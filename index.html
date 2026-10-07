@@ -432,7 +432,12 @@ async function setModel(obj,name){
   fitView();
   updateAllUI();
   const count=parts.length;
-  showMessage(`V4 loaded · ${count} selectable mesh object${count===1?'':'s'}${count===EXPECTED_PARTS?' ✓':` (expected about ${EXPECTED_PARTS})`} · Click a block to see its outline + name.`);
+  if(count===0){
+    const decoded=(modelRoot?.children?.length||0);
+    showMessage(`3DM opened, but 0 render meshes were found${decoded? ` (${decoded} Rhino objects decoded)` : ''}. This usually means the file was saved with Save Small, or the Breps never had render meshes generated. In Rhino: open the ORIGINAL model → switch to Shaded → select the pavilion objects → run RefreshShade → Save As with “Save small” OFF → replace model.3dm. The website needs embedded render meshes to make the blocks selectable.`, true);
+  }else{
+    showMessage(`V4 loaded · ${count} selectable mesh object${count===1?'':'s'}${count===EXPECTED_PARTS?' ✓':` (expected about ${EXPECTED_PARTS})`} · Click a block to see its outline + name.`);
+  }
   if(liveMode) await syncCloudInitial();
 }
 
