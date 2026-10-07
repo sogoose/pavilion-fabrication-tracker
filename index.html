@@ -414,9 +414,12 @@ async function loadModelFile(file){
   const buffer=await file.arrayBuffer();
   const loader=makeLoader();
   try{
-    const obj = await loader.parseAsync(buffer);
-    setModel(obj,file.name);
-  }catch(err){ console.error(err); showMessage('Could not read this 3DM file: '+err.message,true); }
+    const obj = await new Promise((resolve,reject)=>loader.parse(buffer,resolve,reject));
+    await setModel(obj,file.name);
+  }catch(err){
+    console.error(err);
+    showMessage('Could not read this 3DM file: '+(err?.message||err),true);
+  }
 }
 
 async function setModel(obj,name){
@@ -785,7 +788,7 @@ async function importExcel(file){
 }
 
 function wireUI(){
-  document.getElementById('modelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)loadModelFile(f)});
+  document.getElementById('modelInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(f)await loadModelFile(f);e.target.value='';});
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
