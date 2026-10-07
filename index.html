@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pavilion Fabrication Tracker</title>
+  <style>
+    :root{
+      --bg:#f5f5f2; --panel:#ffffff; --ink:#151515; --muted:#777; --line:#d9d9d4;
+      --accent:#111; --soft:#efefeb; --danger:#b42318;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    body{overflow:hidden}
+    button,input,select,textarea{font:inherit}
+    button,.button{border:1px solid var(--line);background:#fff;padding:8px 11px;border-radius:8px;cursor:pointer}
+    button:hover,.button:hover{background:#f4f4f1}
+    button.primary{background:#111;color:#fff;border-color:#111}
+    button.danger{color:var(--danger)}
+    .app{height:100%;display:grid;grid-template-rows:auto 1fr}
+    header{background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:grid;gap:10px}
+    .toprow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .brand{font-weight:700;letter-spacing:.02em;margin-right:auto}
+    .badge{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;background:#fafafa}
+    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .controls label{font-size:12px;color:var(--muted)}
+    select,input[type="search"]{border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff;min-height:36px}
+    .main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 360px}
+    #viewerWrap{position:relative;min-width:0;background:#f9f9f7}
+    #viewer{position:absolute;inset:0}
+    #viewer canvas{display:block;width:100%;height:100%}
+    .viewerOverlay{position:absolute;left:14px;bottom:14px;display:flex;gap:8px;align-items:center;z-index:2}
+    .legend{position:absolute;right:14px;bottom:14px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:10px;padding:10px;min-width:180px;max-width:230px;z-index:2;font-size:12px}
+    .legend-title{font-weight:700;margin-bottom:8px}
+    .legend-row{display:flex;align-items:center;gap:8px;margin:5px 0}
+    .swatch{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.12);flex:0 0 auto}
+    .panel{background:#fff;border-left:1px solid var(--line);overflow:auto;padding:16px}
+    .empty{color:var(--muted);font-size:14px;line-height:1.5;margin-top:30px}
+    .partTitle{font-size:19px;font-weight:700;margin:0 0 4px}
+    .sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .divider{height:1px;background:var(--line);margin:16px 0}
+    .field{display:grid;gap:6px;margin-bottom:12px}
+    .field label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#666;font-weight:700}
+    .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff}
+    .field textarea{min-height:76px;resize:vertical}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .autoStatus{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fafafa;font-size:13px;display:flex;justify-content:space-between;gap:10px}
+    .footerActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .kpis{display:flex;gap:8px;flex-wrap:wrap}
+    .kpi{background:#fafafa;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px}
+    .kpi b{font-size:14px;margin-right:4px}
+    .dropzone{display:none;position:absolute;inset:20px;border:2px dashed #999;border-radius:14px;background:rgba(255,255,255,.88);z-index:10;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:700}
+    #message{position:absolute;top:14px;left:14px;z-index:3;max-width:520px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12px;display:none}
+    #message.error{border-color:#e8aaa5;color:#8f1d16}
+    .fileBtn{position:relative;overflow:hidden;display:inline-flex;align-items:center}
+    .fileBtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    input[type="range"]{width:150px}
+
+    .versionTag{display:inline-block;margin-left:7px;padding:3px 6px;border:1px solid #111;border-radius:999px;font-size:10px;vertical-align:2px}
+    #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:7px 9px;font-size:11px;line-height:1.3;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:nowrap}
+    #objectLabel b{display:block;font-size:12px;margin-bottom:1px}
+    .methodCard{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:12px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+    .methodCard strong{font-size:14px;letter-spacing:.035em}
+    .method-print{background:#eef4fb;border-color:#c9d9ea}
+    .method-rammed{background:#f3ede4;border-color:#d8c6aa}
+    .method-other{background:#f2f2f0}
+    .sectionTitle{font-size:11px;font-weight:800;letter-spacing:.09em;color:#555;margin:15px 0 9px;text-transform:uppercase}
+    .infillPreview{height:92px;border:1px solid var(--line);border-radius:9px;background:#fafaf8;overflow:hidden;margin:-2px 0 12px;position:relative}
+    .infillPreview svg{width:100%;height:100%;display:block}
+    .infillMeta{position:absolute;right:8px;bottom:6px;background:rgba(255,255,255,.88);border:1px solid #ddd;border-radius:999px;padding:3px 6px;font-size:10px;color:#555}
+
+    .sync-live{background:#eaf7ed;border-color:#a9d8b1;color:#226b31;font-weight:700}
+    .sync-syncing{background:#fff7df;border-color:#ead08b;color:#765c16;font-weight:700}
+    .sync-offline{background:#f3f3f0;color:#666}
+    .sync-error{background:#fff0ef;border-color:#efb2ac;color:#9a2f27;font-weight:700}
+    .editorBox{display:flex;align-items:center;gap:6px;font-size:12px;color:#666}
+    .editorBox input{width:118px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-height:34px;background:#fff}
+    .liveNote{font-size:11px;color:#666;margin-top:8px;line-height:1.45}
+    .updatedBy{display:inline-flex;gap:5px;align-items:center;margin-top:5px}
+
+    @media(max-width:900px){
+      .main{grid-template-columns:1fr;grid-template-rows:55vh 1fr}
+      .panel{border-left:0;border-top:1px solid var(--line)}
+      body{overflow:auto}.app{height:auto;min-height:100%}
+      #viewerWrap{min-height:55vh}
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="toprow">
+      <div class="brand">PAVILION / FABRICATION TRACKER <span class="versionTag">V4 · TEAM</span></div>
+      <span id="objectBadge" class="badge">0 objects</span>
+      <span id="saveBadge" class="badge">local autosave</span>
+      <span id="syncBadge" class="badge sync-offline">LOCAL MODE</span>
+      <label class="editorBox">Editing as <input id="editorName" list="peopleList" placeholder="Your name" /></label>
+      <button id="syncNow">Sync now</button>
+      <button id="downloadExcel" class="primary">Download Excel</button>
+      <label class="button fileBtn">Import Excel<input id="excelInput" type="file" accept=".xlsx,.xls,.csv" /></label>
+      <label class="button fileBtn">Load 3DM<input id="modelInput" type="file" accept=".3dm" /></label>
+    </div>
+    <div class="controls">
+      <label>Color by</label>
+      <select id="colorBy">
+        <option value="Overall_Status">Overall status</option>
+        <option value="Construction_Status">Construction status</option>
+        <option value="Production_Status">Production status</option>
+        <option value="Structural_Status">Structural status</option>
+        <option value="Assigned_To">Assigned person</option>
+        <option value="Material">Material</option>
+        <option value="Manufacturing_Method">Manufacturing method</option>
+        <option value="Infill_Pattern">Infill pattern</option>
+      </select>
+      <label>Filter</label>
+      <select id="statusFilter"><option value="__ALL__">All</option></select>
+      <input id="search" type="search" placeholder="Search ID / person / material" />
+      <label>Explode</label>
+      <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
+      <button id="fitView">Fit view</button>
+      <button id="resetData" class="danger">Reset data</button>
+      <div id="kpis" class="kpis"></div>
+    </div>
+  </header>
+
+  <div class="main">
+    <section id="viewerWrap">
+      <div id="viewer"></div>
+      <div id="message"></div>
+       <div id="objectLabel"></div>
+      <div class="viewerOverlay">
+        <button id="homeView">Axonometric</button>
+      </div>
+      <div id="legend" class="legend"></div>
+      <div id="dropzone" class="dropzone">Drop a Rhino .3dm file here</div>
+    </section>
+
+    <aside id="detailPanel" class="panel">
+      <div class="empty">
+        Click a block in the 3D model to edit its fabrication / construction data.<br><br>
+        Changes are cached in this browser automatically. When Supabase is configured, edits are also shared live with the team.<br><br>Use <b>Download Excel</b> whenever you want a spreadsheet snapshot.
+      </div>
+    </aside>
+  </div>
+</div>
+
+<datalist id="peopleList">
+  <option value="Unassigned"><option value="Sohyun"><option value="Niels"><option value="Jin"><option value="Serdar">
+</datalist>
+<datalist id="materialList">
+  <option value="Soil Mix A"><option value="Soil Mix B"><option value="Soil Mix C"><option value="Custom / TBD">
+</datalist>
+<datalist id="machineList">
+  <option value="WASP"><option value="UR5"><option value="COMAU"><option value="HAND">
+</datalist>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
+
+const EXPECTED_PARTS = 70;
+const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
+const fields = [
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Manufacturing_Method','Assigned_To',
+  'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
+  'Machine','GCode_File','Last_Updated','Updated_By','Notes'
+];
+const lists = {
+  Manufacturing_Method:['3D Printing','Rammed Earth','Other'],
+  Structural_Status:['Pending','Checking','Approved','Revision'],
+  Production_Status:['Not Started','Queued','Printing','Printed','Failed'],
+  Drying_QC_Status:['Not Started','Drying','QC Pending','Approved','Rework'],
+  Construction_Status:['Not Installed','Ready','Installing','Installed','Issue'],
+  Infill_Pattern:['Triangular','Gyroid','Grid','Lines','Honeycomb','Medial','Solid','Custom'],
+  Machine_3DP:['WASP','UR5','COMAU'],
+  Machine_Rammed:['HAND']
+};
+const statusPalettes = {
+  Overall_Status:{'Not Started':'#d6d6d1','Planned':'#a8c7e8','In Production':'#e7c971','Ready for Assembly':'#e5a55f','In Construction':'#d88d58','Installed':'#79aa7a','Issue':'#cc6b62'},
+  Structural_Status:{'Pending':'#d6d6d1','Checking':'#e7c971','Approved':'#79aa7a','Revision':'#cc6b62'},
+  Production_Status:{'Not Started':'#d6d6d1','Queued':'#a8c7e8','Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'},
+  Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
+  Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'},
+  Infill_Pattern:{'Triangular':'#7da6cc','Gyroid':'#9e86bf','Grid':'#7dac8a','Lines':'#c0a269','Honeycomb':'#d08b74','Medial':'#8aa3a8','Solid':'#777777','Custom':'#aaa9a5'}
+};
+
+
+const CONFIG = window.PAVILION_CONFIG || {};
+const PROJECT_ID = CONFIG.projectId || 'pavilion-2026';
+const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
+const dbMap = {
+  Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
+  Rhino_Object_Name:'rhino_object_name', Material:'material', Manufacturing_Method:'manufacturing_method', Assigned_To:'assigned_to',
+  Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
+  Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Production_Status:'production_status',
+  Drying_QC_Status:'drying_qc_status', Construction_Status:'construction_status', Overall_Status:'overall_status', Machine:'machine',
+  GCode_File:'gcode_file', Last_Updated:'updated_at', Updated_By:'updated_by', Notes:'notes'
+};
+let supabaseClient=null, liveMode=false, cloudReady=false, realtimeChannel=null;
+const cloudSaveTimers = {};
+
+let renderer, scene, camera, controls, raycaster, mouse;
+let modelRoot = null;
+let parts = [];
+let records = {};
+let selectedKey = null;
+let currentModelName = 'model.3dm';
+let selectedOutlineObjects = [];
+
+const viewer = document.getElementById('viewer');
+const panel = document.getElementById('detailPanel');
+const colorBy = document.getElementById('colorBy');
+const statusFilter = document.getElementById('statusFilter');
+const searchInput = document.getElementById('search');
+const explodeInput = document.getElementById('explode');
+const message = document.getElementById('message');
+const objectLabel = document.getElementById('objectLabel');
+const syncBadge = document.getElementById('syncBadge');
+const editorName = document.getElementById('editorName');
+
+initThree();
+restoreLocal();
+initCollaboration();
+wireUI();
+loadBundledModel();
+
+
+function currentEditor(){ return (editorName?.value || '').trim() || 'Unidentified'; }
+function setSyncBadge(text,state='offline'){
+  if(!syncBadge) return;
+  syncBadge.textContent=text;
+  syncBadge.className=`badge sync-${state}`;
+}
+function initCollaboration(){
+  const savedEditor=localStorage.getItem(EDITOR_KEY) || CONFIG.defaultEditor || '';
+  editorName.value=savedEditor;
+  const url=String(CONFIG.supabaseUrl||'').trim();
+  const key=String(CONFIG.supabaseAnonKey||'').trim();
+  const configured=url && key && !url.includes('PASTE_') && !key.includes('PASTE_');
+  if(!configured || !window.supabase?.createClient){
+    liveMode=false; cloudReady=false; setSyncBadge('LOCAL MODE','offline');
+    return;
+  }
+  try{
+    supabaseClient=window.supabase.createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+    liveMode=true; setSyncBadge('CONNECTING…','syncing');
+  }catch(err){
+    console.error(err); liveMode=false; setSyncBadge('CONNECTION ERROR','error');
+  }
+}
+function normalizeNumber(v){
+  if(v===null || v===undefined || v==='') return null;
+  const n=Number(v); return Number.isFinite(n)?n:null;
+}
+function toDbRecord(r){
+  const out={project_id:PROJECT_ID};
+  for(const [app,db] of Object.entries(dbMap)){
+    let v=r?.[app] ?? null;
+    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct'].includes(app)) v=normalizeNumber(v);
+    if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
+    out[db]=v;
+  }
+  out.updated_by=currentEditor();
+  out.updated_at=new Date().toISOString();
+  return out;
+}
+function fromDbRecord(row){
+  const r={};
+  for(const [app,db] of Object.entries(dbMap)){
+    let v=row?.[db];
+    if(app==='Last_Updated' && v) v=new Date(v).toISOString().slice(0,19).replace('T',' ');
+    r[app]=v ?? '';
+  }
+  return r;
+}
+function persistLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({records,modelName:currentModelName,updated:new Date().toISOString()}));
+    document.getElementById('saveBadge').textContent=liveMode?'cached locally':'saved locally';
+  }catch(e){document.getElementById('saveBadge').textContent='autosave unavailable';}
+}
+function queueCloudSave(key){
+  if(!liveMode || !cloudReady || !key || !records[key]) return;
+  clearTimeout(cloudSaveTimers[key]);
+  setSyncBadge('SAVING…','syncing');
+  cloudSaveTimers[key]=setTimeout(()=>saveRecordToCloud(key),450);
+}
+async function saveRecordToCloud(key){
+  if(!liveMode || !records[key]) return;
+  const payload=toDbRecord(records[key]);
+  const {error}=await supabaseClient.from('pavilion_parts').upsert(payload,{onConflict:'project_id,rhino_guid'});
+  if(error){console.error(error);setSyncBadge('SYNC ERROR','error');showMessage('Shared save failed: '+error.message,true);return;}
+  records[key].Last_Updated=new Date(payload.updated_at).toISOString().slice(0,19).replace('T',' ');
+  records[key].Updated_By=payload.updated_by;
+  persistLocal();
+  setSyncBadge('LIVE · SHARED','live');
+  if(selectedKey===key) renderPanel();
+}
+async function upsertKeys(keys){
+  if(!liveMode || !keys.length) return;
+  const payloads=keys.filter(k=>records[k]).map(k=>toDbRecord(records[k]));
+  if(!payloads.length) return;
+  const {error}=await supabaseClient.from('pavilion_parts').upsert(payloads,{onConflict:'project_id,rhino_guid'});
+  if(error) throw error;
+}
+async function syncCloudInitial(force=false){
+  if(!liveMode || !supabaseClient || !parts.length) return;
+  setSyncBadge('SYNCING…','syncing');
+  try{
+    const {data,error}=await supabaseClient.from('pavilion_parts').select('*').eq('project_id',PROJECT_ID);
+    if(error) throw error;
+    const cloudRows=data||[];
+    const cloudKeys=new Set();
+    cloudRows.forEach(row=>{
+      const k=String(row.rhino_guid||''); if(!k) return;
+      cloudKeys.add(k);
+      if(records[k]) records[k]={...records[k],...fromDbRecord(row)};
+    });
+    const missing=parts.map(p=>p.key).filter(k=>!cloudKeys.has(k));
+    if(missing.length) await upsertKeys(missing);
+    cloudReady=true;
+    persistLocal(); updateAllUI(); applyColors(); renderPanel(); updateObjectLabel();
+    subscribeRealtime();
+    setSyncBadge('LIVE · SHARED','live');
+    showMessage(`Team sync ready · ${cloudRows.length + missing.length} shared block record${cloudRows.length + missing.length===1?'':'s'}.`);
+  }catch(err){
+    console.error(err); cloudReady=false; setSyncBadge('SYNC ERROR','error');
+    showMessage('Could not connect to the shared database. Local editing still works. '+(err.message||err),true);
+  }
+}
+function subscribeRealtime(){
+  if(!liveMode || !supabaseClient || realtimeChannel) return;
+  realtimeChannel=supabaseClient.channel(`pavilion-${PROJECT_ID}`)
+    .on('postgres_changes',{event:'*',schema:'public',table:'pavilion_parts',filter:`project_id=eq.${PROJECT_ID}`},payload=>{
+      if(payload.eventType==='DELETE') return;
+      const row=payload.new||{}; const k=String(row.rhino_guid||'');
+      if(!k || !records[k]) return;
+      records[k]={...records[k],...fromDbRecord(row)}; derive(records[k]);
+      persistLocal(); updateAllUI(); applyColors();
+      if(selectedKey===k) renderPanel();
+      updateObjectLabel(); setSyncBadge('LIVE · SHARED','live');
+    })
+    .subscribe(status=>{
+      if(status==='SUBSCRIBED') setSyncBadge('LIVE · SHARED','live');
+      else if(status==='CHANNEL_ERROR' || status==='TIMED_OUT') setSyncBadge('REALTIME ERROR','error');
+    });
+}
+
+function initThree(){
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf9f9f7);
+  camera = new THREE.PerspectiveCamera(34, 1, 0.01, 1000000);
+  camera.up.set(0,0,1);
+  camera.position.set(12,-14,10);
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  viewer.appendChild(renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.screenSpacePanning = true;
+  controls.target.set(0,0,0);
+
+  const hemi = new THREE.HemisphereLight(0xffffff,0xc8c8c2,2.2); scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff,2.3); dir.position.set(10,-10,18); scene.add(dir);
+  const dir2 = new THREE.DirectionalLight(0xffffff,1.0); dir2.position.set(-10,7,5); scene.add(dir2);
+
+  raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2();
+  renderer.domElement.addEventListener('pointerdown', onPick);
+  window.addEventListener('resize', resize);
+  resize(); animate();
+}
+
+function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); renderer.render(scene,camera); }
+function resize(){
+  const r = viewer.getBoundingClientRect();
+  camera.aspect = Math.max(r.width,1)/Math.max(r.height,1); camera.updateProjectionMatrix();
+  renderer.setSize(Math.max(r.width,1),Math.max(r.height,1),false);
+}
+
+function showMessage(text, isError=false){
+  message.textContent=text; message.className=isError?'error':''; message.style.display='block';
+  clearTimeout(showMessage._t); showMessage._t=setTimeout(()=>message.style.display='none',7000);
+}
+
+function loadBundledModel(){
+  const loader = makeLoader();
+  const modelUrl=String(CONFIG.modelUrl||'').trim() || './model.3dm';
+  const modelName=modelUrl.split('/').pop()?.split('?')[0] || 'model.3dm';
+  loader.load(modelUrl, obj => setModel(obj,modelName), undefined, err => {
+    showMessage('Auto-load needs a local web server. Use run.bat, or click “Load 3DM” and choose the Rhino file.', true);
+    console.warn(err);
+  });
+}
+function makeLoader(){
+  const loader = new Rhino3dmLoader();
+  loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.32.1/');
+  loader.setWorkerLimit(2);
+  return loader;
+}
+async function loadModelFile(file){
+  showMessage('Loading '+file.name+' …');
+  const buffer=await file.arrayBuffer();
+  const loader=makeLoader();
+  try{
+    const obj = await loader.parseAsync(buffer);
+    setModel(obj,file.name);
+  }catch(err){ console.error(err); showMessage('Could not read this 3DM file: '+err.message,true); }
+}
+
+async function setModel(obj,name){
+  clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none';
+  if(modelRoot) scene.remove(modelRoot);
+  modelRoot=obj; currentModelName=name || 'model.3dm'; scene.add(modelRoot);
+  buildParts(modelRoot);
+  ensureRecords();
+  simplifyMaterials();
+  applyColors();
+  fitView();
+  updateAllUI();
+  const count=parts.length;
+  showMessage(`V4 loaded · ${count} selectable mesh object${count===1?'':'s'}${count===EXPECTED_PARTS?' ✓':` (expected about ${EXPECTED_PARTS})`} · Click a block to see its outline + name.`);
+  if(liveMode) await syncCloudInitial();
+}
+
+function ancestorAttribute(obj,key){
+  let p=obj;
+  while(p){ const a=p.userData?.attributes; if(a && a[key]!==undefined && a[key]!==null && String(a[key]).trim()!=='') return a[key]; p=p.parent; }
+  return null;
+}
+function buildParts(root){
+  const grouped = new Map();
+  let fallback=0;
+  root.traverse(o=>{
+    if(!o.isMesh || !o.geometry) return;
+    const rid = ancestorAttribute(o,'id') || ancestorAttribute(o,'objectId') || ancestorAttribute(o,'uuid') || `mesh-${++fallback}`;
+    const key=String(rid);
+    if(!grouped.has(key)) grouped.set(key,{key,meshes:[],name:'',box:new THREE.Box3(),center:new THREE.Vector3(),originalCenters:[]});
+    const part=grouped.get(key); part.meshes.push(o);
+    part.name = String(ancestorAttribute(o,'name') || part.name || '');
+    o.userData._trackerKey=key;
+  });
+  parts=[...grouped.values()];
+  parts.forEach(p=>{
+    p.box.makeEmpty();
+    p.meshes.forEach(m=>{ m.updateWorldMatrix(true,false); p.box.union(new THREE.Box3().setFromObject(m)); });
+    p.box.getCenter(p.center);
+    p.meshes.forEach(m=>m.userData._trackerBasePosition=m.position.clone());
+  });
+  // Stable spatial order: lower Z first, then X, then Y.
+  parts.sort((a,b)=> (a.center.z-b.center.z) || (a.center.x-b.center.x) || (a.center.y-b.center.y));
+}
+function defaultRecord(part,i){
+  const n=i+1;
+  return {
+    Rhino_GUID:part.key,
+    Object_ID:`M${String(n).padStart(2,'0')}`,
+    Module_No:n,
+    Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
+    Material:'Custom / TBD', Manufacturing_Method:'3D Printing', Assigned_To:'Unassigned',
+    Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'Triangular', Infill_Density_pct:'', Production_Status:'Not Started',
+    Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
+    Machine:'WASP', GCode_File:'', Last_Updated:'', Updated_By:'', Notes:''
+  };
+}
+function ensureRecords(){
+  parts.forEach((p,i)=>{
+    if(!records[p.key]) records[p.key]=defaultRecord(p,i);
+    records[p.key].Rhino_GUID=p.key;
+    if(!records[p.key].Module_No) records[p.key].Module_No=i+1;
+    if(!records[p.key].Object_ID) records[p.key].Object_ID=`M${String(i+1).padStart(2,'0')}`;
+    if(!records[p.key].Rhino_Object_Name && p.name) records[p.key].Rhino_Object_Name=p.name;
+    derive(records[p.key]);
+  });
+  persistLocal();
+}
+function derive(r){
+  r.Ready_for_Production = r.Structural_Status==='Approved' ? 'YES' : 'WAIT';
+  if(r.Manufacturing_Method==='Rammed Earth') r.Machine='HAND';
+  else if(r.Manufacturing_Method==='3D Printing' && !lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
+  if(r.Construction_Status==='Installed') r.Overall_Status='Installed';
+  else if(r.Construction_Status==='Issue' || r.Structural_Status==='Revision' || r.Production_Status==='Failed' || r.Drying_QC_Status==='Rework') r.Overall_Status='Issue';
+  else if(r.Construction_Status==='Installing') r.Overall_Status='In Construction';
+  else if(r.Production_Status==='Printed' && r.Drying_QC_Status==='Approved') r.Overall_Status='Ready for Assembly';
+  else if(r.Production_Status==='Printing') r.Overall_Status='In Production';
+  else if(r.Production_Status==='Queued' || r.Ready_for_Production==='YES') r.Overall_Status='Planned';
+  else r.Overall_Status='Not Started';
+}
+function autoId(r){
+  if(r.Module_No!=='' && r.Level!=='' && r.Sequence!==''){
+    const n=String(parseInt(r.Module_No)||0).padStart(2,'0');
+    const l=String(parseInt(r.Level)||0).padStart(2,'0');
+    const s=String(parseInt(r.Sequence)||0).padStart(2,'0');
+    r.Object_ID=`M${n}_L${l}_S${s}`;
+  }
+}
+function simplifyMaterials(){
+  parts.forEach(p=>p.meshes.forEach(m=>{
+    const mat = new THREE.MeshStandardMaterial({color:0xd6d6d1,roughness:.93,metalness:0,side:THREE.DoubleSide});
+    m.material=mat;
+    m.castShadow=false; m.receiveShadow=false;
+  }));
+}
+
+function hashColor(text){
+  const s=String(text||'Unassigned'); let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  const hue=h%360; const c=new THREE.Color(); c.setHSL(hue/360,.38,.66); return '#'+c.getHexString();
+}
+function colorFor(field,value){
+  const p=statusPalettes[field]; if(p && p[value]) return p[value]; return hashColor(value || 'Unassigned');
+}
+function applyColors(){
+  const field=colorBy.value;
+  parts.forEach(p=>{
+    const r=records[p.key]; if(!r)return;
+    const c=colorFor(field,r[field]);
+    p.meshes.forEach(m=>{
+      if(m.material?.color) m.material.color.set(c);
+      if(m.material?.emissive){m.material.emissive.set(p.key===selectedKey?0x3a3a3a:0x000000);m.material.emissiveIntensity=p.key===selectedKey?.28:0;}
+    });
+  });
+  applyFilter(); renderLegend();
+}
+function applyFilter(){
+  const field=colorBy.value, f=statusFilter.value, q=searchInput.value.trim().toLowerCase();
+  parts.forEach(p=>{
+    const r=records[p.key];
+    const matchesStatus = f==='__ALL__' || String(r?.[field]??'')===f;
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Manufacturing_Method,r?.Notes].join(' ').toLowerCase();
+    const matchesSearch=!q || hay.includes(q);
+    p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
+  });
+}
+function renderLegend(){
+  const field=colorBy.value; const vals=[...new Set(parts.map(p=>records[p.key]?.[field]).filter(v=>v!==undefined&&v!==''))];
+  vals.sort();
+  const previous=statusFilter.value || '__ALL__';
+  document.getElementById('legend').innerHTML=`<div class="legend-title">${pretty(field)}</div>`+vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span>${escapeHtml(v)}</span></div>`).join('');
+  statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join('');
+  statusFilter.value=vals.includes(previous)?previous:'__ALL__';
+}
+
+function onPick(e){
+  const rect=renderer.domElement.getBoundingClientRect();
+  mouse.x=((e.clientX-rect.left)/rect.width)*2-1; mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouse,camera);
+  const hits=raycaster.intersectObjects(modelRoot?modelRoot.children:[],true).filter(h=>h.object.isMesh && h.object.visible);
+  if(!hits.length) return;
+  const key=hits[0].object.userData._trackerKey;
+  if(key) selectPart(key);
+}
+function clearSelectionOutline(){
+  selectedOutlineObjects.forEach(({mesh,line})=>{
+    if(line.parent===mesh) mesh.remove(line);
+    line.geometry?.dispose?.(); line.material?.dispose?.();
+  });
+  selectedOutlineObjects=[];
+}
+function drawSelectionOutline(key){
+  clearSelectionOutline();
+  const p=parts.find(x=>x.key===key); if(!p)return;
+  p.meshes.forEach(mesh=>{
+    try{
+      const g=new THREE.EdgesGeometry(mesh.geometry, 24);
+      const mat=new THREE.LineBasicMaterial({color:0x111111,transparent:true,opacity:.96,depthTest:false});
+      const line=new THREE.LineSegments(g,mat);
+      line.renderOrder=999; line.frustumCulled=false;
+      mesh.add(line); selectedOutlineObjects.push({mesh,line});
+    }catch(e){console.warn('outline',e)}
+  });
+}
+function selectPart(key){ selectedKey=key; drawSelectionOutline(key); applyColors(); renderPanel(); updateObjectLabel(); }
+function updateObjectLabel(){
+  if(!selectedKey || !renderer || !camera){objectLabel.style.display='none';return;}
+  const p=parts.find(x=>x.key===selectedKey), r=records[selectedKey];
+  if(!p||!r){objectLabel.style.display='none';return;}
+  const box=new THREE.Box3(); p.meshes.forEach(m=>{if(m.visible)box.union(new THREE.Box3().setFromObject(m));});
+  if(box.isEmpty()){objectLabel.style.display='none';return;}
+  const pos=box.getCenter(new THREE.Vector3()); pos.z=box.max.z; pos.project(camera);
+  const rect=renderer.domElement.getBoundingClientRect();
+  const x=(pos.x*.5+.5)*rect.width, y=(-pos.y*.5+.5)*rect.height;
+  if(pos.z < -1 || pos.z > 1 || x<0 || x>rect.width || y<0 || y>rect.height){objectLabel.style.display='none';return;}
+  objectLabel.style.left=`${x}px`; objectLabel.style.top=`${y}px`; objectLabel.style.display='block';
+  const name=r.Rhino_Object_Name || 'Unnamed Rhino object';
+  objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b>${escapeHtml(name)}`;
+}
+function renderPanel(){
+  if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
+  const r=records[selectedKey];
+  derive(r);
+  const methodClass=r.Manufacturing_Method==='3D Printing'?'method-print':(r.Manufacturing_Method==='Rammed Earth'?'method-rammed':'method-other');
+  const machineOptions=r.Manufacturing_Method==='Rammed Earth'?lists.Machine_Rammed:lists.Machine_3DP;
+  panel.innerHTML=`
+    <h2 class="partTitle">${escapeHtml(r.Object_ID||'Unnamed block')}</h2>
+    <div class="sub">Rhino object: ${escapeHtml(r.Rhino_Object_Name||'—')}</div>
+    <div class="methodCard ${methodClass}"><div><div class="sub">MANUFACTURING</div><strong>${escapeHtml(r.Manufacturing_Method)}</strong></div><div><div class="sub">MACHINE</div><strong>${escapeHtml(r.Machine||'—')}</strong></div></div>
+    <div class="grid2">
+      ${inputField('Module_No','Module no.',r.Module_No,'number')}
+      ${inputField('Level','Level',r.Level,'number')}
+      ${inputField('Sequence','Sequence',r.Sequence,'number')}
+      ${inputField('Object_ID','Object ID',r.Object_ID,'text')}
+    </div>
+    ${inputField('Rhino_Object_Name','Rhino object name',r.Rhino_Object_Name,'text')}
+    ${datalistField('Material','Material',r.Material,'materialList')}
+    ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
+    ${selectField('Machine','Machine',r.Machine,machineOptions)}
+    ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
+
+    <div class="divider"></div>
+    <div class="sectionTitle">Structural</div>
+    ${selectField('Structural_Status','Structural status',r.Structural_Status,lists.Structural_Status)}
+    ${inputField('Compression_Force_kN','Compression force (kN)',r.Compression_Force_kN,'number','0.01')}
+    <div class="autoStatus"><span>Ready for production</span><b>${escapeHtml(r.Ready_for_Production)}</b></div>
+
+    <div class="sectionTitle">Infill</div>
+    <div class="grid2">
+      ${selectField('Infill_Pattern','Infill pattern',r.Infill_Pattern,lists.Infill_Pattern)}
+      ${inputField('Infill_Density_pct','Density (%)',r.Infill_Density_pct,'number','1')}
+    </div>
+    ${infillPreview(r.Infill_Pattern,r.Infill_Density_pct)}
+
+    <div class="sectionTitle">Production / Construction</div>
+    ${selectField('Production_Status','Production status',r.Production_Status,lists.Production_Status)}
+    ${selectField('Drying_QC_Status','Drying / QC',r.Drying_QC_Status,lists.Drying_QC_Status)}
+    ${selectField('Construction_Status','Construction status',r.Construction_Status,lists.Construction_Status)}
+    <div class="autoStatus"><span>Overall status</span><b>${escapeHtml(r.Overall_Status)}</b></div>
+    <div class="divider"></div>
+    ${inputField('GCode_File','G-code file',r.GCode_File,'text')}
+    ${textareaField('Notes','Notes',r.Notes)}
+    <div class="footerActions"><button id="stampNow">Stamp updated time</button><button id="focusSelected">Focus object</button></div>
+    <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.'}</div>`;
+
+  panel.querySelectorAll('[data-field]').forEach(el=>{
+    const sync=()=>{
+      const field=el.dataset.field; r[field]=el.value;
+      if(['Module_No','Level','Sequence'].includes(field)) autoId(r);
+      if(field==='Manufacturing_Method'){
+        if(r.Manufacturing_Method==='Rammed Earth') r.Machine='HAND';
+        else if(r.Manufacturing_Method==='3D Printing' && !lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
+      }
+      derive(r); r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' '); r.Updated_By=currentEditor();
+      persist(selectedKey); updateAllUI(); applyColors(); updateObjectLabel();
+    };
+    el.addEventListener('change',()=>{sync(); renderPanel();});
+    if(el.tagName==='TEXTAREA' || el.getAttribute('list')) el.addEventListener('input',sync);
+  });
+  document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
+  document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
+}
+function inputField(key,label,value,type='text',step=''){return `<div class="field"><label>${label}</label><input data-field="${key}" type="${type}" ${step?`step="${step}"`:''} value="${escapeAttr(value??'')}"></div>`}
+function datalistField(key,label,value,list){return `<div class="field"><label>${label}</label><input data-field="${key}" list="${list}" value="${escapeAttr(value??'')}"></div>`}
+function selectField(key,label,value,opts){return `<div class="field"><label>${label}</label><select data-field="${key}">${opts.map(o=>`<option ${String(value)===o?'selected':''}>${escapeHtml(o)}</option>`).join('')}</select></div>`}
+function textareaField(key,label,value){return `<div class="field"><label>${label}</label><textarea data-field="${key}">${escapeHtml(value??'')}</textarea></div>`}
+function infillPreview(pattern,density){
+  const p=String(pattern||'Triangular');
+  let body='';
+  if(p==='Triangular') body='<path d="M-20 90 L35 0 M10 90 L65 0 M40 90 L95 0 M70 90 L125 0 M-20 0 L35 90 M10 0 L65 90 M40 0 L95 90 M70 0 L125 90 M0 30 H120 M0 60 H120"/>';
+  else if(p==='Grid') body='<path d="M20 0 V90 M45 0 V90 M70 0 V90 M95 0 V90 M0 22 H120 M0 45 H120 M0 68 H120"/>';
+  else if(p==='Lines') body='<path d="M-10 80 L45 0 M15 90 L70 0 M45 90 L100 0 M75 90 L130 0"/>';
+  else if(p==='Honeycomb') body='<path d="M12 18 L28 8 L44 18 L44 38 L28 48 L12 38 Z M44 18 L60 8 L76 18 L76 38 L60 48 L44 38 M12 58 L28 48 L44 58 L44 78 L28 88 L12 78 Z M44 58 L60 48 L76 58 L76 78 L60 88 L44 78 M76 18 L92 8 L108 18 L108 38 L92 48 L76 38 M76 58 L92 48 L108 58 L108 78 L92 88 L76 78"/>';
+  else if(p==='Gyroid') body='<path d="M0 18 C18 0 42 0 60 18 S102 36 120 18 M0 45 C18 27 42 27 60 45 S102 63 120 45 M0 72 C18 54 42 54 60 72 S102 90 120 72 M18 0 C0 18 0 42 18 60 S36 102 18 120 M60 0 C42 18 42 42 60 60 S78 102 60 120 M102 0 C84 18 84 42 102 60 S120 102 102 120"/>';
+  else if(p==='Medial') body='<path d="M60 5 V85 M60 20 L20 45 M60 20 L100 45 M60 55 L25 75 M60 55 L95 75"/>';
+  else if(p==='Solid') body='<rect x="8" y="8" width="104" height="74" fill="#777" stroke="none" opacity=".7"/>';
+  else body='<path d="M5 70 Q30 15 55 55 T115 20 M10 25 Q45 75 75 35 T115 70"/>';
+  return `<div class="infillPreview"><svg viewBox="0 0 120 90" preserveAspectRatio="none"><g fill="none" stroke="#555" stroke-width="1.25">${body}</g></svg><span class="infillMeta">${escapeHtml(p)} · ${escapeHtml(density||'—')}%</span></div>`;
+}
+
+
+function explode(f){
+  if(!modelRoot)return;
+  const allBox=new THREE.Box3().setFromObject(modelRoot); const c=allBox.getCenter(new THREE.Vector3()); const span=allBox.getSize(new THREE.Vector3()).length();
+  parts.forEach(p=>{
+    const dir=p.center.clone().sub(c); if(dir.lengthSq()>0) dir.normalize();
+    const dz=(p.center.z-c.z)/(span||1);
+    p.meshes.forEach(m=>{
+      const base=m.userData._trackerBasePosition || m.position.clone();
+      m.position.copy(base).addScaledVector(dir,span*0.12*f).add(new THREE.Vector3(0,0,span*0.05*f*dz));
+    });
+  });
+}
+function fitView(){
+  if(!modelRoot)return;
+  const box=new THREE.Box3().setFromObject(modelRoot); if(box.isEmpty())return;
+  const center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3());
+  const radius=Math.max(size.x,size.y,size.z)*0.7 || 1;
+  controls.target.copy(center);
+  camera.near=Math.max(radius/1000,.01); camera.far=radius*1000; camera.updateProjectionMatrix();
+  camera.position.copy(center).add(new THREE.Vector3(radius*1.35,-radius*1.5,radius*1.05));
+  controls.update();
+}
+function focusPart(key){
+  const p=parts.find(x=>x.key===key); if(!p)return;
+  const box=new THREE.Box3(); p.meshes.forEach(m=>box.union(new THREE.Box3().setFromObject(m)));
+  const center=box.getCenter(new THREE.Vector3()), size=box.getSize(new THREE.Vector3()); const r=Math.max(size.x,size.y,size.z)||1;
+  controls.target.copy(center); camera.position.copy(center).add(new THREE.Vector3(r*2,-r*2,r*1.5)); controls.update();
+}
+
+function updateAllUI(){
+  document.getElementById('objectBadge').textContent=`${parts.length} objects${parts.length===EXPECTED_PARTS?' ✓':''}`;
+  const rs=parts.map(p=>records[p.key]).filter(Boolean);
+  const approved=rs.filter(r=>r.Structural_Status==='Approved').length;
+  const prod=rs.filter(r=>r.Overall_Status==='In Production').length;
+  const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
+  const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
+  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+}
+function persist(changedKey=null){
+  persistLocal();
+  if(changedKey) queueCloudSave(changedKey);
+}
+function restoreLocal(){
+  try{const raw=localStorage.getItem(STORAGE_KEY); if(raw){const parsed=JSON.parse(raw); records=parsed.records||{};}}
+  catch(e){console.warn(e)}
+}
+async function resetData(){
+  if(liveMode){
+    if(!confirm('Discard this browser cache and reload the current shared team data? The shared database will NOT be deleted.')) return;
+    records={}; localStorage.removeItem(STORAGE_KEY); clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none';
+    if(parts.length){ensureRecords(); await syncCloudInitial(true);}
+    renderPanel(); return;
+  }
+  if(!confirm('Reset all tracker fields for this browser? The 3D model is not affected.')) return;
+  records={}; localStorage.removeItem(STORAGE_KEY); clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none'; if(parts.length){ensureRecords();applyColors();updateAllUI();} renderPanel();
+}
+
+function exportExcel(){
+  if(!window.XLSX){showMessage('Excel library has not loaded. Check your internet connection.',true);return;}
+  const rows=parts.map(p=>{const r={...(records[p.key]||{})}; derive(r); return fields.reduce((o,k)=>(o[k]=r[k]??'',o),{});});
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows,{header:fields});
+  ws['!cols']=fields.map(k=>({wch:Math.max(12,Math.min(28,k.length+3))}));
+  XLSX.utils.book_append_sheet(wb,ws,'Tracker');
+  const listRows=[];
+  Object.entries(lists).forEach(([k,arr])=>arr.forEach((v,i)=>{if(!listRows[i])listRows[i]={};listRows[i][k]=v;}));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(listRows),'Lists');
+  XLSX.writeFile(wb,`Pavilion_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+async function importExcel(file){
+  if(!window.XLSX){showMessage('Excel library has not loaded. Check your internet connection.',true);return;}
+  const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+  let matched=0;
+  rows.forEach(row=>{
+    let key=String(row.Rhino_GUID||'').trim();
+    if(!records[key]){
+      const p=parts.find(p=> String(records[p.key]?.Object_ID||'')===String(row.Object_ID||'') || String(records[p.key]?.Module_No||'')===String(row.Module_No||''));
+      if(p) key=p.key;
+    }
+    if(records[key]){fields.forEach(f=>{if(row[f]!==undefined && row[f]!==null) records[key][f]=row[f];});records[key].Rhino_GUID=key;records[key].Updated_By=currentEditor();records[key].Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');derive(records[key]);matched++;}
+  });
+  persistLocal();
+  if(liveMode && cloudReady){try{await upsertKeys(parts.map(p=>p.key));setSyncBadge('LIVE · SHARED','live');}catch(err){setSyncBadge('SYNC ERROR','error');showMessage('Excel imported locally, but shared upload failed: '+err.message,true);}}
+  updateAllUI(); applyColors(); renderPanel(); showMessage(`Imported spreadsheet: ${matched} row${matched===1?'':'s'} matched to model objects${liveMode?' and shared with the team':''}.`);
+}
+
+function wireUI(){
+  document.getElementById('modelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)loadModelFile(f)});
+  document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
+  document.getElementById('downloadExcel').onclick=exportExcel;
+  document.getElementById('fitView').onclick=fitView;
+  document.getElementById('homeView').onclick=fitView;
+  document.getElementById('resetData').onclick=resetData;
+  editorName.addEventListener('change',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
+  editorName.addEventListener('blur',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
+  document.getElementById('syncNow').onclick=()=>{
+    if(liveMode) syncCloudInitial(true);
+    else showMessage('This copy is in local mode. Add your Supabase Project URL + publishable/anon key to config.js, then reload.',true);
+  };
+  colorBy.onchange=()=>{statusFilter.value='__ALL__';applyColors();};
+  statusFilter.onchange=applyFilter; searchInput.oninput=applyFilter;
+  explodeInput.oninput=()=>explode(parseFloat(explodeInput.value));
+  const wrap=document.getElementById('viewerWrap'), dz=document.getElementById('dropzone');
+  wrap.addEventListener('dragover',e=>{e.preventDefault();dz.style.display='flex'});
+  wrap.addEventListener('dragleave',()=>dz.style.display='none');
+  wrap.addEventListener('drop',e=>{e.preventDefault();dz.style.display='none';const f=[...e.dataTransfer.files].find(x=>x.name.toLowerCase().endsWith('.3dm'));if(f)loadModelFile(f)});
+}
+
+function pretty(s){return String(s).replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
+</script>
+</body>
+</html>
