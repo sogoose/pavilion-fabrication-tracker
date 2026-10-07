@@ -554,11 +554,18 @@ function applyFilter(){
   });
 }
 function renderLegend(){
-  const field=colorBy.value; const vals=[...new Set(parts.map(p=>records[p.key]?.[field]).filter(v=>v!==undefined&&v!==''))];
+  const field=colorBy.value;
+  const values=parts.map(p=>records[p.key]?.[field]).filter(v=>v!==undefined&&v!=='');
+  const vals=[...new Set(values)];
   vals.sort();
+  const counts={};
+  values.forEach(v=>{ const k=String(v); counts[k]=(counts[k]||0)+1; });
   const previous=statusFilter.value || '__ALL__';
-  document.getElementById('legend').innerHTML=`<div class="legend-title">${pretty(field)}</div>`+vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span>${escapeHtml(v)}</span></div>`).join('');
-  statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join('');
+  const total=parts.length;
+  document.getElementById('legend').innerHTML=
+    `<div class="legend-title">${pretty(field)} <span style="font-weight:500;opacity:.6">· Total ${total}</span></div>`+
+    vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span style="flex:1">${escapeHtml(v)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${counts[String(v)]||0}</b></div>`).join('');
+  statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)} (${counts[String(v)]||0})</option>`).join('');
   statusFilter.value=vals.includes(previous)?previous:'__ALL__';
 }
 
