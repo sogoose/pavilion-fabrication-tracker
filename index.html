@@ -426,6 +426,14 @@ function initThree(){
   controls.screenSpacePanning = true;
   controls.target.set(0,0,0);
 
+  // Rhino-like navigation:
+  // left click = select, right drag = rotate, Shift + right drag = pan,
+  // middle drag = pan, mouse wheel = zoom.
+  controls.mouseButtons.LEFT = null;
+  controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
+  controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+  renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
+
   const hemi = new THREE.HemisphereLight(0xffffff,0xc8c8c2,2.2); scene.add(hemi);
   const dir = new THREE.DirectionalLight(0xffffff,2.3); dir.position.set(10,-10,18); scene.add(dir);
   const dir2 = new THREE.DirectionalLight(0xffffff,1.0); dir2.position.set(-10,7,5); scene.add(dir2);
@@ -644,6 +652,7 @@ function renderLegend(){
 }
 
 function onPick(e){
+  if(e.button!==0) return;
   const rect=renderer.domElement.getBoundingClientRect();
   mouse.x=((e.clientX-rect.left)/rect.width)*2-1; mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;
   raycaster.setFromCamera(mouse,camera);
