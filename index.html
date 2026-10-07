@@ -121,11 +121,11 @@
         <option value="Assigned_To">Assigned person</option>
         <option value="Material">Material</option>
         <option value="Manufacturing_Method">Manufacturing method</option>
-        <option value="Infill_Pattern">Infill pattern</option>
+        <option value="Infill_Density_pct">Infill density</option>
       </select>
       <label>Filter</label>
       <select id="statusFilter"><option value="__ALL__">All</option></select>
-      <input id="search" type="search" placeholder="Search ID / person / material" />
+      <input id="search" type="search" placeholder="Search ID / person / material / method" />
       <label>Explode</label>
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
       <button id="fitView">Fit view</button>
@@ -174,7 +174,7 @@ const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
 const fields = [
   'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Manufacturing_Method','Assigned_To',
-  'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
+  'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Density_pct','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
 const lists = {
@@ -183,7 +183,6 @@ const lists = {
   Production_Status:['Not Started','Queued','Printing','Printed','Failed'],
   Drying_QC_Status:['Not Started','Drying','QC Pending','Approved','Rework'],
   Construction_Status:['Not Installed','Ready','Installing','Installed','Issue'],
-  Infill_Pattern:['Triangular','Gyroid','Grid','Lines','Honeycomb','Medial','Solid','Custom'],
   Machine_3DP:['WASP','UR5','COMAU'],
   Machine_Rammed:['HAND']
 };
@@ -192,8 +191,7 @@ const statusPalettes = {
   Structural_Status:{'Pending':'#d6d6d1','Checking':'#e7c971','Approved':'#79aa7a','Revision':'#cc6b62'},
   Production_Status:{'Not Started':'#d6d6d1','Queued':'#a8c7e8','Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'},
   Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
-  Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'},
-  Infill_Pattern:{'Triangular':'#7da6cc','Gyroid':'#9e86bf','Grid':'#7dac8a','Lines':'#c0a269','Honeycomb':'#d08b74','Medial':'#8aa3a8','Solid':'#777777','Custom':'#aaa9a5'}
+  Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'}
 };
 
 
@@ -204,7 +202,7 @@ const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
   Rhino_Object_Name:'rhino_object_name', Material:'material', Manufacturing_Method:'manufacturing_method', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
-  Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Production_Status:'production_status',
+  Infill_Density_pct:'infill_density_pct', Weight_kg:'weight_kg', Production_Status:'production_status',
   Drying_QC_Status:'drying_qc_status', Construction_Status:'construction_status', Overall_Status:'overall_status', Machine:'machine',
   GCode_File:'gcode_file', Last_Updated:'updated_at', Updated_By:'updated_by', Notes:'notes'
 };
@@ -268,7 +266,7 @@ function toDbRecord(r){
   const out={project_id:PROJECT_ID};
   for(const [app,db] of Object.entries(dbMap)){
     let v=r?.[app] ?? null;
-    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct'].includes(app)) v=normalizeNumber(v);
+    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Weight_kg'].includes(app)) v=normalizeNumber(v);
     if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
     out[db]=v;
   }
@@ -480,7 +478,7 @@ function defaultRecord(part,i){
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
     Material:'Custom / TBD', Manufacturing_Method:'3D Printing', Assigned_To:'Unassigned',
-    Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'Triangular', Infill_Density_pct:'', Production_Status:'Not Started',
+    Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Density_pct:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
     Machine:'WASP', GCode_File:'', Last_Updated:'', Updated_By:'', Notes:''
   };
@@ -529,6 +527,14 @@ function hashColor(text){
   const hue=h%360; const c=new THREE.Color(); c.setHSL(hue/360,.38,.66); return '#'+c.getHexString();
 }
 function colorFor(field,value){
+  if(field==='Infill_Density_pct'){
+    const n=Number(value);
+    if(!Number.isFinite(n)) return '#d6d6d1';
+    const t=Math.max(0,Math.min(100,n))/100;
+    const c=new THREE.Color();
+    c.setHSL(0.58, 0.45, 0.88 - t*0.46);
+    return '#'+c.getHexString();
+  }
   const p=statusPalettes[field]; if(p && p[value]) return p[value]; return hashColor(value || 'Unassigned');
 }
 function applyColors(){
@@ -557,16 +563,18 @@ function renderLegend(){
   const field=colorBy.value;
   const values=parts.map(p=>records[p.key]?.[field]).filter(v=>v!==undefined&&v!=='');
   const vals=[...new Set(values)];
-  vals.sort();
+  if(field==='Infill_Density_pct') vals.sort((a,b)=>Number(a)-Number(b)); else vals.sort();
   const counts={};
   values.forEach(v=>{ const k=String(v); counts[k]=(counts[k]||0)+1; });
   const previous=statusFilter.value || '__ALL__';
   const total=parts.length;
+  const title=field==='Infill_Density_pct'?'Infill Density (%)':pretty(field);
+  const label=v=>field==='Infill_Density_pct'? `${escapeHtml(v)}%` : escapeHtml(v);
   document.getElementById('legend').innerHTML=
-    `<div class="legend-title">${pretty(field)} <span style="font-weight:500;opacity:.6">· Total ${total}</span></div>`+
-    vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span style="flex:1">${escapeHtml(v)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${counts[String(v)]||0}</b></div>`).join('');
-  statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${escapeHtml(v)} (${counts[String(v)]||0})</option>`).join('');
-  statusFilter.value=vals.includes(previous)?previous:'__ALL__';
+    `<div class="legend-title">${title} <span style="font-weight:500;opacity:.6">· Total ${total}</span></div>`+
+    vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span style="flex:1">${label(v)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${counts[String(v)]||0}</b></div>`).join('');
+  statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${label(v)} (${counts[String(v)]||0})</option>`).join('');
+  statusFilter.value=vals.map(String).includes(String(previous))?previous:'__ALL__';
 }
 
 function onPick(e){
@@ -634,6 +642,7 @@ function renderPanel(){
     ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
     ${selectField('Machine','Machine',r.Machine,machineOptions)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
+    ${inputField('Weight_kg','Module weight (kg)',r.Weight_kg,'number','0.01')}
 
     <div class="divider"></div>
     <div class="sectionTitle">Structural</div>
@@ -642,11 +651,8 @@ function renderPanel(){
     <div class="autoStatus"><span>Ready for production</span><b>${escapeHtml(r.Ready_for_Production)}</b></div>
 
     <div class="sectionTitle">Infill</div>
-    <div class="grid2">
-      ${selectField('Infill_Pattern','Infill pattern',r.Infill_Pattern,lists.Infill_Pattern)}
-      ${inputField('Infill_Density_pct','Density (%)',r.Infill_Density_pct,'number','1')}
-    </div>
-    ${infillPreview(r.Infill_Pattern,r.Infill_Density_pct)}
+    ${inputField('Infill_Density_pct','Density (%)',r.Infill_Density_pct,'number','1')}
+    ${infillDensityPreview(r.Infill_Density_pct)}
 
     <div class="sectionTitle">Production / Construction</div>
     ${selectField('Production_Status','Production status',r.Production_Status,lists.Production_Status)}
@@ -680,18 +686,15 @@ function inputField(key,label,value,type='text',step=''){return `<div class="fie
 function datalistField(key,label,value,list){return `<div class="field"><label>${label}</label><input data-field="${key}" list="${list}" value="${escapeAttr(value??'')}"></div>`}
 function selectField(key,label,value,opts){return `<div class="field"><label>${label}</label><select data-field="${key}">${opts.map(o=>`<option ${String(value)===o?'selected':''}>${escapeHtml(o)}</option>`).join('')}</select></div>`}
 function textareaField(key,label,value){return `<div class="field"><label>${label}</label><textarea data-field="${key}">${escapeHtml(value??'')}</textarea></div>`}
-function infillPreview(pattern,density){
-  const p=String(pattern||'Triangular');
-  let body='';
-  if(p==='Triangular') body='<path d="M-20 90 L35 0 M10 90 L65 0 M40 90 L95 0 M70 90 L125 0 M-20 0 L35 90 M10 0 L65 90 M40 0 L95 90 M70 0 L125 90 M0 30 H120 M0 60 H120"/>';
-  else if(p==='Grid') body='<path d="M20 0 V90 M45 0 V90 M70 0 V90 M95 0 V90 M0 22 H120 M0 45 H120 M0 68 H120"/>';
-  else if(p==='Lines') body='<path d="M-10 80 L45 0 M15 90 L70 0 M45 90 L100 0 M75 90 L130 0"/>';
-  else if(p==='Honeycomb') body='<path d="M12 18 L28 8 L44 18 L44 38 L28 48 L12 38 Z M44 18 L60 8 L76 18 L76 38 L60 48 L44 38 M12 58 L28 48 L44 58 L44 78 L28 88 L12 78 Z M44 58 L60 48 L76 58 L76 78 L60 88 L44 78 M76 18 L92 8 L108 18 L108 38 L92 48 L76 38 M76 58 L92 48 L108 58 L108 78 L92 88 L76 78"/>';
-  else if(p==='Gyroid') body='<path d="M0 18 C18 0 42 0 60 18 S102 36 120 18 M0 45 C18 27 42 27 60 45 S102 63 120 45 M0 72 C18 54 42 54 60 72 S102 90 120 72 M18 0 C0 18 0 42 18 60 S36 102 18 120 M60 0 C42 18 42 42 60 60 S78 102 60 120 M102 0 C84 18 84 42 102 60 S120 102 102 120"/>';
-  else if(p==='Medial') body='<path d="M60 5 V85 M60 20 L20 45 M60 20 L100 45 M60 55 L25 75 M60 55 L95 75"/>';
-  else if(p==='Solid') body='<rect x="8" y="8" width="104" height="74" fill="#777" stroke="none" opacity=".7"/>';
-  else body='<path d="M5 70 Q30 15 55 55 T115 20 M10 25 Q45 75 75 35 T115 70"/>';
-  return `<div class="infillPreview"><svg viewBox="0 0 120 90" preserveAspectRatio="none"><g fill="none" stroke="#555" stroke-width="1.25">${body}</g></svg><span class="infillMeta">${escapeHtml(p)} · ${escapeHtml(density||'—')}%</span></div>`;
+function infillDensityPreview(density){
+  const n=Number(density);
+  const pct=Number.isFinite(n)?Math.max(0,Math.min(100,n)):0;
+  return `<div class="infillPreview" style="padding:12px">
+    <div style="height:14px;border:1px solid #c9c9c4;border-radius:999px;overflow:hidden;background:#efefec">
+      <div style="height:100%;width:${pct}%;background:${colorFor('Infill_Density_pct',pct)}"></div>
+    </div>
+    <span class="infillMeta">Custom infill · ${Number.isFinite(n)?escapeHtml(n)+'%':'—'}</span>
+  </div>`;
 }
 
 
