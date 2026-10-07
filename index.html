@@ -407,7 +407,7 @@ function loadBundledModel(){
 }
 function makeLoader(){
   const loader = new Rhino3dmLoader();
-  loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.32.1/');
+  loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/');
   loader.setWorkerLimit(2);
   return loader;
 }
@@ -434,7 +434,11 @@ async function setModel(obj,name){
   const count=parts.length;
   if(count===0){
     const decoded=(modelRoot?.children?.length||0);
-    showMessage(`3DM opened, but 0 render meshes were found${decoded? ` (${decoded} Rhino objects decoded)` : ''}. This usually means the file was saved with Save Small, or the Breps never had render meshes generated. In Rhino: open the ORIGINAL model → switch to Shaded → select the pavilion objects → run RefreshShade → Save As with “Save small” OFF → replace model.3dm. The website needs embedded render meshes to make the blocks selectable.`, true);
+    const typeCounts={};
+    modelRoot?.traverse?.(o=>{ const t=o?.userData?.objectType || o?.type || 'Unknown'; typeCounts[t]=(typeCounts[t]||0)+1; });
+    const warningText=(modelRoot?.userData?.warnings||[]).map(w=>w?.message||String(w)).slice(0,3).join(' | ');
+    const types=Object.entries(typeCounts).map(([k,v])=>`${k}:${v}`).join(', ');
+    showMessage(`3DM decoded but no selectable THREE.Mesh objects were created${decoded? ` (${decoded} top-level objects)` : ''}. Decoded types: ${types || 'unknown'}.${warningText ? ' Loader warning: '+warningText : ''} This is a loader/geometry compatibility issue, not automatically a Save Small issue.`, true);
   }else{
     showMessage(`V4 loaded · ${count} selectable mesh object${count===1?'':'s'}${count===EXPECTED_PARTS?' ✓':` (expected about ${EXPECTED_PARTS})`} · Click a block to see its outline + name.`);
   }
