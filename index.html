@@ -34,6 +34,10 @@
     .legend-title{font-weight:700;margin-bottom:8px}
     .legend-row{display:flex;align-items:center;gap:8px;margin:5px 0}
     .swatch{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.12);flex:0 0 auto}
+    .swatch-edit{position:relative;overflow:hidden;cursor:pointer;outline:1px solid transparent;outline-offset:2px}
+    .swatch-edit:hover{outline-color:rgba(0,0,0,.2)}
+    .swatch-edit input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+    .legend-hint{font-size:10px;font-weight:500;color:#888;margin-top:2px}
     .panel{background:#fff;border-left:1px solid var(--line);overflow:auto;padding:16px}
     .empty{color:var(--muted);font-size:14px;line-height:1.5;margin-top:30px}
     .partTitle{font-size:19px;font-weight:700;margin:0 0 4px}
@@ -175,6 +179,7 @@ import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
+const COLOR_STORAGE_KEY = 'pavilion-color-overrides-v1';
 const fields = [
   'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Manufacturing_Method','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Density_pct','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
@@ -211,6 +216,8 @@ const dbMap = {
 };
 let supabaseClient=null, liveMode=false, cloudReady=false, realtimeChannel=null;
 const cloudSaveTimers = {};
+let colorOverrides={};
+try{colorOverrides=JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY)||'{}')||{};}catch(e){colorOverrides={};}
 
 let renderer, scene, camera, controls, raycaster, mouse;
 let modelRoot = null;
@@ -239,6 +246,41 @@ loadBundledModel();
 
 
 function currentEditor(){ return (editorName?.value || '').trim() || 'Unidentified'; }
+function colorKey(field,value){ return field+'::'+String(value??''); }
+function persistColorOverrides(){
+  try{localStorage.setItem(COLOR_STORAGE_KEY,JSON.stringify(colorOverrides));}catch(e){}
+}
+async function loadColorSettings(){
+  if(!liveMode || !supabaseClient) return;
+  try{
+    const {data,error}=await supabaseClient.from('pavilion_settings').select('color_overrides').eq('project_id',PROJECT_ID).maybeSingle();
+    if(error) throw error;
+    if(data?.color_overrides && typeof data.color_overrides==='object'){
+      colorOverrides={...colorOverrides,...data.color_overrides};
+      persistColorOverrides();
+    }
+  }catch(err){console.warn('color settings load',err);}
+}
+async function saveColorSettings(){
+  persistColorOverrides();
+  if(!liveMode || !supabaseClient) return;
+  try{
+    const {error}=await supabaseClient.from('pavilion_settings').upsert({
+      project_id:PROJECT_ID,
+      color_overrides:colorOverrides,
+      updated_by:currentEditor(),
+      updated_at:new Date().toISOString()
+    },{onConflict:'project_id'});
+    if(error) throw error;
+  }catch(err){console.warn('color settings save',err);}
+}
+function setColorOverride(field,value,color){
+  if(!/^#[0-9a-f]{6}$/i.test(String(color))) return;
+  colorOverrides[colorKey(field,value)]=String(color);
+  persistColorOverrides();
+  applyColors();
+  saveColorSettings();
+}
 function setSyncBadge(text,state='offline'){
   if(!syncBadge) return;
   syncBadge.textContent=text;
@@ -320,6 +362,7 @@ async function syncCloudInitial(force=false){
   if(!liveMode || !supabaseClient || !parts.length) return;
   setSyncBadge('SYNCING…','syncing');
   try{
+    await loadColorSettings();
     const {data,error}=await supabaseClient.from('pavilion_parts').select('*').eq('project_id',PROJECT_ID);
     if(error) throw error;
     const cloudRows=data||[];
@@ -344,6 +387,14 @@ async function syncCloudInitial(force=false){
 function subscribeRealtime(){
   if(!liveMode || !supabaseClient || realtimeChannel) return;
   realtimeChannel=supabaseClient.channel(`pavilion-${PROJECT_ID}`)
+    .on('postgres_changes',{event:'*',schema:'public',table:'pavilion_settings',filter:`project_id=eq.${PROJECT_ID}`},payload=>{
+      const row=payload.new||{};
+      if(row.color_overrides && typeof row.color_overrides==='object'){
+        colorOverrides={...row.color_overrides};
+        persistColorOverrides();
+        applyColors();
+      }
+    })
     .on('postgres_changes',{event:'*',schema:'public',table:'pavilion_parts',filter:`project_id=eq.${PROJECT_ID}`},payload=>{
       if(payload.eventType==='DELETE') return;
       const row=payload.new||{}; const k=String(row.rhino_guid||'');
@@ -533,6 +584,8 @@ function hashColor(text){
   const hue=h%360; const c=new THREE.Color(); c.setHSL(hue/360,.38,.66); return '#'+c.getHexString();
 }
 function colorFor(field,value){
+  const override=colorOverrides[colorKey(field,value)];
+  if(override) return override;
   if(field==='Infill_Density_pct'){
     const n=Number(value);
     if(!Number.isFinite(n)) return '#d6d6d1';
@@ -576,9 +629,16 @@ function renderLegend(){
   const total=parts.length;
   const title=field==='Infill_Density_pct'?'Infill Density (%)':pretty(field);
   const label=v=>field==='Infill_Density_pct'? `${escapeHtml(v)}%` : escapeHtml(v);
-  document.getElementById('legend').innerHTML=
-    `<div class="legend-title">${title} <span style="font-weight:500;opacity:.6">· Total ${total}</span></div>`+
-    vals.map(v=>`<div class="legend-row"><span class="swatch" style="background:${colorFor(field,v)}"></span><span style="flex:1">${label(v)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${counts[String(v)]||0}</b></div>`).join('');
+  const legend=document.getElementById('legend');
+  legend.innerHTML=
+    `<div class="legend-title">${title} <span style="font-weight:500;opacity:.6">· Total ${total}</span><div class="legend-hint">Click a color square to edit</div></div>`+
+    vals.map(v=>{
+      const color=colorFor(field,v);
+      return `<div class="legend-row"><label class="swatch swatch-edit" style="background:${color}" title="Change color"><input type="color" class="legendColorInput" data-value="${escapeAttr(v)}" value="${escapeAttr(color)}"></label><span style="flex:1">${label(v)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${counts[String(v)]||0}</b></div>`;
+    }).join('');
+  legend.querySelectorAll('.legendColorInput').forEach(input=>{
+    input.addEventListener('change',()=>setColorOverride(field,input.dataset.value,input.value));
+  });
   statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${label(v)} (${counts[String(v)]||0})</option>`).join('');
   statusFilter.value=vals.map(String).includes(String(previous))?previous:'__ALL__';
 }
