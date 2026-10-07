@@ -57,9 +57,11 @@
     input[type="range"]{width:150px}
 
     .versionTag{display:inline-block;margin-left:7px;padding:3px 6px;border:1px solid #111;border-radius:999px;font-size:10px;vertical-align:2px}
-    #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:7px 9px;font-size:11px;line-height:1.3;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:nowrap;transition:background .15s ease,box-shadow .15s ease}
+    #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.35;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:normal;min-width:150px;max-width:260px;transition:background .15s ease,box-shadow .15s ease}
     #objectLabel.progress{background:rgba(47,125,74,.96);box-shadow:0 4px 16px rgba(47,125,74,.24)}
-    #objectLabel b{display:block;font-size:12px;margin-bottom:1px}
+    #objectLabel b{display:block;font-size:12px;margin-bottom:3px}
+    #objectLabel .statusLine{font-weight:700;margin-bottom:3px}
+    #objectLabel .noteLine{opacity:.9;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
     .methodCard{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:12px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
     .methodCard strong{font-size:14px;letter-spacing:.035em}
     .method-print{background:#eef4fb;border-color:#c9d9ea}
@@ -624,8 +626,9 @@ function updateObjectLabel(){
   objectLabel.style.left=`${x}px`; objectLabel.style.top=`${y}px`; objectLabel.style.display='block';
   const greenStatuses=['In Production','Ready for Assembly','In Construction','Installed'];
   objectLabel.classList.toggle('progress',greenStatuses.includes(r.Overall_Status));
-  const name=r.Rhino_Object_Name || 'Unnamed Rhino object';
-  objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b>${escapeHtml(name)}`;
+  const status=r.Overall_Status || 'Not Started';
+  const note=(r.Notes || '').trim() || 'No notes';
+  objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
 function renderPanel(){
   if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
