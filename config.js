@@ -1,6 +1,6 @@
 window.PAVILION_CONFIG = {
-  supabaseUrl: "PASTE_SUPABASE_PROJECT_URL_HERE",
-  supabaseAnonKey: "PASTE_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE",
+  supabaseUrl: "https://xjhwzhqiixbombbudlpl.supabase.co",
+  supabaseAnonKey: "sb_publishable_5agi4GlOLYN8wc3q4NxFAw_90Y2BKjn",
   projectId: "pavilion-2026",
   modelUrl: "",
   defaultEditor: ""
