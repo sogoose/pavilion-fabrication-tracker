@@ -20,6 +20,7 @@ create table if not exists public.pavilion_parts (
   ready_for_production text,
   infill_pattern text,
   infill_density_pct numeric,
+  weight_kg numeric,
   production_status text,
   drying_qc_status text,
   construction_status text,
