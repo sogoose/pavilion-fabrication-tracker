@@ -64,6 +64,11 @@
     #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.35;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:normal;min-width:150px;max-width:260px;transition:background .15s ease,box-shadow .15s ease}
     #objectLabel.progress{background:rgba(47,125,74,.96);box-shadow:0 4px 16px rgba(47,125,74,.24)}
     #objectLabel b{display:block;font-size:12px;margin-bottom:3px}
+    .allObjectLabels{position:absolute;inset:0;z-index:4;pointer-events:none;display:none}
+    .allObjectLabels.active{display:block}
+    .moduleObjectLabel{position:absolute;transform:translate(-50%,-50%);background:rgba(255,255,255,.88);border:1px solid rgba(0,0,0,.16);border-radius:6px;padding:4px 6px;font-size:9px;line-height:1.2;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .moduleObjectLabel b{display:block;font-size:10px;color:#111}
+    .moduleObjectLabel span{display:block;color:#666;max-width:120px;overflow:hidden;text-overflow:ellipsis}
     #objectLabel .statusLine{font-weight:700;margin-bottom:3px}
     #objectLabel .noteLine{opacity:.9;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
     .methodCard{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:12px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
@@ -136,6 +141,7 @@
       <label>Explode</label>
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
       <button id="fitView">Fit view</button>
+      <button id="toggleObjectLabels">Module + Object labels</button>
       <button id="resetData" class="danger">Reset data</button>
       <div id="kpis" class="kpis"></div>
     </div>
@@ -146,6 +152,7 @@
       <div id="viewer"></div>
       <div id="message"></div>
        <div id="objectLabel"></div>
+       <div id="allObjectLabels" class="allObjectLabels"></div>
       <div class="viewerOverlay">
         <button id="homeView">Axonometric</button>
       </div>
@@ -226,6 +233,7 @@ let records = {};
 let selectedKey = null;
 let currentModelName = 'model.3dm';
 let selectedOutlineObjects = [];
+let showAllObjectLabels = false;
 
 const viewer = document.getElementById('viewer');
 const panel = document.getElementById('detailPanel');
@@ -235,6 +243,7 @@ const searchInput = document.getElementById('search');
 const explodeInput = document.getElementById('explode');
 const message = document.getElementById('message');
 const objectLabel = document.getElementById('objectLabel');
+const allObjectLabels = document.getElementById('allObjectLabels');
 const syncBadge = document.getElementById('syncBadge');
 const editorName = document.getElementById('editorName');
 
@@ -444,7 +453,7 @@ function initThree(){
   resize(); animate();
 }
 
-function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); renderer.render(scene,camera); }
+function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); updateAllObjectLabels(); renderer.render(scene,camera); }
 function resize(){
   const r = viewer.getBoundingClientRect();
   camera.aspect = Math.max(r.width,1)/Math.max(r.height,1); camera.updateProjectionMatrix();
@@ -502,6 +511,7 @@ async function setModel(obj,name){
   applyColors();
   fitView();
   updateAllUI();
+  rebuildAllObjectLabels();
   const count=parts.length;
   if(count===0){
     const decoded=(modelRoot?.children?.length||0);
@@ -657,6 +667,46 @@ function renderLegend(){
   });
   statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${label(v)} (${counts[String(v)]||0})</option>`).join('');
   statusFilter.value=vals.map(String).includes(String(previous))?previous:'__ALL__';
+}
+
+function rebuildAllObjectLabels(){
+  if(!allObjectLabels) return;
+  allObjectLabels.innerHTML='';
+  parts.forEach(p=>{
+    const r=records[p.key];
+    if(!r) return;
+    const el=document.createElement('div');
+    el.className='moduleObjectLabel';
+    el.dataset.key=p.key;
+    const moduleName=r.Object_ID || (r.Module_No!=='' ? 'Module '+r.Module_No : 'Unnamed module');
+    const objectName=r.Rhino_Object_Name || 'Unnamed object';
+    el.innerHTML=`<b>${escapeHtml(moduleName)}</b><span>${escapeHtml(objectName)}</span>`;
+    allObjectLabels.appendChild(el);
+  });
+}
+function updateAllObjectLabels(){
+  if(!showAllObjectLabels || !allObjectLabels || !renderer || !camera) return;
+  const rect=renderer.domElement.getBoundingClientRect();
+  allObjectLabels.querySelectorAll('.moduleObjectLabel').forEach(el=>{
+    const key=el.dataset.key;
+    const p=parts.find(x=>x.key===key);
+    if(!p || key===selectedKey){el.style.display='none';return;}
+    const box=new THREE.Box3();
+    p.meshes.forEach(m=>{if(m.visible) box.union(new THREE.Box3().setFromObject(m));});
+    if(box.isEmpty()){el.style.display='none';return;}
+    const pos=box.getCenter(new THREE.Vector3());
+    pos.project(camera);
+    const x=(pos.x*.5+.5)*rect.width, y=(-pos.y*.5+.5)*rect.height;
+    if(pos.z < -1 || pos.z > 1 || x<0 || x>rect.width || y<0 || y>rect.height){el.style.display='none';return;}
+    el.style.left=`${x}px`; el.style.top=`${y}px`; el.style.display='block';
+  });
+}
+function toggleAllObjectLabels(){
+  showAllObjectLabels=!showAllObjectLabels;
+  allObjectLabels?.classList.toggle('active',showAllObjectLabels);
+  const btn=document.getElementById('toggleObjectLabels');
+  if(btn) btn.textContent=showAllObjectLabels?'Hide Module + Object labels':'Module + Object labels';
+  if(showAllObjectLabels){rebuildAllObjectLabels();updateAllObjectLabels();}
 }
 
 function onPick(e){
@@ -821,6 +871,7 @@ function updateAllUI(){
   const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
   const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
   document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+  if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
   persistLocal();
@@ -875,6 +926,7 @@ function wireUI(){
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
+  document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
   document.getElementById('homeView').onclick=fitView;
   document.getElementById('resetData').onclick=resetData;
   editorName.addEventListener('change',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
