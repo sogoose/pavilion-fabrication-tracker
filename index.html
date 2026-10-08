@@ -903,7 +903,30 @@ function focusPart(key){
   controls.target.copy(center); camera.position.copy(center).add(new THREE.Vector3(r*2,-r*2,r*1.5)); controls.update();
 }
 
+function refreshDynamicDatalists(){
+  const materialDefaults=['Soil Mix A','Soil Mix B','Soil Mix C','Custom / TBD'];
+  const peopleDefaults=['Unassigned','Sohyun','Niels','Jin','Serdar'];
+  const unique=(defaults,values)=>{
+    const seen=new Set(), out=[];
+    [...defaults,...values].forEach(v=>{
+      const s=String(v??'').trim();
+      if(!s) return;
+      const k=s.toLowerCase();
+      if(seen.has(k)) return;
+      seen.add(k); out.push(s);
+    });
+    return out;
+  };
+  const rows=Object.values(records||{});
+  const materials=unique(materialDefaults,rows.map(r=>r?.Material));
+  const people=unique(peopleDefaults,rows.map(r=>r?.Assigned_To));
+  const materialList=document.getElementById('materialList');
+  const peopleList=document.getElementById('peopleList');
+  if(materialList) materialList.innerHTML=materials.map(v=>`<option value="${escapeAttr(v)}"></option>`).join('');
+  if(peopleList) peopleList.innerHTML=people.map(v=>`<option value="${escapeAttr(v)}"></option>`).join('');
+}
 function updateAllUI(){
+  refreshDynamicDatalists();
   document.getElementById('objectBadge').textContent=`${parts.length} objects${parts.length===EXPECTED_PARTS?' ✓':''}`;
   const rs=parts.map(p=>records[p.key]).filter(Boolean);
   const approved=rs.filter(r=>r.Structural_Status==='Approved').length;
@@ -940,7 +963,10 @@ function exportExcel(){
   ws['!cols']=fields.map(k=>({wch:Math.max(12,Math.min(28,k.length+3))}));
   XLSX.utils.book_append_sheet(wb,ws,'Tracker');
   const listRows=[];
-  Object.entries(lists).forEach(([k,arr])=>arr.forEach((v,i)=>{if(!listRows[i])listRows[i]={};listRows[i][k]=v;}));
+  const currentMaterials=[...new Set(['Soil Mix A','Soil Mix B','Soil Mix C','Custom / TBD',...Object.values(records).map(r=>String(r?.Material||'').trim()).filter(Boolean)])];
+  const currentPeople=[...new Set(['Unassigned','Sohyun','Niels','Jin','Serdar',...Object.values(records).map(r=>String(r?.Assigned_To||'').trim()).filter(Boolean)])];
+  const exportLists={...lists,Material:currentMaterials,Assigned_To:currentPeople};
+  Object.entries(exportLists).forEach(([k,arr])=>arr.forEach((v,i)=>{if(!listRows[i])listRows[i]={};listRows[i][k]=v;}));
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(listRows),'Lists');
   XLSX.writeFile(wb,`Pavilion_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
