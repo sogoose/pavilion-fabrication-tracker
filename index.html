@@ -451,6 +451,7 @@ function initThree(){
 
   raycaster = new THREE.Raycaster(); mouse = new THREE.Vector2();
   renderer.domElement.addEventListener('pointerdown', onPick);
+  renderer.domElement.addEventListener('dblclick', clearSelectedPart);
   window.addEventListener('resize', resize);
   resize(); animate();
 }
@@ -778,6 +779,15 @@ function drawSelectionOutline(key){
       mesh.add(line); selectedOutlineObjects.push({mesh,line});
     }catch(e){console.warn('outline',e)}
   });
+}
+function clearSelectedPart(e){
+  if(e && e.button!==0) return;
+  selectedKey=null;
+  clearSelectionOutline();
+  objectLabel.style.display='none';
+  objectLabel.classList.remove('progress');
+  applyColors();
+  renderPanel();
 }
 function selectPart(key){ selectedKey=key; drawSelectionOutline(key); applyColors(); renderPanel(); updateObjectLabel(); }
 function updateObjectLabel(){
