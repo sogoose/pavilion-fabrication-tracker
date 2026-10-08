@@ -979,7 +979,7 @@ async function exportExcel(){
     const av=String(a.Object_ID||''), bv=String(b.Object_ID||'');
     if(!av && bv) return 1;
     if(av && !bv) return -1;
-    return av.localeCompare(bv,undefined,{numeric:true,sensitivity:'base'});
+    return av.localeCompare(bv,undefined,{numeric:true,sensitivity:'case',caseFirst:'upper'});
   });
 
   let snapshot='';
