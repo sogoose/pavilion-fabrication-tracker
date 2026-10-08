@@ -50,6 +50,16 @@
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .autoStatus{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fafafa;font-size:13px;display:flex;justify-content:space-between;gap:10px}
     .footerActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .photoUpload{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafaf8;margin-bottom:10px}
+    .photoUpload textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#fff;resize:vertical;margin-bottom:8px}
+    .photoUploadRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .photoUploadHint{font-size:10px;color:#888;line-height:1.35}
+    .photoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+    .photoCard{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+    .photoCard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#efefeb;cursor:pointer}
+    .photoMeta{padding:7px 8px;font-size:10px;line-height:1.35;color:#555}
+    .photoMeta .photoNote{font-size:11px;color:#222;margin-bottom:4px;white-space:pre-wrap}
+    .photoEmpty{font-size:11px;color:#888;padding:8px 0}
     .kpis{display:flex;gap:8px;flex-wrap:wrap}
     .kpi{background:#fafafa;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px}
     .kpi b{font-size:14px;margin-right:4px}
@@ -188,6 +198,8 @@ import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
 const COLOR_STORAGE_KEY = 'pavilion-color-overrides-v1';
+const PHOTO_BUCKET = 'pavilion-module-photos';
+const MAX_PHOTOS_PER_MODULE = 5;
 const fields = [
   'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Manufacturing_Method','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Density_pct','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
@@ -406,6 +418,10 @@ function subscribeRealtime(){
         persistColorOverrides();
         applyColors();
       }
+    })
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'pavilion_module_photos',filter:`project_id=eq.${PROJECT_ID}`},payload=>{
+      const row=payload.new||{};
+      if(selectedKey && String(row.rhino_guid||'')===String(selectedKey)) loadModulePhotos(selectedKey);
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'pavilion_parts',filter:`project_id=eq.${PROJECT_ID}`},payload=>{
       if(payload.eventType==='DELETE') return;
@@ -808,6 +824,115 @@ function updateObjectLabel(){
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
+async function compressPhoto(file){
+  if(!file || !file.type?.startsWith('image/')) throw new Error('Please choose an image file.');
+  const bitmap=await createImageBitmap(file);
+  const maxSide=1200;
+  const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+  const w=Math.max(1,Math.round(bitmap.width*scale));
+  const h=Math.max(1,Math.round(bitmap.height*scale));
+  const canvas=document.createElement('canvas');
+  canvas.width=w; canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(bitmap,0,0,w,h);
+  bitmap.close?.();
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.68));
+  if(!blob) throw new Error('Could not compress image.');
+  if(blob.size>2*1024*1024) throw new Error('Compressed image is still over 2 MB.');
+  return blob;
+}
+function publicPhotoUrl(path){
+  if(!supabaseClient || !path) return '';
+  return supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path).data?.publicUrl || '';
+}
+async function loadModulePhotos(key){
+  const wrap=document.getElementById('modulePhotos');
+  if(!wrap || !key || !liveMode || !supabaseClient){
+    if(wrap) wrap.innerHTML='<div class="photoEmpty">Photos are available in shared mode.</div>';
+    return;
+  }
+  const {data,error}=await supabaseClient
+    .from('pavilion_module_photos')
+    .select('*')
+    .eq('project_id',PROJECT_ID)
+    .eq('rhino_guid',key)
+    .order('created_at',{ascending:false});
+  if(!document.getElementById('modulePhotos') || selectedKey!==key) return;
+  if(error){
+    console.error(error);
+    wrap.innerHTML='<div class="photoEmpty">Could not load photos.</div>';
+    return;
+  }
+  const items=data||[];
+  wrap.dataset.count=String(items.length);
+  if(!items.length){
+    wrap.innerHTML='<div class="photoEmpty">No site photos yet.</div>';
+    return;
+  }
+  wrap.innerHTML='<div class="photoGrid">'+items.map(item=>{
+    const url=publicPhotoUrl(item.storage_path);
+    const when=item.created_at?new Date(item.created_at).toLocaleString():'';
+    return `<div class="photoCard">
+      <img src="${escapeAttr(url)}" alt="${escapeAttr(item.object_id||'Module photo')}" loading="lazy" data-photo-url="${escapeAttr(url)}">
+      <div class="photoMeta">
+        ${item.note?`<div class="photoNote">${escapeHtml(item.note)}</div>`:''}
+        <div>${escapeHtml(item.uploaded_by||'—')} · ${escapeHtml(when)}</div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+  wrap.querySelectorAll('[data-photo-url]').forEach(img=>{
+    img.addEventListener('click',()=>window.open(img.dataset.photoUrl,'_blank','noopener'));
+  });
+}
+async function uploadModulePhoto(key){
+  if(!liveMode || !supabaseClient){showMessage('Photo upload needs shared mode.',true);return;}
+  const fileInput=document.getElementById('modulePhotoInput');
+  const noteInput=document.getElementById('modulePhotoNote');
+  const file=fileInput?.files?.[0];
+  const editor=(editorName?.value||'').trim();
+  if(!editor){showMessage('Enter your name in “Editing as” before uploading a photo.',true);return;}
+  if(!file){showMessage('Choose a photo first.',true);return;}
+  if(!file.type?.startsWith('image/')){showMessage('Only image files can be uploaded.',true);return;}
+  const currentCount=Number(document.getElementById('modulePhotos')?.dataset.count||0);
+  if(currentCount>=MAX_PHOTOS_PER_MODULE){showMessage('Maximum 5 photos per module.',true);return;}
+  const note=String(noteInput?.value||'').trim().slice(0,240);
+  const r=records[key];
+  if(!r) return;
+  const btn=document.getElementById('uploadModulePhoto');
+  if(btn){btn.disabled=true;btn.textContent='Uploading…';}
+  try{
+    const blob=await compressPhoto(file);
+    const safeGuid=String(key).replace(/[^A-Za-z0-9_-]/g,'_');
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+    const rand=Math.random().toString(36).slice(2,8);
+    const path=`${PROJECT_ID}/${safeGuid}/${stamp}_${rand}.jpg`;
+    const {error:uploadError}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,blob,{
+      contentType:'image/jpeg',
+      cacheControl:'3600',
+      upsert:false
+    });
+    if(uploadError) throw uploadError;
+    const {error:dbError}=await supabaseClient.from('pavilion_module_photos').insert({
+      project_id:PROJECT_ID,
+      rhino_guid:key,
+      object_id:r.Object_ID||'',
+      storage_path:path,
+      note,
+      uploaded_by:editor
+    });
+    if(dbError) throw dbError;
+    if(fileInput) fileInput.value='';
+    if(noteInput) noteInput.value='';
+    await loadModulePhotos(key);
+    showMessage('Photo added to '+(r.Object_ID||'module')+'.');
+  }catch(err){
+    console.error(err);
+    showMessage('Photo upload failed: '+(err?.message||err),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Add photo';}
+  }
+}
+
 function renderPanel(){
   if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
   const r=records[selectedKey];
@@ -849,6 +974,18 @@ function renderPanel(){
     <div class="divider"></div>
     ${inputField('GCode_File','G-code file',r.GCode_File,'text')}
     ${textareaField('Notes','Notes',r.Notes)}
+
+    <div class="sectionTitle">Photos / Site Record</div>
+    <div class="photoUpload">
+      <textarea id="modulePhotoNote" maxlength="240" placeholder="Short photo note (optional)"></textarea>
+      <div class="photoUploadRow">
+        <label class="button fileBtn">Choose photo<input id="modulePhotoInput" type="file" accept="image/jpeg,image/png,image/webp,image/*"></label>
+        <button id="uploadModulePhoto" type="button">Add photo</button>
+      </div>
+      <div class="photoUploadHint">Max 5 photos/module · image only · compressed to max 1200 px · max 2 MB/file · no delete from the tracker</div>
+    </div>
+    <div id="modulePhotos" data-count="0"><div class="photoEmpty">Loading photos…</div></div>
+
     <div class="footerActions"><button id="stampNow">Stamp updated time</button><button id="focusSelected">Focus object</button></div>
     <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.'}</div>`;
 
@@ -868,6 +1005,8 @@ function renderPanel(){
   });
   document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
   document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
+  document.getElementById('uploadModulePhoto').onclick=()=>uploadModulePhoto(selectedKey);
+  loadModulePhotos(selectedKey);
 }
 function inputField(key,label,value,type='text',step=''){return `<div class="field"><label>${label}</label><input data-field="${key}" type="${type}" ${step?`step="${step}"`:''} value="${escapeAttr(value??'')}"></div>`}
 function datalistField(key,label,value,list){return `<div class="field"><label>${label}</label><input data-field="${key}" list="${list}" value="${escapeAttr(value??'')}"></div>`}
