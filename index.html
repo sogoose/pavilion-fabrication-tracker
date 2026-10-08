@@ -54,6 +54,8 @@
     .photoUpload textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:#fff;resize:vertical;margin-bottom:8px}
     .photoUploadRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
     .photoUploadHint{font-size:10px;color:#888;line-height:1.35}
+    .photoSelected{font-size:10px;color:#444;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .photoError{font-size:10px;color:#9a2f27;margin-top:7px}
     .photoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
     .photoCard{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
     .photoCard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#efefeb;cursor:pointer}
@@ -825,21 +827,33 @@ function updateObjectLabel(){
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
 async function compressPhoto(file){
-  if(!file || !file.type?.startsWith('image/')) throw new Error('Please choose an image file.');
-  const bitmap=await createImageBitmap(file);
-  const maxSide=1200;
-  const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
-  const w=Math.max(1,Math.round(bitmap.width*scale));
-  const h=Math.max(1,Math.round(bitmap.height*scale));
-  const canvas=document.createElement('canvas');
-  canvas.width=w; canvas.height=h;
-  const ctx=canvas.getContext('2d');
-  ctx.drawImage(bitmap,0,0,w,h);
-  bitmap.close?.();
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.68));
-  if(!blob) throw new Error('Could not compress image.');
-  if(blob.size>2*1024*1024) throw new Error('Compressed image is still over 2 MB.');
-  return blob;
+  const allowed=['image/jpeg','image/png','image/webp'];
+  if(!file || !allowed.includes(file.type)) throw new Error('Please choose a JPG, PNG, or WebP image.');
+  const objectUrl=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((resolve,reject)=>{
+      const el=new Image();
+      el.onload=()=>resolve(el);
+      el.onerror=()=>reject(new Error('This image could not be read by the browser.'));
+      el.src=objectUrl;
+    });
+    const maxSide=1200;
+    const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+    const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
+    const h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+    const canvas=document.createElement('canvas');
+    canvas.width=w; canvas.height=h;
+    const ctx=canvas.getContext('2d',{alpha:false});
+    ctx.fillStyle='#fff';
+    ctx.fillRect(0,0,w,h);
+    ctx.drawImage(img,0,0,w,h);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.7));
+    if(!blob) throw new Error('Could not compress image.');
+    if(blob.size>2*1024*1024) throw new Error('Compressed image is still over 2 MB.');
+    return blob;
+  }finally{
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 function publicPhotoUrl(path){
   if(!supabaseClient || !path) return '';
@@ -889,8 +903,7 @@ async function uploadModulePhoto(key){
   const fileInput=document.getElementById('modulePhotoInput');
   const noteInput=document.getElementById('modulePhotoNote');
   const file=fileInput?.files?.[0];
-  const editor=(editorName?.value||'').trim();
-  if(!editor){showMessage('Enter your name in “Editing as” before uploading a photo.',true);return;}
+  const editor=currentEditor();
   if(!file){showMessage('Choose a photo first.',true);return;}
   if(!file.type?.startsWith('image/')){showMessage('Only image files can be uploaded.',true);return;}
   const currentCount=Number(document.getElementById('modulePhotos')?.dataset.count||0);
@@ -899,6 +912,8 @@ async function uploadModulePhoto(key){
   const r=records[key];
   if(!r) return;
   const btn=document.getElementById('uploadModulePhoto');
+  const status=document.getElementById('modulePhotoStatus');
+  if(status){status.className='photoSelected';status.textContent='Preparing image…';}
   if(btn){btn.disabled=true;btn.textContent='Uploading…';}
   try{
     const blob=await compressPhoto(file);
@@ -923,10 +938,12 @@ async function uploadModulePhoto(key){
     if(dbError) throw dbError;
     if(fileInput) fileInput.value='';
     if(noteInput) noteInput.value='';
+    if(status){status.className='photoSelected';status.textContent='Uploaded successfully.';}
     await loadModulePhotos(key);
     showMessage('Photo added to '+(r.Object_ID||'module')+'.');
   }catch(err){
     console.error(err);
+    if(status){status.className='photoError';status.textContent=String(err?.message||err);}
     showMessage('Photo upload failed: '+(err?.message||err),true);
   }finally{
     if(btn){btn.disabled=false;btn.textContent='Add photo';}
@@ -979,10 +996,11 @@ function renderPanel(){
     <div class="photoUpload">
       <textarea id="modulePhotoNote" maxlength="240" placeholder="Short photo note (optional)"></textarea>
       <div class="photoUploadRow">
-        <label class="button fileBtn">Choose photo<input id="modulePhotoInput" type="file" accept="image/jpeg,image/png,image/webp,image/*"></label>
+        <label class="button fileBtn">Choose photo<input id="modulePhotoInput" type="file" accept="image/jpeg,image/png,image/webp"></label>
         <button id="uploadModulePhoto" type="button">Add photo</button>
       </div>
-      <div class="photoUploadHint">Max 5 photos/module · image only · compressed to max 1200 px · max 2 MB/file · no delete from the tracker</div>
+      <div id="modulePhotoStatus" class="photoSelected">No photo selected.</div>
+      <div class="photoUploadHint">Max 5 photos/module · JPG/PNG/WebP · compressed to max 1200 px · max 2 MB/file · no delete from the tracker</div>
     </div>
     <div id="modulePhotos" data-count="0"><div class="photoEmpty">Loading photos…</div></div>
 
@@ -1006,6 +1024,14 @@ function renderPanel(){
   document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
   document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
   document.getElementById('uploadModulePhoto').onclick=()=>uploadModulePhoto(selectedKey);
+  document.getElementById('modulePhotoInput').addEventListener('change',e=>{
+    const f=e.target.files?.[0];
+    const status=document.getElementById('modulePhotoStatus');
+    if(status){
+      status.className='photoSelected';
+      status.textContent=f?`Selected: ${f.name} · ${Math.max(1,Math.round(f.size/1024))} KB`:'No photo selected.';
+    }
+  });
   loadModulePhotos(selectedKey);
 }
 function inputField(key,label,value,type='text',step=''){return `<div class="field"><label>${label}</label><input data-field="${key}" type="${type}" ${step?`step="${step}"`:''} value="${escapeAttr(value??'')}"></div>`}
