@@ -141,6 +141,7 @@
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
       <button id="fitView">Fit view</button>
       <button id="toggleObjectLabels">Module labels</button>
+      <button id="toggleModuleOutlines">Module outlines</button>
       <button id="resetData" class="danger">Reset data</button>
       <div id="kpis" class="kpis"></div>
     </div>
@@ -232,7 +233,9 @@ let records = {};
 let selectedKey = null;
 let currentModelName = 'model.3dm';
 let selectedOutlineObjects = [];
+let allModuleOutlineObjects = [];
 let showAllObjectLabels = false;
+let showAllModuleOutlines = false;
 
 const viewer = document.getElementById('viewer');
 const panel = document.getElementById('detailPanel');
@@ -501,7 +504,7 @@ async function loadModelFile(file){
 }
 
 async function setModel(obj,name){
-  clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none';
+  clearSelectionOutline(); clearAllModuleOutlines(); selectedKey=null; objectLabel.style.display='none';
   if(modelRoot) scene.remove(modelRoot);
   modelRoot=obj; currentModelName=name || 'model.3dm'; scene.add(modelRoot);
   buildParts(modelRoot);
@@ -511,6 +514,7 @@ async function setModel(obj,name){
   fitView();
   updateAllUI();
   rebuildAllObjectLabels();
+  if(showAllModuleOutlines) rebuildAllModuleOutlines();
   const count=parts.length;
   if(count===0){
     const decoded=(modelRoot?.children?.length||0);
@@ -666,6 +670,44 @@ function renderLegend(){
   });
   statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${label(v)} (${counts[String(v)]||0})</option>`).join('');
   statusFilter.value=vals.map(String).includes(String(previous))?previous:'__ALL__';
+}
+
+function clearAllModuleOutlines(){
+  allModuleOutlineObjects.forEach(({mesh,line})=>{
+    if(line.parent===mesh) mesh.remove(line);
+    line.geometry?.dispose?.();
+    line.material?.dispose?.();
+  });
+  allModuleOutlineObjects=[];
+}
+function rebuildAllModuleOutlines(){
+  clearAllModuleOutlines();
+  if(!showAllModuleOutlines) return;
+  parts.forEach(p=>{
+    p.meshes.forEach(mesh=>{
+      try{
+        const g=new THREE.EdgesGeometry(mesh.geometry,24);
+        const mat=new THREE.LineBasicMaterial({
+          color:0x111111,
+          transparent:true,
+          opacity:.58,
+          depthTest:true,
+          depthWrite:false
+        });
+        const line=new THREE.LineSegments(g,mat);
+        line.renderOrder=8;
+        line.frustumCulled=false;
+        mesh.add(line);
+        allModuleOutlineObjects.push({mesh,line});
+      }catch(e){console.warn('module outline',e);}
+    });
+  });
+}
+function toggleAllModuleOutlines(){
+  showAllModuleOutlines=!showAllModuleOutlines;
+  const btn=document.getElementById('toggleModuleOutlines');
+  if(btn) btn.textContent=showAllModuleOutlines?'Hide module outlines':'Module outlines';
+  rebuildAllModuleOutlines();
 }
 
 function rebuildAllObjectLabels(){
@@ -925,6 +967,7 @@ function wireUI(){
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
   document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
+  document.getElementById('toggleModuleOutlines').onclick=toggleAllModuleOutlines;
   document.getElementById('homeView').onclick=fitView;
   document.getElementById('resetData').onclick=resetData;
   editorName.addEventListener('change',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
