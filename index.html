@@ -456,14 +456,22 @@ function showMessage(text, isError=false){
   clearTimeout(showMessage._t); showMessage._t=setTimeout(()=>message.style.display='none',7000);
 }
 
-function loadBundledModel(){
+async function loadBundledModel(){
   const loader = makeLoader();
   const modelUrl=String(CONFIG.modelUrl||'').trim() || './model.3dm';
   const modelName=modelUrl.split('/').pop()?.split('?')[0] || 'model.3dm';
-  loader.load(modelUrl, obj => setModel(obj,modelName), undefined, err => {
-    showMessage('Auto-load needs a local web server. Use run.bat, or click “Load 3DM” and choose the Rhino file.', true);
+  try{
+    // Revalidate model.3dm on every page load so an updated GitHub Pages model
+    // is not replaced by a stale browser/CDN cache.
+    const response=await fetch(modelUrl,{cache:'no-cache'});
+    if(!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    const buffer=await response.arrayBuffer();
+    const obj=await new Promise((resolve,reject)=>loader.parse(buffer,resolve,reject));
+    await setModel(obj,modelName);
+  }catch(err){
+    showMessage('Could not load the current model. '+(err?.message||err), true);
     console.warn(err);
-  });
+  }
 }
 function makeLoader(){
   const loader = new Rhino3dmLoader();
