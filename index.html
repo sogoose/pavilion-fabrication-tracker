@@ -64,6 +64,10 @@
     #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.35;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:normal;min-width:150px;max-width:260px;transition:background .15s ease,box-shadow .15s ease}
     #objectLabel.progress{background:rgba(47,125,74,.96);box-shadow:0 4px 16px rgba(47,125,74,.24)}
     #objectLabel b{display:block;font-size:12px;margin-bottom:3px}
+    .allObjectLabels{position:absolute;inset:0;z-index:4;pointer-events:none;display:none}
+    .allObjectLabels.active{display:block}
+    .moduleObjectLabel{position:absolute;transform:translate(-50%,-50%);background:transparent;border:0;border-radius:0;padding:2px 3px;font-size:9px;line-height:1.2;white-space:nowrap;box-shadow:none;text-shadow:0 1px 2px rgba(255,255,255,.95),0 0 4px rgba(255,255,255,.9)}
+    .moduleObjectLabel b{display:block;font-size:10px;color:#111}
     #objectLabel .statusLine{font-weight:700;margin-bottom:3px}
     #objectLabel .noteLine{opacity:.9;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
     .methodCard{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:12px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
@@ -136,6 +140,8 @@
       <label>Explode</label>
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
       <button id="fitView">Fit view</button>
+      <button id="toggleObjectLabels">Module labels</button>
+      <button id="toggleModuleOutlines">Module outlines</button>
       <button id="resetData" class="danger">Reset data</button>
       <div id="kpis" class="kpis"></div>
     </div>
@@ -146,6 +152,7 @@
       <div id="viewer"></div>
       <div id="message"></div>
        <div id="objectLabel"></div>
+       <div id="allObjectLabels" class="allObjectLabels"></div>
       <div class="viewerOverlay">
         <button id="homeView">Axonometric</button>
       </div>
@@ -226,6 +233,9 @@ let records = {};
 let selectedKey = null;
 let currentModelName = 'model.3dm';
 let selectedOutlineObjects = [];
+let allModuleOutlineObjects = [];
+let showAllObjectLabels = false;
+let showAllModuleOutlines = false;
 
 const viewer = document.getElementById('viewer');
 const panel = document.getElementById('detailPanel');
@@ -235,6 +245,7 @@ const searchInput = document.getElementById('search');
 const explodeInput = document.getElementById('explode');
 const message = document.getElementById('message');
 const objectLabel = document.getElementById('objectLabel');
+const allObjectLabels = document.getElementById('allObjectLabels');
 const syncBadge = document.getElementById('syncBadge');
 const editorName = document.getElementById('editorName');
 
@@ -444,7 +455,7 @@ function initThree(){
   resize(); animate();
 }
 
-function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); renderer.render(scene,camera); }
+function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); updateAllObjectLabels(); renderer.render(scene,camera); }
 function resize(){
   const r = viewer.getBoundingClientRect();
   camera.aspect = Math.max(r.width,1)/Math.max(r.height,1); camera.updateProjectionMatrix();
@@ -456,14 +467,22 @@ function showMessage(text, isError=false){
   clearTimeout(showMessage._t); showMessage._t=setTimeout(()=>message.style.display='none',7000);
 }
 
-function loadBundledModel(){
+async function loadBundledModel(){
   const loader = makeLoader();
   const modelUrl=String(CONFIG.modelUrl||'').trim() || './model.3dm';
   const modelName=modelUrl.split('/').pop()?.split('?')[0] || 'model.3dm';
-  loader.load(modelUrl, obj => setModel(obj,modelName), undefined, err => {
-    showMessage('Auto-load needs a local web server. Use run.bat, or click “Load 3DM” and choose the Rhino file.', true);
+  try{
+    // Revalidate model.3dm on every page load so an updated GitHub Pages model
+    // is not replaced by a stale browser/CDN cache.
+    const response=await fetch(modelUrl,{cache:'no-cache'});
+    if(!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    const buffer=await response.arrayBuffer();
+    const obj=await new Promise((resolve,reject)=>loader.parse(buffer,resolve,reject));
+    await setModel(obj,modelName);
+  }catch(err){
+    showMessage('Could not load the current model. '+(err?.message||err), true);
     console.warn(err);
-  });
+  }
 }
 function makeLoader(){
   const loader = new Rhino3dmLoader();
@@ -485,7 +504,7 @@ async function loadModelFile(file){
 }
 
 async function setModel(obj,name){
-  clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none';
+  clearSelectionOutline(); clearAllModuleOutlines(); selectedKey=null; objectLabel.style.display='none';
   if(modelRoot) scene.remove(modelRoot);
   modelRoot=obj; currentModelName=name || 'model.3dm'; scene.add(modelRoot);
   buildParts(modelRoot);
@@ -494,6 +513,8 @@ async function setModel(obj,name){
   applyColors();
   fitView();
   updateAllUI();
+  rebuildAllObjectLabels();
+  if(showAllModuleOutlines) rebuildAllModuleOutlines();
   const count=parts.length;
   if(count===0){
     const decoded=(modelRoot?.children?.length||0);
@@ -649,6 +670,83 @@ function renderLegend(){
   });
   statusFilter.innerHTML='<option value="__ALL__">All</option>'+vals.map(v=>`<option value="${escapeAttr(v)}">${label(v)} (${counts[String(v)]||0})</option>`).join('');
   statusFilter.value=vals.map(String).includes(String(previous))?previous:'__ALL__';
+}
+
+function clearAllModuleOutlines(){
+  allModuleOutlineObjects.forEach(({mesh,line})=>{
+    if(line.parent===mesh) mesh.remove(line);
+    line.geometry?.dispose?.();
+    line.material?.dispose?.();
+  });
+  allModuleOutlineObjects=[];
+}
+function rebuildAllModuleOutlines(){
+  clearAllModuleOutlines();
+  if(!showAllModuleOutlines) return;
+  parts.forEach(p=>{
+    p.meshes.forEach(mesh=>{
+      try{
+        const g=new THREE.EdgesGeometry(mesh.geometry,24);
+        const mat=new THREE.LineBasicMaterial({
+          color:0x111111,
+          transparent:true,
+          opacity:.58,
+          depthTest:true,
+          depthWrite:false
+        });
+        const line=new THREE.LineSegments(g,mat);
+        line.renderOrder=8;
+        line.frustumCulled=false;
+        mesh.add(line);
+        allModuleOutlineObjects.push({mesh,line});
+      }catch(e){console.warn('module outline',e);}
+    });
+  });
+}
+function toggleAllModuleOutlines(){
+  showAllModuleOutlines=!showAllModuleOutlines;
+  const btn=document.getElementById('toggleModuleOutlines');
+  if(btn) btn.textContent=showAllModuleOutlines?'Hide module outlines':'Module outlines';
+  rebuildAllModuleOutlines();
+}
+
+function rebuildAllObjectLabels(){
+  if(!allObjectLabels) return;
+  allObjectLabels.innerHTML='';
+  parts.forEach(p=>{
+    const r=records[p.key];
+    if(!r) return;
+    const el=document.createElement('div');
+    el.className='moduleObjectLabel';
+    el.dataset.key=p.key;
+    const moduleName=r.Object_ID || (r.Module_No!=='' ? 'Module '+r.Module_No : 'Unnamed module');
+    el.innerHTML=`<b>${escapeHtml(moduleName)}</b>`;
+    allObjectLabels.appendChild(el);
+  });
+}
+function updateAllObjectLabels(){
+  if(!showAllObjectLabels || !allObjectLabels || !renderer || !camera) return;
+  const rect=renderer.domElement.getBoundingClientRect();
+  allObjectLabels.querySelectorAll('.moduleObjectLabel').forEach(el=>{
+    const key=el.dataset.key;
+    const p=parts.find(x=>x.key===key);
+    if(!p || key===selectedKey){el.style.display='none';return;}
+    const box=new THREE.Box3();
+    p.meshes.forEach(m=>{if(m.visible) box.union(new THREE.Box3().setFromObject(m));});
+    if(box.isEmpty()){el.style.display='none';return;}
+    const pos=box.getCenter(new THREE.Vector3());
+    pos.project(camera);
+    const x=(pos.x*.5+.5)*rect.width, y=(-pos.y*.5+.5)*rect.height;
+    if(pos.z < -1 || pos.z > 1 || x<0 || x>rect.width || y<0 || y>rect.height){el.style.display='none';return;}
+    el.style.left=`${x}px`; el.style.top=`${y}px`; el.style.display='block';
+  });
+}
+function toggleAllObjectLabels(){
+  showAllObjectLabels=!showAllObjectLabels;
+  allObjectLabels?.classList.toggle('active',showAllObjectLabels);
+  const btn=document.getElementById('toggleObjectLabels');
+  if(btn) btn.textContent=showAllObjectLabels?'Hide module labels':'Module labels';
+  if(showAllObjectLabels){rebuildAllObjectLabels();updateAllObjectLabels();}
 }
 
 function onPick(e){
@@ -813,6 +911,7 @@ function updateAllUI(){
   const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
   const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
   document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+  if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
   persistLocal();
@@ -867,6 +966,8 @@ function wireUI(){
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
+  document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
+  document.getElementById('toggleModuleOutlines').onclick=toggleAllModuleOutlines;
   document.getElementById('homeView').onclick=fitView;
   document.getElementById('resetData').onclick=resetData;
   editorName.addEventListener('change',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
