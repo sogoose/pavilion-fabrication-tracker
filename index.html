@@ -97,6 +97,7 @@
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./config.js"></script>
   <script type="importmap">
@@ -965,24 +966,174 @@ async function resetData(){
   records={}; localStorage.removeItem(STORAGE_KEY); clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none'; if(parts.length){ensureRecords();applyColors();updateAllUI();} renderPanel();
 }
 
-function exportExcel(){
-  if(!window.XLSX){showMessage('Excel library has not loaded. Check your internet connection.',true);return;}
-  const rows=parts.map(p=>{const r={...(records[p.key]||{})}; derive(r); return fields.reduce((o,k)=>(o[k]=r[k]??'',o),{});});
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.json_to_sheet(rows,{header:fields});
-  ws['!cols']=fields.map(k=>({wch:Math.max(12,Math.min(28,k.length+3))}));
-  XLSX.utils.book_append_sheet(wb,ws,'Tracker');
-  const listRows=[];
+async function exportExcel(){
+  if(!window.ExcelJS){showMessage('Excel export library has not loaded. Check your internet connection.',true);return;}
+
+  showMessage('Preparing Excel snapshot …');
+
+  const rows=parts.map(p=>{
+    const r={...(records[p.key]||{})};
+    derive(r);
+    return fields.reduce((o,k)=>(o[k]=r[k]??'',o),{});
+  }).sort((a,b)=>{
+    const av=String(a.Object_ID||''), bv=String(b.Object_ID||'');
+    if(!av && bv) return 1;
+    if(av && !bv) return -1;
+    return av.localeCompare(bv,undefined,{numeric:true,sensitivity:'base'});
+  });
+
+  let snapshot='';
+  try{
+    renderer.render(scene,camera);
+    snapshot=renderer.domElement.toDataURL('image/png');
+    if(snapshot.length<1500) snapshot='';
+  }catch(err){console.warn('Excel snapshot',err);}
+
+  const wb=new ExcelJS.Workbook();
+  wb.creator='Pavilion Fabrication Tracker';
+  wb.created=new Date();
+  const ws=wb.addWorksheet('Tracker',{properties:{defaultRowHeight:18}});
+
+  // Overall sheet sizing
+  const widths=[22,14,10,10,10,24,22,22,18,18,20,20,18,18,16,18,18,20,20,16,28,20,42];
+  widths.forEach((w,i)=>ws.getColumn(i+1).width=w);
+
+  // Header / summary
+  ws.mergeCells('A1:W1');
+  const title=ws.getCell('A1');
+  title.value='PAVILION / FABRICATION TRACKER';
+  title.font={name:'Arial',size:18,bold:true,color:{argb:'FF111111'}};
+  title.alignment={vertical:'middle'};
+  ws.getRow(1).height=30;
+
+  ws.mergeCells('A3:C3');
+  ws.getCell('A3').value='TOTAL MODULES';
+  ws.getCell('A3').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+
+  ws.mergeCells('A4:C6');
+  ws.getCell('A4').value=rows.length;
+  ws.getCell('A4').font={name:'Arial',size:28,bold:true,color:{argb:'FF111111'}};
+  ws.getCell('A4').alignment={vertical:'middle',horizontal:'left'};
+
+  ws.mergeCells('A8:C8');
+  ws.getCell('A8').value='MODEL';
+  ws.getCell('A8').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+  ws.mergeCells('A9:C9');
+  ws.getCell('A9').value=currentModelName||'model.3dm';
+  ws.getCell('A9').font={name:'Arial',size:11,bold:true,color:{argb:'FF222222'}};
+
+  ws.mergeCells('A11:C11');
+  ws.getCell('A11').value='EXPORTED';
+  ws.getCell('A11').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+  ws.mergeCells('A12:C12');
+  ws.getCell('A12').value=new Date();
+  ws.getCell('A12').numFmt='yyyy-mm-dd hh:mm';
+  ws.getCell('A12').font={name:'Arial',size:10,color:{argb:'FF444444'}};
+
+  ws.mergeCells('E2:L2');
+  ws.getCell('E2').value='CURRENT VIEW';
+  ws.getCell('E2').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+
+  if(snapshot){
+    try{
+      const imageId=wb.addImage({base64:snapshot,extension:'png'});
+      ws.addImage(imageId,{tl:{col:4,row:2},br:{col:12,row:12},editAs:'oneCell'});
+    }catch(err){console.warn('Embed snapshot',err);}
+  }else{
+    ws.mergeCells('E3:L12');
+    ws.getCell('E3').value='3D snapshot unavailable';
+    ws.getCell('E3').alignment={vertical:'middle',horizontal:'center'};
+    ws.getCell('E3').font={italic:true,color:{argb:'FF999999'}};
+  }
+
+  // Divider before table
+  ws.getRow(14).height=8;
+  ws.getRow(15).height=8;
+  const headerRow=16;
+  const dataStart=17;
+
+  fields.forEach((f,i)=>{
+    const cell=ws.getCell(headerRow,i+1);
+    cell.value=f;
+    cell.font={name:'Arial',size:9,bold:true,color:{argb:'FFFFFFFF'}};
+    cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF222222'}};
+    cell.alignment={vertical:'middle',horizontal:'left',wrapText:true};
+    cell.border={bottom:{style:'thin',color:{argb:'FF111111'}}};
+  });
+  ws.getRow(headerRow).height=28;
+
+  rows.forEach((r,rowIndex)=>{
+    const excelRow=dataStart+rowIndex;
+    fields.forEach((f,colIndex)=>{
+      const cell=ws.getCell(excelRow,colIndex+1);
+      let value=r[f]??'';
+      if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Weight_kg'].includes(f) && value!==''){
+        const n=Number(value); if(Number.isFinite(n)) value=n;
+      }
+      cell.value=value;
+      cell.font={name:'Arial',size:9,color:{argb:'FF222222'}};
+      cell.alignment={vertical:'top',wrapText:['Notes','GCode_File','Rhino_Object_Name'].includes(f)};
+      cell.border={bottom:{style:'hair',color:{argb:'FFE1E1DD'}}};
+
+      if(f==='Overall_Status' && statusPalettes.Overall_Status[value]){
+        cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+statusPalettes.Overall_Status[value].replace('#','').toUpperCase()}};
+      }
+      if(f==='Manufacturing_Method' && statusPalettes.Manufacturing_Method[value]){
+        cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+statusPalettes.Manufacturing_Method[value].replace('#','').toUpperCase()}};
+      }
+    });
+  });
+
+  if(rows.length){
+    ws.autoFilter={
+      from:{row:headerRow,column:1},
+      to:{row:headerRow,column:fields.length}
+    };
+  }
+
+  ws.pageSetup={
+    orientation:'landscape',
+    fitToPage:true,
+    fitToWidth:1,
+    fitToHeight:0,
+    margins:{left:0.25,right:0.25,top:0.4,bottom:0.4,header:0.2,footer:0.2}
+  };
+  ws.pageSetup.printTitlesRow='16:16';
+
+  // Reusable dropdown values / references.
   const currentMaterials=[...new Set(['Soil Mix A','Soil Mix B','Soil Mix C','Custom / TBD',...Object.values(records).map(r=>String(r?.Material||'').trim()).filter(Boolean)])];
   const currentPeople=[...new Set(['Unassigned','Sohyun','Niels','Jin','Serdar',...Object.values(records).map(r=>String(r?.Assigned_To||'').trim()).filter(Boolean)])];
   const exportLists={...lists,Material:currentMaterials,Assigned_To:currentPeople};
-  Object.entries(exportLists).forEach(([k,arr])=>arr.forEach((v,i)=>{if(!listRows[i])listRows[i]={};listRows[i][k]=v;}));
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(listRows),'Lists');
-  XLSX.writeFile(wb,`Pavilion_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`);
+  const listWs=wb.addWorksheet('Lists');
+  let listCol=1;
+  Object.entries(exportLists).forEach(([name,arr])=>{
+    listWs.getCell(1,listCol).value=name;
+    listWs.getCell(1,listCol).font={bold:true};
+    arr.forEach((v,i)=>listWs.getCell(i+2,listCol).value=v);
+    listWs.getColumn(listCol).width=Math.max(16,...arr.map(v=>String(v).length+2));
+    listCol++;
+  });
+  listWs.state='hidden';
+
+  const buffer=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`Pavilion_Tracker_${new Date().toISOString().slice(0,10)}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  showMessage(`Excel exported · ${rows.length} modules · sorted by Object_ID.`);
 }
 async function importExcel(file){
   if(!window.XLSX){showMessage('Excel library has not loaded. Check your internet connection.',true);return;}
-  const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+  const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]];
+  const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  const headerIndex=raw.findIndex(row=>row.includes('Rhino_GUID') && row.includes('Object_ID'));
+  if(headerIndex<0){showMessage('Could not find the tracker table headers in this Excel file.',true);return;}
+  const rows=XLSX.utils.sheet_to_json(ws,{range:headerIndex,defval:''});
   let matched=0;
   rows.forEach(row=>{
     let key=String(row.Rhino_GUID||'').trim();
