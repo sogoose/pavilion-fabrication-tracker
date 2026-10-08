@@ -1015,20 +1015,49 @@ async function exportExcel(){
   ws.getCell('A4').font={name:'Arial',size:28,bold:true,color:{argb:'FF111111'}};
   ws.getCell('A4').alignment={vertical:'middle',horizontal:'left'};
 
-  ws.mergeCells('A8:C8');
-  ws.getCell('A8').value='MODEL';
-  ws.getCell('A8').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
-  ws.mergeCells('A9:C9');
-  ws.getCell('A9').value=currentModelName||'model.3dm';
-  ws.getCell('A9').font={name:'Arial',size:11,bold:true,color:{argb:'FF222222'}};
+  // Type breakdown from the case-sensitive Object_ID prefix.
+  // A01 and a01 are intentionally treated as different module types.
+  const typeCounts={};
+  rows.forEach(r=>{
+    const id=String(r.Object_ID||'').trim();
+    const m=id.match(/^[A-Za-z]+/);
+    const type=m?m[0]:'Other';
+    typeCounts[type]=(typeCounts[type]||0)+1;
+  });
+  const typeEntries=Object.entries(typeCounts).sort((a,b)=>{
+    if(a[0]==='Other') return 1;
+    if(b[0]==='Other') return -1;
+    return a[0].localeCompare(b[0],undefined,{numeric:true,sensitivity:'case',caseFirst:'upper'});
+  });
 
-  ws.mergeCells('A11:C11');
-  ws.getCell('A11').value='EXPORTED';
-  ws.getCell('A11').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
-  ws.mergeCells('A12:C12');
-  ws.getCell('A12').value=new Date();
-  ws.getCell('A12').numFmt='yyyy-mm-dd hh:mm';
-  ws.getCell('A12').font={name:'Arial',size:10,color:{argb:'FF444444'}};
+  ws.mergeCells('A8:C8');
+  ws.getCell('A8').value='MODULE TYPES';
+  ws.getCell('A8').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+  typeEntries.forEach(([type,count],i)=>{
+    const row=9+i;
+    ws.getCell(row,1).value=type;
+    ws.getCell(row,1).font={name:'Arial',size:10,bold:true,color:{argb:'FF222222'}};
+    ws.getCell(row,2).value=count;
+    ws.getCell(row,2).font={name:'Arial',size:10,bold:true,color:{argb:'FF222222'}};
+    ws.getCell(row,3).value=`${Math.round(count/Math.max(rows.length,1)*100)}%`;
+    ws.getCell(row,3).font={name:'Arial',size:9,color:{argb:'FF777777'}};
+    ws.getCell(row,3).alignment={horizontal:'right'};
+  });
+
+  ws.mergeCells('N3:Q3');
+  ws.getCell('N3').value='MODEL';
+  ws.getCell('N3').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+  ws.mergeCells('N4:Q4');
+  ws.getCell('N4').value=currentModelName||'model.3dm';
+  ws.getCell('N4').font={name:'Arial',size:11,bold:true,color:{argb:'FF222222'}};
+
+  ws.mergeCells('N6:Q6');
+  ws.getCell('N6').value='EXPORTED';
+  ws.getCell('N6').font={name:'Arial',size:10,bold:true,color:{argb:'FF777777'}};
+  ws.mergeCells('N7:Q7');
+  ws.getCell('N7').value=new Date();
+  ws.getCell('N7').numFmt='yyyy-mm-dd hh:mm';
+  ws.getCell('N7').font={name:'Arial',size:10,color:{argb:'FF444444'}};
 
   ws.mergeCells('E2:L2');
   ws.getCell('E2').value='CURRENT VIEW';
@@ -1046,11 +1075,11 @@ async function exportExcel(){
     ws.getCell('E3').font={italic:true,color:{argb:'FF999999'}};
   }
 
-  // Divider before table
-  ws.getRow(14).height=8;
-  ws.getRow(15).height=8;
-  const headerRow=16;
-  const dataStart=17;
+  // Divider before table. Leave room for all module type rows.
+  const headerRow=Math.max(16,11+typeEntries.length);
+  ws.getRow(headerRow-2).height=8;
+  ws.getRow(headerRow-1).height=8;
+  const dataStart=headerRow+1;
 
   fields.forEach((f,i)=>{
     const cell=ws.getCell(headerRow,i+1);
@@ -1098,7 +1127,7 @@ async function exportExcel(){
     fitToHeight:0,
     margins:{left:0.25,right:0.25,top:0.4,bottom:0.4,header:0.2,footer:0.2}
   };
-  ws.pageSetup.printTitlesRow='16:16';
+  ws.pageSetup.printTitlesRow=`${headerRow}:${headerRow}`;
 
   // Reusable dropdown values / references.
   const currentMaterials=[...new Set(['Soil Mix A','Soil Mix B','Soil Mix C','Custom / TBD',...Object.values(records).map(r=>String(r?.Material||'').trim()).filter(Boolean)])];
