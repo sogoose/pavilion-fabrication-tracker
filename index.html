@@ -821,11 +821,11 @@ function updateObjectLabel(){
   const x=(pos.x*.5+.5)*rect.width, y=(-pos.y*.5+.5)*rect.height;
   if(pos.z < -1 || pos.z > 1 || x<0 || x>rect.width || y<0 || y>rect.height){objectLabel.style.display='none';return;}
   objectLabel.style.left=`${x}px`; objectLabel.style.top=`${y}px`; objectLabel.style.display='block';
-  const isPrinted=r.Production_Status==='Printed';
-  const greenStatuses=['In Production','Ready for Assembly','In Construction','Installed'];
+  const productionStatus=r.Production_Status || 'Not Started';
+  const isPrinted=productionStatus==='Printed';
   objectLabel.classList.toggle('printed',isPrinted);
-  objectLabel.classList.toggle('progress',!isPrinted && greenStatuses.includes(r.Overall_Status));
-  const status=r.Overall_Status || 'Not Started';
+  objectLabel.classList.toggle('progress',!isPrinted && productionStatus==='Printing');
+  const status=productionStatus;
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
