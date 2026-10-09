@@ -76,6 +76,7 @@
     #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.35;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:normal;min-width:150px;max-width:260px;transition:background .15s ease,box-shadow .15s ease}
     #objectLabel.progress{background:rgba(47,125,74,.96);box-shadow:0 4px 16px rgba(47,125,74,.24)}
     #objectLabel.printed{background:#dff2df;color:#245b32;box-shadow:0 4px 16px rgba(47,125,74,.14);border:1px solid #b8ddb9}
+    #objectLabel.failed{background:#f8dedd;color:#8f1d16;box-shadow:0 4px 16px rgba(180,35,24,.14);border:1px solid #e8aaa5}
     #objectLabel b{display:block;font-size:12px;margin-bottom:3px}
     .allObjectLabels{position:absolute;inset:0;z-index:4;pointer-events:none;display:none}
     .allObjectLabels.active{display:block}
@@ -805,7 +806,7 @@ function clearSelectedPart(e){
   selectedKey=null;
   clearSelectionOutline();
   objectLabel.style.display='none';
-  objectLabel.classList.remove('progress','printed');
+  objectLabel.classList.remove('progress','printed','failed');
   applyColors();
   renderPanel();
 }
@@ -823,8 +824,10 @@ function updateObjectLabel(){
   objectLabel.style.left=`${x}px`; objectLabel.style.top=`${y}px`; objectLabel.style.display='block';
   const productionStatus=r.Production_Status || 'Not Started';
   const isPrinted=productionStatus==='Printed';
+  const isFailed=['Failed','Error','Issue'].includes(productionStatus);
   objectLabel.classList.toggle('printed',isPrinted);
-  objectLabel.classList.toggle('progress',!isPrinted && productionStatus==='Printing');
+  objectLabel.classList.toggle('failed',isFailed);
+  objectLabel.classList.toggle('progress',!isPrinted && !isFailed && productionStatus==='Printing');
   const status=productionStatus;
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
