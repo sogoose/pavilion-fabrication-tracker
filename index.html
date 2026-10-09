@@ -75,6 +75,7 @@
     .versionTag{display:inline-block;margin-left:7px;padding:3px 6px;border:1px solid #111;border-radius:999px;font-size:10px;vertical-align:2px}
     #objectLabel{position:absolute;display:none;z-index:6;pointer-events:none;background:rgba(17,17,17,.92);color:#fff;border-radius:7px;padding:8px 10px;font-size:11px;line-height:1.35;box-shadow:0 4px 16px rgba(0,0,0,.15);transform:translate(-50%,-115%);white-space:normal;min-width:150px;max-width:260px;transition:background .15s ease,box-shadow .15s ease}
     #objectLabel.progress{background:rgba(47,125,74,.96);box-shadow:0 4px 16px rgba(47,125,74,.24)}
+    #objectLabel.printed{background:#dff2df;color:#245b32;box-shadow:0 4px 16px rgba(47,125,74,.14);border:1px solid #b8ddb9}
     #objectLabel b{display:block;font-size:12px;margin-bottom:3px}
     .allObjectLabels{position:absolute;inset:0;z-index:4;pointer-events:none;display:none}
     .allObjectLabels.active{display:block}
@@ -804,7 +805,7 @@ function clearSelectedPart(e){
   selectedKey=null;
   clearSelectionOutline();
   objectLabel.style.display='none';
-  objectLabel.classList.remove('progress');
+  objectLabel.classList.remove('progress','printed');
   applyColors();
   renderPanel();
 }
@@ -820,8 +821,10 @@ function updateObjectLabel(){
   const x=(pos.x*.5+.5)*rect.width, y=(-pos.y*.5+.5)*rect.height;
   if(pos.z < -1 || pos.z > 1 || x<0 || x>rect.width || y<0 || y>rect.height){objectLabel.style.display='none';return;}
   objectLabel.style.left=`${x}px`; objectLabel.style.top=`${y}px`; objectLabel.style.display='block';
+  const isPrinted=r.Production_Status==='Printed';
   const greenStatuses=['In Production','Ready for Assembly','In Construction','Installed'];
-  objectLabel.classList.toggle('progress',greenStatuses.includes(r.Overall_Status));
+  objectLabel.classList.toggle('printed',isPrinted);
+  objectLabel.classList.toggle('progress',!isPrinted && greenStatuses.includes(r.Overall_Status));
   const status=r.Overall_Status || 'Not Started';
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
