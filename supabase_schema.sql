@@ -13,6 +13,7 @@ create table if not exists public.pavilion_parts (
   sequence integer,
   rhino_object_name text,
   material text,
+  material_details text,
   manufacturing_method text,
   assigned_to text,
   structural_status text,
