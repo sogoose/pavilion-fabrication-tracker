@@ -204,7 +204,7 @@ const COLOR_STORAGE_KEY = 'pavilion-color-overrides-v1';
 const PHOTO_BUCKET = 'pavilion-module-photos';
 const MAX_PHOTOS_PER_MODULE = 5;
 const fields = [
-  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Manufacturing_Method','Assigned_To',
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Density_pct','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
@@ -231,7 +231,7 @@ const PROJECT_ID = CONFIG.projectId || 'pavilion-2026';
 const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
 const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
-  Rhino_Object_Name:'rhino_object_name', Material:'material', Manufacturing_Method:'manufacturing_method', Assigned_To:'assigned_to',
+  Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
   Infill_Density_pct:'infill_density_pct', Weight_kg:'weight_kg', Production_Status:'production_status',
   Drying_QC_Status:'drying_qc_status', Construction_Status:'construction_status', Overall_Status:'overall_status', Machine:'machine',
@@ -584,7 +584,7 @@ function defaultRecord(part,i){
     Object_ID:`M${String(n).padStart(2,'0')}`,
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
-    Material:'Custom / TBD', Manufacturing_Method:'3D Printing', Assigned_To:'Unassigned',
+    Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Density_pct:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
     Machine:'WASP', GCode_File:'', Last_Updated:'', Updated_By:'', Notes:''
@@ -663,7 +663,7 @@ function applyFilter(){
   parts.forEach(p=>{
     const r=records[p.key];
     const matchesStatus = f==='__ALL__' || String(r?.[field]??'')===f;
-    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Manufacturing_Method,r?.Notes].join(' ').toLowerCase();
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Notes].join(' ').toLowerCase();
     const matchesSearch=!q || hay.includes(q);
     p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
   });
@@ -971,6 +971,11 @@ function renderPanel(){
     </div>
     ${inputField('Rhino_Object_Name','Rhino object name',r.Rhino_Object_Name,'text')}
     ${datalistField('Material','Material',r.Material,'materialList')}
+
+    <div class="sectionTitle">Material Details</div>
+    ${textareaField('Material_Details','Composition / quantity',r.Material_Details)}
+    <div class="sub" style="white-space:normal;line-height:1.45;margin:-6px 0 12px">Use this for the actual mix and amount used per module. Example: Soil 12.0 kg · Clay 3.5 kg · Coffee grounds 0.8 kg · Water 2.2 L. This field is recorded in the database / Excel but does not affect the 3D color view.</div>
+
     ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
     ${selectField('Machine','Machine',r.Machine,machineOptions)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
@@ -1269,7 +1274,7 @@ async function exportExcel(){
       }
       cell.value=value;
       cell.font={name:'Arial',size:9,color:{argb:'FF222222'}};
-      cell.alignment={vertical:'top',wrapText:['Notes','GCode_File','Rhino_Object_Name'].includes(f)};
+      cell.alignment={vertical:'top',wrapText:['Notes','Material_Details','GCode_File','Rhino_Object_Name'].includes(f)};
       cell.border={bottom:{style:'hair',color:{argb:'FFE1E1DD'}}};
 
       if(f==='Overall_Status' && statusPalettes.Overall_Status[value]){
