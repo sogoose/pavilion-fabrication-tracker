@@ -56,6 +56,13 @@
     .photoUploadHint{font-size:10px;color:#888;line-height:1.35}
     .photoSelected{font-size:10px;color:#444;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .photoError{font-size:10px;color:#9a2f27;margin-top:7px}
+    .gcodeUpload{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafaf8;margin-bottom:12px}
+    .gcodeCurrent{font-size:11px;color:#444;margin-bottom:9px;line-height:1.45;word-break:break-word}
+    .gcodeCurrent button{padding:5px 8px;font-size:11px}
+    .gcodeUploadRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .gcodeHint{font-size:10px;color:#888;line-height:1.35;margin-top:7px}
+    .gcodeStatus{font-size:10px;color:#444;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gcodeError{font-size:10px;color:#9a2f27;margin-top:7px}
     .photoGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
     .photoCard{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
     .photoCard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#efefeb;cursor:pointer}
@@ -203,7 +210,9 @@ const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
 const COLOR_STORAGE_KEY = 'pavilion-color-overrides-v1';
 const PHOTO_BUCKET = 'pavilion-module-photos';
+const GCODE_BUCKET = 'pavilion-gcode-files';
 const MAX_PHOTOS_PER_MODULE = 5;
+const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
   'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Density_pct','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
@@ -664,7 +673,7 @@ function applyFilter(){
   parts.forEach(p=>{
     const r=records[p.key];
     const matchesStatus = f==='__ALL__' || String(r?.[field]??'')===f;
-    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Notes].join(' ').toLowerCase();
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
     const matchesSearch=!q || hay.includes(q);
     p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
   });
@@ -956,6 +965,113 @@ async function uploadModulePhoto(key){
   }
 }
 
+function isStoredGCode(path){
+  return String(path||'').startsWith(PROJECT_ID+'/');
+}
+function gcodeDisplayName(path){
+  const raw=String(path||'').split('/').pop() || '';
+  try{
+    const decoded=decodeURIComponent(raw);
+    return decoded.replace(/^\d+_/, '') || 'G-code file';
+  }catch(e){
+    return raw.replace(/^\d+_/, '') || 'G-code file';
+  }
+}
+async function uploadGCode(key){
+  if(!liveMode || !supabaseClient){showMessage('G-code upload needs shared mode.',true);return;}
+  const input=document.getElementById('gcodeInput');
+  const file=input?.files?.[0];
+  const status=document.getElementById('gcodeStatus');
+  const btn=document.getElementById('uploadGCode');
+  const r=records[key];
+  if(!r || !file){showMessage('Choose a G-code file first.',true);return;}
+
+  const ext=(file.name.split('.').pop()||'').toLowerCase();
+  if(!['gcode','gco','nc','tap','txt'].includes(ext)){
+    showMessage('Please choose a .gcode, .gco, .nc, .tap, or .txt file.',true);
+    return;
+  }
+  if(file.size>MAX_GCODE_BYTES){
+    showMessage('G-code file is over the 50 MB upload limit.',true);
+    return;
+  }
+
+  if(btn){btn.disabled=true;btn.textContent='Uploading…';}
+  if(status){status.className='gcodeStatus';status.textContent='Uploading '+file.name+'…';}
+
+  try{
+    const safeGuid=String(key).replace(/[^A-Za-z0-9_-]/g,'_');
+    const safeName=String(file.name).replace(/[^A-Za-z0-9._-]/g,'_');
+    const path=`${PROJECT_ID}/${safeGuid}/${Date.now()}_${safeName}`;
+    const {error}=await supabaseClient.storage.from(GCODE_BUCKET).upload(path,file,{
+      contentType:'text/plain',
+      cacheControl:'3600',
+      upsert:false
+    });
+    if(error) throw error;
+
+    r.GCode_File=path;
+    r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');
+    r.Updated_By=currentEditor();
+    persistLocal();
+    if(cloudReady) await saveRecordToCloud(key); else queueCloudSave(key);
+
+    if(input) input.value='';
+    showMessage('G-code uploaded and linked to '+(r.Object_ID||'module')+'.');
+    renderPanel();
+  }catch(err){
+    console.error(err);
+    if(status){status.className='gcodeError';status.textContent=String(err?.message||err);}
+    showMessage('G-code upload failed: '+(err?.message||err),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Upload G-code';}
+  }
+}
+async function downloadGCode(key){
+  if(!liveMode || !supabaseClient){showMessage('G-code download needs shared mode.',true);return;}
+  const r=records[key];
+  const path=String(r?.GCode_File||'');
+  if(!isStoredGCode(path)){showMessage('This record contains only a filename/path, not an uploaded G-code file.',true);return;}
+  const btn=document.getElementById('downloadGCode');
+  if(btn){btn.disabled=true;btn.textContent='Downloading…';}
+  try{
+    const {data,error}=await supabaseClient.storage.from(GCODE_BUCKET).download(path);
+    if(error) throw error;
+    const url=URL.createObjectURL(data);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=gcodeDisplayName(path);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(err){
+    console.error(err);
+    showMessage('G-code download failed: '+(err?.message||err),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Download';}
+  }
+}
+function gcodeUploadPanel(r){
+  const path=String(r?.GCode_File||'').trim();
+  const stored=isStoredGCode(path);
+  const current=path
+    ? (stored
+      ? `<div class="gcodeCurrent"><b>Current file:</b> ${escapeHtml(gcodeDisplayName(path))} <button id="downloadGCode" type="button">Download</button></div>`
+      : `<div class="gcodeCurrent"><b>Legacy entry:</b> ${escapeHtml(path)}<br><span style="color:#888">This is text only. Upload the actual file below to make it downloadable.</span></div>`)
+    : '<div class="gcodeCurrent"><b>Current file:</b> —</div>';
+  return `<div class="sectionTitle">G-code</div>
+    <div class="gcodeUpload">
+      ${current}
+      <div class="gcodeUploadRow">
+        <label class="button fileBtn">Choose G-code<input id="gcodeInput" type="file" accept=".gcode,.gco,.nc,.tap,.txt,text/plain"></label>
+        <button id="uploadGCode" type="button">Upload G-code</button>
+      </div>
+      <div id="gcodeStatus" class="gcodeStatus">No file selected.</div>
+      <div class="gcodeHint">The actual file is stored in team storage and linked to this module · max 50 MB · .gcode / .gco / .nc / .tap / .txt</div>
+    </div>`;
+}
+
 function renderPanel(){
   if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
   const r=records[selectedKey];
@@ -1000,7 +1116,7 @@ function renderPanel(){
     ${selectField('Construction_Status','Construction status',r.Construction_Status,lists.Construction_Status)}
     <div class="autoStatus"><span>Overall status</span><b>${escapeHtml(r.Overall_Status)}</b></div>
     <div class="divider"></div>
-    ${inputField('GCode_File','G-code file',r.GCode_File,'text')}
+    ${gcodeUploadPanel(r)}
     ${textareaField('Notes','Notes',r.Notes)}
 
     <div class="sectionTitle">Photos / Site Record</div>
@@ -1034,6 +1150,19 @@ function renderPanel(){
   });
   document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
   document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
+  const gcodeUploadBtn=document.getElementById('uploadGCode');
+  const gcodeInput=document.getElementById('gcodeInput');
+  const gcodeDownloadBtn=document.getElementById('downloadGCode');
+  if(gcodeUploadBtn) gcodeUploadBtn.onclick=()=>uploadGCode(selectedKey);
+  if(gcodeDownloadBtn) gcodeDownloadBtn.onclick=()=>downloadGCode(selectedKey);
+  if(gcodeInput) gcodeInput.addEventListener('change',e=>{
+    const f=e.target.files?.[0];
+    const status=document.getElementById('gcodeStatus');
+    if(status){
+      status.className='gcodeStatus';
+      status.textContent=f?`Selected: ${f.name} · ${Math.max(1,Math.round(f.size/1024))} KB`:'No file selected.';
+    }
+  });
   document.getElementById('uploadModulePhoto').onclick=()=>uploadModulePhoto(selectedKey);
   document.getElementById('modulePhotoInput').addEventListener('change',e=>{
     const f=e.target.files?.[0];
