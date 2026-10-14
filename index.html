@@ -69,6 +69,36 @@
     .photoMeta{padding:7px 8px;font-size:10px;line-height:1.35;color:#555}
     .photoMeta .photoNote{font-size:11px;color:#222;margin-bottom:4px;white-space:pre-wrap}
     .photoEmpty{font-size:11px;color:#888;padding:8px 0}
+    .attachmentsModal{position:fixed;inset:0;z-index:1200;background:rgba(15,15,15,.42);display:none;align-items:center;justify-content:center;padding:28px}
+    .attachmentsModal.open{display:flex}
+    .attachmentsDialog{width:min(1120px,96vw);max-height:88vh;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 60px rgba(0,0,0,.22);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+    .attachmentsHeader{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:#fff}
+    .attachmentsHeader h2{font-size:16px;margin:0}
+    .attachmentsHeader .sub{white-space:normal}
+    .attachmentsHeader button{margin-left:auto}
+    .attachmentsBody{overflow:auto;padding:16px}
+    .attachmentsSectionTitle{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#666;margin:2px 0 10px}
+    .attachmentsGallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:22px}
+    .attachmentPhotoCard,.attachmentFileCard{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;min-width:0}
+    .attachmentPhotoCard img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#efefeb;cursor:pointer}
+    .attachmentCardMeta{padding:9px 10px;font-size:10px;line-height:1.4;color:#666}
+    .attachmentCardMeta b{display:block;color:#222;font-size:11px;margin-bottom:3px}
+    .attachmentCardNote{color:#333;font-size:11px;white-space:pre-wrap;margin:4px 0}
+    .attachmentModuleLink{border:0;background:transparent;padding:0;color:#222;text-decoration:underline;text-underline-offset:2px;font-weight:700;font-size:11px}
+    .attachmentModuleLink:hover{background:transparent}
+    .attachmentFiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+    .attachmentFileCard{padding:11px 12px;display:grid;gap:7px}
+    .attachmentFileName{font-size:11px;font-weight:700;color:#222;word-break:break-word}
+    .attachmentFileActions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+    .attachmentFileActions button{padding:5px 8px;font-size:10px}
+    .attachmentsEmpty{border:1px dashed var(--line);border-radius:10px;padding:18px;color:#888;font-size:12px;text-align:center}
+    .attachmentsLoading{padding:30px 10px;color:#666;font-size:12px;text-align:center}
+    @media(max-width:700px){
+      .attachmentsModal{padding:10px}
+      .attachmentsDialog{max-height:94vh}
+      .attachmentsGallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .attachmentsBody{padding:12px}
+    }
     .kpis{display:flex;gap:8px;flex-wrap:wrap}
     .kpi{background:#fafafa;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px}
     .kpi b{font-size:14px;margin-right:4px}
@@ -164,7 +194,7 @@
       <button id="fitView">Fit view</button>
       <button id="toggleObjectLabels">Module labels</button>
       <button id="toggleModuleOutlines">Module outlines</button>
-      <button id="resetData" class="danger">Reset data</button>
+      <button id="openAttachments">Attachments</button>
       <div id="kpis" class="kpis"></div>
     </div>
   </header>
@@ -188,6 +218,21 @@
         Changes are cached in this browser automatically. When Supabase is configured, edits are also shared live with the team.<br><br>Use <b>Download Excel</b> whenever you want a spreadsheet snapshot.
       </div>
     </aside>
+  </div>
+</div>
+
+<div id="attachmentsModal" class="attachmentsModal" aria-hidden="true">
+  <div class="attachmentsDialog" role="dialog" aria-modal="true" aria-labelledby="attachmentsTitle">
+    <div class="attachmentsHeader">
+      <div>
+        <h2 id="attachmentsTitle">Attachments</h2>
+        <div id="attachmentsSummary" class="sub">Photos and G-code files across all modules.</div>
+      </div>
+      <button id="closeAttachments" type="button">Close</button>
+    </div>
+    <div id="attachmentsBody" class="attachmentsBody">
+      <div class="attachmentsLoading">Loading attachments…</div>
+    </div>
   </div>
 </div>
 
@@ -877,6 +922,128 @@ function publicPhotoUrl(path){
   if(!supabaseClient || !path) return '';
   return supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path).data?.publicUrl || '';
 }
+function closeAttachmentsGallery(){
+  const modal=document.getElementById('attachmentsModal');
+  if(!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+}
+function attachmentModuleName(key,fallback=''){
+  const r=records[String(key||'')];
+  return r?.Object_ID || fallback || 'Unnamed module';
+}
+function focusAttachmentModule(key){
+  closeAttachmentsGallery();
+  if(!key) return;
+  if(records[key]) selectPart(key);
+}
+async function downloadGCodePath(path,button=null){
+  if(!liveMode || !supabaseClient){showMessage('G-code download needs shared mode.',true);return;}
+  const stored=String(path||'');
+  if(!isStoredGCode(stored)){showMessage('This is not an uploaded G-code file.',true);return;}
+  const oldText=button?.textContent;
+  if(button){button.disabled=true;button.textContent='Downloading…';}
+  try{
+    const {data,error}=await supabaseClient.storage.from(GCODE_BUCKET).download(stored);
+    if(error) throw error;
+    const url=URL.createObjectURL(data);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=gcodeDisplayName(stored);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }catch(err){
+    console.error(err);
+    showMessage('G-code download failed: '+(err?.message||err),true);
+  }finally{
+    if(button){button.disabled=false;button.textContent=oldText||'Download';}
+  }
+}
+async function openAttachmentsGallery(){
+  const modal=document.getElementById('attachmentsModal');
+  const body=document.getElementById('attachmentsBody');
+  const summary=document.getElementById('attachmentsSummary');
+  if(!modal || !body) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+  body.innerHTML='<div class="attachmentsLoading">Loading attachments…</div>';
+
+  const gcodes=Object.entries(records)
+    .map(([key,r])=>({key,path:String(r?.GCode_File||'').trim(),objectId:r?.Object_ID||''}))
+    .filter(x=>isStoredGCode(x.path));
+
+  let photos=[];
+  let photoError='';
+  if(liveMode && supabaseClient){
+    try{
+      const {data,error}=await supabaseClient
+        .from('pavilion_module_photos')
+        .select('*')
+        .eq('project_id',PROJECT_ID)
+        .order('created_at',{ascending:false});
+      if(error) throw error;
+      photos=data||[];
+    }catch(err){
+      console.error(err);
+      photoError=String(err?.message||err);
+    }
+  }else{
+    photoError='Shared mode is required to load the team photo gallery.';
+  }
+
+  if(summary) summary.textContent=`${photos.length} photo${photos.length===1?'':'s'} · ${gcodes.length} G-code file${gcodes.length===1?'':'s'}`;
+
+  const photoHtml=photos.length
+    ? `<div class="attachmentsGallery">${photos.map(item=>{
+        const url=publicPhotoUrl(item.storage_path);
+        const key=String(item.rhino_guid||'');
+        const name=attachmentModuleName(key,item.object_id||'');
+        const when=item.created_at?new Date(item.created_at).toLocaleString():'';
+        return `<div class="attachmentPhotoCard">
+          <img src="${escapeAttr(url)}" alt="${escapeAttr(name+' site photo')}" loading="lazy" data-gallery-photo="${escapeAttr(url)}">
+          <div class="attachmentCardMeta">
+            <button class="attachmentModuleLink" type="button" data-gallery-module="${escapeAttr(key)}">${escapeHtml(name)}</button>
+            ${item.note?`<div class="attachmentCardNote">${escapeHtml(item.note)}</div>`:''}
+            <div>${escapeHtml(item.uploaded_by||'—')}${when?' · '+escapeHtml(when):''}</div>
+          </div>
+        </div>`;
+      }).join('')}</div>`
+    : `<div class="attachmentsEmpty">${escapeHtml(photoError||'No photos have been uploaded yet.')}</div>`;
+
+  const gcodeHtml=gcodes.length
+    ? `<div class="attachmentFiles">${gcodes.map(item=>{
+        const name=attachmentModuleName(item.key,item.objectId);
+        return `<div class="attachmentFileCard">
+          <div class="attachmentFileName">${escapeHtml(gcodeDisplayName(item.path))}</div>
+          <div class="sub">Linked to ${escapeHtml(name)}</div>
+          <div class="attachmentFileActions">
+            <button type="button" data-gallery-gcode="${escapeAttr(item.path)}">Download</button>
+            <button type="button" data-gallery-module="${escapeAttr(item.key)}">Open module</button>
+          </div>
+        </div>`;
+      }).join('')}</div>`
+    : '<div class="attachmentsEmpty">No uploaded G-code files yet.</div>';
+
+  body.innerHTML=`
+    <div class="attachmentsSectionTitle">Site Photos</div>
+    ${photoHtml}
+    <div class="attachmentsSectionTitle">G-code Files</div>
+    ${gcodeHtml}
+  `;
+
+  body.querySelectorAll('[data-gallery-photo]').forEach(img=>{
+    img.addEventListener('click',()=>window.open(img.dataset.galleryPhoto,'_blank','noopener'));
+  });
+  body.querySelectorAll('[data-gallery-module]').forEach(btn=>{
+    btn.addEventListener('click',()=>focusAttachmentModule(btn.dataset.galleryModule));
+  });
+  body.querySelectorAll('[data-gallery-gcode]').forEach(btn=>{
+    btn.addEventListener('click',()=>downloadGCodePath(btn.dataset.galleryGcode,btn));
+  });
+}
+
 async function loadModulePhotos(key){
   const wrap=document.getElementById('modulePhotos');
   if(!wrap || !key || !liveMode || !supabaseClient){
@@ -1031,29 +1198,10 @@ async function uploadGCode(key){
   }
 }
 async function downloadGCode(key){
-  if(!liveMode || !supabaseClient){showMessage('G-code download needs shared mode.',true);return;}
   const r=records[key];
   const path=String(r?.GCode_File||'');
   if(!isStoredGCode(path)){showMessage('This record contains only a filename/path, not an uploaded G-code file.',true);return;}
-  const btn=document.getElementById('downloadGCode');
-  if(btn){btn.disabled=true;btn.textContent='Downloading…';}
-  try{
-    const {data,error}=await supabaseClient.storage.from(GCODE_BUCKET).download(path);
-    if(error) throw error;
-    const url=URL.createObjectURL(data);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=gcodeDisplayName(path);
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-  }catch(err){
-    console.error(err);
-    showMessage('G-code download failed: '+(err?.message||err),true);
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent='Download';}
-  }
+  await downloadGCodePath(path,document.getElementById('downloadGCode'));
 }
 function gcodeUploadPanel(r){
   const path=String(r?.GCode_File||'').trim();
@@ -1506,7 +1654,10 @@ function wireUI(){
   document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
   document.getElementById('toggleModuleOutlines').onclick=toggleAllModuleOutlines;
   document.getElementById('homeView').onclick=fitView;
-  document.getElementById('resetData').onclick=resetData;
+  document.getElementById('openAttachments').onclick=openAttachmentsGallery;
+  document.getElementById('closeAttachments').onclick=closeAttachmentsGallery;
+  document.getElementById('attachmentsModal').addEventListener('click',e=>{if(e.target.id==='attachmentsModal') closeAttachmentsGallery();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape') closeAttachmentsGallery();});
   editorName.addEventListener('change',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
   editorName.addEventListener('blur',()=>{localStorage.setItem(EDITOR_KEY,editorName.value.trim());});
   document.getElementById('syncNow').onclick=()=>{
