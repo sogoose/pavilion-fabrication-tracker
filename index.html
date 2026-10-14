@@ -1116,7 +1116,7 @@ function renderPanel(){
     ${r.Manufacturing_Method==='3D Printing' ? `
       <div class="sectionTitle">3D Printing Parameters</div>
       <div class="grid2">
-        ${inputField('Motor_Speed','Motor speed',r.Motor_Speed,'number','0.01')}
+        ${inputField('Motor_Speed','Motor speed (steps/s)',r.Motor_Speed,'number','0.01')}
         ${inputField('Motor_Speed_Manual_Adjustment_pct','Motor speed manual adjustment (%)',r.Motor_Speed_Manual_Adjustment_pct,'number','0.1')}
         ${inputField('Air_Pressure_bar','Air pressure (bar)',r.Air_Pressure_bar,'number','0.1')}
         ${inputField('First_Layer_Height_mm','First layer height (mm)',r.First_Layer_Height_mm,'number','0.01')}
