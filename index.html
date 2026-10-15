@@ -33,6 +33,9 @@
     .legend{position:absolute;right:14px;bottom:14px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:10px;padding:10px;min-width:180px;max-width:230px;z-index:2;font-size:12px}
     .legend-title{font-weight:700;margin-bottom:8px}
     .legend-row{display:flex;align-items:center;gap:8px;margin:5px 0}
+    .legend-group-row{display:flex;align-items:center;gap:8px;margin:7px 0 3px;font-weight:700}
+    .legend-child{padding-left:17px}
+    .legend-child span{font-size:11px}
     .swatch{width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.12);flex:0 0 auto}
     .swatch-edit{position:relative;overflow:hidden;cursor:pointer;outline:1px solid transparent;outline-offset:2px}
     .swatch-edit:hover{outline-color:rgba(0,0,0,.2)}
@@ -278,6 +281,11 @@ const statusPalettes = {
   Production_Status:{'Not Started':'#d6d6d1','Queued':'#a8c7e8','Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'},
   Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
   Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'}
+};
+const printingMachinePalette = {
+  WASP:'#7da6cc',
+  UR5:'#a9c5df',
+  COMAU:'#4f82b1'
 };
 
 
@@ -704,11 +712,25 @@ function colorFor(field,value){
   }
   const p=statusPalettes[field]; if(p && p[value]) return p[value]; return hashColor(value || 'Unassigned');
 }
+function printingMachineLegendValue(machine){
+  return '3D Printing / '+String(machine||'Unassigned');
+}
+function manufacturingColor(r){
+  const method=String(r?.Manufacturing_Method||'');
+  if(method==='3D Printing'){
+    const machine=String(r?.Machine||'Unassigned');
+    const legendValue=printingMachineLegendValue(machine);
+    const override=colorOverrides[colorKey('Manufacturing_Method',legendValue)];
+    if(override) return override;
+    return printingMachinePalette[machine] || hashColor(legendValue);
+  }
+  return colorFor('Manufacturing_Method',method);
+}
 function applyColors(){
   const field=colorBy.value;
   parts.forEach(p=>{
     const r=records[p.key]; if(!r)return;
-    const c=colorFor(field,r[field]);
+    const c=field==='Manufacturing_Method' ? manufacturingColor(r) : colorFor(field,r[field]);
     p.meshes.forEach(m=>{
       if(m.material?.color) m.material.color.set(c);
       if(m.material?.emissive){m.material.emissive.set(p.key===selectedKey?0x3a3a3a:0x000000);m.material.emissiveIntensity=p.key===selectedKey?.28:0;}
@@ -720,14 +742,80 @@ function applyFilter(){
   const field=colorBy.value, f=statusFilter.value, q=searchInput.value.trim().toLowerCase();
   parts.forEach(p=>{
     const r=records[p.key];
-    const matchesStatus = f==='__ALL__' || String(r?.[field]??'')===f;
-    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
+    let matchesStatus=true;
+    if(f!=='__ALL__'){
+      if(field==='Manufacturing_Method' && f.startsWith('METHOD::')){
+        matchesStatus=String(r?.Manufacturing_Method||'')===f.slice('METHOD::'.length);
+      }else if(field==='Manufacturing_Method' && f.startsWith('MACHINE::')){
+        matchesStatus=String(r?.Manufacturing_Method||'')==='3D Printing' && String(r?.Machine||'Unassigned')===f.slice('MACHINE::'.length);
+      }else{
+        matchesStatus=String(r?.[field]??'')===f;
+      }
+    }
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Machine,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
     const matchesSearch=!q || hay.includes(q);
     p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
   });
 }
+function renderManufacturingLegend(){
+  const previous=statusFilter.value || '__ALL__';
+  const rs=parts.map(p=>records[p.key]).filter(Boolean);
+  const total=rs.length;
+  const printing=rs.filter(r=>r.Manufacturing_Method==='3D Printing');
+  const methodCounts={};
+  rs.forEach(r=>{
+    const method=String(r.Manufacturing_Method||'Unassigned');
+    methodCounts[method]=(methodCounts[method]||0)+1;
+  });
+  const machineCounts={};
+  printing.forEach(r=>{
+    const machine=String(r.Machine||'Unassigned');
+    machineCounts[machine]=(machineCounts[machine]||0)+1;
+  });
+  const preferred=['WASP','UR5','COMAU'];
+  const machines=[...new Set([...preferred,...Object.keys(machineCounts)])].filter(m=>machineCounts[m]);
+  const otherMethods=Object.keys(methodCounts).filter(m=>m!=='3D Printing').sort();
+
+  const machineRows=machines.map(machine=>{
+    const legendValue=printingMachineLegendValue(machine);
+    const color=colorOverrides[colorKey('Manufacturing_Method',legendValue)] || printingMachinePalette[machine] || hashColor(legendValue);
+    return `<div class="legend-row legend-child"><label class="swatch swatch-edit" style="background:${color}" title="Change ${escapeAttr(machine)} color"><input type="color" class="legendColorInput" data-value="${escapeAttr(legendValue)}" value="${escapeAttr(color)}"></label><span style="flex:1">${escapeHtml(machine)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${machineCounts[machine]||0}</b></div>`;
+  }).join('');
+
+  const methodRows=otherMethods.map(method=>{
+    const color=colorFor('Manufacturing_Method',method);
+    return `<div class="legend-row"><label class="swatch swatch-edit" style="background:${color}" title="Change color"><input type="color" class="legendColorInput" data-value="${escapeAttr(method)}" value="${escapeAttr(color)}"></label><span style="flex:1">${escapeHtml(method)}</span><b style="margin-left:10px;font-variant-numeric:tabular-nums">${methodCounts[method]||0}</b></div>`;
+  }).join('');
+
+  const legend=document.getElementById('legend');
+  legend.innerHTML=
+    `<div class="legend-title">Manufacturing Method <span style="font-weight:500;opacity:.6">· Total ${total}</span><div class="legend-hint">3D Printing is split by machine · click a color square to edit</div></div>`+
+    (methodCounts['3D Printing'] ? `<div class="legend-group-row"><span style="flex:1">3D Printing</span><b style="font-variant-numeric:tabular-nums">${methodCounts['3D Printing']}</b></div>${machineRows}` : '')+
+    methodRows;
+
+  legend.querySelectorAll('.legendColorInput').forEach(input=>{
+    input.addEventListener('change',()=>setColorOverride('Manufacturing_Method',input.dataset.value,input.value));
+  });
+
+  let filterHtml='<option value="__ALL__">All</option>';
+  if(methodCounts['3D Printing']){
+    filterHtml+=`<optgroup label="3D Printing (${methodCounts['3D Printing']})"><option value="METHOD::3D Printing">All 3D Printing (${methodCounts['3D Printing']})</option>`+
+      machines.map(machine=>`<option value="MACHINE::${escapeAttr(machine)}">${escapeHtml(machine)} (${machineCounts[machine]||0})</option>`).join('')+
+      '</optgroup>';
+  }
+  if(otherMethods.length){
+    filterHtml+='<optgroup label="Other methods">'+otherMethods.map(method=>`<option value="METHOD::${escapeAttr(method)}">${escapeHtml(method)} (${methodCounts[method]||0})</option>`).join('')+'</optgroup>';
+  }
+  statusFilter.innerHTML=filterHtml;
+  const allowed=['__ALL__','METHOD::3D Printing',...machines.map(m=>'MACHINE::'+m),...otherMethods.map(m=>'METHOD::'+m)];
+  statusFilter.value=allowed.includes(previous)?previous:'__ALL__';
+}
 function renderLegend(){
   const field=colorBy.value;
+  if(field==='Manufacturing_Method'){
+    renderManufacturingLegend();
+    return;
+  }
   const values=parts.map(p=>records[p.key]?.[field]).filter(v=>v!==undefined&&v!=='');
   const vals=[...new Set(values)];
   if(field==='Infill_Density_pct') vals.sort((a,b)=>Number(a)-Number(b)); else vals.sort();
