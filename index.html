@@ -126,6 +126,11 @@
     #objectLabel .noteLine{opacity:.9;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
     .methodCard{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin:12px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
     .methodCard strong{font-size:14px;letter-spacing:.035em}
+    .routeToggle{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:0 0 7px}
+    .routeBtn{padding:8px 5px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.035em;line-height:1.2;background:#fff}
+    .routeBtn.active{background:#111;color:#fff;border-color:#111}
+    .routeHint{font-size:10px;color:#777;line-height:1.4;margin:-1px 0 12px}
+    .firingPanel{border:1px solid var(--line);border-radius:10px;padding:11px 11px 1px;background:#faf8f4;margin-bottom:14px}
     .method-print{background:#eef4fb;border-color:#c9d9ea}
     .method-rammed{background:#f3ede4;border-color:#d8c6aa}
     .method-other{background:#f2f2f0}
@@ -187,11 +192,13 @@
         <option value="Assigned_To">Assigned person</option>
         <option value="Material">Material</option>
         <option value="Manufacturing_Method">Manufacturing method</option>
+        <option value="Firing_Route">Firing route</option>
+        <option value="Firing_Status">Firing status</option>
         <option value="Infill_Density_pct">Infill density</option>
       </select>
       <label>Filter</label>
       <select id="statusFilter"><option value="__ALL__">All</option></select>
-      <input id="search" type="search" placeholder="Search ID / person / material / method" />
+      <input id="search" type="search" placeholder="Search ID / person / material / method / firing" />
       <label>Explode</label>
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
       <button id="fitView">Fit view</button>
@@ -262,12 +269,14 @@ const GCODE_BUCKET = 'pavilion-gcode-files';
 const MAX_PHOTOS_PER_MODULE = 5;
 const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
-  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Assigned_To',
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
 const lists = {
   Manufacturing_Method:['3D Printing','Rammed Earth','Other'],
+  Firing_Route:['Unfired','To be fired','TBD'],
+  Firing_Status:['Not Ready','Ready','In Kiln','Cooling','Fired','Failed'],
   Structural_Status:['Pending','Checking','Approved','Revision'],
   Production_Status:['Not Started','Queued','Printing','Printed','Failed'],
   Drying_QC_Status:['Not Started','Drying','QC Pending','Approved','Rework'],
@@ -280,7 +289,9 @@ const statusPalettes = {
   Structural_Status:{'Pending':'#d6d6d1','Checking':'#e7c971','Approved':'#79aa7a','Revision':'#cc6b62'},
   Production_Status:{'Not Started':'#d6d6d1','Queued':'#a8c7e8','Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'},
   Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
-  Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'}
+  Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'},
+  Firing_Route:{'Unfired':'#c8c8c2','To be fired':'#d9a15b','TBD':'#a8c7e8'},
+  Firing_Status:{'Not Ready':'#d6d6d1','Ready':'#a8c7e8','In Kiln':'#d98f55','Cooling':'#e7c971','Fired':'#79aa7a','Failed':'#cc6b62'}
 };
 const printingMachinePalette = {
   WASP:'#7da6cc',
@@ -294,7 +305,9 @@ const PROJECT_ID = CONFIG.projectId || 'pavilion-2026';
 const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
 const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
-  Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method', Assigned_To:'assigned_to',
+  Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method',
+  Firing_Route:'firing_route', Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Program:'firing_program', Firing_Date:'firing_date',
+  Firing_Dimension_Before_mm:'firing_dimension_before_mm', Firing_Dimension_After_mm:'firing_dimension_after_mm', Firing_Shrinkage_pct:'firing_shrinkage_pct', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
   Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Motor_Speed:'motor_speed', Motor_Speed_Manual_Adjustment_pct:'motor_speed_manual_adjustment_pct',
   Air_Pressure_bar:'air_pressure_bar', First_Layer_Height_mm:'first_layer_height_mm', Layer_Height_mm:'layer_height_mm', Print_Duration_min:'print_duration_min',
@@ -403,7 +416,7 @@ function toDbRecord(r){
   const out={project_id:PROJECT_ID};
   for(const [app,db] of Object.entries(dbMap)){
     let v=r?.[app] ?? null;
-    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg'].includes(app)) v=normalizeNumber(v);
+    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
     if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
     out[db]=v;
   }
@@ -649,7 +662,8 @@ function defaultRecord(part,i){
     Object_ID:`M${String(n).padStart(2,'0')}`,
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
-    Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing', Assigned_To:'Unassigned',
+    Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing',
+    Firing_Route:'TBD', Firing_Status:'', Firing_Batch:'', Firing_Kiln:'', Firing_Peak_Temp_C:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'', Infill_Density_pct:'',
     Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
@@ -669,14 +683,30 @@ function ensureRecords(){
 }
 function derive(r){
   r.Ready_for_Production = r.Structural_Status==='Approved' ? 'YES' : 'WAIT';
-  if(r.Manufacturing_Method==='Rammed Earth') r.Machine='HAND';
-  else if(r.Manufacturing_Method==='3D Printing' && !lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
+  if(r.Manufacturing_Method==='Rammed Earth'){
+    r.Machine='HAND';
+    r.Firing_Route='Unfired';
+  }else if(r.Manufacturing_Method==='3D Printing'){
+    if(!lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
+    if(!lists.Firing_Route.includes(r.Firing_Route)) r.Firing_Route='TBD';
+    if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not Ready';
+  }
+  const dimBefore=Number(r.Firing_Dimension_Before_mm);
+  const dimAfter=Number(r.Firing_Dimension_After_mm);
+  if(Number.isFinite(dimBefore) && dimBefore>0 && Number.isFinite(dimAfter)){
+    r.Firing_Shrinkage_pct=Number((((dimBefore-dimAfter)/dimBefore)*100).toFixed(2));
+  }else if(r.Firing_Dimension_Before_mm==='' || r.Firing_Dimension_After_mm===''){
+    r.Firing_Shrinkage_pct='';
+  }
+  const firingFailed=r.Firing_Route==='To be fired' && r.Firing_Status==='Failed';
+  const firingActive=r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status);
+  const firingComplete=r.Firing_Route!=='To be fired' || r.Firing_Status==='Fired';
   if(r.Construction_Status==='Installed') r.Overall_Status='Installed';
-  else if(r.Construction_Status==='Issue' || r.Structural_Status==='Revision' || r.Production_Status==='Failed' || r.Drying_QC_Status==='Rework') r.Overall_Status='Issue';
+  else if(r.Construction_Status==='Issue' || r.Structural_Status==='Revision' || r.Production_Status==='Failed' || r.Drying_QC_Status==='Rework' || firingFailed) r.Overall_Status='Issue';
   else if(r.Construction_Status==='Installing') r.Overall_Status='In Construction';
-  else if(r.Production_Status==='Printed' && r.Drying_QC_Status==='Approved') r.Overall_Status='Ready for Assembly';
-  else if(r.Production_Status==='Printing') r.Overall_Status='In Production';
-  else if(r.Production_Status==='Queued' || r.Ready_for_Production==='YES') r.Overall_Status='Planned';
+  else if(r.Production_Status==='Printed' && r.Drying_QC_Status==='Approved' && firingComplete) r.Overall_Status='Ready for Assembly';
+  else if(r.Production_Status==='Printing' || firingActive) r.Overall_Status='In Production';
+  else if(r.Production_Status==='Queued' || r.Ready_for_Production==='YES' || (r.Firing_Route==='To be fired' && r.Firing_Status==='Ready')) r.Overall_Status='Planned';
   else r.Overall_Status='Not Started';
 }
 function autoId(r){
@@ -752,7 +782,7 @@ function applyFilter(){
         matchesStatus=String(r?.[field]??'')===f;
       }
     }
-    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Machine,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Machine,r?.Firing_Route,r?.Firing_Status,r?.Firing_Batch,r?.Firing_Kiln,r?.Firing_Program,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
     const matchesSearch=!q || hay.includes(q);
     p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
   });
@@ -973,7 +1003,7 @@ function updateObjectLabel(){
   objectLabel.classList.toggle('printed',isPrinted);
   objectLabel.classList.toggle('failed',isFailed);
   objectLabel.classList.toggle('progress',!isPrinted && !isFailed && productionStatus==='Printing');
-  const status=productionStatus;
+  const status=r.Firing_Route==='To be fired' ? productionStatus+' · Firing: '+(r.Firing_Status||'Not Ready') : productionStatus;
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
@@ -1311,6 +1341,41 @@ function gcodeUploadPanel(r){
     </div>`;
 }
 
+
+function firingRouteToggle(r){
+  if(r.Manufacturing_Method!=='3D Printing') return '';
+  const route=lists.Firing_Route.includes(r.Firing_Route)?r.Firing_Route:'TBD';
+  const button=(value,label)=>'<button type="button" class="routeBtn'+(route===value?' active':'')+'" data-firing-route="'+escapeAttr(value)+'">'+escapeHtml(label)+'</button>';
+  return '<div class="sectionTitle">Firing Route</div>'+
+    '<div class="routeToggle">'+
+      button('Unfired','UNFIRED')+
+      button('To be fired','TO BE FIRED')+
+      button('TBD','TBD')+
+    '</div>'+
+    '<div class="routeHint">Post-production route for 3D-printed soil blocks. Firing details appear only when <b>TO BE FIRED</b> is selected.</div>';
+}
+function firingPanel(r){
+  if(r.Manufacturing_Method!=='3D Printing' || r.Firing_Route!=='To be fired') return '';
+  const shrink=(r.Firing_Shrinkage_pct!=='' && r.Firing_Shrinkage_pct!==null && r.Firing_Shrinkage_pct!==undefined) ? escapeHtml(r.Firing_Shrinkage_pct)+'%' : '—';
+  return '<div class="sectionTitle">Firing</div>'+
+    '<div class="firingPanel">'+
+      selectField('Firing_Status','Firing status',r.Firing_Status||'Not Ready',lists.Firing_Status)+
+      '<div class="grid2">'+
+        inputField('Firing_Batch','Firing batch',r.Firing_Batch,'text')+
+        inputField('Firing_Kiln','Kiln',r.Firing_Kiln,'text')+
+        inputField('Firing_Peak_Temp_C','Peak temperature (°C)',r.Firing_Peak_Temp_C,'number','1')+
+        inputField('Firing_Date','Firing date',r.Firing_Date,'date')+
+      '</div>'+
+      inputField('Firing_Program','Firing program',r.Firing_Program,'text')+
+      '<div class="grid2">'+
+        inputField('Firing_Dimension_Before_mm','Ref. dimension before (mm)',r.Firing_Dimension_Before_mm,'number','0.01')+
+        inputField('Firing_Dimension_After_mm','Ref. dimension after (mm)',r.Firing_Dimension_After_mm,'number','0.01')+
+      '</div>'+
+      '<div class="autoStatus"><span>Measured shrinkage</span><b>'+shrink+'</b></div>'+
+      '<div class="routeHint" style="margin:8px 0 10px">Shrinkage is calculated from the same reference dimension before and after firing.</div>'+
+    '</div>';
+}
+
 function renderPanel(){
   if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
   const r=records[selectedKey];
@@ -1336,6 +1401,7 @@ function renderPanel(){
 
     ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
     ${selectField('Machine','Machine',r.Machine,machineOptions)}
+    ${firingRouteToggle(r)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
     ${inputField('Weight_kg','Module weight (kg)',r.Weight_kg,'number','0.01')}
 
@@ -1361,6 +1427,8 @@ function renderPanel(){
       </div>
       ${inputField('Infill_Pattern','Infill pattern name',r.Infill_Pattern,'text')}
     ` : ''}
+
+    ${firingPanel(r)}
 
     <div class="sectionTitle">Production / Construction</div>
     ${selectField('Production_Status','Production status',r.Production_Status,lists.Production_Status)}
@@ -1391,7 +1459,7 @@ function renderPanel(){
       const field=el.dataset.field; r[field]=el.value;
       if(['Module_No','Level','Sequence'].includes(field)) autoId(r);
       if(field==='Manufacturing_Method'){
-        if(r.Manufacturing_Method==='Rammed Earth') r.Machine='HAND';
+        if(r.Manufacturing_Method==='Rammed Earth'){ r.Machine='HAND'; r.Firing_Route='Unfired'; }
         else if(r.Manufacturing_Method==='3D Printing' && !lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
       }
       derive(r); r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' '); r.Updated_By=currentEditor();
@@ -1399,6 +1467,16 @@ function renderPanel(){
     };
     el.addEventListener('change',()=>{sync(); renderPanel();});
     if(el.tagName==='TEXTAREA' || el.getAttribute('list')) el.addEventListener('input',sync);
+  });
+  panel.querySelectorAll('[data-firing-route]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      r.Firing_Route=btn.dataset.firingRoute;
+      if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not Ready';
+      derive(r);
+      r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');
+      r.Updated_By=currentEditor();
+      persist(selectedKey); updateAllUI(); applyColors(); updateObjectLabel(); renderPanel();
+    });
   });
   document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
   document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
@@ -1501,7 +1579,9 @@ function updateAllUI(){
   const prod=rs.filter(r=>r.Overall_Status==='In Production').length;
   const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
   const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
-  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+  const toFire=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status!=='Fired').length;
+  const firingNow=rs.filter(r=>r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status)).length;
+  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${toFire}</b>to fire</span><span class="kpi"><b>${firingNow}</b>firing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
@@ -1552,11 +1632,12 @@ async function exportExcel(){
   const ws=wb.addWorksheet('Tracker',{properties:{defaultRowHeight:18}});
 
   // Overall sheet sizing
-  const widths=[22,14,10,10,10,24,22,22,18,18,20,20,18,18,16,18,18,20,20,16,28,20,42];
+  const widths=[22,14,10,10,10,24,22,22,18,18,18,16,16,18,18,18,16,18,18,16,18,20,20,18,18,16,18,18,20,20,16,28,20,42];
+  while(widths.length<fields.length) widths.push(18);
   widths.forEach((w,i)=>ws.getColumn(i+1).width=w);
 
   // Header / summary
-  ws.mergeCells('A1:W1');
+  ws.mergeCells(1,1,1,Math.max(fields.length,23));
   const title=ws.getCell('A1');
   title.value='PAVILION / FABRICATION TRACKER';
   title.font={name:'Arial',size:18,bold:true,color:{argb:'FF111111'}};
@@ -1653,7 +1734,7 @@ async function exportExcel(){
     fields.forEach((f,colIndex)=>{
       const cell=ws.getCell(excelRow,colIndex+1);
       let value=r[f]??'';
-      if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg'].includes(f) && value!==''){
+      if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(f) && value!==''){
         const n=Number(value); if(Number.isFinite(n)) value=n;
       }
       cell.value=value;
