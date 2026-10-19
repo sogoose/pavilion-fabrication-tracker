@@ -1,6 +1,6 @@
 # Fabrication Catalogue — high-resolution vector PDF
 
-The Tracker exports **A4 landscape CAD-style PDFs** with exactly **one page per module**. A summary cover page is optional in full-catalogue mode. No overflow/appendix pages are produced.
+The Tracker exports **A4 landscape CAD-style PDFs** with exactly **one page per module**. A summary cover page is optional in full-catalogue mode. You can export **all modules**, **uppercase-leading IDs only**, or **one selected module**. No overflow/appendix pages are produced.
 
 ## How to export
 
