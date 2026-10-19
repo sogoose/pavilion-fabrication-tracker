@@ -79,6 +79,8 @@ on conflict (user_id) do nothing;
 
 **Security:** Do not put a service-role key, editor password, or owner email into `config.js` or public GitHub files. The browser only contains a publishable key. Editor authorization is based on the authenticated Supabase user ID in the server-side membership table, never on a client-side email comparison. A shared link alone does not grant editing access. Existing Tracker edit policies are separate and unchanged by this migration.
 
+**Editor controls:** Once approved and signed in, use **Edit page** beside the main Workflow heading to change the title, introduction, construction-management link, Fabrication/Drying labels, and footer. Open a process or a detached team and click **EDIT** (or double-click the drawing) to change its title, description, participant credits, existing/new file links, and drawing caption where available. Saving writes the Workflow-only record to Supabase; other visitors see the change on refresh. No GitHub commit is required for these text changes, and editing does not grant Tracker privileges or remove its existing anonymous collaboration.
+
 **Editing format:** participant rows use `ROLE | Person · Person`; file rows use `LABEL | https://example.com/...` or `LABEL | #tracker`. Only HTTPS and the internal Tracker shortcut are accepted. A saved section overrides the original markup for all visitors; empty file lists are supported.
 
 ## Edit the layout or wording
