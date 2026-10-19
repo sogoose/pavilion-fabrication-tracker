@@ -261,14 +261,17 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   print(pdf,present(r.Object_ID),10,23,165,22,true,ink);
   // Large photography area preserved at top-left. High-res raster only here.
   bg(pdf,10,33,157,89,[246,246,242]);
-  const image=asset.photo||asset.model;
+  const image=asset.primary==='gcode'?null:
+    asset.primary==='model'?(asset.model||asset.photo):
+    (asset.photo||asset.model);
   if(image){
     try{photoFit(pdf,image,11,34,155,87);}catch(e){console.warn('Main PDF photograph:',e);}
   }else if(!drawGcode3D(pdf,asset.gcode,15,41,147,74,8500)) {
     print(pdf,'NO PHOTO / MODEL AVAILABLE',33,78,107,8,false,grey);
   }
   frame(pdf,10,33,157,89);
-  label(pdf,asset.photo?'SITE PHOTO':asset.model?'ISOLATED 3D / AXONOMETRIC':'G-CODE / AXONOMETRIC',10,126.7);
+  label(pdf,image===asset.photo&&image?'SITE PHOTO':
+    image?'ISOLATED 3D / AXONOMETRIC':'G-CODE / AXONOMETRIC',10,126.7);
   box(pdf,10,131,76,39,'3D  /  RHINO AXONOMETRIC');
   if(!drawModel3D(pdf,THREE,entry.part,12,138.5,72,29)) {
     if(asset.model){try{photoFit(pdf,asset.model,13,139,70,27);}catch(e){}}
