@@ -15,7 +15,7 @@ create table if not exists public.pavilion_parts (
   material text,
   material_details text,
   manufacturing_method text,
-  firing_route text not null default 'TBD',
+  firing_route text,
   firing_status text,
   firing_batch text,
   firing_kiln text,
