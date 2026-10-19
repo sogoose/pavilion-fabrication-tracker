@@ -13,9 +13,9 @@
 
   // <details name="workflow-detail"> keeps the open drawing in normal
   // document flow, unlike an overlay, so adjacent drawings never overlap.
-  board.querySelectorAll('details.wb-block').forEach(detail => {
+  board.querySelectorAll('details.wb-block, details.wp-island').forEach(detail => {
     detail.addEventListener('toggle', () => {
-      const label = detail.querySelector('.wb-plus');
+      const label = detail.querySelector('.wb-plus, .wp-plus');
       if (label) label.textContent = detail.open ? '×' : '+';
     });
   });
