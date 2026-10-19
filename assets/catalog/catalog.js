@@ -248,17 +248,50 @@ export function setupCatalog({ THREE, getState, notify }) {
           local.add(clone);
         }
         if(!local.children.length)continue;
-        // Keep the clones in world coordinates so their positions agree with
-        // each object's label anchor, even for nested Rhino layer transforms.
         group.add(local);
         const bounds=new THREE.Box3().setFromObject(local);
         if(!bounds.isEmpty())anchors.push({
           id:String(entry.record.Object_ID||entry.key),status,
-          center:bounds.getCenter(new THREE.Vector3())
+          originalCenter:bounds.getCenter(new THREE.Vector3()),
+          local
         });
       }
+      // Explode only the temporary *PDF scene*. Never move original Tracker
+      // meshes or alter assembly records. Offset each module 5.5% of the
+      // full-model diagonal away from the assembly's centre.
+      const assembledBox=new THREE.Box3().setFromObject(group);
+      if(assembledBox.isEmpty())throw Error('Rhino overview contains no visible geometry.');
+      const assembledCenter=assembledBox.getCenter(new THREE.Vector3());
+      const assembledDiagonal=Math.max(assembledBox.getSize(new THREE.Vector3()).length(),.01);
+      const explodeDistance=assembledDiagonal*.055;
+      for(let i=0;i<anchors.length;i++){
+        const item=anchors[i];
+        const dx=item.originalCenter.x-assembledCenter.x;
+        const dy=item.originalCenter.y-assembledCenter.y;
+        const dz=item.originalCenter.z-assembledCenter.z;
+        let ux=dx,uy=dy,uz=dz*.58;
+        const length=Math.hypot(ux,uy,uz);
+        if(length<assembledDiagonal*.002){
+          // Two coincident module centres still need distinct directions.
+          const theta=i*2.399963229728653;
+          ux=Math.cos(theta);uy=Math.sin(theta);uz=.24;
+        }else{
+          ux/=length;uy/=length;uz/=length;
+        }
+        const norm=Math.hypot(ux,uy,uz)||1;
+        item.local.position.set(
+          (ux/norm)*explodeDistance,
+          (uy/norm)*explodeDistance,
+          (uz/norm)*explodeDistance
+        );
+        item.local.updateMatrixWorld(true);
+        // Recompute after explosion, so the printed label points to the actual
+        // shifted module rather than its original assembly location.
+        item.center=new THREE.Box3().setFromObject(item.local)
+          .getCenter(new THREE.Vector3());
+      }
       const bbox=new THREE.Box3().setFromObject(group);
-      if(bbox.isEmpty())throw Error('Rhino overview contains no visible geometry.');
+      if(bbox.isEmpty())throw Error('Exploded Rhino overview contains no visible geometry.');
       const center=bbox.getCenter(new THREE.Vector3());
       const diagonal=Math.max(bbox.getSize(new THREE.Vector3()).length(),.01);
       const direction=new THREE.Vector3(1.3,-1.65,1.04).normalize();
