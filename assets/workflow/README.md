@@ -26,13 +26,15 @@ Two additional SVG files control the visible process links:
 - `arrows-desktop.svg`: soft Bézier arrows on the compact desktop board (viewBox 1100 × 1450)
 - `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1640)
 
+Drying has no number, icon, participant field or expandable detail: it is an inline label in `index.html`, positioned using `.wb-drying` in `board.css`. Curved arrows in these two SVG files now connect 3D Printing and Rammed Earth to Drying, then optionally Firing / Glazing or directly Assembly.
+
 Edit either in Illustrator and replace the same file on GitHub. You can move a chapter by changing `--x`, `--y`, `--w` in `board.css`; update the corresponding arrow endpoint to keep the connection aligned. The SVGs use arrowheads but no straight orthogonal connectors.
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
 ## Process credits and compact support studies
 
-The page remains **one Workflow page**. Eight main processes are connected by editable SVG Bézier arrows; all process indices are deliberately concise: `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`.
+The page remains **one Workflow page**. Eight main clickable processes plus a small **noninteractive Drying marker** are connected by editable SVG Bézier arrows; the numbered indices remain `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`. Both fabrication routes pass through Drying. Firing / Glazing is optional for selected dried components; dried components can also proceed directly to Assembly.
 
 **All names are hidden until a process or team is clicked.** A main process reveals its team credits alongside notes and files. The four support/research teams are quietly collected **beneath the process diagram**, without an extra section heading or connecting arrows; their names, descriptions and links are visible only upon expansion.
 
@@ -45,7 +47,7 @@ The page remains **one Workflow page**. Eight main processes are connected by ed
 - Materials Masters — Linda, Joyce, Yishan
 - 3D Printing — rotating student teams of 2–3, guided by WASP Masters Linda, Niels, Joyce, Yishan and COMAU Masters Maria, Elisavet
 - Rammed Earth — rotating student teams of 2–3, guided by Evgenia and Tamara
-- Firing — Hongyuan, Yishan
+- Firing / Glazing — Hongyuan, Yishan
 - Assembly — all students
 
 ### Detached support teams
