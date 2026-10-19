@@ -20,6 +20,7 @@ create table if not exists public.pavilion_parts (
   firing_batch text,
   firing_kiln text,
   firing_peak_temp_c numeric,
+  firing_duration_h numeric,
   firing_program text,
   firing_date date,
   fabrication_date date,
