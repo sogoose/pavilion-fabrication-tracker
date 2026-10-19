@@ -58,23 +58,17 @@ The page remains **one Workflow page**. Eight main clickable processes plus a sm
 
 SVGs are editable separately in Illustrator; these four are placeholders intended for replacement. To adjust their grouped layout, edit `.wp-cluster` in `board.css`. To edit credits, descriptions or links, edit the Workflow HTML in `index.html`. The existing 3D Tracker database and its records are unaffected.
 
-## Password-only Workflow editing
+## Shared Workflow editing (no login)
 
-The public Workflow page has a quiet **Editor login** action below the footer. Click it, enter the private editor password, and select **Unlock editor**. No email or magic links are used.
+The Workflow page is collaboratively editable like **02 / Tracker**. Every visitor can expand a process/team and click **EDIT** (or double-click a drawing) to edit its title, team credits, description, caption, and file links. **Edit page** at the bottom of Workflow edits the overall heading, guide text, management link, and other page labels. Edits are saved to the shared Supabase table `pavilion_workflow_content`; everyone sees the updated text on refresh.
 
-The server checks the password against a salted PBKDF2-SHA256 hash stored in a private Supabase table. The raw password is **not** in this repository, configuration, database, browser storage, or website source. A successful login issues a signed four-hour edit session kept in **sessionStorage** for this browser tab; **Sign out** clears it. Login failures are throttled on the server.
+This requires no password, login email, or edit token. The original static Workflow content remains the fallback if an individual section has never been edited. Drawings and curved-arrow SVG files are still separately editable in GitHub/Illustrator.
 
-After unlocking, **Edit page** can change the main title and guide text, management link and labels; process-specific **EDIT** buttons can change headings, captions, teams, notes and HTTPS file links. All approved writes pass through the protected Supabase Edge Function `pavilion-workflow-editor` and are stored in `pavilion_workflow_content`. Ordinary visitors have read-only access to this Workflow content. Original static descriptions are shown whenever a record has not yet been saved.
+Database permissions: anonymous users can **read, insert, and update** the 13 defined Workflow sections using scoped RLS policies; they cannot delete them or access private authentication tables. The migration is `supabase/migrations/20261019_workflow_open_collaboration.sql`. The Workflow editor code is `assets/workflow/editor.js`.
 
-**Tracker stays unchanged:** `pavilion_parts`, photos, machine settings, and shared status records retain their existing team editing permissions, with no password required. Workflow permissions are separate.
+**02 / Tracker retains its separate anonymous edit permissions.** Blank Firing Dates are converted to SQL `NULL` before an individual save or batch save, avoiding PostgreSQL's invalid-date error.
 
-Implementation:
-- `supabase/functions/pavilion-workflow-editor/index.ts`: server-side login, short-lived session verification and Workflow-only writes
-- `supabase/migrations/20261019_workflow_password_login.sql`: private authentication tables
-- `supabase/migrations/20261019_workflow_password_rate_limits.sql`: atomic login failure limit
-- `assets/workflow/editor.js`: password dialog, inline editor and secure API calls
-
-To change the password, create a **new salted hash in the private database**, not in GitHub; rotate the signing key at the same time to invalidate existing sessions. Never embed a password or service-role key in a public file. Since a shared password grants editing rights to anyone who knows it, keep it private.
+**Important:** This is a publicly accessible website. Anyone who has the site address can now change Workflow text and file links, not only trusted classmates. Avoid putting confidential documents or untrusted links there; you can revert content through database/GitHub backups.
 
 **Editing format:** credits use `ROLE | Person · Person` per line; file links use `LABEL | https://example.com/...` or `LABEL | #tracker`.
 
