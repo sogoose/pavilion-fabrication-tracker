@@ -3,8 +3,12 @@
  * Module records come from shared Supabase (fallback: current Rhino/Tracker).
  * One image-rich technical sheet per module, optional summary cover.
  */
-import { idOrder, parseGcode3D, drawSheet as drawVectorSheet, drawCover as drawVectorCover }
-  from './vector-sheet.js?v=20261019-kiln-duration-v1';
+import {
+  idOrder, parseGcode3D,
+  drawSheet as drawVectorSheet,
+  drawStatusCover as drawVectorCover,
+  drawRegisterPage as drawVectorRegister
+} from './vector-sheet.js?v=20261019-status-map-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -14,15 +18,15 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<div class="catalog-head"><span class="catalog-kicker">PAVILION / DOCUMENTATION</span>' +
       '<button type="button" class="catalog-close" aria-label="Close">×</button></div>' +
       '<h2>Fabrication Catalogue</h2>' +
-      '<p class="catalog-lead">A4 landscape · currently modelled modules only · one CAD sheet per module.</p>' +
+      '<p class="catalog-lead">Full PDF starts with a coloured, labelled 3D production-status map, then a readable module register and individual CAD sheets.</p>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
         '<option value="selected">Selected module / one sheet</option></select></label>' +
 
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
-        '<span>Include overview / cover page in full catalogue</span></label>' +
-      '<p class="catalog-footnote">Only modules in the currently loaded Rhino file are included. One A4 sheet per module. The larger render and latest two site photos are placed beside vector CAD data.</p>' +
+        '<span>Include status map + module register at the front</span></label>' +
+      '<p class="catalog-footnote">Only modules in the current Rhino model are included. Individual sheets show a square Rhino close-up, enlarged 3D G-code, and up to two uploaded photos.</p>' +
       '<div class="catalog-progress" hidden><div class="catalog-track"><div class="catalog-progress-fill"></div></div>' +
         '<span class="catalog-status" role="status" aria-live="polite"></span></div>' +
       '<div class="catalog-actions"><button type="button" class="catalog-cancel">Cancel</button>' +
@@ -159,7 +163,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     try {
       renderer=new THREE.WebGLRenderer({ antialias:true,preserveDrawingBuffer:true,alpha:false });
       renderer.setPixelRatio(1);
-      renderer.setSize(1650,1100,false);
+      renderer.setSize(1320,1320,false);
       renderer.outputColorSpace=THREE.SRGBColorSpace;
     } catch(error) { console.warn('Catalogue isolated 3D renderer:',error); return null; }
     const render = part => {
@@ -184,7 +188,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       const center=box.getCenter(new THREE.Vector3());
       const size=box.getSize(new THREE.Vector3());
       const radius=Math.max(size.length()/2,0.01);
-      const camera=new THREE.PerspectiveCamera(32,1650/1100,0.01,Math.max(10000,radius*60));
+      const camera=new THREE.PerspectiveCamera(32,1,0.01,Math.max(10000,radius*60));
       const direction=new THREE.Vector3(1,-1,0.86).normalize();
       const distance=Math.max(2.75*radius,radius/Math.sin(16*Math.PI/180)*1.12);
       camera.position.copy(center).addScaledVector(direction,distance);
@@ -195,6 +199,108 @@ export function setupCatalog({ THREE, getState, notify }) {
       return renderer.domElement;
     };
     return {render,dispose:()=>{renderer.dispose();renderer.forceContextLoss?.();material.dispose();}};
+  }
+  const DEFAULT_PRODUCTION_COLORS={
+    'Not Started':'#d6d6d1','Queued':'#a8c7e8',
+    'Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'
+  };
+  function captureProductionOverview(state,entries) {
+    // Use a separate scene and material clones: never disturb the interactive
+    // Tracker viewer, camera, visibility or its selected-object colors.
+    const width=2100,height=1503;
+    let overviewRenderer=null;
+    const colors={...DEFAULT_PRODUCTION_COLORS,...(state.productionPalette||{})};
+    const materials=new Map();
+    try{
+      overviewRenderer=new THREE.WebGLRenderer({
+        antialias:true,preserveDrawingBuffer:true,alpha:false
+      });
+      overviewRenderer.setPixelRatio(1);
+      overviewRenderer.setSize(width,height,false);
+      overviewRenderer.outputColorSpace=THREE.SRGBColorSpace;
+      const scene=new THREE.Scene();
+      scene.background=new THREE.Color(0xf6f6f2);
+      const group=new THREE.Group();
+      scene.add(group);
+      scene.add(new THREE.HemisphereLight(0xffffff,0xb3b4a9,2.2));
+      const key=new THREE.DirectionalLight(0xffffff,2.7);
+      key.position.set(9,-11,16);scene.add(key);
+      const fill=new THREE.DirectionalLight(0xffffff,.7);
+      fill.position.set(-8,7,6);scene.add(fill);
+
+      const anchors=[];
+      for(const entry of entries) {
+        if(!entry.part?.meshes?.length)continue;
+        const status=String(entry.record.Production_Status||'Not Started');
+        const color=colors[status]||'#bbbdb7';
+        if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({
+          color,roughness:.9,metalness:0,side:THREE.DoubleSide
+        }));
+        const local=new THREE.Group();
+        for(const mesh of entry.part.meshes){
+          if(!mesh?.geometry)continue;
+          mesh.updateWorldMatrix(true,false);
+          const clone=new THREE.Mesh(mesh.geometry,materials.get(color));
+          clone.matrixAutoUpdate=false;
+          clone.matrix.copy(mesh.matrixWorld);
+          local.add(clone);
+        }
+        if(!local.children.length)continue;
+        // Keep the clones in world coordinates so their positions agree with
+        // each object's label anchor, even for nested Rhino layer transforms.
+        group.add(local);
+        const bounds=new THREE.Box3().setFromObject(local);
+        if(!bounds.isEmpty())anchors.push({
+          id:String(entry.record.Object_ID||entry.key),status,
+          center:bounds.getCenter(new THREE.Vector3())
+        });
+      }
+      const bbox=new THREE.Box3().setFromObject(group);
+      if(bbox.isEmpty())throw Error('Rhino overview contains no visible geometry.');
+      const center=bbox.getCenter(new THREE.Vector3());
+      const diagonal=Math.max(bbox.getSize(new THREE.Vector3()).length(),.01);
+      const direction=new THREE.Vector3(1.3,-1.65,1.04).normalize();
+      const camera=new THREE.OrthographicCamera(-1,1,1,-1,.01,diagonal*12);
+      camera.up.set(0,0,1);
+      camera.position.copy(center).addScaledVector(direction,diagonal*2.4);
+      camera.lookAt(center);
+      camera.updateMatrixWorld(true);
+      const boxPoints=[];
+      for(const ix of [bbox.min.x,bbox.max.x])
+        for(const iy of [bbox.min.y,bbox.max.y])
+          for(const iz of [bbox.min.z,bbox.max.z])
+            boxPoints.push(new THREE.Vector3(ix,iy,iz).applyMatrix4(camera.matrixWorldInverse));
+      const xs=boxPoints.map(p=>p.x),ys=boxPoints.map(p=>p.y);
+      const modelWidth=Math.max(...xs)-Math.min(...xs);
+      const modelHeight=Math.max(...ys)-Math.min(...ys);
+      const aspect=width/height;
+      const halfH=Math.max(modelHeight/2*1.24,modelWidth/(2*aspect)*1.24,.001);
+      camera.left=-halfH*aspect;camera.right=halfH*aspect;
+      camera.top=halfH;camera.bottom=-halfH;
+      camera.updateProjectionMatrix();
+      overviewRenderer.render(scene,camera);
+      const labels=anchors.map(part=>{
+        const projected=part.center.clone().project(camera);
+        return {
+          id:part.id,status:part.status,
+          u:(projected.x+1)/2,v:(1-projected.y)/2,depth:projected.z
+        };
+      });
+      return {
+        canvas:overviewRenderer.domElement,labels,
+        dispose(){
+          materials.forEach(m=>m.dispose());
+          overviewRenderer.dispose();
+          overviewRenderer.forceContextLoss?.();
+        }
+      };
+    }catch(error){
+      console.warn('3D production overview unavailable:',error);
+      materials.forEach(m=>m.dispose());
+      overviewRenderer?.dispose();
+      overviewRenderer?.forceContextLoss?.();
+      return null;
+    }
   }
   async function photoVisual(client,bucket,item) {
     if(!client || !item?.storage_path)return null;
@@ -268,11 +374,28 @@ export function setupCatalog({ THREE, getState, notify }) {
         pages++;
       };
       if(scope.value!=='selected'&&cover.checked){
-        next();
-        const currentIds=new Set(entries.map(e=>e.key));
-        const selectedPhotos=[...photos.keys()].filter(key=>currentIds.has(key)).length;
-        drawVectorCover(pdf,entries,selectedPhotos,
-          entries.filter(e=>String(e.record.GCode_File||'').trim()).length);
+        message('Rendering 3D production-status map…',.025);
+        let overview=null;
+        try {
+          overview=captureProductionOverview(state,entries);
+          next();
+          drawVectorCover(pdf,entries,overview,{
+            palette:state.productionPalette||DEFAULT_PRODUCTION_COLORS
+          });
+        }finally{
+          overview?.dispose();
+        }
+        // Keep the cover focused on a legible colour-coded pavilion model.
+        // The register is a dedicated second page (88 rows per page).
+        const perRegisterPage=88;
+        for(let offset=0;offset<entries.length;offset+=perRegisterPage){
+          if(cancelled)throw new Error('Catalogue cancelled.');
+          next();
+          drawVectorRegister(pdf,entries.slice(offset,offset+perRegisterPage),{
+            palette:state.productionPalette||DEFAULT_PRODUCTION_COLORS,
+            startIndex:offset,total:entries.length
+          });
+        }
       }
       capture=createIsolatedCapture();
       for(let i=0;i<entries.length;i++){
