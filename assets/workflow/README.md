@@ -1,6 +1,6 @@
 # Editable workflow board assets
 
-The **01 / Workflow** page is an **asymmetric, floating architectural drawing atlas** titled **Overall Workflow**. Differently scaled drawings, technical fragments, material studies and faint reference lines share a large editorial canvas. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
+The **01 / Workflow** page is a **compact, asymmetric architectural process diagram** titled **Overall Workflow**, connected by softly curved arrows. Small technical drawings remain editable as standalone vectors. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
 
 ## Edit an illustration in Illustrator
 
@@ -19,22 +19,21 @@ The **01 / Workflow** page is an **asymmetric, floating architectural drawing at
 
 All eight illustrations are **separate vector files**, not code embedded inside `index.html`.
 
-## Floating studies — also editable SVGs
+## Curved arrows — editable SVGs
 
-Five extra study drawings are separate editable files, not flattened into the site:
+Two additional SVG files control the visible process links:
 
-- `contour-fragment.svg` — offset geometry study
-- `deposition-fragment.svg` — exploded layers
-- `soil-fragment.svg` — dispersed grain/soil study
-- `mould-fragment.svg` — exploded formwork detail
-- `diagram-guides.svg` — very faint connecting/registration lines
+- `arrows-desktop.svg`: soft Bézier arrows on the compact desktop board (viewBox 1100 × 1130)
+- `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1370)
 
-They are deliberately **decorative and noninteractive**; the eight primary processes remain the only clickable drawings. On narrow screens the extra studies are hidden and the primary drawings are still staggered in a responsive vertical sequence.
+Edit either in Illustrator and replace the same file on GitHub. You can move a chapter by changing `--x`, `--y`, `--w` in `board.css`; update the corresponding arrow endpoint to keep the connection aligned. The SVGs use arrowheads but no straight orthogonal connectors.
 
-Edit SVG artwork in Illustrator and replace the file under the same name. For placement/rotation/scale, modify `board.css` under **LOOSE ATLAS / V2**. In that CSS, each primary process has `--block-x`, `--block-y`, `--block-width`; floating fragments use `--study-width` and `--study-rotation`. The `board.css` media queries define separate tablet/phone layouts.
-
+The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
 ## Edit the layout or wording
+
+The page uses Google Fonts **Instrument Serif** (main title and stage names), **Inter** (body) and **IBM Plex Mono** (indices/captions). Fallbacks are included if external fonts do not load.
+
 
 - `board.css`: column sizes, white space, visual hierarchy, yellow Fabrication highlight and responsive mobile arrangement.
 - `index.html`: Workflow captions, HTML blocks, existing SharePoint links.
