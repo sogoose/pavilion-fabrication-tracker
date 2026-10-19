@@ -206,25 +206,49 @@ function reducedToolpathRuns(paths,maxSegments=6500) {
   const diag=Math.hypot(Math.max(...xs)-Math.min(...xs),
     Math.max(...ys)-Math.min(...ys),height);
   let runs=toolpathRuns(work);
-  let usedLayerSelection=false;
   // Dense clay prints may contain tens of thousands of G1 micro-segments.
-  // Show complete representative Z bands, rather than all overlapping layers.
+  // Prefer complete representative Z layers (planar printing), falling back
+  // to narrow height bands for continuous/spiral toolpaths.
   if(work.length>maxSegments*1.55 && height>Math.max(.8,diag*.012)){
-    const count=11;
-    const centres=Array.from({length:count},(_,i)=>zmin+
-      (height*i/(count-1)));
-    for(const widthFactor of [.015,.032]){
-      const halfWidth=Math.max(.18,height*widthFactor);
-      const chosen=toolpathRuns(work,(_,seg)=>{
-        const mid=(seg.a[2]+seg.b[2])*.5;
-        return centres.some(z=>Math.abs(mid-z)<=halfWidth);
+    const levels=new Map();
+    for(const seg of work){
+      const z=(seg.a[2]+seg.b[2])*.5;
+      const key=Math.round(z*10)/10;
+      levels.set(key,(levels.get(key)||0)+1);
+    }
+    const dominant=[...levels].filter(([,n])=>
+      n>=Math.max(20,work.length/Math.max(1,levels.size)*.45))
+      .map(([z])=>z).sort((a,b)=>a-b);
+    const planar=dominant.length>=7 &&
+      dominant.length<=500 &&
+      dominant.length/work.length<.006;
+    let selections=[];
+    if(planar){
+      const count=Math.min(11,dominant.length);
+      const centres=Array.from({length:count},(_,i)=>
+        dominant[Math.round(i*(dominant.length-1)/(count-1))]);
+      selections.push((i,seg)=>{
+        const z=(seg.a[2]+seg.b[2])*.5;
+        return centres.some(c=>Math.abs(z-c)<=.065);
       });
+    }
+    const count=9;
+    const centres=Array.from({length:count},(_,i)=>zmin+
+      height*i/(count-1));
+    for(const factor of [.007,.018]){
+      const halfWidth=Math.max(.12,height*factor);
+      selections.push((i,seg)=>{
+        const z=(seg.a[2]+seg.b[2])*.5;
+        return centres.some(c=>Math.abs(z-c)<=halfWidth);
+      });
+    }
+    for(const selector of selections){
+      const chosen=toolpathRuns(work,selector);
       const segments=chosen.reduce((sum,points)=>sum+points.length-1,0);
-      const meaningful=chosen.filter(points=>points.length>=4);
-      const meaningfulEdges=meaningful.reduce((sum,points)=>sum+points.length-1,0);
+      const meaningfulEdges=chosen.filter(points=>points.length>=4)
+        .reduce((sum,points)=>sum+points.length-1,0);
       if(segments>=Math.min(160,maxSegments*.06)&&meaningfulEdges>=segments*.45){
         runs=chosen;
-        usedLayerSelection=true;
         break;
       }
     }
