@@ -84,11 +84,13 @@
   text-underline-offset: 4px;
 }
 
-/* The canvas is narrower and ~40% shorter than the earlier collage. */
+/* Compact, nearly square desktop workflow board (1200 × 1320, 1 : 1.1).
+ * Native SVG artwork stays undistorted; only its stage framing changes. */
 .wb-board {
   position: relative;
-  width: min(1100px,100%);
-  height: 1450px;
+  width: min(1200px,100%);
+  aspect-ratio: 10 / 11;
+  height: 1320px;
   margin: 20px auto 0;
   isolation: isolate;
   overflow: visible;
@@ -97,7 +99,7 @@
   position: absolute;
   inset: 0 auto auto 0;
   width: 100%;
-  height: 1450px;
+  height: 1320px;
   z-index: 0;
   overflow: visible;
   pointer-events: none;
@@ -176,12 +178,13 @@
   display: block;
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: min(100%, 170px);
   min-height: 0;
 }
 .wb-drawing img {
   width: 100%;
-  height: var(--image-h,105px);
+  height: auto;
+  aspect-ratio: 10 / 11;
   max-width: 100%;
   display: block;
   object-fit: contain;
@@ -224,21 +227,23 @@
 .wb-links a:hover { color: #927433; }
 .wb-note { color: #aaa79c; font-size: 9px; }
 
-/* Compact asymmetric locations, tuned to the separately editable Bézier arrows. */
-.wb-spatial   { --x:8.5%; --y:54px;  --w:21%; --image-h:127px; }
-.wb-structural{ --x:56%;  --y:54px;  --w:21%; --image-h:97px; }
-.wb-gcode     { --x:30%;  --y:281px; --w:18%; --image-h:114px; }
-.wb-material  { --x:73%;  --y:279px; --w:23%; --image-h:107px; }
-.wb-printing  { --x:21%;  --y:586px; --w:26%; --image-h:145px; }
-.wb-rammed    { --x:70%;  --y:587px; --w:24%; --image-h:132px; }
-.wb-firing    { --x:14%;  --y:970px; --w:17%; --image-h:91px; }
-.wb-assembly  { --x:68%;  --y:1130px; --w:23%; --image-h:127px; }
+/* More vertical, three-cluster editorial composition.
+ * Paired stages retain the actual sequence: spatial → structural →
+ * G-code / material → printing / rammed → drying → firing / assembly. */
+.wb-spatial   { --x:8%;   --y:26px;   --w:23%; }
+.wb-structural{ --x:67%;  --y:26px;   --w:23%; }
+.wb-gcode     { --x:32%;  --y:318px;  --w:21%; }
+.wb-material  { --x:70%;  --y:318px;  --w:25%; }
+.wb-printing  { --x:12%;  --y:666px;  --w:24%; }
+.wb-rammed    { --x:70%;  --y:666px;  --w:24%; }
+.wb-firing    { --x:11%;  --y:1053px; --w:22%; }
+.wb-assembly  { --x:69%;  --y:1053px; --w:24%; }
 /* Drying is a deliberately unnumbered, noninteractive process marker. */
 .wb-drying {
   position:absolute;
-  left:49%;
-  top:881px;
-  width:16%;
+  left:42%;
+  top:952px;
+  width:17%;
   z-index:2;
   padding:2px 7px;
   background:#faf9f5;
@@ -269,7 +274,7 @@
 .wb-firing .wb-index { color: #99988f; }
 
 .wb-material-layout { display: flex; align-items: center; gap: 8px; }
-.wb-material-layout .wb-drawing { width: 67%; flex: 1; }
+.wb-material-layout .wb-drawing { width: min(67%,170px); flex: 0 1 170px; }
 .wb-sample {
   width: 47px;
   height: 55px;
@@ -291,8 +296,8 @@
 
 .wb-phase {
   position: absolute;
-  left: 40%;
-  top: 493px;
+  left: 39%;
+  top: 582px;
   width: 30%;
   z-index: 1;
   display: flex;
@@ -326,7 +331,7 @@
 }
 
 .wb-bottom {
-  width: min(1100px,100%);
+  width: min(1200px,100%);
   border-top: 1px solid #d2d0c7;
   padding: 11px 0 0;
   margin: 0 auto;
@@ -342,7 +347,7 @@
   .wb-mast { gap: 20px; }
   .wb-mast h1 { font-size: clamp(34px,4.6vw,48px); }
   .wb-management { width: 236px; }
-  .wb-board { width: min(460px,100%); height: 1640px; margin-top: 14px; }
+  .wb-board { width: min(460px,100%); height: 1640px; aspect-ratio:auto; margin-top: 14px; }
   .wb-arrows { height: 1640px; }
   .wb-arrows-desktop { display: none !important; }
   .wb-arrows-mobile { display: block !important; }
@@ -455,7 +460,7 @@
 /* Quiet, unconnected support-team cluster beneath the SAME Workflow map.
    No additional section title, category line, connecting arrows or visible names. */
 #workflowView .wp-cluster {
-  width:min(1100px,100%);
+  width:min(1200px,100%);
   margin:0 auto 24px;
   padding:17px 0 0;
   display:grid;
@@ -497,8 +502,9 @@
 }
 #workflowView .wp-art {
   display:block;
-  width:100%;
-  height:58px;
+  width:min(100%,145px);
+  height:auto;
+  aspect-ratio:10 / 11;
   object-fit:contain;
   object-position:left center;
   opacity:.65;
@@ -545,14 +551,14 @@
     padding-top:16px;
     margin-bottom:25px;
   }
-  #workflowView .wp-art { height:62px; }
+  #workflowView .wp-art { width:min(100%,136px); height:auto; aspect-ratio:10 / 11; }
   #workflowView .wp-title { font-size:13px; }
   #workflowView .wb-credits-names { font-size:10px; }
 }
 @media(max-width:390px) {
   #workflowView .wp-cluster { column-gap:15px; }
   #workflowView .wp-title { font-size:12px; }
-  #workflowView .wp-art { height:50px; }
+  #workflowView .wp-art { width:min(100%,112px); height:auto; }
 }
 
 /* Workflow owner-only editing: unobtrusive controls, visible only after authorization. */
