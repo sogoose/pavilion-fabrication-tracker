@@ -111,13 +111,13 @@
 /* Small process photographs, arranged around rather than inside workflow cards. */
 .wb-decorations { position:absolute; inset:0; pointer-events:none; z-index:1; }
 .wb-deco { position:absolute; display:block; width:var(--dw); height:auto; max-height:156px; object-fit:contain; opacity:.78; filter:saturate(.77); }
-.wb-deco-rammed-blocks { left:1%; top:525px; --dw:75px; transform:rotate(-8deg); }
-.wb-deco-rammed-block { right:1%; top:830px; --dw:61.2px; transform:rotate(8deg); }
-.wb-deco-rammed-mould { right:35%; top:710px; --dw:87px; transform:rotate(-4deg); }
-.wb-deco-hybrid { right:4%; top:1190px; --dw:70.8px; transform:rotate(6deg); }
-.wb-deco-robot { left:37%; top:800px; --dw:70.8px; transform:rotate(5deg); }
-.wb-deco-printer { left:2%; top:1080px; --dw:75px; transform:rotate(-5deg); }
-.wb-deco-printed-module { left:6%; top:1440px; --dw:81px; transform:rotate(-8deg); }
+.wb-deco-rammed-blocks { left:-3%; top:505px; --dw:75px; transform:rotate(-8deg); }
+.wb-deco-rammed-block { right:-4%; top:885px; --dw:61.2px; transform:rotate(8deg); }
+.wb-deco-rammed-mould { right:-3%; top:690px; --dw:87px; transform:rotate(-4deg); }
+.wb-deco-hybrid { right:-3%; top:1290px; --dw:70.8px; transform:rotate(6deg); }
+.wb-deco-robot { left:-3%; top:825px; --dw:70.8px; transform:rotate(5deg); }
+.wb-deco-printer { left:-3%; top:1150px; --dw:75px; transform:rotate(-5deg); }
+.wb-deco-printed-module { left:-3%; top:1550px; --dw:81px; transform:rotate(-8deg); }
 @media(max-width:760px) { .wb-decorations { display:none !important; } }
 .wb-board > .wb-block {
   position: absolute;
