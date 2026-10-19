@@ -104,7 +104,6 @@
   // Page labels and guide copy use the same owner-only storage as process notes.
   // Plain text is assigned through textContent, never as arbitrary HTML.
   const pageFields = [
-    ['eyebrow', 'Small top label', '.wb-eyebrow', 'input', 120],
     ['title', 'Main heading', '.wb-mast h1', 'input', 120],
     ['intro', 'Introduction', '.wb-intro', 'textarea', 1000],
     ['hint', 'Instruction label', '.wb-hint', 'input', 200],
@@ -129,28 +128,12 @@
       const element = pageNodes.get(id);
       if (!element || typeof value[id] !== 'string') return;
       if (id === 'title') {
-        // Maintain the centered two-line editorial title after database reload.
-        const raw = value[id].replace(/^\s*👇\s*/, '').trim();
-        const guide = raw.match(/^(.*?)\s+(Guide)$/i);
-        const amp = raw.indexOf('&');
-        let mainText = raw, subText = '';
-        if (guide && /Workflow/i.test(guide[1])) {
-          mainText = guide[1].trim();
-          subText = guide[2];
-        } else if (amp >= 0) {
-          mainText = raw.slice(0, amp).trim();
-          subText = '& ' + raw.slice(amp + 1).trim();
-        }
+        // Shared edits always retain the one-line Workflow heading.
+        // Older drafts may contain the pointing-finger emoji; strip it gently.
         const main = document.createElement('span');
         main.className = 'wb-title-main';
-        main.textContent = mainText;
+        main.textContent = value[id].replace(/^\s*👇\s*/, '').trim();
         element.replaceChildren(main);
-        if (subText) {
-          const secondary = document.createElement('span');
-          secondary.className = 'wb-title-secondary';
-          secondary.textContent = subText;
-          element.append(secondary);
-        }
       } else {
         element.textContent = value[id];
       }
