@@ -168,7 +168,9 @@
   const actions = document.createElement('div');
   actions.className = 'wf-owner-actions';
   actions.innerHTML = '<button type="button" class="wf-login" aria-label="Workflow editor login">Editor login</button><button type="button" class="wf-page-edit" hidden>Edit page</button><button type="button" class="wf-logout" hidden>Sign out</button><span class="wf-editor-state" role="status" aria-live="polite"></span>';
-  root.querySelector('.wb-mast > div')?.append(actions);
+  // Keep the editor controls out of the visual workflow header.
+  // Place them after the closing board footer, at the very bottom of Workflow.
+  (root.querySelector('.wb-bottom') || root.querySelector('.wb-shell'))?.after(actions);
   const loginButton = actions.querySelector('.wf-login');
   const pageButton = actions.querySelector('.wf-page-edit');
   const logoutButton = actions.querySelector('.wf-logout');
