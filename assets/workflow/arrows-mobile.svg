@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 360 1640" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 360 2010" fill="none">
 <title>Workflow process connections — readable stacked mobile layout</title>
 <defs>
   <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
@@ -18,7 +18,7 @@
   <path d="M290 1074 C266 1087 240 1087 220 1100" marker-end="url(#arr)"/>
   <!-- Optional firing, plus the direct unfired route to assembly -->
   <path d="M149 1143 C126 1155 113 1174 96 1192" stroke-dasharray="3 6" marker-end="url(#arr)"/>
-  <path d="M223 1141 C275 1200 275 1308 269 1370" marker-end="url(#arr)"/>
-  <path d="M140 1402 C192 1432 206 1455 213 1474" stroke-dasharray="3 6" marker-end="url(#arr)"/>
+  <path d="M223 1141 C333 1270 353 1446 244 1588" marker-end="url(#arr)"/>
+  <path d="M140 1402 C108 1450 105 1542 149 1588" stroke-dasharray="3 6" marker-end="url(#arr)"/>
 </g>
 </svg>
