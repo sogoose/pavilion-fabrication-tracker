@@ -401,14 +401,15 @@ export function setupCatalog({ THREE, getState, notify }) {
       ctx.fillText(String(v),x,598);
     });
     label(ctx,'DOCUMENT INDEX / MODULE IDS',58,694);
-    ctx.font='400 16px "IBM Plex Mono",monospace';ctx.fillStyle='#767770';
-    const idEntries=all.slice(0,105);
+    ctx.font='400 12px "IBM Plex Mono",monospace';ctx.fillStyle='#767770';
+    // 14 x 12 compact module-ID register fits the current 163-module project.
+    const idEntries=all.slice(0,168);
     idEntries.forEach((entry,n)=>{
-      const row=Math.floor(n/10),col=n%10;
-      const id=clean(entry.record.Object_ID).slice(0,14);
-      ctx.fillText(id,58+col*136,730+row*20);
+      const row=Math.floor(n/14),col=n%14;
+      const id=clean(entry.record.Object_ID).slice(0,13);
+      ctx.fillText(id,58+col*97,730+row*18);
     });
-    if(all.length>105)label(ctx,'+ '+(all.length-105)+' ADDITIONAL RECORDS',58,960);
+    if(all.length>168)label(ctx,'+ '+(all.length-168)+' ADDITIONAL RECORDS',58,969);
     ctx.fillStyle='#c3c4bd';ctx.fillRect(58,988,1358,2);
     label(ctx,'SOURCE  /  PAVILION FABRICATION TRACKER · SHARED MODULE RECORDS',58,1017);
     label(ctx,'ISSUED  '+new Date().toISOString().slice(0,10),1130,1017);
