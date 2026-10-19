@@ -213,15 +213,39 @@
     editingId = null; fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
     const email = addField('Your editor email', '', 'input');
     email.type = 'email'; email.autocomplete = 'email'; email.placeholder = 'you@example.com';
-    addButton('Send sign-in link', async () => {
+    const send = addButton('Send sign-in link', async () => {
       const address = email.value.trim();
       if (!address || !email.checkValidity()) { setFeedback('Enter a valid email address.', true); return; }
-      setFeedback('Sending…');
-      const { error } = await client.auth.signInWithOtp({
-        email: address,
-        options: { emailRedirectTo: location.origin + location.pathname + '#workflow', shouldCreateUser: true }
-      });
-      setFeedback(error ? error.message : 'Check your email for the sign-in link. Return to this site after signing in.', !!error);
+      send.disabled = true;
+      send.textContent = 'Sending…';
+      setFeedback('Requesting one sign-in email…');
+      let error;
+      try {
+        ({ error } = await client.auth.signInWithOtp({
+          email: address,
+          options: {
+            emailRedirectTo: location.origin + location.pathname + '#workflow',
+            // Editors are pre-approved; visitors must not create new accounts here.
+            shouldCreateUser: false
+          }
+        }));
+      } catch (requestError) {
+        error = requestError;
+      }
+      if (error) {
+        const limited = error.status === 429 || /rate limit|too many requests/i.test(error.message || '');
+        if (limited) {
+          send.textContent = 'Email temporarily limited';
+          setFeedback('Supabase has reached its email sending limit. Please do not resend repeatedly. Check any recent sign-in email, then retry after the provider limit resets (often at least an hour). Also verify that your Supabase Site URL points to this GitHub Pages site.', true);
+          return;
+        }
+        send.disabled = false;
+        send.textContent = 'Send sign-in link';
+        setFeedback(error.message || 'Could not request the sign-in email. Try again later.', true);
+        return;
+      }
+      send.textContent = 'Email requested';
+      setFeedback('One sign-in link requested. Check your inbox and spam folder. Please do not request another while waiting.');
     }, 'wf-editor-save');
     addButton('Cancel', closeDialog);
     dialog.showModal(); email.focus();
