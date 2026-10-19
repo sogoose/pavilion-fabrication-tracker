@@ -1,6 +1,6 @@
 # Editable workflow board assets
 
-The **01 / Workflow** page is a **compact, asymmetric architectural process diagram** titled **Workflow Guide & File Index**, connected by softly curved arrows. Small technical drawings remain editable as standalone vectors. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
+The **01 / Workflow** page is an **asymmetric architectural process diagram with an enlarged, standalone Assembly conclusion** titled **Workflow Guide & File Index**, connected by softly curved arrows. Small technical drawings remain editable as standalone vectors. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
 
 ## Edit an illustration in Illustrator
 
@@ -23,8 +23,8 @@ All eight illustrations are **separate vector files**, not code embedded inside 
 
 Two additional SVG files control the visible process links:
 
-- `arrows-desktop.svg`: soft Bézier arrows on the near-square desktop board (**viewBox 1200 × 1320**, 1:1.1)
-- `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1640)
+- `arrows-desktop.svg`: soft Bézier arrows on the extended desktop board (**viewBox 1200 × 1930**)
+- `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 2010)
 
 Drying has no number, icon, participant field or expandable detail: it is an inline label in `index.html`, positioned using `.wb-drying` in `board.css`. Curved arrows in these two SVG files now connect 3D Printing and Rammed Earth to Drying, then optionally Firing / Glazing or directly Assembly.
 
@@ -32,13 +32,13 @@ Edit either in Illustrator and replace the same file on GitHub. You can move a c
 
 The four detached support-team artboards now also use **1:1.1 portrait proportions**, `180 × 198` with `viewBox="0 -54 180 198"`. Stage artwork is centred in a taller `170 × 187`-pixel frame on desktop. Since the art geometry remains unchanged, Illustrator layers and stroke proportions stay editable and intact.
 
-Mobile keeps a long `360 × 1640` route map so that names and edit controls remain legible; the individual SVG artwork is still portrait. The mobile arrows are authored separately to match the taller images.
+Mobile keeps a long `360 × 2010` route map so that names and edit controls remain legible; the individual SVG artwork is still portrait. The mobile arrows are authored separately to match the taller images.
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
 ## Process credits and compact support studies
 
-The page remains **one Workflow page**. Eight main clickable processes plus a small **noninteractive Drying marker** are connected by editable SVG Bézier arrows; the numbered indices remain `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`. Both fabrication routes pass through Drying. Firing / Glazing is optional for selected dried components; dried components can also proceed directly to Assembly.
+The page remains **one Workflow page**. Assembly sits on its own centered final row, with an enlarged illustration (up to 330px desktop / 255px mobile). The solid path from Drying and optional dashed path from Firing / Glazing both lead into Assembly. Eight main clickable processes plus a small **noninteractive Drying marker** are connected by editable SVG Bézier arrows; the numbered indices remain `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`. Both fabrication routes pass through Drying. Firing / Glazing is optional for selected dried components; dried components can also proceed directly to Assembly.
 
 **All names are hidden until a process or team is clicked.** A main process reveals its team credits alongside notes and files. The four support/research teams are quietly collected **beneath the process diagram**, without an extra section heading or connecting arrows; their names, descriptions and links are visible only upon expansion.
 
