@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="90" viewBox="0 0 180 90" fill="none" stroke="#75756f" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+<title>Environmental monitoring — editable placeholder</title>
+<g opacity=".86">
+<path d="M12 16V72H169M12 49C33 44 35 31 53 36S73 63 91 55S120 27 142 37S159 50 169 33"/>
+<path d="M12 61C39 56 44 63 62 48S91 43 110 62S148 62 169 50" stroke-dasharray="4 5"/>
+<path d="M53 36V72M91 55V72M142 37V72" stroke-dasharray="2 4" opacity=".6"/>
+<circle cx="53" cy="36" r="3"/><circle cx="91" cy="55" r="3"/><circle cx="142" cy="37" r="3"/>
+</g></svg>
