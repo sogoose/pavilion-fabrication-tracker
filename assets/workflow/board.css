@@ -1,461 +1,354 @@
+/* OVERALL WORKFLOW / EDITORIAL PROCESS MAP
+ * Source artwork and curved arrows are individual Illustrator-editable SVG files.
+ * This stylesheet affects the Workflow chapter only; 3D Tracker remains untouched.
+ */
 
-/* WORKFLOW / EDITORIAL FABRICATION BOARD
-   Drawings remain independently editable under assets/workflow/*.svg. */
-#workflowView.workflowScreen{display:none;background:#fbfaf7;color:#252520;overflow-y:auto;overflow-x:hidden;min-height:0}
-.app.workflow-active #workflowView.workflowScreen{display:block}
-.app.workflow-active .main,.app.workflow-active header .controls{display:none}
-.wb-shell{max-width:1450px;margin:0 auto;padding:22px clamp(18px,3.3vw,52px) 82px}
-.wb-mast{display:grid;grid-template-columns:minmax(0,1fr) 315px;align-items:end;gap:32px;border-top:1px solid #262620;border-bottom:1px solid #b8b8b0;padding:22px 0 27px}
-.wb-eyebrow,.wb-index,.wb-tiny,.wb-photo-label,.wb-phase span,.wb-bottom,.wb-management-label{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.045em;text-transform:uppercase}
-.wb-eyebrow{font-size:10px;color:#88877e}
-.wb-mast h1{font-size:clamp(46px,7.7vw,106px);font-weight:400;letter-spacing:-.081em;line-height:.92;margin:16px 0 0}
-.wb-mast h1 em{font-style:normal;color:#999991}
-.wb-management{border-left:1px solid #cbcbc4;padding:2px 0 2px 20px;max-width:320px}
-.wb-management-label{font-size:10px;color:#77766e}
-.wb-management p{font-size:12px;line-height:1.55;color:#696960;max-width:275px;margin:12px 0 13px}
-.wb-management a,.wb-links a{display:inline-flex;gap:5px;align-items:center;font:11px/1.45 ui-monospace,Consolas,monospace;color:#262620;text-underline-offset:4px;text-decoration:underline;text-decoration-thickness:.7px}
-.wb-board{display:grid;grid-template-columns:1.12fr 1fr .92fr;grid-template-areas:
- "spatial spatial structural"
- "spatial spatial gcode"
- "material material gcode"
- "phase phase phase"
- "printing printing rammed"
- "firing assembly assembly";
- column-gap:clamp(17px,2.4vw,38px);row-gap:clamp(26px,3.7vw,55px);padding:34px 0 45px;align-items:stretch}
-.wb-block{position:relative;min-width:0;border-top:1px solid #aaa9a0;background:transparent;isolation:isolate}
-.wb-preview{list-style:none;position:relative;min-height:100%;cursor:pointer;display:flex;flex-direction:column;padding:11px 0 0;outline-offset:4px}
-.wb-preview::-webkit-details-marker{display:none}
-.wb-preview:focus-visible{outline:2px solid #bca45a}
-.wb-preview:hover .wb-name,.wb-block[open] .wb-name{color:#887134}
-.wb-preview:hover .wb-drawing img{transform:translateY(-3px)}
-.wb-index{font-size:10px;color:#77776f}
-.wb-name{font-size:clamp(21px,2.55vw,35px);font-weight:400;line-height:1.08;letter-spacing:-.052em;display:block;margin:8px 0 8px;transition:color .2s}
-.wb-plus{font:20px/1 ui-monospace,monospace;position:absolute;right:1px;top:11px;color:#75756e}
-.wb-block[open] .wb-plus{transform:rotate(45deg)}
-.wb-drawing{margin:0;position:relative;min-height:115px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1}
-.wb-drawing img{max-width:100%;width:100%;object-fit:contain;object-position:center center;display:block;filter:grayscale(1);transition:transform .2s ease}
-.wb-drawing figcaption{font:10px/1.45 ui-monospace,monospace;color:#929087;letter-spacing:.01em;margin-top:6px}
-.wb-detail{margin-top:11px;padding:15px 0 5px;border-top:1px dotted #bcbcb4;max-width:100%}
-.wb-detail[hidden]{display:none}
-.wb-detail p{max-width:460px;font-size:12px;line-height:1.6;color:#66665e;margin:0 0 12px}
-.wb-links{display:flex;gap:15px;flex-wrap:wrap;padding-bottom:8px}
-.wb-detail .wb-links a{font-size:10px}
-.wb-note{font:10px/1.4 ui-monospace,monospace;color:#aaa99e}
-.wb-spatial{grid-area:spatial;min-height:410px}
-.wb-spatial .wb-name{font-size:clamp(34px,4.3vw,67px)}
-.wb-spatial .wb-drawing{padding:0 2% 2px 5%}
-.wb-spatial .wb-drawing img{height:300px;object-position:50% 54%}
-.wb-spatial::after{content:"";position:absolute;right:-23px;top:37%;width:40px;height:1px;background:#d0d0c7;pointer-events:none}
-.wb-structural{grid-area:structural;min-height:190px}
-.wb-structural .wb-name{font-size:clamp(20px,2.2vw,31px)}
-.wb-structural .wb-drawing img{height:105px}
-.wb-gcode{grid-area:gcode;min-height:310px}
-.wb-gcode .wb-name{font-size:clamp(22px,2.3vw,34px)}
-.wb-gcode .wb-drawing{background:linear-gradient(145deg,#f4f3ee,#fbfaf7 70%);padding:10px 16px 0;margin-top:10px}
-.wb-gcode .wb-drawing img{height:220px}
-.wb-material{grid-area:material;min-height:240px}
-.wb-material .wb-name{font-size:clamp(25px,3.1vw,44px)}
-.wb-material .wb-material-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.56fr);gap:18px;align-items:center;flex:1}
-.wb-material .wb-drawing img{height:140px}
-.wb-sample{align-self:stretch;margin:5px 0 15px;min-height:130px;background:#e8ddca;position:relative;overflow:hidden;clip-path:polygon(6% 0,96% 3%,100% 92%,9% 100%,0 38%)}
-.wb-sample:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 20% 35%,#b6a088 0 2px,transparent 3px),radial-gradient(circle at 65% 65%,#d0bfa3 0 3px,transparent 4px),repeating-linear-gradient(160deg,transparent 0 9px,rgba(125,93,58,.12) 10px 11px);background-size:24px 28px,37px 31px,100% 100%;opacity:.85;transform:rotate(-5deg)}
-.wb-sample:after{content:"SOIL / MIX";position:absolute;bottom:12px;left:16px;font:9px ui-monospace,monospace;color:#71624e}
-.wb-phase{grid-area:phase;display:flex;align-items:center;gap:18px;padding:13px 0 7px;border-bottom:1px solid #b6b19a;position:relative;isolation:isolate}
-.wb-phase:before{content:"";position:absolute;z-index:-1;left:-12px;top:9px;width:390px;max-width:78%;height:32px;background:rgba(235,213,116,.48);transform:skewX(-8deg)}
-.wb-phase strong{font-size:clamp(23px,3.2vw,44px);font-weight:400;letter-spacing:-.06em}
-.wb-phase span{font-size:11px;white-space:nowrap;color:#77714c;margin-left:auto}
-.wb-printing{grid-area:printing;min-height:340px}
-.wb-printing .wb-name{font-size:clamp(31px,4.1vw,62px)}
-.wb-printing .wb-drawing{padding:0 0 0 5%}
-.wb-printing .wb-drawing img{height:246px}
-.wb-rammed{grid-area:rammed;min-height:340px}
-.wb-rammed .wb-name{font-size:clamp(26px,3vw,40px)}
-.wb-rammed .wb-drawing{padding:6px;background:linear-gradient(180deg,#faf9f5,#f3eee6);margin-top:12px}
-.wb-rammed .wb-drawing img{height:215px}
-.wb-firing{grid-area:firing;min-height:215px;opacity:.84;border-top-style:dashed}
-.wb-firing .wb-name{font-size:clamp(22px,2.5vw,35px)}
-.wb-firing .wb-drawing img{height:147px}
-.wb-assembly{grid-area:assembly;min-height:280px;border-top:1px dashed #b1b0a8}
-.wb-assembly .wb-name{font-size:clamp(33px,4.5vw,72px)}
-.wb-assembly .wb-drawing{padding-left:6%}
-.wb-assembly .wb-drawing img{height:245px}
-.wb-assembly .wb-index{color:#97978d}
-.wb-assembly .wb-preview:before{content:"UPCOMING";position:absolute;right:34px;top:12px;font:10px ui-monospace,monospace;color:#918d7a;letter-spacing:.06em}
-.wb-bottom{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-top:1px solid #b9b9b2;font-size:10px;color:#8b8b82}
-@media(max-width:920px){
- .wb-mast{grid-template-columns:1fr 245px;gap:18px}
- .wb-board{grid-template-columns:1fr 1fr;grid-template-areas:
- "spatial structural"
- "spatial gcode"
- "material material"
- "phase phase"
- "printing rammed"
- "firing assembly";column-gap:23px;row-gap:35px}
- .wb-spatial{min-height:460px}
- .wb-spatial .wb-drawing img{height:280px}
- .wb-structural{min-height:190px}
- .wb-gcode{min-height:250px}
- .wb-gcode .wb-drawing img{height:150px}
- .wb-printing .wb-drawing img,.wb-rammed .wb-drawing img{height:190px}
- .wb-assembly .wb-drawing img{height:190px}
- .wb-spatial .wb-name{font-size:42px}
- .wb-material .wb-name{font-size:34px}
+#workflowView.workflowScreen {
+  display: none;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: #292a26;
+  background: #faf9f5;
+  font-family: "Inter", Arial, sans-serif;
 }
-@media(max-width:620px){
- .wb-shell{padding:18px 17px 58px}
- .wb-mast{display:block;padding:17px 0 21px}
- .wb-mast h1{font-size:clamp(50px,13vw,76px);margin:12px 0 20px}
- .wb-management{max-width:none;border-left:0;border-top:1px solid #d5d4c9;padding:12px 0 0}
- .wb-management p{max-width:none;margin:6px 0 9px;font-size:12px}
- .wb-board{grid-template-columns:1fr 1fr;grid-template-areas:
- "spatial spatial"
- "structural gcode"
- "material material"
- "phase phase"
- "printing printing"
- "rammed rammed"
- "firing firing"
- "assembly assembly";
- column-gap:16px;row-gap:28px;padding-top:25px}
- .wb-spatial{min-height:295px}
- .wb-spatial .wb-name{font-size:42px}
- .wb-spatial .wb-drawing img{height:205px}
- .wb-structural,.wb-gcode{min-height:205px}
- .wb-structural .wb-name,.wb-gcode .wb-name{font-size:19px}
- .wb-structural .wb-drawing img,.wb-gcode .wb-drawing img{height:100px}
- .wb-gcode .wb-drawing{padding:5px 4px}
- .wb-material{min-height:210px}
- .wb-material .wb-name{font-size:29px}
- .wb-material .wb-material-layout{grid-template-columns:1.3fr .8fr;gap:8px}
- .wb-material .wb-drawing img{height:115px}
- .wb-sample{min-height:105px}
- .wb-phase{flex-wrap:wrap;gap:6px;padding:9px 0 8px}
- .wb-phase strong{font-size:32px}
- .wb-phase span{font-size:10px}
- .wb-phase:before{height:33px}
- .wb-printing,.wb-rammed{min-height:280px}
- .wb-printing .wb-name,.wb-rammed .wb-name{font-size:38px}
- .wb-printing .wb-drawing img,.wb-rammed .wb-drawing img{height:195px}
- .wb-rammed .wb-drawing{margin-top:5px}
- .wb-firing{min-height:190px}
- .wb-firing .wb-drawing img{height:120px}
- .wb-assembly{min-height:270px}
- .wb-assembly .wb-name{font-size:48px}
- .wb-assembly .wb-drawing img{height:205px}
- .wb-preview{min-height:0}
- .wb-bottom{font-size:9px}
-}
-@media(prefers-reduced-motion:reduce){.wb-drawing img,.wb-name{transition:none}}
+.app.workflow-active #workflowView.workflowScreen { display: block; }
+.app.workflow-active .main,
+.app.workflow-active header .controls { display: none; }
 
-
-/* ─────────────────────────────────────────────────────────────
-   LOOSE ATLAS / V2
-   Intentionally irregular editorial composition rather than
-   uniform cards. Each diagram is still an editable SVG asset.
-   ───────────────────────────────────────────────────────────── */
-
-.wb-mast{align-items:start;grid-template-columns:minmax(0,1fr) 300px;padding:21px 0 21px;border-top-color:#aaa9a1}
-.wb-mast h1{font-size:clamp(43px,5.25vw,76px);letter-spacing:-.066em;line-height:1.05;margin:14px 0 1px;font-weight:400}
-.wb-management{border-left-color:#dedbd3;padding-left:18px}
-.wb-shell{max-width:1510px}
-.wb-board{
-  position:relative;
-  display:block;
-  min-height:1970px;
-  margin-top:28px;
-  padding:0;
-  isolation:isolate;
+.wb-shell {
+  max-width: 1350px;
+  margin: 0 auto;
+  padding: 25px clamp(18px,3.5vw,48px) 65px;
 }
-.wb-guides{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:fill;
-  z-index:0;
-  pointer-events:none;
-  opacity:.58;
+.wb-mast {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 35px;
+  border-top: 1px solid #9f9e94;
+  border-bottom: 1px solid #d6d3ca;
+  padding: 19px 0 22px;
 }
-.wb-studies{position:absolute;inset:0;z-index:1;pointer-events:none}
-.wb-study{
-  position:absolute;
-  width:var(--study-width,18%);
-  margin:0;
-  opacity:.65;
-  mix-blend-mode:multiply;
-  transform:rotate(var(--study-rotation,0deg));
-  transform-origin:50% 50%;
+.wb-mast > div { min-width: 0; }
+.wb-eyebrow,
+.wb-index,
+.wb-drawing figcaption,
+.wb-note,
+.wb-management-label,
+.wb-phase span,
+.wb-links a,
+.wb-bottom {
+  font-family: "IBM Plex Mono", "Courier New", monospace;
 }
-.wb-study img{display:block;width:100%;height:auto}
-.wb-study figcaption{
-  font:9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
-  color:#aaa69c;
-  letter-spacing:.065em;
-  text-align:right;
-  margin-top:-5px;
+.wb-eyebrow { font-size: 10px; letter-spacing: .045em; color: #85837b; }
+.wb-mast h1 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: clamp(48px,5.3vw,73px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -.024em;
+  margin: 13px 0 0;
 }
-.wb-study-contour{top:46px;left:48%;--study-width:18%;--study-rotation:-12deg;opacity:.6}
-.wb-study-soil{top:498px;left:45%;--study-width:18%;--study-rotation:9deg;opacity:.52}
-.wb-study-deposition{top:722px;left:68%;--study-width:23%;--study-rotation:7deg;opacity:.59}
-.wb-study-mould{top:1370px;left:32%;--study-width:20%;--study-rotation:-13deg;opacity:.52}
-
-/* In desktop view each study is freely placed, not trapped in a tile. */
-.wb-board>.wb-block{
-  position:absolute;
-  display:block;
-  z-index:3;
-  border:0;
-  margin:0;
-  padding:0;
-  background:transparent;
-  min-height:0;
-  width:var(--block-width,32%);
-  left:var(--block-x,0%);
-  top:var(--block-y,0px);
-  opacity:1;
+.wb-management {
+  width: 274px;
+  flex-shrink: 0;
+  padding: 0 0 0 17px;
+  border-left: 1px solid #d5d2c8;
 }
-.wb-board>.wb-block::before{
-  content:"";
-  position:absolute;
-  width:0;
-  height:0;
-  border:0;
+.wb-management-label { font-size: 10px; letter-spacing: .02em; color: #77736b; }
+.wb-management p {
+  font-size: 11px;
+  line-height: 1.65;
+  color: #66655f;
+  margin: 8px 0 9px;
 }
-.wb-board>.wb-block[open]{z-index:18}
-.wb-preview{
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-  min-height:0;
-  height:auto;
-  padding:0;
-}
-.wb-index{
-  font-size:10px;
-  letter-spacing:.075em;
-  opacity:.75;
-}
-.wb-name{
-  font-size:clamp(24px,2.55vw,38px);
-  line-height:1.06;
-  letter-spacing:-.065em;
-  margin:8px 0 7px;
-}
-.wb-drawing{
-  margin:0;
-  min-height:0;
-  flex:0 0 auto;
-  justify-content:flex-start;
-}
-.wb-drawing img{
-  display:block;
-  mix-blend-mode:multiply;
-  max-width:100%;
-  opacity:.84;
-  object-fit:contain;
-  filter:none;
-  transform:rotate(var(--angle,0deg)) translate(var(--offx,0),var(--offy,0));
-  transition:transform .23s ease,opacity .23s ease;
-}
-.wb-block .wb-preview:hover .wb-drawing img{
-  opacity:1;
-  transform:rotate(var(--angle,0deg)) translate(var(--offx,0),-4px) scale(1.025);
-}
-.wb-drawing figcaption{
-  margin-top:2px;
-  font-size:9px;
-  line-height:1.5;
-  color:#99988f;
-  letter-spacing:.022em;
-}
-.wb-plus{right:0;top:0;font-size:18px;color:#96958a}
-.wb-detail{
-  position:relative;
-  background:rgba(251,250,247,.985);
-  padding:12px 13px 12px 0;
-  border-top:1px dotted #d0cec3;
-  box-shadow:8px 10px 20px rgba(170,166,149,.08);
-}
-.wb-detail p{font-size:12px;line-height:1.6;color:#595a54}
-
-/* Different typographic scales and offset geometries. */
-.wb-board>.wb-spatial{--block-x:2%;--block-y:40px;--block-width:48%}
-.wb-spatial .wb-name{font-size:clamp(40px,4.65vw,69px)}
-.wb-spatial .wb-drawing{padding:0}
-.wb-spatial .wb-drawing img{
-  height:312px;
-  object-position:45% 50%;
-  --angle:-7deg;
-  --offx:-12px;
-}
-.wb-spatial::after{display:none}
-
-.wb-board>.wb-structural{--block-x:76%;--block-y:72px;--block-width:23%}
-.wb-structural .wb-name{font-size:clamp(22px,2.1vw,31px)}
-.wb-structural .wb-drawing img{height:119px;--angle:8deg;--offx:-3px}
-.wb-structural::after{content:"";display:block;position:absolute;left:-30px;top:15px;width:23px;border-top:1px solid #dedad0}
-
-.wb-board>.wb-gcode{--block-x:58%;--block-y:333px;--block-width:29%}
-.wb-gcode .wb-name{font-size:clamp(22px,2.55vw,38px)}
-.wb-gcode .wb-drawing{background:none;padding:0;margin:0}
-.wb-gcode .wb-drawing img{height:211px;--angle:-12deg;--offx:7px}
-
-.wb-board>.wb-material{--block-x:5%;--block-y:577px;--block-width:44%}
-.wb-material .wb-name{font-size:clamp(30px,3.4vw,52px)}
-.wb-material .wb-material-layout{grid-template-columns:1.2fr .7fr;gap:6px;align-items:center}
-.wb-material .wb-drawing img{height:175px;--angle:7deg;--offx:-4px}
-.wb-material .wb-sample{
-  align-self:end;
-  min-height:122px;
-  transform:rotate(-11deg) translate(-7px,-12px);
-  opacity:.82;
+.wb-management a {
+  font: 10px "IBM Plex Mono",monospace;
+  color: #262723;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-.wb-board>.wb-phase{
-  position:absolute;
-  z-index:3;
-  grid-area:auto;
-  left:35%;
-  top:903px;
-  width:55%;
-  border:0;
-  padding:8px 0 5px;
-  display:flex;
-  gap:18px;
+/* The canvas is narrower and ~40% shorter than the earlier collage. */
+.wb-board {
+  position: relative;
+  width: min(1100px,100%);
+  height: 1130px;
+  margin: 20px auto 0;
+  isolation: isolate;
+  overflow: visible;
 }
-.wb-phase:before{
-  left:-18px;
-  top:15px;
-  width:68%;
-  max-width:unset;
-  height:37px;
-  transform:rotate(-3deg) skewX(-15deg);
-  background:rgba(238,216,110,.49);
+.wb-arrows {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
 }
-.wb-phase:after{
-  content:"";
-  position:absolute;
-  border-bottom:1px solid #cfccbe;
-  width:63%;
-  bottom:0;
-  left:6%;
-  transform:rotate(-2deg);
-  pointer-events:none;
+.wb-arrows img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.wb-arrows-mobile { display: none !important; }
+
+/* Each stage is a small, captioned diagram — not a card. */
+.wb-board > .wb-block {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--w);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  z-index: 2;
 }
-.wb-phase strong{font-size:clamp(32px,4vw,61px);font-weight:400;letter-spacing:-.065em}
-.wb-phase span{font:10px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.05em;color:#81764c}
+.wb-board > .wb-block[open] { z-index: 12; }
+.wb-preview {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  list-style: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  min-height: 0;
+  outline-offset: 6px;
+}
+.wb-preview::-webkit-details-marker { display: none; }
+.wb-preview:focus-visible { outline: 1px solid #a48f4f; }
+.wb-index {
+  font-size: 10px;
+  line-height: 1.4;
+  color: #85837a;
+  letter-spacing: .025em;
+}
+.wb-name {
+  display: block;
+  margin: 5px 13px 6px 0;
+  font: 400 28px/1.03 "Instrument Serif",Georgia,serif;
+  letter-spacing: -.007em;
+  transition: color .16s ease;
+}
+.wb-preview:hover .wb-name,
+.wb-block[open] .wb-name { color: #7d6b45; }
+.wb-plus {
+  position: absolute;
+  right: 0;
+  top: -2px;
+  color: #99968d;
+  font: 17px/1 "Inter",sans-serif;
+}
+.wb-block[open] .wb-plus { transform: rotate(45deg); }
 
-.wb-board>.wb-printing{--block-x:7%;--block-y:1031px;--block-width:48%}
-.wb-printing .wb-name{font-size:clamp(39px,4.9vw,77px)}
-.wb-printing .wb-drawing{padding:0}
-.wb-printing .wb-drawing img{height:266px;--angle:-9deg;--offx:15px}
+.wb-drawing {
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 0;
+}
+.wb-drawing img {
+  width: 100%;
+  height: var(--image-h,105px);
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  opacity: .82;
+  /* No rotation. The free placement comes from a composition of small diagrams. */
+  transform: none;
+  filter: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.wb-preview:hover .wb-drawing img { opacity: 1; transform: translateY(-2px); }
+.wb-drawing figcaption {
+  margin-top: 4px;
+  color: #9b9990;
+  line-height: 1.5;
+  font-size: 9px;
+  letter-spacing: -.01em;
+}
+.wb-detail {
+  position: relative;
+  background: rgba(250,249,245,.985);
+  margin: 8px 0 0;
+  padding: 11px 10px 11px 0;
+  border-top: 1px dotted #c6c2b8;
+  box-shadow: 8px 12px 14px rgba(190,186,172,.12);
+}
+.wb-detail p {
+  font: 11px/1.6 "Inter",Arial,sans-serif;
+  color: #67665f;
+  margin: 0 0 10px;
+}
+.wb-links { display: flex; flex-wrap: wrap; gap: 11px; }
+.wb-links a {
+  font-size: 10px;
+  line-height: 1.45;
+  color: #33332d;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.wb-links a:hover { color: #927433; }
+.wb-note { color: #aaa79c; font-size: 9px; }
 
-.wb-board>.wb-rammed{--block-x:68%;--block-y:1114px;--block-width:30%}
-.wb-rammed .wb-name{font-size:clamp(27px,2.65vw,41px)}
-.wb-rammed .wb-drawing{padding:0;background:none;margin:0}
-.wb-rammed .wb-drawing img{height:234px;--angle:11deg;--offx:-5px}
+/* Compact asymmetric locations, tuned to the separately editable Bézier arrows. */
+.wb-spatial   { --x:8.5%; --y:54px;  --w:21%; --image-h:127px; }
+.wb-structural{ --x:56%;  --y:54px;  --w:21%; --image-h:97px; }
+.wb-gcode     { --x:30%;  --y:281px; --w:18%; --image-h:114px; }
+.wb-material  { --x:74%;  --y:279px; --w:21%; --image-h:111px; }
+.wb-printing  { --x:22%;  --y:586px; --w:23%; --image-h:150px; }
+.wb-rammed    { --x:70%;  --y:587px; --w:21%; --image-h:137px; }
+.wb-firing    { --x:14%;  --y:838px; --w:17%; --image-h:91px; }
+.wb-assembly  { --x:68%;  --y:925px; --w:23%; --image-h:127px; }
 
-.wb-board>.wb-firing{--block-x:8%;--block-y:1555px;--block-width:24%;border:0;opacity:.82}
-.wb-firing .wb-name{font-size:clamp(25px,2.4vw,35px)}
-.wb-firing .wb-drawing img{height:162px;--angle:8deg}
+.wb-spatial .wb-name { font-size: 31px; }
+.wb-structural .wb-name { font-size: 25px; }
+.wb-gcode .wb-name { font-size: 26px; }
+.wb-material .wb-name { font-size: 26px; }
+.wb-printing .wb-name { font-size: 31px; }
+.wb-rammed .wb-name { font-size: 29px; }
+.wb-firing .wb-name { font-size: 26px; }
+.wb-assembly .wb-name { font-size: 32px; }
+.wb-assembly .wb-preview::before {
+  content: "UPCOMING";
+  position: absolute;
+  top: -3px;
+  right: 21px;
+  color: #a19e93;
+  font: 9px "IBM Plex Mono",monospace;
+}
+.wb-firing .wb-index { color: #99988f; }
 
-.wb-board>.wb-assembly{--block-x:43%;--block-y:1492px;--block-width:54%;border:0;opacity:.94}
-.wb-assembly .wb-name{font-size:clamp(38px,4.6vw,74px)}
-.wb-assembly .wb-drawing{padding-left:0}
-.wb-assembly .wb-drawing img{height:286px;--angle:-6deg;--offx:0px}
-.wb-assembly .wb-preview:before{right:25px;top:2px}
-.wb-bottom{border-top-color:#cdcbc1;margin-top:0}
+.wb-material-layout { display: flex; align-items: center; gap: 8px; }
+.wb-material-layout .wb-drawing { width: 67%; flex: 1; }
+.wb-sample {
+  width: 47px;
+  height: 55px;
+  flex-shrink: 0;
+  margin: 0;
+  background: #c6b599;
+  clip-path: polygon(2% 3%,96% 0,100% 90%,8% 100%);
+  opacity: .75;
+  position: relative;
+  overflow: hidden;
+}
+.wb-sample::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(15deg,transparent 0 7px,rgba(91,80,68,.21) 8px 9px);
+}
+.wb-sample::after { content:""; }
 
-/* Tablet: an irregular, but naturally flowing, two-column atlas. */
-@media(max-width:1100px){
-  .wb-mast{grid-template-columns:1fr 255px}
-  .wb-board{
-    display:grid;
-    min-height:0;
-    grid-template-columns:1.18fr .82fr;
-    grid-template-areas:
-      "spatial structural"
-      "spatial gcode"
-      "material material"
-      "phase phase"
-      "printing rammed"
-      "firing assembly";
-    column-gap:26px;
-    row-gap:42px;
-    padding:34px 0 36px;
-    margin-top:4px;
+.wb-phase {
+  position: absolute;
+  left: 40%;
+  top: 493px;
+  width: 30%;
+  z-index: 1;
+  display: flex;
+  align-items: end;
+  justify-content: flex-start;
+  gap: 8px;
+  border: 0;
+  padding: 0 2px 7px 0;
+  isolation: isolate;
+}
+.wb-phase::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 8px;
+  left: -10px;
+  width: 82%;
+  height: 29px;
+  background: rgba(235,215,122,.43);
+  transform: skewX(-9deg);
+}
+.wb-phase strong {
+  font: 400 36px/1 "Instrument Serif",Georgia,serif;
+  letter-spacing: -.005em;
+}
+.wb-phase span {
+  font-size: 9px;
+  color: #847d63;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+
+.wb-bottom {
+  width: min(1100px,100%);
+  border-top: 1px solid #d2d0c7;
+  padding: 11px 0 0;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  color: #929086;
+  font-size: 9px;
+}
+
+/* Mobile uses its own narrow spline diagram: no sideways scrolling. */
+@media (max-width: 850px) {
+  .wb-mast { gap: 20px; }
+  .wb-mast h1 { font-size: clamp(47px,7vw,61px); }
+  .wb-management { width: 236px; }
+  .wb-board { width: min(460px,100%); height: 1370px; margin-top: 14px; }
+  .wb-arrows-desktop { display: none !important; }
+  .wb-arrows-mobile { display: block !important; }
+
+  .wb-spatial    { --x:4%;  --y:34px;   --w:44%; --image-h:100px; }
+  .wb-structural { --x:58%; --y:68px;   --w:40%; --image-h:84px; }
+  .wb-gcode      { --x:7%;  --y:277px;  --w:43%; --image-h:96px; }
+  .wb-material   { --x:56%; --y:279px;  --w:42%; --image-h:86px; }
+  .wb-printing   { --x:4%;  --y:618px;  --w:46%; --image-h:120px; }
+  .wb-rammed     { --x:58%; --y:649px;  --w:40%; --image-h:103px; }
+  .wb-firing     { --x:7%;  --y:922px;  --w:35%; --image-h:80px; }
+  .wb-assembly   { --x:56%; --y:1041px; --w:43%; --image-h:128px; }
+  .wb-phase      { top: 510px; left: 25%; width: 54%; }
+  .wb-phase strong { font-size: 32px; }
+  .wb-phase::before { height: 26px; top: 6px; }
+
+  .wb-spatial .wb-name { font-size: 28px; }
+  .wb-structural .wb-name { font-size: 24px; }
+  .wb-gcode .wb-name { font-size: 25px; }
+  .wb-material .wb-name { font-size: 24px; }
+  .wb-printing .wb-name { font-size: 29px; }
+  .wb-rammed .wb-name { font-size: 27px; }
+  .wb-firing .wb-name { font-size: 25px; }
+  .wb-assembly .wb-name { font-size: 29px; }
+  .wb-material .wb-sample { width: 26px; height: 43px; }
+  .wb-material-layout { gap: 1px; }
+  .wb-management p { font-size: 11px; }
+}
+
+@media (max-width: 620px) {
+  .wb-shell { padding: 15px 15px 48px; }
+  .wb-mast { flex-direction: column; align-items: stretch; gap: 17px; padding: 15px 0 18px; }
+  .wb-mast h1 { font-size: 53px; }
+  .wb-management {
+    width: 100%;
+    border-left: 0;
+    border-top: 1px solid #e0ddd4;
+    padding: 11px 0 0;
   }
-  .wb-board>.wb-block,.wb-board>.wb-phase{
-    position:relative;
-    width:auto;
-    top:auto;
-    left:auto;
-    right:auto;
-    bottom:auto;
-    min-height:0;
-  }
-  .wb-board>.wb-spatial{grid-area:spatial}
-  .wb-board>.wb-structural{grid-area:structural;margin-top:30px}
-  .wb-board>.wb-gcode{grid-area:gcode;margin-right:8%}
-  .wb-board>.wb-material{grid-area:material;max-width:82%;margin-left:9%}
-  .wb-board>.wb-phase{grid-area:phase;width:80%;margin-left:14%;align-self:center}
-  .wb-board>.wb-printing{grid-area:printing}
-  .wb-board>.wb-rammed{grid-area:rammed;margin-top:76px}
-  .wb-board>.wb-firing{grid-area:firing;max-width:80%;margin-top:45px}
-  .wb-board>.wb-assembly{grid-area:assembly}
-  .wb-studies,.wb-guides{display:none}
-  .wb-spatial .wb-drawing img{height:265px}
-  .wb-structural .wb-drawing img{height:122px}
-  .wb-gcode .wb-drawing img{height:130px}
-  .wb-material .wb-drawing img{height:152px}
-  .wb-printing .wb-drawing img{height:225px}
-  .wb-rammed .wb-drawing img{height:200px}
-  .wb-assembly .wb-drawing img{height:220px}
+  .wb-management p { margin: 6px 0; }
+  .wb-index { font-size: 9px; }
+  .wb-name { margin-top: 5px; }
+  .wb-drawing figcaption { font-size: 8px; }
+  .wb-detail { min-width: min(175px,75vw); }
+  .wb-board > .wb-block[open] { z-index: 15; }
+  .wb-assembly .wb-preview::before { top: -10px; right: 1px; }
+  .wb-bottom { font-size: 8px; }
 }
-/* Phone: varied widths and indents preserve the collage without overlap. */
-@media(max-width:620px){
-  .wb-mast h1{font-size:clamp(37px,9.5vw,55px);letter-spacing:-.065em;margin:8px 0 19px}
-  .wb-board{display:block;padding:24px 0 18px;margin-top:0}
-  .wb-board>.wb-block,.wb-board>.wb-phase{
-    position:relative;
-    width:100%;
-    top:auto;left:auto;right:auto;bottom:auto;
-    margin:0 0 43px;
-    max-width:none;
-  }
-  .wb-board>.wb-spatial{width:95%;margin-left:0}
-  .wb-spatial .wb-name{font-size:44px}
-  .wb-spatial .wb-drawing img{height:210px}
-  .wb-board>.wb-structural{width:67%;margin-left:33%;margin-top:2px;margin-bottom:39px}
-  .wb-structural .wb-name{font-size:23px}
-  .wb-structural .wb-drawing img{height:110px}
-  .wb-board>.wb-gcode{width:73%;margin-left:4%;margin-top:0;margin-bottom:42px}
-  .wb-gcode .wb-name{font-size:26px}
-  .wb-gcode .wb-drawing img{height:130px}
-  .wb-board>.wb-material{width:91%;margin-left:9%;margin-bottom:45px}
-  .wb-material .wb-name{font-size:31px}
-  .wb-material .wb-drawing img{height:126px}
-  .wb-material .wb-sample{min-height:106px}
-  .wb-board>.wb-phase{width:100%;margin:0 0 28px;padding:4px 0 7px}
-  .wb-phase strong{font-size:36px}
-  .wb-phase span{font-size:9px}
-  .wb-phase:before{width:72%;top:9px;height:32px}
-  .wb-board>.wb-printing{width:95%;margin-left:0;margin-bottom:50px}
-  .wb-printing .wb-name{font-size:43px}
-  .wb-printing .wb-drawing img{height:220px}
-  .wb-board>.wb-rammed{width:89%;margin-left:11%;margin-top:0;margin-bottom:56px}
-  .wb-rammed .wb-name{font-size:35px}
-  .wb-rammed .wb-drawing img{height:210px}
-  .wb-board>.wb-firing{width:68%;margin:0 0 35px 3%}
-  .wb-firing .wb-name{font-size:28px}
-  .wb-firing .wb-drawing img{height:118px}
-  .wb-board>.wb-assembly{width:94%;margin:0 0 0 6%}
-  .wb-assembly .wb-name{font-size:48px}
-  .wb-assembly .wb-drawing img{height:196px}
-  .wb-assembly .wb-preview:before{right:8px;top:0;font-size:9px}
-  .wb-spatial::after,.wb-structural::after{display:none}
-  .wb-detail{box-shadow:none;background:#fbfaf7}
+@media (max-width: 360px) {
+  .wb-spatial .wb-name { font-size: 25px; }
+  .wb-structural .wb-name { font-size: 21px; }
+  .wb-material .wb-name { font-size: 21px; }
+  .wb-rammed .wb-name { font-size: 23px; }
+  .wb-assembly .wb-name { font-size: 25px; }
+  .wb-phase strong { font-size: 29px; }
 }
-@media(prefers-reduced-motion:reduce){
-  .wb-block .wb-preview:hover .wb-drawing img{transition:none}
+@media (prefers-reduced-motion:reduce) {
+  .wb-preview:hover .wb-drawing img { transform:none;transition:none; }
 }
