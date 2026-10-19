@@ -1,0 +1,41 @@
+name: Inventory Current Rhino Model
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "model.3dm"
+      - "scripts/build_model_inventory.py"
+      - ".github/workflows/model-inventory.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current published model
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Rhino reader
+        run: python -m pip install "rhino3dm>=8,<9"
+      - name: Extract original Rhino GUIDs
+        run: python scripts/build_model_inventory.py model.3dm assets/catalog/model-inventory.json
+      - name: Commit updated inventory if changed
+        run: |
+          if git diff --quiet -- assets/catalog/model-inventory.json && git ls-files --error-unmatch assets/catalog/model-inventory.json >/dev/null 2>&1; then
+            echo "The Rhino model object inventory is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/catalog/model-inventory.json
+          git commit -m "Update published Rhino model GUID inventory"
+          git push
