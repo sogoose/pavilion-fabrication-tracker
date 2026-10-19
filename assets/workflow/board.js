@@ -36,22 +36,19 @@
     if (text != null) el.textContent = String(text);
     return el;
   };
-  // Architectural cut-corner frames: a whole chapter (title, illustration,
-  // caption) is one unit. Every path is deliberately different, while all
-  // drawings remain independent, editable SVG files.
+  // Only the eight manufacturing stages receive an outline. Drying stays
+  // unframed, while the four parallel support groups remain monochrome/plain.
+  // Each closed SVG path has a different L-notch, step, or trapezoidal edge.
+  // These are inline SVG paths (editable here), not baked into source drawings.
   const FRAME_PATHS = {
-    spatial:      'M22 1 H272 L299 28 V214 L272 259 H19 L1 241 V22 Z',
-    structural:   'M1 1 H260 L299 39 V233 L279 259 H22 L1 233 Z',
-    gcode:        'M20 1 H299 V204 L252 259 H1 V21 Z',
-    material:     'M1 28 L30 1 H273 L299 27 V238 L279 259 H1 Z',
-    printing:     'M18 1 H258 L299 42 V216 L259 259 H1 V18 Z',
-    rammed:       'M1 1 H281 L299 18 V235 L275 259 H42 L1 219 Z',
-    firing:       'M28 1 H299 V234 L273 259 H1 V28 Z',
-    assembly:     'M1 19 L23 1 H277 L299 22 V237 L277 259 H1 Z',
-    computational:'M19 1 H278 L299 21 V234 L272 259 H1 V19 Z',
-    construction: 'M1 1 H279 L299 22 V218 L258 259 H19 L1 241 Z',
-    environment:  'M24 1 H299 V224 L264 259 H1 V24 Z',
-    hrc:          'M1 19 L20 1 H265 L299 35 V239 L279 259 H1 Z'
+    spatial:    'M1 28 H24 V1 H261 L299 39 V225 L275 259 H22 L1 238 Z',
+    structural: 'M1 1 H260 L299 40 V202 L273 226 V259 H77 V240 H1 Z',
+    gcode:      'M32 1 H299 V207 H276 L235 259 H1 V34 Z',
+    material:   'M1 33 L35 1 H266 V23 H299 V220 L260 259 H1 V195 H17 V58 H1 Z',
+    printing:   'M1 1 H241 L299 59 V231 H266 V259 H1 V213 H17 V34 H1 Z',
+    rammed:     'M24 1 H299 V22 H278 V225 L245 259 H1 V38 Z',
+    firing:     'M1 26 L28 1 H299 V189 L270 220 V259 H22 L1 237 Z',
+    assembly:   'M1 21 L28 1 H242 L270 22 H299 V216 L264 259 H1 V238 H23 V64 H1 Z'
   };
   const SVG_NS = 'http://www.w3.org/2000/svg';
   nodes.forEach(node => {
