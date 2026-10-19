@@ -2002,8 +2002,6 @@ async function importExcel(file){
 }
 
 function wireUI(){
-  document.getElementById('viewProduction').onclick=()=>setTrackerView('production');
-  document.getElementById('viewFiring').onclick=()=>setTrackerView('firing');
   document.getElementById('modelInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(f)await loadModelFile(f);e.target.value='';});
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
   document.getElementById('downloadExcel').onclick=exportExcel;
