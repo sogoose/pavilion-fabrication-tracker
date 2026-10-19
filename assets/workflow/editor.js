@@ -93,6 +93,9 @@
         linksWrap.append(anchor);
       });
     }
+    // If a previously linkless process gets a file link, hide its old placeholder.
+    const placeholder = body?.querySelector('.wb-note');
+    if (placeholder && linksWrap) placeholder.hidden = linksWrap.querySelectorAll('a').length > 0;
     node.querySelector('.wb-preview, .wp-island-summary')?.setAttribute('aria-label', 'View ' + data.title + ' details');
   };
 
