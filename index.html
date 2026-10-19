@@ -206,6 +206,54 @@
 @media(max-width:950px){.wf-layout{grid-template-columns:1fr}.wf-process{border-right:0}.wf-management{border-top:1px solid #bbb;padding:20px 0}.wf-management svg{display:none}.wf-management-inner{position:static}.wf-step summary{grid-template-columns:27px minmax(125px,1fr) minmax(80px,160px) 15px;gap:8px}.wf-shell{padding:25px 15px 60px}}
 @media(max-width:600px){.chapterNav{order:5;width:100%}.wf-step summary{min-height:95px}.wf-art{height:66px}.wf-detail{padding:10px 8px 17px 35px;display:block}.wf-links{margin-top:10px}.wf-branches{gap:7px}.wf-branches .wf-step summary{grid-template-columns:20px 1fr;gap:5px}.wf-branches .wf-name{font-size:15px}.wf-heading h1{font-size:38px}}
 
+
+/* INTERACTIVE PROCESS MAP */
+.app.workflow-active .workflowScreen{display:block}
+.workflowScreen{background:#f5f5f2;position:relative}
+.pm-page{max-width:1440px;margin:0 auto;padding:32px 35px 60px}
+.pm-header,.pm-foot{display:flex;justify-content:space-between;gap:20px;font:10px/1.4 monospace;letter-spacing:.07em;color:#858580}
+.pm-header{padding-bottom:14px;border-bottom:1px solid #bdbdb8}
+.pm-title{display:flex;justify-content:space-between;align-items:end;padding:25px 0 24px;gap:20px}
+.pm-title h1{font-size:clamp(32px,4.2vw,62px);font-weight:400;letter-spacing:-.06em;line-height:1;margin:0}
+.pm-title span{font:10px monospace;letter-spacing:.03em;white-space:nowrap}
+.pm-title i{display:inline-block;background:#e9d865;width:9px;height:9px;margin-left:5px}
+.pm-scroll{overflow-x:auto;border-top:1px solid #aaa;border-bottom:1px solid #aaa}
+.pm-grid{position:relative;min-width:730px;height:850px;background:linear-gradient(to right,transparent 49.95%,rgba(0,0,0,.03) 50%,transparent 50.05%)}
+.pm-connections{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pm-node-layer{position:absolute;inset:0}
+.pm-node{position:absolute;left:var(--nx);top:var(--ny);width:26%;height:150px;border:1px solid #363633;background:#fcfcfa;border-radius:0;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:12px 14px 9px;z-index:2;transition:background .16s,box-shadow .16s,transform .16s}
+.pm-node:hover,.pm-node:focus-visible{background:#f5f1d7;box-shadow:3px 3px 0 #222;transform:translate(-2px,-2px)}
+.pm-node.selected{outline:2px solid #111;outline-offset:3px}
+.pm-node-label{font:12px/1.2 Arial,sans-serif;letter-spacing:.035em;display:flex;align-items:center;gap:11px}
+.pm-number{font:10px monospace;color:#858580}
+.pm-art{height:92px;width:100%;color:#444;transition:transform .2s}
+.pm-node:hover .pm-art{transform:scale(1.055)}
+.pm-fabrication-zone{position:absolute;left:8%;top:50%;width:78%;height:25%;border:1px solid #ac913f;background:rgba(244,226,118,.44);z-index:1}
+.pm-zone-head{display:flex;justify-content:space-between;gap:5px;padding:8px 10px;font:11px monospace;letter-spacing:.035em}
+.pm-printing,.pm-rammed{background:#fffbed;border-color:#837643}
+.pm-firing{border-style:dashed}
+.pm-assembly{border-style:dashed;opacity:.68}
+.pm-connector-caption{position:absolute;top:76%;left:43%;font:9px monospace;letter-spacing:.03em;color:#777}
+.pm-management{display:flex;align-items:start;gap:30px;padding:22px 0;border-bottom:1px solid #bbb}
+.pm-aside-index{font:11px monospace;white-space:nowrap;min-width:235px}
+.pm-management p{font-size:12px;line-height:1.55;color:#666;margin:0;flex:1}
+.pm-management a{font:11px monospace;color:#111;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
+.pm-foot{padding-top:15px}
+.pm-overlay{position:fixed;inset:0;z-index:1500;display:none}
+.pm-overlay.open{display:block}
+.pm-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.24);border:0;border-radius:0;width:100%;height:100%;padding:0;cursor:default}
+.pm-drawer{position:absolute;right:0;top:0;height:100%;width:min(430px,93vw);background:#f5f5f2;border-left:1px solid #111;padding:26px;overflow-y:auto;box-shadow:-8px 0 25px rgba(0,0,0,.08)}
+.pm-drawer-top{display:flex;justify-content:space-between;align-items:center;font:11px monospace;border-bottom:1px solid #aaa;padding-bottom:15px}
+.pm-drawer-top button{background:transparent;border:0;font-size:26px;line-height:1}
+#pmDrawerArt{margin-top:38px;border-bottom:1px solid #ddd;padding-bottom:23px}
+#pmDrawerArt .pm-art{height:160px}
+.pm-drawer h2{font-weight:400;font-size:32px;letter-spacing:-.045em;margin:25px 0}
+.pm-drawer p{color:#666;font-size:14px;line-height:1.65}
+.pm-drawer-links{display:grid;gap:10px;margin-top:30px}
+.pm-drawer-links a,.pm-drawer-links button{display:block;border:1px solid #888;border-radius:0;padding:13px;text-align:left;text-decoration:none;color:#111;background:transparent;font:12px monospace;cursor:pointer}
+.pm-drawer-links a:hover,.pm-drawer-links button:hover{background:#e9df9d}
+@media(max-width:760px){.pm-page{padding:23px 14px 50px}.pm-title{display:block}.pm-title span{display:block;margin-top:15px}.pm-grid{width:730px}.pm-management{display:grid;gap:12px}.pm-node-label{font-size:11px}.pm-foot span:last-child{display:none}}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -265,27 +313,39 @@
   </header>
 
   
-<section id="workflowView" class="workflowScreen" aria-label="Project workflow">
-<div class="wf-shell">
-<div class="wf-kicker"><span>PROJECT / PROCESS DOCUMENTATION</span><span>CREATIVE ROBOTICS — 2026</span></div>
-<div class="wf-heading"><h1>Fabrication Workflow</h1><small>01 — 08 / PROCESS</small></div>
-<div class="wf-layout">
-<div class="wf-process">
-<details class="wf-step "><summary><span class="wf-no">01</span><span class="wf-name">Spatial Design</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M32 62L93 76L176 47L115 32Z M32 62V33L115 7L176 25V47 M115 7V32M32 33L93 47L176 25M93 47V76 M54 67V27M76 71V20M116 32V65M140 55V18" opacity=".7"/><path d="M32 62L93 76L176 47 M115 7L32 33L93 47L176 25" stroke-width="1.5"/><path d="M15 77H190 M15 10V77" stroke-dasharray="2 4" opacity=".3"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Rhino geometry and module design. The latest model is maintained in the shared project files.</p><div class="wf-links"><a class="wf-link" target="_blank" rel="noopener noreferrer" href="https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng">Open design files ↗</a></div></div></details>
-<details class="wf-step "><summary><span class="wf-no">02</span><span class="wf-name">Structural Check</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M30 68H186M42 68V31H174V68 M42 31L75 68L108 31L141 68L174 31 M42 31H174" /><path d="M108 4V26M103 21L108 29L113 21M74 7V27M69 22L74 30L79 22M140 7V27M135 22L140 30L145 22" stroke="#a35545" stroke-width="1.4"/><path d="M37 75h10m57 0h10m57 0h10 M37 77l5 5 5-5M104 77l5 5 5-5M171 77l5 5 5-5" opacity=".7"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Structural verification of module geometry before fabrication. Reference files to be added when available.</p><div class="wf-links"></div></div></details>
-<details class="wf-step "><summary><span class="wf-no">03</span><span class="wf-name">G-code Generation</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M38 16L171 16L187 33L171 67L38 67L22 46Z M48 22H163L177 35L163 60H48L33 45Z M58 29H154L167 37L155 54H57L45 43Z" /><path d="M56 53l35-25m-21 26 36-26m-20 26 37-26m-20 26 37-26m-20 26 30-23" opacity=".6"/><path d="M180 7V19M174 13H186" stroke-width="1.4"/><path d="M18 76H188" stroke-dasharray="3 4" opacity=".3"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Toolpaths are organized by machine, then module, in Teams. Module-specific uploads and attachments remain in the existing Tracker.</p><div class="wf-links"><a class="wf-link" target="_blank" rel="noopener noreferrer" href="https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng">Open toolpath files ↗</a></div></div></details>
-<details class="wf-step "><summary><span class="wf-no">04</span><span class="wf-name">Material Preparation</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M41 23L56 76H156L173 23M38 23H176M49 47H164" /><path d="M79 9L114 43M114 43L128 37M114 43L105 31"/><path d="M48 55Q66 48 85 56T125 56T164 55 M53 62Q74 57 95 64T153 63" opacity=".6"/><g fill="currentColor" stroke="none"><circle cx="60" cy="57" r="1.8" opacity=".6"/><circle cx="101" cy="60" r="1.1" opacity=".6"/><circle cx="142" cy="63" r="1.1" opacity=".6"/><circle cx="92" cy="66" r="1.8" opacity=".6"/><circle cx="133" cy="69" r="1.1" opacity=".6"/><circle cx="83" cy="58" r="1.1" opacity=".6"/><circle cx="124" cy="61" r="1.8" opacity=".6"/><circle cx="74" cy="64" r="1.1" opacity=".6"/><circle cx="115" cy="67" r="1.1" opacity=".6"/><circle cx="65" cy="70" r="1.8" opacity=".6"/><circle cx="106" cy="59" r="1.1" opacity=".6"/><circle cx="147" cy="62" r="1.1" opacity=".6"/><circle cx="97" cy="65" r="1.8" opacity=".6"/><circle cx="138" cy="68" r="1.1" opacity=".6"/><circle cx="88" cy="57" r="1.1" opacity=".6"/><circle cx="129" cy="60" r="1.8" opacity=".6"/><circle cx="79" cy="63" r="1.1" opacity=".6"/><circle cx="120" cy="66" r="1.1" opacity=".6"/><circle cx="70" cy="69" r="1.8" opacity=".6"/><circle cx="111" cy="58" r="1.1" opacity=".6"/><circle cx="61" cy="61" r="1.1" opacity=".6"/><circle cx="102" cy="64" r="1.8" opacity=".6"/><circle cx="143" cy="67" r="1.1" opacity=".6"/></g></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Mix composition, preparation and batch information. The shared workbook includes mix and material records for both fabrication methods.</p><div class="wf-links"><a class="wf-link" target="_blank" rel="noopener noreferrer" href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c">Materials workbook ↗</a></div></div></details>
-<div class="wf-stage"><div class="wf-stagehead"><span class="wf-no">05</span><strong>Fabrication</strong></div><div class="wf-branches">
-<details class="wf-step "><summary><span class="wf-no">A</span><span class="wf-name">3D Printing</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M20 70H189M36 61L105 79L173 59L105 42Z M45 58V49L105 32L164 49V57 M45 49L105 67L164 49M45 53L105 71L164 53 M45 57L105 75L164 57"/><path d="M109 5V29M100 5H117V19H100Z M109 19L104 29H114Z"/><path d="M110 29V44" stroke-dasharray="2 3" /><path d="M117 14h44m-9-7v14" opacity=".4"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Robotic extrusion using WASP, UR5 or COMAU. Machine parameters, production status and G-code attachments are recorded in the Tracker.</p><div class="wf-links"><a class="wf-link wf-tracker-link" href="#tracker">Open Tracker ↗</a></div></div></details>
-<details class="wf-step "><summary><span class="wf-no">B</span><span class="wf-name">Rammed Earth</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M48 15V70H159V15 M39 15H168M48 70H159M57 63H150V50H57Z M57 48H150V35H57Z M57 33H150V22H57Z"/><path d="M95 4V16M115 4V16M83 16H126V21H83Z M88 4H122" stroke-width="1.5"/><path d="M63 57h79M63 43h79M63 29h79" stroke-dasharray="2 3" opacity=".6"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Manual mould preparation, material filling and compaction. Production records and shift assignments are maintained in the Tracker and workbook.</p><div class="wf-links"><a class="wf-link" target="_blank" rel="noopener noreferrer" href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c">Rammed Earth shifts ↗</a> <a class="wf-link wf-tracker-link" href="#tracker">Open Tracker ↗</a></div></div></details>
+<section id="workflowView" class="workflowScreen" aria-label="Interactive fabrication process map">
+<div class="pm-page">
+<div class="pm-header"><span>PROJECT / PROCESS MAP</span><span>2026 — CREATIVE ROBOTICS</span></div>
+<div class="pm-title"><h1>Fabrication Workflow</h1><span>ACTIVE PHASE&nbsp; / &nbsp; FABRICATION <i></i></span></div>
+<div class="pm-scroll"><div class="pm-grid">
+<svg class="pm-connections" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#555" stroke-width="1.3">
+<defs><marker id="pm-arr" orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3"><path d="M0 0L6 3L0 6" stroke="#555" fill="none"/></marker></defs>
+<path d="M270 98H530" marker-end="url(#pm-arr)"/>
+<path d="M660 156V202H270V238" marker-end="url(#pm-arr)"/>
+<path d="M660 156V238" marker-end="url(#pm-arr)"/>
+<path d="M270 395V460H500V483" marker-end="url(#pm-arr)"/>
+<path d="M660 395V460H500"/>
+<path d="M270 655V697" marker-end="url(#pm-arr)" stroke-dasharray="5 5"/>
+<path d="M270 655V755H660V786" marker-end="url(#pm-arr)"/>
+<path d="M660 655V786" marker-end="url(#pm-arr)"/>
+</svg>
+<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>← CURRENT PHASE</span></div></div>
+<div class="pm-node-layer"><button class="pm-node pm-spatial" type="button" style="--nx:13%;--ny:6%" data-process="spatial" aria-label="SPATIAL DESIGN details"><span class="pm-node-label"><span class="pm-number">01</span>SPATIAL DESIGN</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 45L64 58L122 37L72 24Z M14 45V21L72 5L122 19V37 M14 21L64 34L122 19 M64 34V58M72 5V24 M35 51V15M95 46V12"/></svg></button>
+<button class="pm-node pm-structural" type="button" style="--nx:53%;--ny:6%" data-process="structural" aria-label="STRUCTURAL CHECK details"><span class="pm-node-label"><span class="pm-number">02</span>STRUCTURAL CHECK</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M13 53H126 M21 48V17H119V48 M21 17L45 48L70 17L94 48L119 17 M21 17H119"/><path d="M70 1V14m-5-5 5 5 5-5M45 1v13m-5-5 5 5 5-5M94 1v13m-5-5 5 5 5-5" stroke-dasharray="3 2"/></svg></button>
+<button class="pm-node pm-gcode" type="button" style="--nx:13%;--ny:28%" data-process="gcode" aria-label="G-CODE GENERATION details"><span class="pm-node-label"><span class="pm-number">03</span>G-CODE GENERATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 12H111L125 24L109 50H16L5 32Z M24 18H102L115 27L100 44H24L15 31Z M32 24H94L103 29L94 38H32L25 31Z"/><path d="M29 38l18-14m-3 14 19-14m-3 14 19-14m-3 14 17-13" opacity=".7"/></svg></button>
+<button class="pm-node pm-material" type="button" style="--nx:53%;--ny:28%" data-process="material" aria-label="MATERIAL PREPARATION details"><span class="pm-node-label"><span class="pm-number">04</span>MATERIAL PREPARATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M23 12L37 55H101L115 12M18 12H121M29 31H109M54 2L80 31M80 31l12-7"/><path d="M34 39q13-6 27 0t27 0t19 0M38 46q13-5 25 0t27 0" stroke-dasharray="2 3"/></svg></button>
+<button class="pm-node pm-printing" type="button" style="--nx:13%;--ny:54%" data-process="printing" aria-label="3D PRINTING details"><span class="pm-node-label"><span class="pm-number">A</span>3D PRINTING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M15 48L67 61L119 47L67 33Z M25 43v-9L67 21L109 35v9M25 34L67 47L109 35M25 40L67 53L109 41M67 47v14"/><path d="M66 2V21M56 2h20v9H56zM66 11l-6 10h12z M66 21v12" stroke-dasharray="3 2"/></svg></button>
+<button class="pm-node pm-rammed" type="button" style="--nx:53%;--ny:54%" data-process="rammed" aria-label="RAMMED EARTH details"><span class="pm-node-label"><span class="pm-number">B</span>RAMMED EARTH</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M20 8V56H116V8M13 8h110M20 56h96M28 18H108V30H28zM28 32h80v12H28zM28 46h80v8H28zM68 0v10M58 0h20"/><path d="M29 23h78M29 37h78M29 49h78" stroke-dasharray="2 3"/></svg></button>
+<button class="pm-node pm-firing" type="button" style="--nx:13%;--ny:76%" data-process="firing" aria-label="FIRING / SELECTIVE details"><span class="pm-node-label"><span class="pm-number">06</span>FIRING / SELECTIVE</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M19 56V17Q66 -12 114 17V56H19Z M29 49V23H104V49H29Z M29 35H104 M37 29h18v6H37zM61 29h18v6H61zM85 29h13v6H85z"/><path d="M9 14q-8 13 0 27m115-27q8 13 0 27" stroke-dasharray="3 3"/></svg></button>
+<button class="pm-node pm-assembly" type="button" style="--nx:53%;--ny:87%" data-process="assembly" aria-label="ASSEMBLY / UPCOMING details"><span class="pm-node-label"><span class="pm-number">07</span>ASSEMBLY / UPCOMING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M17 50L68 62L117 46L68 34Z M17 50V34L68 18L117 33V46M17 34l51 12 49-13M68 46v16M36 28v27M94 27v27"/><path d="M29 14L65 1L105 13M105 13l-7-7m7 7-9 2" stroke-dasharray="3 3"/></svg></button></div>
+<div class="pm-connector-caption">OPTIONAL POST-PROCESSING ↓</div>
 </div></div>
-<details class="wf-step "><summary><span class="wf-no">06</span><span class="wf-name">Firing</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M43 74V22H168V74 M43 22Q105 -8 168 22 M43 74H168 M55 64H156V29H55Z M55 48H156" /><path d="M68 45h21v-12H68Z M101 45h22v-12h-22Z M134 45h15v-12h-15Z M78 61V51 M105 61V51 M132 61V51" /><path d="M32 14q-11 17 0 30m148-30q11 17 0 30" stroke-dasharray="3 4" opacity=".6"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Optional post-processing for selected printed modules only. Firing route and status are managed in the existing module data.</p><div class="wf-links"><a class="wf-link wf-tracker-link" href="#tracker">Open Tracker ↗</a></div></div></details>
-<details class="wf-step "><summary><span class="wf-no">07</span><span class="wf-name">Production Tracking</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M38 16L171 16L187 33L171 67L38 67L22 46Z M48 22H163L177 35L163 60H48L33 45Z M58 29H154L167 37L155 54H57L45 43Z" /><path d="M56 53l35-25m-21 26 36-26m-20 26 37-26m-20 26 37-26m-20 26 30-23" opacity=".6"/><path d="M180 7V19M174 13H186" stroke-width="1.4"/><path d="M18 76H188" stroke-dasharray="3 4" opacity=".3"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Module-level manufacturing records, photographs, statuses and attachments are maintained in the existing 3D Tracker.</p><div class="wf-links"><a class="wf-link wf-tracker-link" href="#tracker">Open Tracker ↗</a></div></div></details>
-<details class="wf-step wf-future"><summary><span class="wf-no">08</span><span class="wf-name">Assembly / Upcoming</span><svg class="wf-art" viewBox="0 0 210 90" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width=".85" stroke-linejoin="round"><path d="M33 73L105 84L178 64L105 53Z M33 73V48L105 28L178 48V64 M33 48L105 65L178 48 M105 65V84 M53 45V69M77 37V75M128 35V75M151 42V70"/><path d="M37 35L91 19L144 35 M144 35l-9-6m9 6-10 0" stroke-dasharray="3 4"/><path d="M174 12v25m-5-5 5 5 5-5" opacity=".6"/></svg><span class="wf-expand">+</span></summary><div class="wf-detail"><p>Future assembly phase, following fabrication and any required post-processing. Not yet part of the active production record.</p><div class="wf-links"></div></div></details>
+<aside class="pm-management"><span class="pm-aside-index">CONSTRUCTION MANAGEMENT &nbsp; ↗</span><p>To check our tasks in detail, follow the Construction Management team's guidance.</p><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a></aside>
+<div class="pm-foot"><span>SELECT A PROCESS TO EXPLORE ITS FILES AND REFERENCES.</span><span>SYSTEM / WORKFLOW 01</span></div>
 </div>
-<aside class="wf-management"><div class="wf-management-inner"><div class="wf-mono">PARALLEL WORKSTREAM</div><h2>Construction<br>Management</h2><svg viewBox="0 0 200 175" fill="none" stroke="currentColor" stroke-width="1"><path d="M16 13H170M16 13V166H170M16 43H160M16 74H160M16 105H160M16 136H160" opacity=".45"/><path d="M37 21v13m35-13v13m35-13v13m35-13v13 M37 52v13m35-13v13m35-13v13m35-13v13 M37 83v13m35-13v13m35-13v13m35-13v13 M37 114v13m35-13v13m35-13v13m35-13v13"/><path d="M16 166H170" stroke-width="2"/><path d="M170 14h18v152h-18" stroke-dasharray="3 4"/></svg><p>Production coordination, materials, work shifts and team scheduling across both fabrication methods.</p><a class="wf-link" target="_blank" rel="noopener noreferrer" href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c">Open planning workbook ↗</a></div></aside>
-</div><div class="wf-bottom"><span>DESIGN / MATERIAL / MACHINE / FABRICATION</span><span>WORKFLOW ↔ TRACKER</span></div>
-</div></section>
+<div class="pm-overlay" id="pmOverlay" aria-hidden="true"><button type="button" class="pm-backdrop" id="pmBackdrop" aria-label="Close detail"></button><aside class="pm-drawer" role="dialog" aria-label="Process details"><div class="pm-drawer-top"><span id="pmDrawerIndex">01 / PROCESS</span><button type="button" id="pmClose" aria-label="Close">×</button></div><div id="pmDrawerArt"></div><h2 id="pmDrawerTitle"></h2><p id="pmDrawerText"></p><div class="pm-drawer-links" id="pmDrawerLinks"></div></aside></div>
+</section>
+
   <div class="main">
     <section id="viewerWrap">
       <div id="viewer"></div>
@@ -1964,6 +2024,41 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
  tracker.addEventListener('click',()=>switchChapter('tracker'));
  document.querySelectorAll('.wf-tracker-link').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();switchChapter('tracker');}));
  if(location.hash==='#workflow')switchChapter('workflow');
+})();
+</script>
+
+<script>
+(function(){
+ const data={
+ spatial:{index:"01",title:"Spatial Design",text:"Design geometry and modular Rhino source. Open the shared Teams resource.",links:[["OPEN RHINO / TEAMS FILES","https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng"]]},
+ structural:{index:"02",title:"Structural Check",text:"Verification of module geometry and structural stability before fabrication. Supporting references can be added when they are available.",links:[]},
+ gcode:{index:"03",title:"G-code Generation",text:"Toolpaths are arranged in Teams by machine and then by module. Existing module G-code attachments remain unchanged in the Tracker.",links:[["OPEN G-CODE FILES","https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng"]]},
+ material:{index:"04",title:"Material Preparation",text:"Preparation and mixing of soil-based composites. The workbook contains material and fabrication records.",links:[["OPEN MATERIALS / SHIFTS","https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c"]]},
+ printing:{index:"05A",title:"3D Printing",text:"Robotic extrusion with WASP, UR5 and COMAU. UR5 and COMAU require the relevant Arduino setup. Use existing Tracker records for module-level settings and attachments.",links:[["OPEN TRACKER","#tracker"]]},
+ rammed:{index:"05B",title:"Rammed Earth",text:"Material filling and compaction in moulds. Shift planning and production records remain in the shared workbook and Tracker.",links:[["OPEN RAMMED EARTH SHIFTS","https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c"],["OPEN TRACKER","#tracker"]]},
+ firing:{index:"06",title:"Firing",text:"Selective post-processing applies only to some 3D-printed modules. Firing status and details stay within existing Tracker fields.",links:[["OPEN TRACKER","#tracker"]]},
+ assembly:{index:"07",title:"Assembly",text:"Upcoming construction phase. Placed downstream of optional firing and both fabrication routes.",links:[]}
+ };
+ const overlay=document.getElementById('pmOverlay');if(!overlay)return;
+ function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.querySelectorAll('.pm-node').forEach(n=>n.classList.remove('selected'));}
+ document.querySelectorAll('.pm-node').forEach(n=>n.addEventListener('click',()=>{
+  const d=data[n.dataset.process];if(!d)return;
+  document.querySelectorAll('.pm-node').forEach(e=>e.classList.toggle('selected',e===n));
+  document.getElementById('pmDrawerIndex').textContent=d.index+' / PROCESS';
+  document.getElementById('pmDrawerTitle').textContent=d.title;
+  document.getElementById('pmDrawerText').textContent=d.text;
+  document.getElementById('pmDrawerArt').innerHTML=n.querySelector('svg').outerHTML;
+  const links=document.getElementById('pmDrawerLinks');links.replaceChildren();
+  d.links.forEach(([label,url])=>{const a=document.createElement('a');a.textContent=label+' ↗';a.href=url;
+   if(url==='#tracker'){a.addEventListener('click',e=>{e.preventDefault();close();document.getElementById('navTracker').click();});}
+   else{a.target='_blank';a.rel='noopener noreferrer';}
+   links.appendChild(a);
+  });
+  overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('pmClose').focus();
+ }));
+ document.getElementById('pmBackdrop').addEventListener('click',close);
+ document.getElementById('pmClose').addEventListener('click',close);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 })();
 </script>
 </body>
