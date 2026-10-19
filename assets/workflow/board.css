@@ -84,13 +84,13 @@
   text-underline-offset: 4px;
 }
 
-/* Compact, nearly square desktop workflow board (1200 × 1320, 1 : 1.1).
- * Native SVG artwork stays undistorted; only its stage framing changes. */
+/* Extended portrait workflow board (1200 × 1930): Assembly is a large,
+ * standalone concluding drawing beneath the paired fabrication processes. */
 .wb-board {
   position: relative;
   width: min(1200px,100%);
-  aspect-ratio: 10 / 11;
-  height: 1320px;
+  aspect-ratio: 1200 / 1930;
+  height: 1930px;
   margin: 20px auto 0;
   isolation: isolate;
   overflow: visible;
@@ -99,7 +99,7 @@
   position: absolute;
   inset: 0 auto auto 0;
   width: 100%;
-  height: 1320px;
+  height: 1930px;
   z-index: 0;
   overflow: visible;
   pointer-events: none;
@@ -227,9 +227,8 @@
 .wb-links a:hover { color: #927433; }
 .wb-note { color: #aaa79c; font-size: 9px; }
 
-/* More vertical, three-cluster editorial composition.
- * Paired stages retain the actual sequence: spatial → structural →
- * G-code / material → printing / rammed → drying → firing / assembly. */
+/* Asymmetric editorial composition. Firing remains an optional side path,
+ * while Assembly concludes the workflow alone in the bottom centre. */
 .wb-spatial   { --x:8%;   --y:26px;   --w:23%; }
 .wb-structural{ --x:67%;  --y:26px;   --w:23%; }
 .wb-gcode     { --x:32%;  --y:318px;  --w:21%; }
@@ -237,7 +236,7 @@
 .wb-printing  { --x:12%;  --y:666px;  --w:24%; }
 .wb-rammed    { --x:70%;  --y:666px;  --w:24%; }
 .wb-firing    { --x:11%;  --y:1053px; --w:22%; }
-.wb-assembly  { --x:69%;  --y:1053px; --w:24%; }
+.wb-assembly  { --x:32%;  --y:1420px; --w:36%; }
 /* Drying is a deliberately unnumbered, noninteractive process marker. */
 .wb-drying {
   position:absolute;
@@ -262,7 +261,7 @@
 .wb-printing .wb-name { font-size: 23px; }
 .wb-rammed .wb-name { font-size: 22px; }
 .wb-firing .wb-name { font-size: 20px; }
-.wb-assembly .wb-name { font-size: 23px; }
+.wb-assembly .wb-name { font-size: 31px; }
 .wb-assembly .wb-preview::before {
   content: "UPCOMING";
   position: absolute;
@@ -271,6 +270,11 @@
   color: #a19e93;
   font: 9px "IBM Plex Mono",monospace;
 }
+/* The pavilion axonometric is intentionally the single, larger final image. */
+.wb-assembly .wb-preview { align-items:center; text-align:center; }
+.wb-assembly .wb-drawing { width:min(100%,330px); }
+.wb-assembly .wb-drawing img { aspect-ratio:10 / 11; }
+.wb-assembly .wb-detail { max-width:345px; margin:10px auto 0; text-align:left; }
 .wb-firing .wb-index { color: #99988f; }
 
 .wb-material-layout { display: flex; align-items: center; gap: 8px; }
@@ -347,8 +351,8 @@
   .wb-mast { gap: 20px; }
   .wb-mast h1 { font-size: clamp(34px,4.6vw,48px); }
   .wb-management { width: 236px; }
-  .wb-board { width: min(460px,100%); height: 1640px; aspect-ratio:auto; margin-top: 14px; }
-  .wb-arrows { height: 1640px; }
+  .wb-board { width: min(460px,100%); height: 2010px; aspect-ratio:auto; margin-top: 14px; }
+  .wb-arrows { height: 2010px; }
   .wb-arrows-desktop { display: none !important; }
   .wb-arrows-mobile { display: block !important; }
 
@@ -359,7 +363,7 @@
   .wb-printing   { --x:4%;  --y:845px;  --w:46%; --image-h:112px; }
   .wb-rammed     { --x:58%; --y:850px;  --w:40%; --image-h:100px; }
   .wb-firing     { --x:7%;  --y:1198px;  --w:35%; --image-h:80px; }
-  .wb-assembly   { --x:56%; --y:1380px; --w:43%; --image-h:124px; }
+  .wb-assembly   { --x:12%; --y:1600px; --w:76%; }
   .wb-drying { left:35%; top:1105px; width:32%; font-size:18px; }
 
   .wb-phase      { top: 732px; left: 25%; width: 54%; }
@@ -373,7 +377,8 @@
   .wb-printing .wb-name { font-size: 21px; }
   .wb-rammed .wb-name { font-size: 20px; }
   .wb-firing .wb-name { font-size: 18px; }
-  .wb-assembly .wb-name { font-size: 21px; }
+  .wb-assembly .wb-name { font-size: 26px; }
+  .wb-assembly .wb-drawing { width:min(100%,255px); }
   .wb-material .wb-sample { width: 26px; height: 43px; }
   .wb-material-layout { gap: 1px; }
   .wb-management p { font-size: 11px; }
@@ -403,7 +408,7 @@
   .wb-structural .wb-name { font-size: 17px; }
   .wb-material .wb-name { font-size: 17px; }
   .wb-rammed .wb-name { font-size: 18px; }
-  .wb-assembly .wb-name { font-size: 20px; }
+  .wb-assembly .wb-name { font-size: 25px; }
   .wb-phase strong { font-size: 25px; }
 }
 @media (prefers-reduced-motion:reduce) {
