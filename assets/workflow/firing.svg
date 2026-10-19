@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Firing — Pavilion Workflow</title>
+<!-- a selective post-process in a kiln, perforated block on shelf -->
+<path d="M30 10H108V60H30Z M37 17H101V52H37Z M37 44H101M30 54H108"/>
+<path d="M51 41V30L61 25L74 30V41M74 41V30L85 27L93 31V41"/>
+<path d="M54 30L61 34L71 30M78 31L85 35L90 32" opacity=".65"/>
+<path d="M43 22Q49 15 52 23M97 19Q91 14 88 22" stroke-dasharray="2 3" opacity=".55"/>
+<path d="M19 43Q13 34 20 25Q25 19 20 11M119 43Q125 34 118 25Q113 19 118 11" stroke-dasharray="3 4" opacity=".7"/>
+<circle cx="105" cy="14" r="2"/>
+</svg>
