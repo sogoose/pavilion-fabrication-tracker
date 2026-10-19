@@ -30,6 +30,32 @@ Edit either in Illustrator and replace the same file on GitHub. You can move a c
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
+## Team credits and parallel work packages
+
+**There are two distinct layers on the Workflow page.**
+
+1. The **main fabrication path** retains the editable curved arrow SVGs and the eight process illustrations. Each expandable process has a small `WORK PACKAGE` or `FABRICATION CREW` footnote directly in its `<summary>` in `index.html`.
+2. The **Parallel Work Packages** section sits *outside* the arrow-connected workflow. These separate islands are independent research and support work packages, with team lists and optional file links. Their HTML lives immediately below `<div class="wb-board">` in `index.html` and their layout in `board.css`.
+
+Current published team credits, from the supplied roster:
+- Spatial: Yassmina
+- Structural: Rojin, Ruben, Wenxiao
+- G-code: team unconfirmed
+- Materials: Linda, Evgenia, Tamara
+- 3D printing / rammed-earth fabrication: rotating student teams of 2–3 (not the robotic support work-package team)
+- Firing: Hongyuan, Yishan
+- On-site assembly: team unconfirmed
+
+Separate work packages:
+- Computational Workflow: Sohyun
+- Construction Management: Niels, Donna
+- Printing/Robotic Setups: Maria, Elisavet
+- HRC Assembly: Suzanne, Parjanya, Matthias, Jin
+- Environmental Monitoring: Sonya, Gergana
+- Computer Vision and Machine Learning: proposed in the studio brief, but **not listed with confirmed members** in the provided work-package roster. Do not represent them as assigned until confirmed.
+
+To modify a member list, edit only the visible text in `index.html`; no JS/data migration is required. Existing links to the shared material/shift workbook and Tracker are preserved. The team overlays are separate from the production database.
+
 ## Edit the layout or wording
 
 The page uses Google Fonts **Syne SemiBold** for the main title, chapter names and Fabrication phase label, **Inter** for descriptions, and **IBM Plex Mono** for indices and technical captions. Fallbacks are included if external fonts do not load.
