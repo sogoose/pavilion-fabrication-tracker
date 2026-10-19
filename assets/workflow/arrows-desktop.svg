@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1200 1930" fill="none">
-<title>Workflow connections — simplified straight-edged desktop routes</title>
+<title>Workflow connections — subtly curved desktop routes</title>
 <defs>
   <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto">
     <path d="M1.5 2L14 9L1.5 16" fill="none" stroke="#a8a69c" stroke-width="1.35" stroke-linejoin="round" stroke-linecap="round"/>
@@ -8,24 +8,24 @@
 </defs>
 <g stroke="#b3afa4" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".91">
   <!-- Spatial Design → Structural Check -->
-  <path d="M375 159 L793 159" marker-end="url(#arr)"/>
+  <path d="M375 159 Q584 148 793 159" marker-end="url(#arr)"/>
   <!-- Structural Check → G-code Generation -->
-  <path d="M820 265 L644 308" marker-end="url(#arr)"/>
+  <path d="M820 265 Q732 280 644 308" marker-end="url(#arr)"/>
   <!-- Structural Check → Material Preparation (direct vertical) -->
   <path d="M954 257 V311" marker-end="url(#arr)"/>
   <!-- G-code Generation → 3D Printing -->
-  <path d="M492 565 L331 648" marker-end="url(#arr)"/>
+  <path d="M492 565 Q411 596 331 648" marker-end="url(#arr)"/>
   <!-- Material Preparation → Rammed Earth -->
-  <path d="M1042 573 L1032 653" marker-end="url(#arr)"/>
+  <path d="M1042 573 Q1029 612 1032 653" marker-end="url(#arr)"/>
   <!-- 3D Printing → Drying -->
-  <path d="M402 926 L552 947" marker-end="url(#arr)"/>
+  <path d="M402 926 Q475 930 552 947" marker-end="url(#arr)"/>
   <!-- Rammed Earth → Drying -->
-  <path d="M945 927 L656 947" marker-end="url(#arr)"/>
+  <path d="M945 927 Q801 935 656 947" marker-end="url(#arr)"/>
   <!-- Drying → optional Firing / Glazing -->
-  <path d="M545 991 L383 1046" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <path d="M545 991 Q466 1008 383 1046" stroke-dasharray="4 6" marker-end="url(#arr)"/>
   <!-- Drying → Assembly (bypass Fabrication label) -->
-  <path d="M679 996 L935 1380 L868 1405" marker-end="url(#arr)"/>
+  <path d="M679 996 Q817 1207 935 1380 Q935 1395 868 1405" marker-end="url(#arr)"/>
   <!-- Firing / Glazing → Assembly -->
-  <path d="M370 1260 L456 1370 L490 1406" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <path d="M370 1260 Q430 1321 456 1370 Q471 1390 490 1406" stroke-dasharray="4 6" marker-end="url(#arr)"/>
 </g>
 </svg>
