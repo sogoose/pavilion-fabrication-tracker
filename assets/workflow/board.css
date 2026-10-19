@@ -1370,3 +1370,148 @@
   #workflowView .wb-board .wb-phase {z-index:3;}
   #workflowView .wp-island-summary {min-height:170px;padding:14px 9px;}
 }
+
+
+/* FINAL REFINEMENT / puzzle contours, no support frames, chapter inverse
+   Preserve Illustrator source SVGs and the absolute arrow map. Only the inline
+   process-frame SVG paths change shape, and only eight primary chapters have one. */
+
+/* L-shaped open editorial bracket, not a box around the headline. */
+#workflowView .wb-mast h1 {
+  padding:12px 24px 22px 25px;
+  margin:9px 0 0;
+}
+#workflowView .wb-mast h1::before {
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M2 3 V95 H45' fill='none' stroke='%23292e31' stroke-width='1.25' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+}
+#workflowView .wb-mast,
+#workflowView .wb-bottom {
+  border-top:0;
+  border-bottom:0;
+}
+#workflowView .wb-mast::before,
+#workflowView .wb-management::before {display:none!important;}
+#workflowView .wb-management {
+  border:0;
+  padding:0;
+  margin-bottom:3px;
+}
+#workflowView .wb-management-label {color:#343a41;}
+#workflowView .wp-cluster {
+  border:0;
+  padding-top:8px;
+}
+
+/* The Structural → Material pair had almost no breathing room.
+   This controlled illustration height creates separation WITHOUT moving the
+   HTML stage anchors or their SVG arrow connections. */
+#workflowView .wb-board .wb-structural .wb-preview .wb-drawing img {
+  width:auto;
+  max-width:100%;
+  height:132px;
+  aspect-ratio:auto;
+  object-fit:contain;
+}
+
+/* Restore Drying to a plain connector label, without an enclosing contour. */
+#workflowView .wb-drying {
+  border:0;
+  border-radius:0;
+  clip-path:none;
+  padding:3px 8px;
+  background:#fff;
+  width:16%;
+  box-shadow:none;
+}
+
+/* The auxiliary four are independent and deliberately unframed. */
+#workflowView .wp-cluster .wp-island,
+#workflowView .wp-cluster .wp-island-summary {
+  border:0!important;
+  background:transparent;
+  box-shadow:none;
+}
+#workflowView .wp-cluster .wp-island {
+  min-height:0;
+  --stage-accent:#565b60;
+}
+#workflowView .wp-cluster .wp-island-summary {
+  min-height:185px;
+  padding:10px 8px;
+}
+#workflowView .wp-cluster .wp-island-summary > .wb-stage-frame {display:none!important;}
+#workflowView .wp-cluster .wp-art {filter:grayscale(1)!important;}
+
+/* Main chapters: white drawings + labels on an accent-filled shape on hover
+   or click, reverting to white with a hairline border when inactive. */
+#workflowView .wb-board .wb-block .wb-stage-frame path {
+  transition:fill .2s ease,stroke .2s ease;
+}
+#workflowView .wb-board .wb-block:hover .wb-stage-frame path,
+#workflowView .wb-board .wb-block.wb-selected .wb-stage-frame path {
+  fill:var(--stage-accent);
+  stroke:var(--stage-accent);
+}
+#workflowView .wb-board .wb-block:hover .wb-index,
+#workflowView .wb-board .wb-block:hover .wb-name,
+#workflowView .wb-board .wb-block:hover .wb-plus,
+#workflowView .wb-board .wb-block:hover .wb-drawing figcaption,
+#workflowView .wb-board .wb-block.wb-selected .wb-index,
+#workflowView .wb-board .wb-block.wb-selected .wb-name,
+#workflowView .wb-board .wb-block.wb-selected .wb-plus,
+#workflowView .wb-board .wb-block.wb-selected .wb-drawing figcaption,
+#workflowView .wb-board .wb-block:hover .wb-preview::before,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview::before {
+  color:#fff!important;
+}
+#workflowView .wb-board .wb-block:hover .wb-drawing img,
+#workflowView .wb-board .wb-block.wb-selected .wb-drawing img {
+  filter:brightness(0) invert(1)!important;
+  opacity:1;
+}
+#workflowView .wb-board .wb-block:hover .wb-drawing figcaption,
+#workflowView .wb-board .wb-block.wb-selected .wb-drawing figcaption {
+  background:transparent!important;
+  border:0!important;
+}
+/* A color fill also changes the plus sign and drawing without moving the art. */
+
+/* The "We are here" Fabrication marker now precedes Assembly in the process
+   sequence, below the optional Firing / Glazing branch. */
+#workflowView .wb-board .wb-phase {
+  left:39%;
+  top:1332px;
+  width:32%;
+  z-index:2;
+}
+#workflowView .wb-phase strong {font-size:27px;}
+#workflowView .wb-phase::before {
+  width:83%;
+  height:24px;
+  top:8px;
+  background:rgba(255,214,75,.30);
+}
+
+@media(max-width:850px) {
+  #workflowView .wb-board .wb-phase {
+    left:22%;
+    top:1500px;
+    width:56%;
+  }
+  #workflowView .wb-board .wb-structural .wb-preview .wb-drawing img {
+    height:98px;
+    max-width:100%;
+  }
+  #workflowView .wp-cluster .wp-island-summary {min-height:170px;}
+}
+@media(max-width:620px) {
+  #workflowView .wb-mast h1 {padding:10px 15px 19px 17px;}
+  #workflowView .wb-board .wb-phase {
+    top:1502px;
+    left:18%;
+    width:65%;
+  }
+  #workflowView .wb-phase strong {font-size:24px;}
+  #workflowView .wb-board .wb-structural .wb-preview .wb-drawing img {height:83px;}
+  #workflowView .wp-cluster .wp-island-summary {min-height:145px;padding:7px 5px;}
+}
