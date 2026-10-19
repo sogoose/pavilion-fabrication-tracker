@@ -126,10 +126,27 @@
   margin: 5px 13px 6px 0;
   font: 400 28px/1.03 "Instrument Serif",Georgia,serif;
   letter-spacing: -.007em;
-  transition: color .16s ease;
+  transition: color .22s ease;
 }
-.wb-preview:hover .wb-name,
-.wb-block[open] .wb-name { color: #7d6b45; }
+ .wb-preview:hover .wb-name { color: #977542; }
+
+/* Selected workflow stage: drawing and typography share one muted ochre tone.
+ * SVG images are external editable files, so a CSS filter tints any custom SVG
+ * without changing the source artwork. Native <details> controls the state. */
+.wb-block[open] .wb-name,
+.wb-block[open] .wb-index,
+.wb-block[open] .wb-plus,
+.wb-block[open] .wb-drawing figcaption {
+  color: #977542;
+}
+.wb-block[open] .wb-drawing img {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(46%) sepia(30%) saturate(640%) hue-rotate(2deg) brightness(96%) contrast(87%);
+}
+.wb-block[open] .wb-preview:hover .wb-drawing img {
+  filter: brightness(0) saturate(100%) invert(46%) sepia(30%) saturate(640%) hue-rotate(2deg) brightness(96%) contrast(87%);
+}
+
 .wb-plus {
   position: absolute;
   right: 0;
@@ -157,7 +174,7 @@
   /* No rotation. The free placement comes from a composition of small diagrams. */
   transform: none;
   filter: none;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s ease, transform .2s ease, filter .22s ease;
 }
 .wb-preview:hover .wb-drawing img { opacity: 1; transform: translateY(-2px); }
 .wb-drawing figcaption {
