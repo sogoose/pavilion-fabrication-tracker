@@ -631,7 +631,7 @@ header{gap:6px;padding:10px 16px}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
-import { setupCatalog } from './assets/catalog/catalog.js?v=20261019-v8';
+import { setupCatalog } from './assets/catalog/catalog.js?v=20261019-current-only-v1';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -1058,6 +1058,15 @@ function defaultRecord(part,i){
   };
 }
 function ensureRecords(){
+  // Do not retain obsolete browser cache from previously loaded Rhino models.
+  // Never purge anything if the current model failed to decode: zero parts is
+  // an error, not evidence that the team deleted every module.
+  if(parts.length){
+    const activeKeys=new Set(parts.map(p=>String(p.key)));
+    for(const key of Object.keys(records)){
+      if(!activeKeys.has(String(key)))delete records[key];
+    }
+  }
   parts.forEach((p,i)=>{
     if(!records[p.key]) records[p.key]=defaultRecord(p,i);
     records[p.key].Rhino_GUID=p.key;
