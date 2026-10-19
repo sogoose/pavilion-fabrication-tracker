@@ -173,21 +173,27 @@ export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=7000){
 export function drawModel3D(pdf,THREE,part,x,y,w,h){
   if(!part?.meshes?.length||!THREE?.EdgesGeometry)return false;
   const segments=[],points=[];
+  const maxEdges=5200;
+  let budget=maxEdges;
   try{
     for(const mesh of part.meshes){
+      if(budget<=0)break;
       if(!mesh.geometry)continue;
       mesh.updateWorldMatrix(true,false);
       const g=new THREE.EdgesGeometry(mesh.geometry,17);
       const pos=g.getAttribute('position');
       const vec=new THREE.Vector3();
       if(pos){
-        const step=Math.max(2,Math.ceil(pos.count/18000)*2);
-        for(let i=0;i+1<pos.count;i+=step){
+        // Bound the number of native PDF line segments per module, including
+        // meshes with multiple disconnected parts.
+        const perMesh=Math.min(budget,Math.max(150,Math.floor(maxEdges/part.meshes.length)));
+        const step=Math.max(2,2*Math.ceil((pos.count/2)/perMesh));
+        for(let i=0;i+1<pos.count&&budget>0;i+=step){
           const a=vec.set(pos.getX(i),pos.getY(i),pos.getZ(i)).applyMatrix4(mesh.matrixWorld);
           const p=iso([a.x,a.y,a.z]);
           const b=vec.set(pos.getX(i+1),pos.getY(i+1),pos.getZ(i+1)).applyMatrix4(mesh.matrixWorld);
           const q=iso([b.x,b.y,b.z]);
-          points.push(p,q);segments.push([p,q]);
+          points.push(p,q);segments.push([p,q]);budget--;
         }
       }
       g.dispose();
