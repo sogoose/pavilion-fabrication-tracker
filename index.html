@@ -641,7 +641,7 @@ const GCODE_BUCKET = 'pavilion-gcode-files';
 const MAX_PHOTOS_PER_MODULE = 5;
 const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
-  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
@@ -678,7 +678,7 @@ const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
 const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
   Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method', Fabrication_Date:'fabrication_date',
-  Firing_Route:'firing_route', Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Program:'firing_program', Firing_Date:'firing_date',
+  Firing_Route:'firing_route', Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Duration_h:'firing_duration_h', Firing_Program:'firing_program', Firing_Date:'firing_date',
   Firing_Dimension_Before_mm:'firing_dimension_before_mm', Firing_Dimension_After_mm:'firing_dimension_after_mm', Firing_Shrinkage_pct:'firing_shrinkage_pct', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
   Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Motor_Speed:'motor_speed', Motor_Speed_Manual_Adjustment_pct:'motor_speed_manual_adjustment_pct',
@@ -799,7 +799,7 @@ function toDbRecord(r){
   const out={project_id:PROJECT_ID};
   for(const [app,db] of Object.entries(dbMap)){
     let v=r?.[app] ?? null;
-    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
+    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
     // PostgreSQL DATE rejects an empty string. Unsupplied firing dates are SQL NULL.
     // This applies to individual autosaves and bulk/cloud sync through toDbRecord().
     if(app==='Firing_Date' || app==='Fabrication_Date') v = String(v ?? '').trim() || null;
@@ -1050,7 +1050,7 @@ function defaultRecord(part,i){
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
     Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing',
-    Fabrication_Date:'', Firing_Route:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'', Firing_Peak_Temp_C:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
+    Fabrication_Date:'', Firing_Route:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'ROHDE-kiln', Firing_Peak_Temp_C:'', Firing_Duration_h:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'', Infill_Density_pct:'',
     Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
@@ -1083,6 +1083,7 @@ function derive(r){
     r.Machine='HAND';
     r.Firing_Route='Rammed';
   }else if(r.Manufacturing_Method==='3D Printing'){
+    if(!String(r.Firing_Kiln||'').trim()) r.Firing_Kiln='ROHDE-kiln';
     if(!lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
     // Legacy "TBD" denotes an undecided printing route, not Rammed Earth.
     if(!['Unfired','To be fired'].includes(r.Firing_Route)) r.Firing_Route='';
@@ -1761,6 +1762,8 @@ function firingPanel(r){
         selectField('Firing_Status','Firing performed?',performed,lists.Firing_Status)+
         inputField('Firing_Date','Firing date',r.Firing_Date,'date')+
         inputField('Firing_Peak_Temp_C','Peak temperature (°C)',r.Firing_Peak_Temp_C,'number','1')+
+        inputField('Firing_Duration_h','Firing duration (hours)',r.Firing_Duration_h,'number','0.1')+
+        inputField('Firing_Kiln','Kiln / machine',r.Firing_Kiln || 'ROHDE-kiln')+
       '</div>'+
     '</div>';
 }
