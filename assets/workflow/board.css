@@ -1652,3 +1652,199 @@
     min-width:80px;
   }
 }
+
+
+/* 2026-10-20 / centered title, quiet mini-folder, and corrected stage affordances
+ * The four existing parallel work packages stay unchanged. */
+#workflowView .wb-mast {
+  display:block;
+  width:100%;
+  max-width:100%;
+  padding:30px 0 26px;
+  margin:0 auto;
+  text-align:center;
+  border:0!important;
+}
+#workflowView .wb-mast::before,
+#workflowView .wb-mast h1::before {display:none!important;content:none!important;}
+#workflowView .wb-heading {
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
+  text-align:center;
+}
+#workflowView .wb-mast h1 {
+  display:block;
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
+  padding:0;
+  line-height:.98;
+  text-align:center;
+  letter-spacing:-.065em;
+}
+#workflowView .wb-mast .wb-title-main,
+#workflowView .wb-mast .wb-title-secondary {
+  display:block;
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
+  padding:0;
+  font-family:"Manrope","DM Sans",Arial,sans-serif!important;
+  font-size:clamp(43px,6.2vw,83px);
+  font-weight:700!important;
+  letter-spacing:-.075em;
+  line-height:.99;
+  text-align:center;
+  color:#16191c;
+}
+#workflowView .wb-mast .wb-title-secondary {margin-top:-5px;}
+#workflowView .wb-eyebrow {
+  display:block;
+  width:100%;
+  margin:18px 0 0;
+  color:#777b81;
+  text-align:center;
+  font:400 9px/1.5 "IBM Plex Mono",monospace;
+  letter-spacing:.075em;
+}
+#workflowView .wb-mast .wb-intro,
+#workflowView .wb-mast .wb-hint,
+#workflowView .wb-bottom {display:none!important;}
+#workflowView .wb-board {margin-top:16px;}
+
+/* A tiny folder tab with a line-art megaphone, positioned between the
+   first two numbered chapters. Opening it reveals the existing editable
+   Construction Management text and workbook link. */
+#workflowView .wb-board > .wb-management {
+  position:absolute;
+  display:block;
+  top:222px;
+  left:50%;
+  transform:translateX(-50%);
+  width:68px;
+  max-width:none;
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0!important;
+  background:none;
+  isolation:isolate;
+  z-index:6;
+}
+#workflowView .wb-board > .wb-management[open] {z-index:26;}
+#workflowView .wb-management-toggle {
+  display:grid;
+  place-items:center;
+  position:relative;
+  width:68px;
+  height:54px;
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  list-style:none;
+}
+#workflowView .wb-management-toggle::-webkit-details-marker {display:none;}
+#workflowView .wb-management-toggle::marker {content:"";}
+#workflowView .wb-management-folder {
+  position:absolute; inset:0;
+  display:block;
+  width:68px;height:54px;
+  overflow:visible;
+}
+#workflowView .wb-management-folder path {
+  fill:white;
+  stroke:#353a3f;
+  stroke-width:1.3px;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#workflowView .wb-management-icon {
+  position:relative;
+  z-index:1;
+  width:23px;height:23px;
+  margin-top:7px;
+  color:#292d31;
+  transition:transform .18s ease;
+}
+#workflowView .wb-management-toggle:hover .wb-management-icon,
+#workflowView .wb-management[open] .wb-management-icon {transform:rotate(-10deg) scale(1.04);}
+#workflowView .wb-management-toggle:hover .wb-management-folder path,
+#workflowView .wb-management[open] .wb-management-folder path {fill:#f1f4f4;}
+#workflowView .wb-management-toggle:focus-visible {outline:2px solid #4c5d72;outline-offset:3px;}
+#workflowView .wb-management-body {
+  display:block;
+  position:absolute;
+  top:61px;
+  left:50%;
+  transform:translateX(-50%);
+  box-sizing:border-box;
+  width:min(325px,calc(100vw - 28px));
+  max-width:none;
+  padding:17px 19px 19px;
+  background:#fff;
+  border:1px solid #858e93;
+  border-radius:8px;
+  box-shadow:0 16px 42px rgba(32,38,43,.14);
+  color:#22272b;
+  text-align:left;
+}
+#workflowView .wb-management-body .wb-management-label {
+  display:block;
+  font:650 14px/1.3 "Manrope","DM Sans",sans-serif!important;
+  letter-spacing:-.035em;
+  color:#20252a;
+}
+#workflowView .wb-management-body p {
+  margin:11px 0;
+  font:400 12px/1.5 "DM Sans",Arial,sans-serif;
+  color:#515a60;
+}
+#workflowView .wb-management-body a {
+  font:500 10px/1.5 "IBM Plex Mono",monospace;
+  color:#344f72;
+  text-underline-offset:3px;
+}
+
+/* Small + marks must sit INSIDE each individual cut-corner geometry.
+   Firing 06 and Assembly 07 keep their original positions. */
+#workflowView .wb-board .wb-spatial .wb-preview > .wb-plus {right:31px;top:31px;}
+#workflowView .wb-board .wb-structural .wb-preview > .wb-plus {right:34px;top:32px;}
+#workflowView .wb-board .wb-gcode .wb-preview > .wb-plus {right:21px;top:27px;}
+#workflowView .wb-board .wb-material .wb-preview > .wb-plus {right:37px;top:36px;}
+#workflowView .wb-board .wb-printing .wb-preview > .wb-plus {right:42px;top:37px;}
+#workflowView .wb-board .wb-rammed .wb-preview > .wb-plus {right:29px;top:29px;}
+
+/* Keep the wide Assembly art; its type now has the same calmer scale
+   as neighbouring numbered process headings. */
+#workflowView .wb-board .wb-assembly .wb-preview > .wb-name {
+  font-size:25px!important;
+  font-weight:600!important;
+  letter-spacing:-.038em;
+}
+
+@media(max-width:850px) {
+  #workflowView .wb-mast {padding:24px 0 22px;}
+  #workflowView .wb-mast .wb-title-main,
+  #workflowView .wb-mast .wb-title-secondary {font-size:clamp(38px,8.6vw,68px);}
+  #workflowView .wb-board > .wb-management {top:728px;}
+  #workflowView .wb-board .wb-assembly .wb-preview > .wb-name {font-size:23px!important;}
+  #workflowView .wb-board .wb-spatial .wb-preview > .wb-plus {right:21px;top:28px;}
+  #workflowView .wb-board .wb-structural .wb-preview > .wb-plus {right:24px;top:30px;}
+  #workflowView .wb-board .wb-gcode .wb-preview > .wb-plus {right:16px;top:27px;}
+  #workflowView .wb-board .wb-material .wb-preview > .wb-plus {right:24px;top:35px;}
+  #workflowView .wb-board .wb-printing .wb-preview > .wb-plus {right:25px;top:33px;}
+  #workflowView .wb-board .wb-rammed .wb-preview > .wb-plus {right:18px;top:28px;}
+}
+@media(max-width:460px) {
+  #workflowView .wb-mast {padding:17px 0 21px;}
+  #workflowView .wb-mast .wb-title-main,
+  #workflowView .wb-mast .wb-title-secondary {font-size:clamp(31px,8vw,42px);}
+  #workflowView .wb-mast .wb-title-secondary {margin-top:-2px;}
+  #workflowView .wb-eyebrow {font-size:8px;margin-top:12px;}
+  #workflowView .wb-board > .wb-management {top:727px;}
+  #workflowView .wb-management-body {width:min(300px,calc(100vw - 35px));}
+  #workflowView .wb-board .wb-assembly .wb-preview > .wb-name {font-size:21px!important;}
+}
