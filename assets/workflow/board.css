@@ -534,7 +534,7 @@
   #workflowView .wp-members { font-size:9px; }
   #workflowView .wp-description p { font-size:10px; }
   #workflowView .wp-computational { --wp-x:3%; --wp-y:557px; --wp-w:42%; }
-  #workflowView .wp-environment { --wp-x:56%; --wp-y:563px; --wp-w:42%; }
+  #workflowView .wp-environment { --wp-x:56%; --wp-y:590px; --wp-w:42%; }
   #workflowView .wp-construction { --wp-x:3%; --wp-y:1649px; --wp-w:42%; }
   #workflowView .wp-hrc { --wp-x:55%; --wp-y:1652px; --wp-w:43%; }
 }
