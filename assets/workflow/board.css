@@ -2030,3 +2030,195 @@
   }
   #workflowView .wb-copyright {font-size:9px;}
 }
+
+
+/* MOBILE FLOW / clean sequential process cards, no arrow maze
+   Phone layout uses the existing chapter order as a simple reading sequence.
+   No connector SVG is shown; desktop retains all its original arrows/positions.
+   Only viewport widths up to 620px are affected. */
+@media (max-width:620px) {
+  #workflowView .wb-shell {
+    padding-inline:clamp(15px,4vw,22px);
+  }
+  #workflowView .wb-board {
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:13px;
+    width:100%;
+    max-width:430px;
+    height:auto;
+    min-height:0;
+    aspect-ratio:auto;
+    margin:0 auto 22px;
+    padding:0;
+    overflow:visible;
+  }
+  /* Hide the actual image-based arrows, not merely their stroke styles. */
+  #workflowView .wb-board .wb-arrows,
+  #workflowView .wb-board .wb-decorations {
+    display:none!important;
+  }
+  #workflowView .wb-board > .wb-block {
+    position:relative;
+    top:auto;
+    left:auto;
+    right:auto;
+    bottom:auto;
+    transform:none;
+    width:100%;
+    max-width:none;
+    height:auto;
+    margin:0;
+    --x:auto;
+    --y:auto;
+    --w:100%;
+  }
+  #workflowView .wb-board .wb-block .wb-preview {
+    box-sizing:border-box;
+    display:flex;
+    width:100%;
+    min-height:215px;
+    padding:13px 21px 16px;
+    align-items:stretch;
+    justify-content:flex-start;
+  }
+  #workflowView .wb-board .wb-block .wb-preview > .wb-index {
+    margin:3px 0 4px 0;
+    width:26px;
+    height:26px;
+    min-width:26px;
+    font-size:9px!important;
+  }
+  #workflowView .wb-board .wb-block .wb-preview > .wb-name {
+    max-width:calc(100% - 25px);
+    margin:0;
+    font-size:clamp(18px,4.6vw,21px)!important;
+    line-height:1.2;
+  }
+  #workflowView .wb-board .wb-block .wb-preview > .wb-plus {
+    top:22px!important;
+    right:26px!important;
+  }
+  #workflowView .wb-board .wb-block .wb-preview .wb-drawing,
+  #workflowView .wb-board .wb-material .wb-preview .wb-material-layout,
+  #workflowView .wb-board .wb-material .wb-preview .wb-drawing {
+    box-sizing:border-box;
+    width:min(100%,220px);
+    max-width:100%;
+    flex:0 1 auto;
+    margin:3px auto 0;
+    align-self:center;
+    align-items:center;
+  }
+  #workflowView .wb-board .wb-block .wb-preview .wb-drawing img {
+    width:100%;
+    height:115px;
+    max-height:115px;
+    aspect-ratio:auto;
+    object-fit:contain;
+    object-position:center;
+    margin:auto;
+  }
+  #workflowView .wb-board .wb-structural .wb-preview .wb-drawing img {
+    height:100px;
+  }
+  #workflowView .wb-board .wb-block .wb-preview .wb-drawing figcaption {
+    max-width:220px;
+    font-size:8px;
+    line-height:1.35;
+    margin:5px auto 0;
+    padding:0 6px;
+    text-align:center;
+  }
+  #workflowView .wb-board .wb-assembly .wb-preview {
+    min-height:240px;
+    padding:16px 24px 18px;
+  }
+  #workflowView .wb-board .wb-assembly .wb-preview > .wb-name {
+    font-size:22px!important;
+  }
+  #workflowView .wb-board .wb-assembly .wb-preview .wb-drawing {
+    width:min(100%,320px);
+    max-width:100%;
+  }
+  #workflowView .wb-board .wb-assembly .wb-preview .wb-drawing img {
+    height:145px;
+    max-height:145px;
+    aspect-ratio:auto;
+  }
+
+  /* Short, plain phase labels between cards rather than floating labels. */
+  #workflowView .wb-board .wb-drying,
+  #workflowView .wb-board .wb-phase {
+    position:relative;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    align-self:center;
+    width:auto!important;
+    height:auto;
+    max-width:100%;
+    min-width:0;
+    margin:2px auto;
+    box-sizing:border-box;
+    text-align:center;
+  }
+  #workflowView .wb-board .wb-drying {
+    padding:8px 12px;
+    border:0!important;
+    clip-path:none;
+    background:transparent;
+    font:650 15px/1.3 "Manrope","DM Sans",Arial,sans-serif;
+    color:#353b40;
+  }
+  #workflowView .wb-board .wb-phase {
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    align-items:center;
+    padding:8px 16px;
+    isolation:isolate;
+  }
+  #workflowView .wb-board .wb-phase::before {
+    inset:6px -1px auto;
+    width:100%;
+    height:24px;
+    transform:skewX(-8deg);
+  }
+  #workflowView .wb-board .wb-phase strong {
+    font-size:21px!important;
+    line-height:1.2;
+  }
+  #workflowView .wb-board .wb-phase span {
+    padding:0;
+    font-size:8px;
+  }
+  /* Announcements sit as a tiny folder above the first stage, in document flow. */
+  #workflowView .wb-board > .wb-management {
+    position:relative;
+    inset:auto;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:68px;
+    margin:4px 0 3px 11px;
+    align-self:flex-start;
+    z-index:9;
+  }
+  #workflowView .wb-board > .wb-management .wb-management-body {
+    left:0;
+    transform:none;
+    width:min(310px,calc(100vw - 50px));
+  }
+  /* Support teams continue below the sequence as simple 2-column links. */
+  #workflowView .wp-cluster {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:17px 13px;
+    padding-top:18px;
+  }
+}
