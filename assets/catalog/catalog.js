@@ -4,7 +4,7 @@
  * One image-rich technical sheet per module, optional summary cover.
  */
 import { idOrder, parseGcode3D, drawSheet as drawVectorSheet, drawCover as drawVectorCover }
-  from './vector-sheet.js?v=20261019-v5';
+  from './vector-sheet.js?v=20261019-current-photos-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
