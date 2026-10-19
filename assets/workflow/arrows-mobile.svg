@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 360 2010" fill="none">
-<title>Workflow process connections — readable stacked mobile layout</title>
+<title>Workflow connections — simplified mobile routes</title>
 <defs>
   <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" refX="10.5" refY="6.5" orient="auto">
     <path d="M1 1L10.5 6.5L1 12" fill="none" stroke="#aaa79e" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
   </marker>
 </defs>
 <g stroke="#b6b3a7" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" opacity=".93">
-  <path d="M169 157 C182 137 201 132 212 154" marker-end="url(#arr)"/>
-  <path d="M247 296 C258 316 188 290 160 310" marker-end="url(#arr)"/>
-  <path d="M308 298 C346 299 326 314 288 318" marker-end="url(#arr)"/>
-  <path d="M147 582 C192 618 189 743 149 835" marker-end="url(#arr)"/>
-  <path d="M214 590 C188 669 184 777 168 834" marker-end="url(#arr)"/>
-  <path d="M348 583 C366 666 354 784 305 835" marker-end="url(#arr)"/>
-  <!-- 3D printing and rammed earth join the unnumbered Drying process -->
-  <path d="M150 1080 C165 1090 174 1091 164 1100" marker-end="url(#arr)"/>
-  <path d="M290 1074 C266 1087 240 1087 220 1100" marker-end="url(#arr)"/>
-  <!-- Optional firing, plus the direct unfired route to assembly -->
-  <path d="M149 1143 C126 1155 113 1174 96 1192" stroke-dasharray="3 6" marker-end="url(#arr)"/>
-  <path d="M223 1141 C333 1270 353 1446 244 1588" marker-end="url(#arr)"/>
-  <path d="M140 1402 C108 1450 105 1542 149 1588" stroke-dasharray="3 6" marker-end="url(#arr)"/>
+  <!-- Spatial Design → Structural Check -->
+  <path d="M174 168 L204 168" marker-end="url(#arr)"/>
+  <!-- Structural Check → G-code Generation -->
+  <path d="M234 292 L166 309" marker-end="url(#arr)"/>
+  <!-- Structural Check → Material Preparation (direct vertical) -->
+  <path d="M280 293 V309" marker-end="url(#arr)"/>
+  <!-- G-code Generation → 3D Printing -->
+  <path d="M129 582 L129 832" marker-end="url(#arr)"/>
+  <!-- Material Preparation → Rammed Earth -->
+  <path d="M292 584 L291 831" marker-end="url(#arr)"/>
+  <!-- 3D Printing → Drying -->
+  <path d="M159 1080 L170 1098" marker-end="url(#arr)"/>
+  <!-- Rammed Earth → Drying -->
+  <path d="M278 1080 L215 1098" marker-end="url(#arr)"/>
+  <!-- Drying → optional Firing / Glazing -->
+  <path d="M155 1140 L111 1191" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <!-- Drying → Assembly (right outer edge) -->
+  <path d="M229 1140 L348 1380 L279 1588" marker-end="url(#arr)"/>
+  <!-- Firing / Glazing → Assembly -->
+  <path d="M142 1401 L156 1587" stroke-dasharray="4 6" marker-end="url(#arr)"/>
 </g>
 </svg>
