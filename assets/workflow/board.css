@@ -557,9 +557,13 @@
 
 /* Workflow owner-only editing: unobtrusive controls, visible only after authorization. */
 #workflowView .wf-owner-actions {
-  display:flex; flex-wrap:wrap; align-items:center; gap:9px;
-  margin-top:12px;
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:11px;
+  margin:12px 0 0;
+  padding:3px 0 0;
+  opacity:.7;
 }
+#workflowView .wf-owner-actions:hover,
+#workflowView .wf-owner-actions:focus-within { opacity:1; }
 #workflowView .wf-owner-actions button {
   padding:3px 0; border:0; border-radius:0; background:transparent;
   color:#8c877c; font:400 9px/1.4 "IBM Plex Mono",monospace;
