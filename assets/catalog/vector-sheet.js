@@ -265,26 +265,32 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   const r=entry.record;
   pageBase(pdf,number,total);
   print(pdf,present(r.Object_ID),10,23,165,22,true,ink);
-  // Large photography area preserved at top-left. High-res raster only here.
-  bg(pdf,10,33,157,89,[246,246,242]);
-  const image=asset.primary==='gcode'?null:
-    asset.primary==='model'?(asset.model||asset.photo):
-    (asset.photo||asset.model);
-  if(image){
-    try{photoFit(pdf,image,11,34,155,87);}catch(e){console.warn('Main PDF photograph:',e);}
-  }else if(!drawGcode3D(pdf,asset.gcode,15,41,147,74,8500)) {
-    print(pdf,'NO PHOTO / MODEL AVAILABLE',33,78,107,8,false,grey);
+  // Main Rhino module capture: 107mm high instead of 89mm (+20%).
+  // The bad edge-line-art preview is intentionally removed.
+  bg(pdf,10,33,157,107,[246,246,242]);
+  const hero=asset.model || asset.photos?.[0] || null;
+  if(hero) {
+    try { photoFit(pdf,hero,11,34,155,105); }
+    catch(e) { console.warn('Catalogue module capture:',e); }
+  } else if (!drawGcode3D(pdf,asset.gcode,15,41,147,91,8500)) {
+    print(pdf,'NO MODULE CAPTURE AVAILABLE',30,90,115,8,false,grey);
   }
-  frame(pdf,10,33,157,89);
-  label(pdf,image===asset.photo&&image?'SITE PHOTO':
-    image?'ISOLATED 3D / AXONOMETRIC':'G-CODE / AXONOMETRIC',10,126.7);
-  box(pdf,10,131,76,39,'3D  /  RHINO AXONOMETRIC');
-  if(!drawModel3D(pdf,THREE,entry.part,12,138.5,72,29)) {
-    if(asset.model){try{photoFit(pdf,asset.model,13,139,70,27);}catch(e){}}
-    else label(pdf,'NO 3D MODEL',29,157);
+  frame(pdf,10,33,157,107);
+  label(pdf,asset.model?'ISOLATED MODULE / RHINO 3D':hero?'SITE PHOTO / MODULE':'G-CODE / 3D AXONOMETRIC',10,144);
+  // Two optional site photos in place of the old Rhino line-art / axo panels.
+  const thumbs = asset.photos || [];
+  for(let i=0;i<2;i++) {
+    const x=i===0?10:90,w=i===0?76:77;
+    box(pdf,x,147, w,23, 'SITE PHOTO / '+String(i+1).padStart(2,'0'));
+    if(thumbs[i]) {
+      try{photoFit(pdf,thumbs[i],x+1,154,w-2,15);}catch(e){}
+    } else if(i===thumbs.length && asset.gcode?.length) {
+      // Preserve a vector G-code axonometric fallback where photos are absent.
+      drawGcode3D(pdf,asset.gcode,x+3,154,w-6,14,5500);
+    } else {
+      label(pdf,'NO UPLOADED PHOTO',x+13,161);
+    }
   }
-  box(pdf,90,131,77,39,'G-CODE  /  3D AXONOMETRIC');
-  if(!drawGcode3D(pdf,asset.gcode,92,138.5,73,29))label(pdf,'NO G-CODE UPLOADED',104,157);
   // The recipe belongs to the Material section's 'Composition / quantity' field.
   stroke(pdf,10,175.2,167,175.2,[75,79,72],.17);
   label(pdf,'MATERIAL COMPOSITION / RECIPE',10,179.4);
