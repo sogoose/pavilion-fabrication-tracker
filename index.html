@@ -346,6 +346,9 @@ header{gap:6px;padding:10px 16px}
 /* Standalone SVG artwork in assets/workflow; same placement as original inline drawings */
 .pm-art{object-fit:contain;display:block}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -408,7 +411,7 @@ header{gap:6px;padding:10px 16px}
 <div class="wb-shell">
   <div class="wb-mast">
     <div>
-      <span class="wb-eyebrow">PAVILION / FABRICATION PROCESS &nbsp; 2026</span>
+      <span class="wb-eyebrow">PAVILION / PROCESS STUDIES &nbsp; 2026</span>
       <h1>Overall Workflow</h1>
     </div>
     <aside class="wb-management">
@@ -418,12 +421,9 @@ header{gap:6px;padding:10px 16px}
     </aside>
   </div>
   <div class="wb-board">
-    <img class="wb-guides" src="./assets/workflow/diagram-guides.svg" alt="" aria-hidden="true" loading="lazy">
-    <div class="wb-studies" aria-hidden="true">
-      <figure class="wb-study wb-study-contour"><img src="./assets/workflow/contour-fragment.svg" alt=""><figcaption>GEOMETRY / OFFSET STUDY</figcaption></figure>
-      <figure class="wb-study wb-study-soil"><img src="./assets/workflow/soil-fragment.svg" alt=""></figure>
-      <figure class="wb-study wb-study-deposition"><img src="./assets/workflow/deposition-fragment.svg" alt=""><figcaption>DEPOSITION / LAYERS</figcaption></figure>
-      <figure class="wb-study wb-study-mould"><img src="./assets/workflow/mould-fragment.svg" alt=""></figure>
+    <div class="wb-arrows" aria-hidden="true">
+      <img class="wb-arrows-desktop" src="./assets/workflow/arrows-desktop.svg" alt="" decoding="async" loading="eager">
+      <img class="wb-arrows-mobile" src="./assets/workflow/arrows-mobile.svg" alt="" decoding="async" loading="eager">
     </div>
   <details class="wb-block wb-spatial" name="workflow-detail" data-process="spatial">
   <summary class="wb-preview" aria-label="View Spatial Design details">
@@ -461,7 +461,7 @@ header{gap:6px;padding:10px 16px}
   </summary>
   <div class="wb-detail"><p>Soil composition and material preparation. Batch and shift records are documented in the shared workbook.</p><div class="wb-links"><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">MATERIAL WORKBOOK ↗</a></div></div>
 </details>
-<div class="wb-phase" aria-label="Current project phase — fabrication"><strong>Fabrication</strong><span>↘ WE ARE HERE &nbsp; / &nbsp; 2026</span></div>
+<div class="wb-phase" aria-label="Current project phase — fabrication"><strong>Fabrication</strong><span>WE ARE HERE &nbsp; ↙</span></div>
 <details class="wb-block wb-printing" name="workflow-detail" data-process="printing">
   <summary class="wb-preview" aria-label="View 3D Printing details">
     <span class="wb-index">05.A / FABRICATION</span>
