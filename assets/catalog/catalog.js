@@ -222,10 +222,12 @@ export function setupCatalog({ THREE, getState, notify }) {
       scene.background=new THREE.Color(0xf6f6f2);
       const group=new THREE.Group();
       scene.add(group);
-      scene.add(new THREE.HemisphereLight(0xffffff,0xb3b4a9,2.2));
-      const key=new THREE.DirectionalLight(0xffffff,2.7);
+      // Moderate lighting keeps the legend's status colours distinguishable:
+      // very bright lights previously washed out light-grey and pastel blocks.
+      scene.add(new THREE.HemisphereLight(0xffffff,0xb3b4a9,1.25));
+      const key=new THREE.DirectionalLight(0xffffff,1.55);
       key.position.set(9,-11,16);scene.add(key);
-      const fill=new THREE.DirectionalLight(0xffffff,.7);
+      const fill=new THREE.DirectionalLight(0xffffff,.4);
       fill.position.set(-8,7,6);scene.add(fill);
 
       const anchors=[];
