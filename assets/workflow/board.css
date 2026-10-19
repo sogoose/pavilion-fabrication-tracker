@@ -1,0 +1,148 @@
+
+/* WORKFLOW / EDITORIAL FABRICATION BOARD
+   Drawings remain independently editable under assets/workflow/*.svg. */
+#workflowView.workflowScreen{display:none;background:#fbfaf7;color:#252520;overflow-y:auto;overflow-x:hidden;min-height:0}
+.app.workflow-active #workflowView.workflowScreen{display:block}
+.app.workflow-active .main,.app.workflow-active header .controls{display:none}
+.wb-shell{max-width:1450px;margin:0 auto;padding:22px clamp(18px,3.3vw,52px) 82px}
+.wb-mast{display:grid;grid-template-columns:minmax(0,1fr) 315px;align-items:end;gap:32px;border-top:1px solid #262620;border-bottom:1px solid #b8b8b0;padding:22px 0 27px}
+.wb-eyebrow,.wb-index,.wb-tiny,.wb-photo-label,.wb-phase span,.wb-bottom,.wb-management-label{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.045em;text-transform:uppercase}
+.wb-eyebrow{font-size:10px;color:#88877e}
+.wb-mast h1{font-size:clamp(46px,7.7vw,106px);font-weight:400;letter-spacing:-.081em;line-height:.92;margin:16px 0 0}
+.wb-mast h1 em{font-style:normal;color:#999991}
+.wb-management{border-left:1px solid #cbcbc4;padding:2px 0 2px 20px;max-width:320px}
+.wb-management-label{font-size:10px;color:#77766e}
+.wb-management p{font-size:12px;line-height:1.55;color:#696960;max-width:275px;margin:12px 0 13px}
+.wb-management a,.wb-links a{display:inline-flex;gap:5px;align-items:center;font:11px/1.45 ui-monospace,Consolas,monospace;color:#262620;text-underline-offset:4px;text-decoration:underline;text-decoration-thickness:.7px}
+.wb-board{display:grid;grid-template-columns:1.12fr 1fr .92fr;grid-template-areas:
+ "spatial spatial structural"
+ "spatial spatial gcode"
+ "material material gcode"
+ "phase phase phase"
+ "printing printing rammed"
+ "firing assembly assembly";
+ column-gap:clamp(17px,2.4vw,38px);row-gap:clamp(26px,3.7vw,55px);padding:34px 0 45px;align-items:stretch}
+.wb-block{position:relative;min-width:0;border-top:1px solid #aaa9a0;background:transparent;isolation:isolate}
+.wb-preview{list-style:none;position:relative;min-height:100%;cursor:pointer;display:flex;flex-direction:column;padding:11px 0 0;outline-offset:4px}
+.wb-preview::-webkit-details-marker{display:none}
+.wb-preview:focus-visible{outline:2px solid #bca45a}
+.wb-preview:hover .wb-name,.wb-block[open] .wb-name{color:#887134}
+.wb-preview:hover .wb-drawing img{transform:translateY(-3px)}
+.wb-index{font-size:10px;color:#77776f}
+.wb-name{font-size:clamp(21px,2.55vw,35px);font-weight:400;line-height:1.08;letter-spacing:-.052em;display:block;margin:8px 0 8px;transition:color .2s}
+.wb-plus{font:20px/1 ui-monospace,monospace;position:absolute;right:1px;top:11px;color:#75756e}
+.wb-block[open] .wb-plus{transform:rotate(45deg)}
+.wb-drawing{margin:0;position:relative;min-height:115px;display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1}
+.wb-drawing img{max-width:100%;width:100%;object-fit:contain;object-position:center center;display:block;filter:grayscale(1);transition:transform .2s ease}
+.wb-drawing figcaption{font:10px/1.45 ui-monospace,monospace;color:#929087;letter-spacing:.01em;margin-top:6px}
+.wb-detail{margin-top:11px;padding:15px 0 5px;border-top:1px dotted #bcbcb4;max-width:100%}
+.wb-detail[hidden]{display:none}
+.wb-detail p{max-width:460px;font-size:12px;line-height:1.6;color:#66665e;margin:0 0 12px}
+.wb-links{display:flex;gap:15px;flex-wrap:wrap;padding-bottom:8px}
+.wb-detail .wb-links a{font-size:10px}
+.wb-note{font:10px/1.4 ui-monospace,monospace;color:#aaa99e}
+.wb-spatial{grid-area:spatial;min-height:410px}
+.wb-spatial .wb-name{font-size:clamp(34px,4.3vw,67px)}
+.wb-spatial .wb-drawing{padding:0 2% 2px 5%}
+.wb-spatial .wb-drawing img{height:300px;object-position:50% 54%}
+.wb-spatial::after{content:"";position:absolute;right:-23px;top:37%;width:40px;height:1px;background:#d0d0c7;pointer-events:none}
+.wb-structural{grid-area:structural;min-height:190px}
+.wb-structural .wb-name{font-size:clamp(20px,2.2vw,31px)}
+.wb-structural .wb-drawing img{height:105px}
+.wb-gcode{grid-area:gcode;min-height:310px}
+.wb-gcode .wb-name{font-size:clamp(22px,2.3vw,34px)}
+.wb-gcode .wb-drawing{background:linear-gradient(145deg,#f4f3ee,#fbfaf7 70%);padding:10px 16px 0;margin-top:10px}
+.wb-gcode .wb-drawing img{height:220px}
+.wb-material{grid-area:material;min-height:240px}
+.wb-material .wb-name{font-size:clamp(25px,3.1vw,44px)}
+.wb-material .wb-material-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.56fr);gap:18px;align-items:center;flex:1}
+.wb-material .wb-drawing img{height:140px}
+.wb-sample{align-self:stretch;margin:5px 0 15px;min-height:130px;background:#e8ddca;position:relative;overflow:hidden;clip-path:polygon(6% 0,96% 3%,100% 92%,9% 100%,0 38%)}
+.wb-sample:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 20% 35%,#b6a088 0 2px,transparent 3px),radial-gradient(circle at 65% 65%,#d0bfa3 0 3px,transparent 4px),repeating-linear-gradient(160deg,transparent 0 9px,rgba(125,93,58,.12) 10px 11px);background-size:24px 28px,37px 31px,100% 100%;opacity:.85;transform:rotate(-5deg)}
+.wb-sample:after{content:"SOIL / MIX";position:absolute;bottom:12px;left:16px;font:9px ui-monospace,monospace;color:#71624e}
+.wb-phase{grid-area:phase;display:flex;align-items:center;gap:18px;padding:13px 0 7px;border-bottom:1px solid #b6b19a;position:relative;isolation:isolate}
+.wb-phase:before{content:"";position:absolute;z-index:-1;left:-12px;top:9px;width:390px;max-width:78%;height:32px;background:rgba(235,213,116,.48);transform:skewX(-8deg)}
+.wb-phase strong{font-size:clamp(23px,3.2vw,44px);font-weight:400;letter-spacing:-.06em}
+.wb-phase span{font-size:11px;white-space:nowrap;color:#77714c;margin-left:auto}
+.wb-printing{grid-area:printing;min-height:340px}
+.wb-printing .wb-name{font-size:clamp(31px,4.1vw,62px)}
+.wb-printing .wb-drawing{padding:0 0 0 5%}
+.wb-printing .wb-drawing img{height:246px}
+.wb-rammed{grid-area:rammed;min-height:340px}
+.wb-rammed .wb-name{font-size:clamp(26px,3vw,40px)}
+.wb-rammed .wb-drawing{padding:6px;background:linear-gradient(180deg,#faf9f5,#f3eee6);margin-top:12px}
+.wb-rammed .wb-drawing img{height:215px}
+.wb-firing{grid-area:firing;min-height:215px;opacity:.84;border-top-style:dashed}
+.wb-firing .wb-name{font-size:clamp(22px,2.5vw,35px)}
+.wb-firing .wb-drawing img{height:147px}
+.wb-assembly{grid-area:assembly;min-height:280px;border-top:1px dashed #b1b0a8}
+.wb-assembly .wb-name{font-size:clamp(33px,4.5vw,72px)}
+.wb-assembly .wb-drawing{padding-left:6%}
+.wb-assembly .wb-drawing img{height:245px}
+.wb-assembly .wb-index{color:#97978d}
+.wb-assembly .wb-preview:before{content:"UPCOMING";position:absolute;right:34px;top:12px;font:10px ui-monospace,monospace;color:#918d7a;letter-spacing:.06em}
+.wb-bottom{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-top:1px solid #b9b9b2;font-size:10px;color:#8b8b82}
+@media(max-width:920px){
+ .wb-mast{grid-template-columns:1fr 245px;gap:18px}
+ .wb-board{grid-template-columns:1fr 1fr;grid-template-areas:
+ "spatial structural"
+ "spatial gcode"
+ "material material"
+ "phase phase"
+ "printing rammed"
+ "firing assembly";column-gap:23px;row-gap:35px}
+ .wb-spatial{min-height:460px}
+ .wb-spatial .wb-drawing img{height:280px}
+ .wb-structural{min-height:190px}
+ .wb-gcode{min-height:250px}
+ .wb-gcode .wb-drawing img{height:150px}
+ .wb-printing .wb-drawing img,.wb-rammed .wb-drawing img{height:190px}
+ .wb-assembly .wb-drawing img{height:190px}
+ .wb-spatial .wb-name{font-size:42px}
+ .wb-material .wb-name{font-size:34px}
+}
+@media(max-width:620px){
+ .wb-shell{padding:18px 17px 58px}
+ .wb-mast{display:block;padding:17px 0 21px}
+ .wb-mast h1{font-size:clamp(50px,13vw,76px);margin:12px 0 20px}
+ .wb-management{max-width:none;border-left:0;border-top:1px solid #d5d4c9;padding:12px 0 0}
+ .wb-management p{max-width:none;margin:6px 0 9px;font-size:12px}
+ .wb-board{grid-template-columns:1fr 1fr;grid-template-areas:
+ "spatial spatial"
+ "structural gcode"
+ "material material"
+ "phase phase"
+ "printing printing"
+ "rammed rammed"
+ "firing firing"
+ "assembly assembly";
+ column-gap:16px;row-gap:28px;padding-top:25px}
+ .wb-spatial{min-height:295px}
+ .wb-spatial .wb-name{font-size:42px}
+ .wb-spatial .wb-drawing img{height:205px}
+ .wb-structural,.wb-gcode{min-height:205px}
+ .wb-structural .wb-name,.wb-gcode .wb-name{font-size:19px}
+ .wb-structural .wb-drawing img,.wb-gcode .wb-drawing img{height:100px}
+ .wb-gcode .wb-drawing{padding:5px 4px}
+ .wb-material{min-height:210px}
+ .wb-material .wb-name{font-size:29px}
+ .wb-material .wb-material-layout{grid-template-columns:1.3fr .8fr;gap:8px}
+ .wb-material .wb-drawing img{height:115px}
+ .wb-sample{min-height:105px}
+ .wb-phase{flex-wrap:wrap;gap:6px;padding:9px 0 8px}
+ .wb-phase strong{font-size:32px}
+ .wb-phase span{font-size:10px}
+ .wb-phase:before{height:33px}
+ .wb-printing,.wb-rammed{min-height:280px}
+ .wb-printing .wb-name,.wb-rammed .wb-name{font-size:38px}
+ .wb-printing .wb-drawing img,.wb-rammed .wb-drawing img{height:195px}
+ .wb-rammed .wb-drawing{margin-top:5px}
+ .wb-firing{min-height:190px}
+ .wb-firing .wb-drawing img{height:120px}
+ .wb-assembly{min-height:270px}
+ .wb-assembly .wb-name{font-size:48px}
+ .wb-assembly .wb-drawing img{height:205px}
+ .wb-preview{min-height:0}
+ .wb-bottom{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){.wb-drawing img,.wb-name{transition:none}}
