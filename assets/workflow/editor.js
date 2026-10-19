@@ -129,21 +129,26 @@
       const element = pageNodes.get(id);
       if (!element || typeof value[id] !== 'string') return;
       if (id === 'title') {
-        // Keep the editorial large-title/small-subtitle hierarchy even after
-        // team-edited text is reloaded from the shared Workflow database.
-        const raw = value[id];
-        const split = raw.indexOf('&');
+        // Maintain the centered two-line editorial title after database reload.
+        const raw = value[id].replace(/^\s*👇\s*/, '').trim();
+        const guide = raw.match(/^(.*?)\s+(Guide)$/i);
+        const amp = raw.indexOf('&');
+        let mainText = raw, subText = '';
+        if (guide && /Workflow/i.test(guide[1])) {
+          mainText = guide[1].trim();
+          subText = guide[2];
+        } else if (amp >= 0) {
+          mainText = raw.slice(0, amp).trim();
+          subText = '& ' + raw.slice(amp + 1).trim();
+        }
         const main = document.createElement('span');
         main.className = 'wb-title-main';
-        main.textContent = (split < 0 ? raw : raw.slice(0, split)).trim();
+        main.textContent = mainText;
         element.replaceChildren(main);
-        if (split >= 0) {
+        if (subText) {
           const secondary = document.createElement('span');
           secondary.className = 'wb-title-secondary';
-          const accent = document.createElement('span');
-          accent.className = 'wb-title-amp';
-          accent.textContent = '&';
-          secondary.append(accent, document.createTextNode(' ' + raw.slice(split + 1).trim()));
+          secondary.textContent = subText;
           element.append(secondary);
         }
       } else {
