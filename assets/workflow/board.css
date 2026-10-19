@@ -392,3 +392,186 @@
   font-style: normal !important;
   font-weight: 600 !important;
 }
+
+
+/* ───── TEAM CREDITS / PROCESS FOOTNOTES ───── */
+#workflowView .wb-credits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  margin-top: 9px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(151,149,137,.33);
+}
+#workflowView .wb-credits-key {
+  color: #96948a;
+  font: 400 8px/1.35 "IBM Plex Mono", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+#workflowView .wb-credits-names {
+  max-width: 100%;
+  color: #45443e;
+  font: 500 10px/1.5 "Inter",Arial,sans-serif;
+  overflow-wrap: break-word;
+}
+#workflowView .wb-credits-pending .wb-credits-names { color: #97938a; font-style: italic; }
+#workflowView .wb-block[open] .wb-credits-key,
+#workflowView .wb-block[open] .wb-credits-names { color: #977542; }
+
+/* ───── WORK PACKAGE ISLANDS / ADDITIONS ─────
+   Separate research & support streams: deliberately no connectors
+   to the fabrication flow and no large cards.
+*/
+#workflowView .wp-section {
+  width: min(1100px,100%);
+  margin: 42px auto 0;
+  padding: 30px 0 45px;
+  border-top: 1px solid #c3c0b6;
+  position: relative;
+}
+#workflowView .wp-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 39px;
+}
+#workflowView .wp-heading-copy { max-width: 690px; }
+#workflowView .wp-section-label,
+#workflowView .wp-detached-label {
+  color: #96928a;
+  font: 400 9px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing: .06em;
+}
+#workflowView .wp-heading h2 {
+  margin: 8px 0 9px;
+  font: 600 clamp(23px,3vw,34px)/1.18 "Syne","Inter",Arial,sans-serif;
+  letter-spacing: -.048em;
+}
+#workflowView .wp-heading p {
+  margin: 0;
+  color: #7a7870;
+  font: 400 11px/1.6 "Inter",Arial,sans-serif;
+  max-width: 560px;
+}
+#workflowView .wp-detached-label { padding: 8px 0 0; white-space: nowrap; }
+#workflowView .wp-islands {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  column-gap: clamp(23px,4vw,67px);
+  row-gap: 28px;
+  align-items: start;
+  margin: 0 0 34px;
+}
+#workflowView .wp-island {
+  position: relative;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid #c5c2ba;
+  background: transparent;
+}
+#workflowView .wp-island:nth-child(3n + 2) { margin-top: 32px; }
+#workflowView .wp-island:nth-child(3n) { margin-top: 10px; }
+#workflowView .wp-island::before {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: -4px;
+  z-index: 1;
+  width: 6px;
+  height: 6px;
+  border: 1px solid #bbb4a8;
+  border-radius: 50%;
+  background: #faf9f5;
+  pointer-events: none;
+}
+#workflowView .wp-island[open]::before { background:#c4a26a; border-color:#c4a26a; }
+#workflowView .wp-island-summary {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  padding: 11px 18px 8px 0;
+  list-style: none;
+  min-height: 83px;
+}
+#workflowView .wp-island-summary::-webkit-details-marker { display:none; }
+#workflowView .wp-island-summary:focus-visible { outline: 1px solid #a48f4f; outline-offset: 4px; }
+#workflowView .wp-meta {
+  color: #96948a;
+  font: 400 9px/1.5 "IBM Plex Mono",monospace;
+  letter-spacing: .01em;
+}
+#workflowView .wp-title {
+  color: #34342f;
+  font: 600 17px/1.28 "Syne","Inter",Arial,sans-serif;
+  letter-spacing: -.03em;
+  margin-top: 5px;
+}
+#workflowView .wp-members {
+  color: #646158;
+  font: 400 10px/1.5 "Inter",Arial,sans-serif;
+  margin-top: 7px;
+}
+#workflowView .wp-plus {
+  position: absolute;
+  top: 13px;
+  right: 2px;
+  font: 400 16px/1 "Inter",Arial,sans-serif;
+  color: #a29f95;
+}
+#workflowView .wp-island[open] .wp-title,
+#workflowView .wp-island[open] .wp-members,
+#workflowView .wp-island[open] .wp-meta { color:#977542; }
+#workflowView .wp-island[open] .wp-plus { transform:rotate(45deg); color:#977542; }
+#workflowView .wp-island-summary:hover .wp-title { color:#977542; }
+#workflowView .wp-description {
+  padding: 3px 15px 13px 0;
+  max-width: 360px;
+}
+#workflowView .wp-description p { margin:0 0 9px; color:#77736c; font:11px/1.6 "Inter",Arial,sans-serif; }
+#workflowView .wp-links { display:flex;flex-wrap:wrap;gap:12px; }
+#workflowView .wp-links a { color:#5f5139;font:400 10px/1.4 "IBM Plex Mono",monospace;text-decoration:underline;text-underline-offset:3px; }
+#workflowView .wp-pending .wp-members { color:#a29d91; font-style:italic; }
+#workflowView .wp-clarifier {
+  max-width: 740px;
+  padding: 13px 0 0;
+  margin: 3px 0 0;
+  border-top: 1px dotted #d9d6cd;
+  color: #99968c;
+  font: 400 10px/1.6 "IBM Plex Mono",monospace;
+}
+@media (max-width: 850px) {
+  #workflowView .wb-credits { margin-top: 6px; padding-top:5px; }
+  #workflowView .wb-credits-key { font-size: 7px; }
+  #workflowView .wb-credits-names { font-size: 9px; line-height:1.4; }
+  #workflowView .wp-islands { grid-template-columns: repeat(2,minmax(0,1fr)); column-gap:22px; row-gap:23px; }
+  #workflowView .wp-island:nth-child(n) { margin-top: 0; }
+  #workflowView .wp-island:nth-child(2n) { margin-top: 26px; }
+  #workflowView .wp-title { font-size:16px; }
+  #workflowView .wp-section { margin-top:26px; }
+}
+@media (max-width: 620px) {
+  #workflowView .wp-section { margin-top:24px; padding-top:21px; }
+  #workflowView .wp-heading { display:block; margin-bottom:24px; }
+  #workflowView .wp-heading h2 { font-size:25px; }
+  #workflowView .wp-detached-label { display:block; margin-top:10px; }
+  #workflowView .wp-islands { column-gap:18px; row-gap:21px; }
+  #workflowView .wp-title { font-size:14px; }
+  #workflowView .wp-meta { font-size:8px; }
+  #workflowView .wp-members { font-size:9px; }
+  #workflowView .wp-island-summary { min-height:86px; }
+  #workflowView .wp-description p { font-size:10px; }
+  #workflowView .wp-clarifier { font-size:9px; }
+}
+@media (max-width: 390px) {
+  #workflowView .wp-islands { grid-template-columns: 1fr;row-gap:18px; }
+  #workflowView .wp-island:nth-child(n) { margin-top: 0; }
+  #workflowView .wp-island-summary { min-height:0; padding-bottom:13px; }
+  #workflowView .wp-title { font-size:17px; }
+  #workflowView .wb-credits-names { font-size:8px; }
+}
