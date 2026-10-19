@@ -58,6 +58,29 @@ The page remains **one Workflow page**. Eight main clickable processes plus a sm
 
 SVGs are editable separately in Illustrator; these four are placeholders intended for replacement. To adjust their grouped layout, edit `.wp-cluster` in `board.css`. To edit credits, descriptions or links, edit the Workflow HTML in `index.html`. The existing 3D Tracker database and its records are unaffected.
 
+## Owner-only online editing — setup required
+
+The Workflow page now includes an **Editor login** action. After a verified owner signs in, each expandable process/team has an **EDIT** button (double-click also opens the editor). The form edits titles, team credits, descriptions and external file links, then saves the data to Supabase for everyone to read. Changes never edit the SVG illustrations, arrows, or Rhino Tracker data.
+
+**Important: the front-end is deployed, but the secure database migration and owner grant must be completed before editing will work.** Until then, the original hard-coded Workflow text remains publicly readable.
+
+1. In Supabase Dashboard for project `xjhwzhqiixbombbudlpl`, open **SQL Editor** and run `supabase/migrations/20261019_workflow_owner_editing.sql`. It creates `pavilion_workflow_editors` and `pavilion_workflow_content` with RLS: public reads, owner-only writes.
+2. In Supabase **Authentication → URL Configuration**, add `https://sogoose.github.io/pavilion-fabrication-tracker/` (and optionally `https://sogoose.github.io/pavilion-fabrication-tracker/**`) to the redirect allowlist. Ensure email OTP / magic link is enabled.
+3. Visit the website, click **Editor login**, enter the owner's email, and follow the sign-in link. The first sign-in creates the Supabase Auth user but **does not grant edit access**.
+4. In SQL Editor, run this statement **after the first sign-in**, substituting the owner's actual email:
+
+```sql
+insert into public.pavilion_workflow_editors (user_id)
+select id from auth.users where lower(email) = lower('YOUR-EMAIL@EXAMPLE.COM')
+on conflict (user_id) do nothing;
+```
+
+5. Refresh the website while signed in. **EDITOR ACCESS** and **EDIT** buttons should appear. Everyone else sees **READ ONLY** or the ordinary public page. Test with a non-owner account: writing must be rejected by RLS.
+
+**Security:** Do not put a service-role key, editor password, or owner email into `config.js` or public GitHub files. The browser only contains a publishable key. Editor authorization is based on the authenticated Supabase user ID in the server-side membership table, never on a client-side email comparison. A shared link alone does not grant editing access. Existing Tracker edit policies are separate and unchanged by this migration.
+
+**Editing format:** participant rows use `ROLE | Person · Person`; file rows use `LABEL | https://example.com/...` or `LABEL | #tracker`. Only HTTPS and the internal Tracker shortcut are accepted. A saved section overrides the original markup for all visitors; empty file lists are supported.
+
 ## Edit the layout or wording
 
 The page uses Google Fonts **Syne SemiBold** for the main title, chapter names and Fabrication phase label, **Inter** for descriptions, and **IBM Plex Mono** for indices and technical captions. Fallbacks are included if external fonts do not load.
