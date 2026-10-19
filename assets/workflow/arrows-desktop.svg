@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1100 1450" fill="none">
-<title>Fabrication process connections — desktop (separate editable curves)</title>
-<defs><marker id="arr" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M1 1L7 4.5L1 8" fill="none" stroke="#a8a69c" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/></marker></defs>
+<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1200 1320" fill="none">
+<title>Workflow process connections — compact nearly square desktop board</title>
+<defs>
+  <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+    <path d="M1 1L7 4.5L1 8" fill="none" stroke="#a8a69c" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round"/>
+  </marker>
+</defs>
 <g stroke="#b3afa4" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".91">
-<path d="M320 134 C418 102 514 93 620 129" marker-end="url(#arr)"/>
-<path d="M672 198 C641 262 548 247 501 285" marker-end="url(#arr)"/>
-<path d="M772 198 C812 220 824 246 859 278" marker-end="url(#arr)"/>
-<path d="M418 481 C420 526 363 532 350 580" marker-end="url(#arr)"/>
-<path d="M822 508 C736 568 612 523 516 637" marker-end="url(#arr)"/>
-<path d="M942 517 C991 534 1003 557 983 580" marker-end="url(#arr)"/>
-<!-- 3D printing + rammed earth both lead into the unnumbered Drying stage -->
-<path d="M480 815 C506 835 537 846 565 869" marker-end="url(#arr)"/>
-<path d="M883 806 C806 820 730 832 683 869" marker-end="url(#arr)"/>
-<!-- Firing / Glazing is an optional branch after drying -->
-<path d="M550 913 C485 950 383 937 306 963" marker-end="url(#arr)" stroke-dasharray="4 6"/>
-<!-- Dried but unfired components can still be assembled -->
-<path d="M678 913 C759 967 810 1047 800 1119" marker-end="url(#arr)"/>
-<!-- The optional fired/glazed route joins the common assembly -->
-<path d="M326 1160 C496 1240 597 1204 742 1231" marker-end="url(#arr)" stroke-dasharray="4 6"/>
+  <!-- Design verification -->
+  <path d="M363 143 C487 100 640 99 795 143" marker-end="url(#arr)"/>
+  <!-- Structural check branches to toolpaths and material preparation -->
+  <path d="M850 297 C781 313 714 283 638 316" marker-end="url(#arr)"/>
+  <path d="M990 297 C1020 303 1056 307 1088 316" marker-end="url(#arr)"/>
+  <!-- Digital G-code and material preparation feed the two fabrication processes -->
+  <path d="M491 564 C454 609 378 611 320 653" marker-end="url(#arr)"/>
+  <path d="M872 564 C770 613 551 598 439 652" marker-end="url(#arr)"/>
+  <path d="M1090 564 C1125 586 1105 621 1038 653" marker-end="url(#arr)"/>
+  <!-- Both fabrication streams converge at the unnumbered drying marker -->
+  <path d="M401 925 C475 937 530 933 555 946" marker-end="url(#arr)"/>
+  <path d="M943 925 C863 933 766 940 698 946" marker-end="url(#arr)"/>
+  <!-- Firing is an optional branch; dried blocks can go directly to assembly -->
+  <path d="M550 996 C486 1024 432 1021 379 1044" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <path d="M698 994 C776 1025 862 1004 930 1044" marker-end="url(#arr)"/>
+  <!-- Optional fired components rejoin the assembly stage -->
+  <path d="M367 1249 C540 1306 693 1305 844 1248" stroke-dasharray="4 6" marker-end="url(#arr)"/>
 </g>
 </svg>
