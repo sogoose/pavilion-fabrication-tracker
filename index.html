@@ -294,6 +294,42 @@
 .firing-legend-note{margin-left:auto;color:#999;font-size:10px}
 .app.workflow-active .firing-legend{display:none}
 @media(max-width:900px){.app{grid-template-rows:auto auto auto}.firing-legend{gap:11px}.firing-legend-note{margin-left:0}}
+
+/* Primary site navigation & compact utility header */
+header{gap:6px;padding:10px 16px}
+.chapterNav{order:-1;width:100%;margin:0;gap:27px;border-bottom:1px solid #ddd}
+.chapterNav button{font-size:15px;font-weight:600;padding:8px 0 11px}
+.toprow{gap:7px}
+.brand{font-size:13px;letter-spacing:0;margin-right:auto}
+.versionTag{font-size:9px}
+.toprow .badge{font-size:10px;padding:4px 7px}
+.toprow .button,.toprow button{font-size:11px;padding:6px 8px}
+.toprow .editorBox{font-size:11px}
+.toprow .editorBox input{min-height:27px}
+.app.workflow-active header .toprow{display:none}
+.app.workflow-active header{padding-bottom:0}
+.pm-title{padding:22px 0 13px}
+.pm-title h1{font-size:clamp(29px,4vw,49px)}
+.pm-title span{font-size:11px;font-weight:400}
+.pm-management{background:transparent;border-top:1px solid #d2d2ce;border-bottom:1px solid #d2d2ce;padding:13px 0;margin-bottom:18px;align-items:center;gap:18px}
+.pm-aside-index{font-size:11px;min-width:205px}
+.pm-management p{font-size:11px}
+.pm-management a{font-size:10px}
+@media(max-width:760px){
+ header{padding:9px 12px 12px}
+ .chapterNav{gap:24px;order:-1;width:100%}
+ .chapterNav button{font-size:14px;padding:5px 0 9px}
+ .toprow{gap:6px}
+ .toprow .brand{width:100%;font-size:13px}
+ .toprow .badge{font-size:10px}
+ .toprow .editorBox{flex:1}
+ .pm-page{padding-top:15px}
+ .pm-management{display:flex;align-items:start;flex-wrap:wrap;gap:7px}
+ .pm-aside-index{width:100%}
+ .pm-management p{width:100%;flex:auto}
+ .pm-management a{font-size:11px}
+}
+
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -311,8 +347,9 @@
 <body>
 <div class="app">
   <header>
+    <nav class="chapterNav" aria-label="Site chapters"><button type="button" id="navWorkflow" aria-current="false">01 / Workflow</button><button type="button" id="navTracker" class="active" aria-current="page">02 / Tracker</button></nav>
     <div class="toprow">
-      <div class="brand">PAVILION / FABRICATION TRACKER <span class="versionTag">V4 · TEAM</span></div>
+      <div class="brand">PAVILION / FABRICATION <span class="versionTag">V4 · TEAM</span></div>
       <span id="objectBadge" class="badge">0 objects</span>
       <span id="saveBadge" class="badge">local autosave</span>
       <span id="syncBadge" class="badge sync-offline">LOCAL MODE</span>
@@ -322,7 +359,7 @@
       <label class="button fileBtn">Import Excel<input id="excelInput" type="file" accept=".xlsx,.xls,.csv" /></label>
       <label class="button fileBtn">Load 3DM<input id="modelInput" type="file" accept=".3dm" /></label>
     </div>
-    <nav class="chapterNav" aria-label="Site chapters"><button type="button" id="navWorkflow" aria-current="false">01 / Workflow</button><button type="button" id="navTracker" class="active" aria-current="page">02 / Tracker</button></nav>
+    
     <div class="controls">
       <label>Color by</label>
       <select id="colorBy">
@@ -353,9 +390,9 @@
   
 <section id="workflowView" class="workflowScreen" aria-label="Interactive fabrication process map">
 <div class="pm-page">
-<div class="pm-header"><span>PROJECT / PROCESS MAP</span><span>2026 — CREATIVE ROBOTICS</span></div>
-<div class="pm-title"><h1>Fabrication Workflow</h1><span>WE ARE HERE&nbsp; / &nbsp; FABRICATION <i></i></span></div>
-<div class="pm-scroll"><div class="pm-grid">
+
+<div class="pm-title"><h1>Workflow</h1><span>📍 WE ARE HERE / FABRICATION <i></i></span></div>
+<aside class="pm-management"><span class="pm-aside-index">📋 CONSTRUCTION MANAGEMENT</span><p>For detailed tasks and shift coordination, follow the Construction Management team's guidance.</p><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN TASK SHEET ↗</a></aside><div class="pm-scroll"><div class="pm-grid">
 <svg class="pm-connections" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#b0b0a9" stroke-width=".85">
 <defs><marker id="pm-arr" orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3"><path d="M0 0L6 3L0 6" stroke="#b0b0a9" fill="none"/></marker></defs>
 <path d="M270 98H530" marker-end="url(#pm-arr)"/>
@@ -367,7 +404,7 @@
 <path d="M270 655V755H660V786" marker-end="url(#pm-arr)"/>
 <path d="M660 655V786" marker-end="url(#pm-arr)"/>
 </svg>
-<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>← WE ARE HERE</span></div></div>
+<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>📍 WE ARE HERE</span></div></div>
 <div class="pm-node-layer"><div class="pm-node pm-spatial" style="--nx:13%;--ny:6%" data-process="spatial"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="SPATIAL DESIGN details details"><span class="pm-node-label"><span class="pm-number">01</span>SPATIAL DESIGN</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 45L64 58L122 37L72 24Z M14 45V21L72 5L122 19V37 M14 21L64 34L122 19 M64 34V58M72 5V24 M35 51V15M95 46V12"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
 <div class="pm-node pm-structural" style="--nx:53%;--ny:6%" data-process="structural"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="STRUCTURAL CHECK details details"><span class="pm-node-label"><span class="pm-number">02</span>STRUCTURAL CHECK</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M13 53H126 M21 48V17H119V48 M21 17L45 48L70 17L94 48L119 17 M21 17H119"/><path d="M70 1V14m-5-5 5 5 5-5M45 1v13m-5-5 5 5 5-5M94 1v13m-5-5 5 5 5-5" stroke-dasharray="3 2"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
 <div class="pm-node pm-gcode" style="--nx:13%;--ny:28%" data-process="gcode"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="G-CODE GENERATION details details"><span class="pm-node-label"><span class="pm-number">03</span>G-CODE GENERATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 12H111L125 24L109 50H16L5 32Z M24 18H102L115 27L100 44H24L15 31Z M32 24H94L103 29L94 38H32L25 31Z"/><path d="M29 38l18-14m-3 14 19-14m-3 14 19-14m-3 14 17-13" opacity=".7"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
@@ -378,8 +415,8 @@
 <div class="pm-node pm-assembly" style="--nx:53%;--ny:87%" data-process="assembly"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="ASSEMBLY / UPCOMING details details"><span class="pm-node-label"><span class="pm-number">07</span>ASSEMBLY / UPCOMING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M17 50L68 62L117 46L68 34Z M17 50V34L68 18L117 33V46M17 34l51 12 49-13M68 46v16M36 28v27M94 27v27"/><path d="M29 14L65 1L105 13M105 13l-7-7m7 7-9 2" stroke-dasharray="3 3"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div></div>
 <div class="pm-connector-caption">OPTIONAL POST-PROCESSING ↓</div>
 </div></div>
-<aside class="pm-management"><span class="pm-aside-index">CONSTRUCTION MANAGEMENT &nbsp; ↗</span><p>To check our tasks in detail, follow the Construction Management team's guidance.</p><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a></aside>
-<div class="pm-foot"><span>SELECT A PROCESS TO EXPLORE ITS FILES AND REFERENCES.</span><span>SYSTEM / WORKFLOW 01</span></div>
+
+
 </div>
 <div class="pm-overlay" id="pmOverlay" aria-hidden="true"><button type="button" class="pm-backdrop" id="pmBackdrop" aria-label="Close detail"></button><aside class="pm-drawer" role="dialog" aria-label="Process details"><div class="pm-drawer-top"><span id="pmDrawerIndex">01 / PROCESS</span><button type="button" id="pmClose" aria-label="Close">×</button></div><div id="pmDrawerArt"></div><h2 id="pmDrawerTitle"></h2><p id="pmDrawerText"></p><div class="pm-drawer-links" id="pmDrawerLinks"></div></aside></div>
 </section>
