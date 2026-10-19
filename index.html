@@ -254,6 +254,34 @@
 .pm-drawer-links a:hover,.pm-drawer-links button:hover{background:#e9df9d}
 @media(max-width:760px){.pm-page{padding:23px 14px 50px}.pm-title{display:block}.pm-title span{display:block;margin-top:15px}.pm-grid{width:730px}.pm-management{display:grid;gap:12px}.pm-node-label{font-size:11px}.pm-foot span:last-child{display:none}}
 
+
+/* EDITORIAL MAP / IN-PLACE EXPANSION */
+.pm-title span{font-size:12px;font-weight:600}
+.pm-connections{opacity:.6}
+.pm-fabrication-zone{background:rgba(244,226,118,.38);border-color:#c6b66c}
+.pm-zone-head{font-size:12px;font-weight:600}
+.pm-node{height:auto;min-height:148px;display:block;padding:0;overflow:visible;transition:background .18s ease,box-shadow .18s ease,width .24s ease,transform .18s ease}
+.pm-node-toggle{display:flex;flex-direction:column;justify-content:space-between;width:100%;min-height:148px;border:0;border-radius:0;background:transparent;text-align:left;padding:14px 16px 11px;position:relative}
+.pm-node-toggle:hover{background:transparent}
+.pm-node-label{font:400 clamp(17px,2.15vw,26px)/1.05 Arial,sans-serif;letter-spacing:-.045em;display:block;max-width:100%}
+.pm-number{font:10px monospace;display:block;margin-bottom:8px;letter-spacing:0}
+.pm-art{height:66px;width:56%;align-self:end;opacity:.67}
+.pm-node-more{position:absolute;right:10px;top:8px;font-size:18px;font-weight:300;color:#777}
+.pm-node:hover .pm-art{transform:none;opacity:1}
+.pm-node.open{z-index:20;width:39%;background:#fffdf2;box-shadow:4px 4px 0 rgba(20,20,20,.13);transform:none}
+.pm-node.open .pm-node-toggle{min-height:126px}
+.pm-node.open .pm-node-more{transform:rotate(45deg)}
+.pm-node.open .pm-node-detail{display:block;padding:0 15px 17px;border-top:1px solid #ccc4a5}
+.pm-node-detail[hidden]{display:none!important}
+.pm-inline-text{font-size:12px;color:#565650;line-height:1.55;margin:13px 0}
+.pm-inline-links{display:flex;flex-wrap:wrap;gap:8px}
+.pm-inline-links a{border-bottom:1px solid #777;color:#111;font:11px/1.7 monospace;text-decoration:none}
+.pm-inline-links a:hover{background:#efe5b0}
+.pm-node.selected{outline:0}
+.pm-node:hover,.pm-node:focus-within{box-shadow:2px 2px 0 #aaa;transform:none;background:#f9f6e9}
+.pm-node.open:hover{box-shadow:4px 4px 0 rgba(20,20,20,.13)}
+.pm-printing,.pm-rammed{background:#fffbed}
+@media(max-width:760px){.pm-node-label{font-size:19px}.pm-node.open{width:43%}.pm-node-toggle{padding:12px}.pm-node.open .pm-node-detail{padding:0 12px 12px}}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -316,10 +344,10 @@
 <section id="workflowView" class="workflowScreen" aria-label="Interactive fabrication process map">
 <div class="pm-page">
 <div class="pm-header"><span>PROJECT / PROCESS MAP</span><span>2026 — CREATIVE ROBOTICS</span></div>
-<div class="pm-title"><h1>Fabrication Workflow</h1><span>ACTIVE PHASE&nbsp; / &nbsp; FABRICATION <i></i></span></div>
+<div class="pm-title"><h1>Fabrication Workflow</h1><span>WE ARE HERE&nbsp; / &nbsp; FABRICATION <i></i></span></div>
 <div class="pm-scroll"><div class="pm-grid">
-<svg class="pm-connections" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#555" stroke-width="1.3">
-<defs><marker id="pm-arr" orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3"><path d="M0 0L6 3L0 6" stroke="#555" fill="none"/></marker></defs>
+<svg class="pm-connections" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#b0b0a9" stroke-width=".85">
+<defs><marker id="pm-arr" orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3"><path d="M0 0L6 3L0 6" stroke="#b0b0a9" fill="none"/></marker></defs>
 <path d="M270 98H530" marker-end="url(#pm-arr)"/>
 <path d="M660 156V202H270V238" marker-end="url(#pm-arr)"/>
 <path d="M660 156V238" marker-end="url(#pm-arr)"/>
@@ -329,15 +357,15 @@
 <path d="M270 655V755H660V786" marker-end="url(#pm-arr)"/>
 <path d="M660 655V786" marker-end="url(#pm-arr)"/>
 </svg>
-<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>← CURRENT PHASE</span></div></div>
-<div class="pm-node-layer"><button class="pm-node pm-spatial" type="button" style="--nx:13%;--ny:6%" data-process="spatial" aria-label="SPATIAL DESIGN details"><span class="pm-node-label"><span class="pm-number">01</span>SPATIAL DESIGN</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 45L64 58L122 37L72 24Z M14 45V21L72 5L122 19V37 M14 21L64 34L122 19 M64 34V58M72 5V24 M35 51V15M95 46V12"/></svg></button>
-<button class="pm-node pm-structural" type="button" style="--nx:53%;--ny:6%" data-process="structural" aria-label="STRUCTURAL CHECK details"><span class="pm-node-label"><span class="pm-number">02</span>STRUCTURAL CHECK</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M13 53H126 M21 48V17H119V48 M21 17L45 48L70 17L94 48L119 17 M21 17H119"/><path d="M70 1V14m-5-5 5 5 5-5M45 1v13m-5-5 5 5 5-5M94 1v13m-5-5 5 5 5-5" stroke-dasharray="3 2"/></svg></button>
-<button class="pm-node pm-gcode" type="button" style="--nx:13%;--ny:28%" data-process="gcode" aria-label="G-CODE GENERATION details"><span class="pm-node-label"><span class="pm-number">03</span>G-CODE GENERATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 12H111L125 24L109 50H16L5 32Z M24 18H102L115 27L100 44H24L15 31Z M32 24H94L103 29L94 38H32L25 31Z"/><path d="M29 38l18-14m-3 14 19-14m-3 14 19-14m-3 14 17-13" opacity=".7"/></svg></button>
-<button class="pm-node pm-material" type="button" style="--nx:53%;--ny:28%" data-process="material" aria-label="MATERIAL PREPARATION details"><span class="pm-node-label"><span class="pm-number">04</span>MATERIAL PREPARATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M23 12L37 55H101L115 12M18 12H121M29 31H109M54 2L80 31M80 31l12-7"/><path d="M34 39q13-6 27 0t27 0t19 0M38 46q13-5 25 0t27 0" stroke-dasharray="2 3"/></svg></button>
-<button class="pm-node pm-printing" type="button" style="--nx:13%;--ny:54%" data-process="printing" aria-label="3D PRINTING details"><span class="pm-node-label"><span class="pm-number">A</span>3D PRINTING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M15 48L67 61L119 47L67 33Z M25 43v-9L67 21L109 35v9M25 34L67 47L109 35M25 40L67 53L109 41M67 47v14"/><path d="M66 2V21M56 2h20v9H56zM66 11l-6 10h12z M66 21v12" stroke-dasharray="3 2"/></svg></button>
-<button class="pm-node pm-rammed" type="button" style="--nx:53%;--ny:54%" data-process="rammed" aria-label="RAMMED EARTH details"><span class="pm-node-label"><span class="pm-number">B</span>RAMMED EARTH</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M20 8V56H116V8M13 8h110M20 56h96M28 18H108V30H28zM28 32h80v12H28zM28 46h80v8H28zM68 0v10M58 0h20"/><path d="M29 23h78M29 37h78M29 49h78" stroke-dasharray="2 3"/></svg></button>
-<button class="pm-node pm-firing" type="button" style="--nx:13%;--ny:76%" data-process="firing" aria-label="FIRING / SELECTIVE details"><span class="pm-node-label"><span class="pm-number">06</span>FIRING / SELECTIVE</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M19 56V17Q66 -12 114 17V56H19Z M29 49V23H104V49H29Z M29 35H104 M37 29h18v6H37zM61 29h18v6H61zM85 29h13v6H85z"/><path d="M9 14q-8 13 0 27m115-27q8 13 0 27" stroke-dasharray="3 3"/></svg></button>
-<button class="pm-node pm-assembly" type="button" style="--nx:53%;--ny:87%" data-process="assembly" aria-label="ASSEMBLY / UPCOMING details"><span class="pm-node-label"><span class="pm-number">07</span>ASSEMBLY / UPCOMING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M17 50L68 62L117 46L68 34Z M17 50V34L68 18L117 33V46M17 34l51 12 49-13M68 46v16M36 28v27M94 27v27"/><path d="M29 14L65 1L105 13M105 13l-7-7m7 7-9 2" stroke-dasharray="3 3"/></svg></button></div>
+<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>← WE ARE HERE</span></div></div>
+<div class="pm-node-layer"><div class="pm-node pm-spatial" style="--nx:13%;--ny:6%" data-process="spatial"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="SPATIAL DESIGN details details"><span class="pm-node-label"><span class="pm-number">01</span>SPATIAL DESIGN</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 45L64 58L122 37L72 24Z M14 45V21L72 5L122 19V37 M14 21L64 34L122 19 M64 34V58M72 5V24 M35 51V15M95 46V12"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-structural" style="--nx:53%;--ny:6%" data-process="structural"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="STRUCTURAL CHECK details details"><span class="pm-node-label"><span class="pm-number">02</span>STRUCTURAL CHECK</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M13 53H126 M21 48V17H119V48 M21 17L45 48L70 17L94 48L119 17 M21 17H119"/><path d="M70 1V14m-5-5 5 5 5-5M45 1v13m-5-5 5 5 5-5M94 1v13m-5-5 5 5 5-5" stroke-dasharray="3 2"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-gcode" style="--nx:13%;--ny:28%" data-process="gcode"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="G-CODE GENERATION details details"><span class="pm-node-label"><span class="pm-number">03</span>G-CODE GENERATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M14 12H111L125 24L109 50H16L5 32Z M24 18H102L115 27L100 44H24L15 31Z M32 24H94L103 29L94 38H32L25 31Z"/><path d="M29 38l18-14m-3 14 19-14m-3 14 19-14m-3 14 17-13" opacity=".7"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-material" style="--nx:53%;--ny:28%" data-process="material"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="MATERIAL PREPARATION details details"><span class="pm-node-label"><span class="pm-number">04</span>MATERIAL PREPARATION</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M23 12L37 55H101L115 12M18 12H121M29 31H109M54 2L80 31M80 31l12-7"/><path d="M34 39q13-6 27 0t27 0t19 0M38 46q13-5 25 0t27 0" stroke-dasharray="2 3"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-printing" style="--nx:13%;--ny:54%" data-process="printing"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="3D PRINTING details details"><span class="pm-node-label"><span class="pm-number">A</span>3D PRINTING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M15 48L67 61L119 47L67 33Z M25 43v-9L67 21L109 35v9M25 34L67 47L109 35M25 40L67 53L109 41M67 47v14"/><path d="M66 2V21M56 2h20v9H56zM66 11l-6 10h12z M66 21v12" stroke-dasharray="3 2"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-rammed" style="--nx:53%;--ny:54%" data-process="rammed"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="RAMMED EARTH details details"><span class="pm-node-label"><span class="pm-number">B</span>RAMMED EARTH</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M20 8V56H116V8M13 8h110M20 56h96M28 18H108V30H28zM28 32h80v12H28zM28 46h80v8H28zM68 0v10M58 0h20"/><path d="M29 23h78M29 37h78M29 49h78" stroke-dasharray="2 3"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-firing" style="--nx:13%;--ny:76%" data-process="firing"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="FIRING / SELECTIVE details details"><span class="pm-node-label"><span class="pm-number">06</span>FIRING / SELECTIVE</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M19 56V17Q66 -12 114 17V56H19Z M29 49V23H104V49H29Z M29 35H104 M37 29h18v6H37zM61 29h18v6H61zM85 29h13v6H85z"/><path d="M9 14q-8 13 0 27m115-27q8 13 0 27" stroke-dasharray="3 3"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
+<div class="pm-node pm-assembly" style="--nx:53%;--ny:87%" data-process="assembly"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="ASSEMBLY / UPCOMING details details"><span class="pm-node-label"><span class="pm-number">07</span>ASSEMBLY / UPCOMING</span><svg class="pm-art" viewBox="0 0 135 65" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round" aria-hidden="true"><path d="M17 50L68 62L117 46L68 34Z M17 50V34L68 18L117 33V46M17 34l51 12 49-13M68 46v16M36 28v27M94 27v27"/><path d="M29 14L65 1L105 13M105 13l-7-7m7 7-9 2" stroke-dasharray="3 3"/></svg><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div></div>
 <div class="pm-connector-caption">OPTIONAL POST-PROCESSING ↓</div>
 </div></div>
 <aside class="pm-management"><span class="pm-aside-index">CONSTRUCTION MANAGEMENT &nbsp; ↗</span><p>To check our tasks in detail, follow the Construction Management team's guidance.</p><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a></aside>
@@ -2039,26 +2067,29 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
  firing:{index:"06",title:"Firing",text:"Selective post-processing applies only to some 3D-printed modules. Firing status and details stay within existing Tracker fields.",links:[["OPEN TRACKER","#tracker"]]},
  assembly:{index:"07",title:"Assembly",text:"Upcoming construction phase. Placed downstream of optional firing and both fabrication routes.",links:[]}
  };
- const overlay=document.getElementById('pmOverlay');if(!overlay)return;
- function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.querySelectorAll('.pm-node').forEach(n=>n.classList.remove('selected'));}
- document.querySelectorAll('.pm-node').forEach(n=>n.addEventListener('click',()=>{
-  const d=data[n.dataset.process];if(!d)return;
-  document.querySelectorAll('.pm-node').forEach(e=>e.classList.toggle('selected',e===n));
-  document.getElementById('pmDrawerIndex').textContent=d.index+' / PROCESS';
-  document.getElementById('pmDrawerTitle').textContent=d.title;
-  document.getElementById('pmDrawerText').textContent=d.text;
-  document.getElementById('pmDrawerArt').innerHTML=n.querySelector('svg').outerHTML;
-  const links=document.getElementById('pmDrawerLinks');links.replaceChildren();
-  d.links.forEach(([label,url])=>{const a=document.createElement('a');a.textContent=label+' ↗';a.href=url;
-   if(url==='#tracker'){a.addEventListener('click',e=>{e.preventDefault();close();document.getElementById('navTracker').click();});}
+
+ document.querySelectorAll('.pm-node').forEach(node=>{
+  const d=data[node.dataset.process];if(!d)return;
+  const toggle=node.querySelector('.pm-node-toggle');
+  const detail=node.querySelector('.pm-node-detail');
+  const p=node.querySelector('.pm-inline-text');
+  const links=node.querySelector('.pm-inline-links');
+  p.textContent=d.text;
+  d.links.forEach(([label,url])=>{
+   const a=document.createElement('a');a.textContent=label+' ↗';a.href=url;
+   if(url==='#tracker')a.addEventListener('click',e=>{e.preventDefault();document.getElementById('navTracker').click();});
    else{a.target='_blank';a.rel='noopener noreferrer';}
    links.appendChild(a);
   });
-  overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.getElementById('pmClose').focus();
- }));
- document.getElementById('pmBackdrop').addEventListener('click',close);
- document.getElementById('pmClose').addEventListener('click',close);
- document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+  toggle.addEventListener('click',()=>{
+   const opening=!node.classList.contains('open');
+   document.querySelectorAll('.pm-node.open').forEach(other=>{
+    other.classList.remove('open');other.querySelector('.pm-node-toggle').setAttribute('aria-expanded','false');other.querySelector('.pm-node-detail').hidden=true;
+   });
+   if(opening){node.classList.add('open');toggle.setAttribute('aria-expanded','true');detail.hidden=false;}
+  });
+ });
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.pm-node.open').forEach(node=>{node.classList.remove('open');node.querySelector('.pm-node-toggle').setAttribute('aria-expanded','false');node.querySelector('.pm-node-detail').hidden=true;});});
 })();
 </script>
 </body>
