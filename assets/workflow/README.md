@@ -1,6 +1,6 @@
 # Editable workflow board assets
 
-The **01 / Workflow** page is a **compact, asymmetric architectural process diagram** titled **Overall Workflow**, connected by softly curved arrows. Small technical drawings remain editable as standalone vectors. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
+The **01 / Workflow** page is a **compact, asymmetric architectural process diagram** titled **Workflow Guide & File Index**, connected by softly curved arrows. Small technical drawings remain editable as standalone vectors. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
 
 ## Edit an illustration in Illustrator
 
@@ -32,7 +32,7 @@ The older experimental study assets (`contour-fragment.svg`, `deposition-fragmen
 
 ## Edit the layout or wording
 
-The page uses Google Fonts **Syne SemiBold** (main Overall Workflow title), **Instrument Serif** (stage names), **Inter** (body) and **IBM Plex Mono** (indices/captions). Fallbacks are included if external fonts do not load.
+The page uses Google Fonts **Syne SemiBold** for the main title, chapter names and Fabrication phase label, **Inter** for descriptions, and **IBM Plex Mono** for indices and technical captions. Fallbacks are included if external fonts do not load.
 
 
 - `board.css`: column sizes, white space, visual hierarchy, yellow Fabrication highlight and responsive mobile arrangement.
