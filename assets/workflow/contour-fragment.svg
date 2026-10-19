@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160" viewBox="0 0 240 160" fill="none" stroke="#77746f" stroke-width="0.85" stroke-linecap="round" stroke-linejoin="round">
+<title>Offset contour study</title>
+<g opacity=".65">
+<path d="M32 35C58 11 99 22 120 45C149 15 190 25 213 52C193 74 172 74 148 66L122 93L89 67C61 80 39 70 21 55Z"/>
+<path d="M35 44C59 24 96 32 119 53C143 29 180 37 199 54C185 67 169 67 146 59L121 82L88 61C60 73 41 64 30 55Z"/>
+<path d="M44 51C64 36 94 40 118 59C143 40 175 43 187 55C176 62 166 61 145 55L120 72L89 56C68 66 49 60 40 55Z"/>
+<path d="M50 58C72 49 94 48 115 65M130 64C147 48 162 47 179 55" stroke-dasharray="2 3"/>
+</g>
+<path d="M11 119H215M14 117V123M215 117V123" opacity=".28"/>
+<path d="M122 12V114M118 15L126 15M118 110L126 110" stroke-dasharray="3 5" opacity=".25"/>
+<circle cx="119" cy="55" r="2" fill="#77746f" stroke="none"/>
+</svg>
