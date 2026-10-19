@@ -19,14 +19,10 @@ export function setupCatalog({ THREE, getState, notify }) {
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
         '<option value="selected">Selected module / one sheet</option></select></label>' +
-      '<label class="catalog-field">LARGE IMAGE' +
-        '<select class="catalog-media"><option value="auto">Auto / photo → 3D → axonometric G-code</option>' +
-        '<option value="photo">Photograph first</option>' +
-        '<option value="model">Isolated Rhino 3D first</option>' +
-        '<option value="gcode">G-code axonometric first</option></select></label>' +
+      '<p class="catalog-lead">Main image: isolated Rhino model capture (+20% height). Below: up to two uploaded photos.</p>' +
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
         '<span>Include overview / cover page in full catalogue</span></label>' +
-      '<p class="catalog-footnote">One A4 page per module · vector CAD tables and axonometric linework · photo / model / G-code shown together. G0/G1 paths are documentation, not machine simulation.</p>' +
+      '<p class="catalog-footnote">Only modules in the currently loaded Rhino file are included. One A4 sheet per module. The larger render and latest two site photos are placed beside vector CAD data.</p>' +
       '<div class="catalog-progress" hidden><div class="catalog-track"><div class="catalog-progress-fill"></div></div>' +
         '<span class="catalog-status" role="status" aria-live="polite"></span></div>' +
       '<div class="catalog-actions"><button type="button" class="catalog-cancel">Cancel</button>' +
@@ -36,7 +32,7 @@ export function setupCatalog({ THREE, getState, notify }) {
 
   const $ = s => dialog.querySelector(s);
   const scope = $('.catalog-scope');
-  const media = $('.catalog-media');
+  const media = null;
   const cover = $('.catalog-cover');
   const progress = $('.catalog-progress');
   const progressFill = $('.catalog-progress-fill');
@@ -104,35 +100,31 @@ export function setupCatalog({ THREE, getState, notify }) {
     return record;
   }
   async function gatherRecords(state) {
-    const partById = new Map((state.parts || []).map(part => [String(part.key),part]));
-    const local = new Map();
-    for (const [key, record] of Object.entries(state.records || {})) {
-      local.set(String(key), {key:String(key), record:{...record}, part:partById.get(String(key))});
+    // Rhino geometry is authoritative. NEVER resurrect historical cloud records
+    // or cached modules whose GUID is absent from the currently loaded .3dm.
+    const currentParts = (state.parts || []).filter(part =>
+      part && part.key && Array.isArray(part.meshes) && part.meshes.length > 0
+    );
+    if(!currentParts.length) {
+      throw new Error('Current Rhino model is not loaded. Wait for model.3dm to load before downloading the catalogue.');
     }
-    let all = local;
+    const partById = new Map(currentParts.map(part => [String(part.key),part]));
+    const all = new Map();
+    for (const [key,part] of partById) {
+      const local = state.records?.[key] || {};
+      all.set(key, {key, part, record:{...local, Rhino_GUID:key}});
+    }
     if (state.client && state.liveMode) {
       const response = await state.client.from('pavilion_parts')
         .select('*').eq('project_id',state.projectId).range(0, 1999);
       if (response.error) {
-        console.warn('Catalogue: shared records unavailable; using current local records.',response.error.message);
+        console.warn('Catalogue: shared records unavailable; using current model records.',response.error.message);
       } else {
-        // Shared DB is the authoritative catalogue. Exclude stale browser-cache
-        // modules from previously loaded Rhino models.
-        all = new Map();
         for (const row of response.data || []) {
           const key = String(row.rhino_guid || '');
-          if (!key) continue;
-          all.set(key,{
-            key,
-            part:partById.get(key),
-            record:{...(local.get(key)?.record || {}), ...mapCloud(row,state.dbMap)}
-          });
-        }
-        // Include unsynced modules only if they belong to the current Rhino model.
-        for (const [key,entry] of local) {
-          if (!all.has(key) && (partById.has(key) || key===String(state.selectedKey))) {
-            all.set(key,entry);
-          }
+          if (!all.has(key)) continue;
+          const entry=all.get(key);
+          entry.record = {...entry.record, ...mapCloud(row,state.dbMap)};
         }
       }
     }
@@ -152,7 +144,11 @@ export function setupCatalog({ THREE, getState, notify }) {
     }
     for (const item of data || []) {
       const key = String(item.rhino_guid || '');
-      if (key && !photos.has(key)) photos.set(key,item);
+      if (!key) continue;
+      const list = photos.get(key) || [];
+      if (list.length >= 2) continue;
+      list.push(item);
+      photos.set(key,list);
     }
     return photos;
   }
@@ -209,14 +205,17 @@ export function setupCatalog({ THREE, getState, notify }) {
     return {canvas:image,kind:'SITE PHOTO / FABRICATION',note:item.note || ''};
   }
   async function moduleAssets(state,entry,photos,capture,visualPref) {
-    const asset={photo:null,model:null,gcode:[],primary:visualPref};
-    // Failure of one media file must not block other modules or the PDF export.
+    const asset={photos:[],model:null,gcode:[]};
+    // Only the latest two uploaded photos enter the thumbnail strip.
+    // A failed photo never prevents the Rhino render or G-code from appearing.
     if(photos.has(entry.key) && state.client) {
-      try {
-        const loaded=await photoVisual(state.client,state.photoBucket,photos.get(entry.key));
-        asset.photo=loaded?.canvas||null;
-      } catch(error) {
-        console.warn('Catalogue photo '+entry.key+':',error);
+      for(const item of photos.get(entry.key).slice(0,2)) {
+        try {
+          const loaded=await photoVisual(state.client,state.photoBucket,item);
+          if(loaded?.canvas) asset.photos.push(loaded.canvas);
+        } catch(error) {
+          console.warn('Catalogue photo '+entry.key+':',error);
+        }
       }
     }
     if(entry.part && capture) {
@@ -243,7 +242,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       message('PDF library unavailable. Check your connection and reload.');
       return;
     }
-    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;media.disabled=true;
+    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;
     cover.disabled=true;
     const original=download.textContent;
     download.textContent='Generating…';
@@ -282,12 +281,12 @@ export function setupCatalog({ THREE, getState, notify }) {
         const entry=entries[i];
         message('CAD sheet '+(i+1)+' / '+entries.length+' · '+clean(entry.record.Object_ID),
           (i+.1)/entries.length);
-        const asset=await moduleAssets(state,entry,photos,capture,media.value);
+        const asset=await moduleAssets(state,entry,photos,capture,'model');
         next();
         drawVectorSheet(pdf,entry,asset,{
           THREE,number:i+1,total:entries.length
         });
-        if(asset.photo?.close)asset.photo.close();
+        for(const img of asset.photos || []) if(img?.close)img.close();
         if(i%2===0)await new Promise(resolve=>setTimeout(resolve,0));
       }
       if(cancelled)throw new Error('Catalogue cancelled.');
@@ -305,7 +304,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     }finally{
       capture?.dispose();
       busy=false;cancelled=false;
-      download.disabled=false;scope.disabled=false;media.disabled=false;
+      download.disabled=false;scope.disabled=false;
       cover.disabled=scope.value==='selected';
       download.textContent=original;
     }
