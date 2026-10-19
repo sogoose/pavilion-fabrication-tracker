@@ -1130,3 +1130,243 @@
   #workflowView .wb-management {padding-top:11px;}
   #workflowView .wb-process-dialog .wb-tarot {border-radius:12px;}
 }
+
+
+/* CHAPTER FRAMES / individually cut outlines, no card fills
+ * Frames are SVG strokes, not rectangular CSS borders. Their varied clipped
+ * corners are designed to hold heading, art and caption as ONE chapter.
+ * SVG drawings and existing team editing remain untouched. */
+#workflowView .wb-board > .wb-block {
+  background:transparent;
+}
+#workflowView .wb-board .wb-preview {
+  position:relative;
+  padding:12px 13px 15px;
+  min-height:0;
+  isolation:isolate;
+}
+#workflowView .wb-board .wb-preview > .wb-stage-frame {
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  pointer-events:none;
+  overflow:visible;
+  color:color-mix(in srgb,var(--stage-accent) 40%,#b5b8bb);
+}
+#workflowView .wb-stage-frame path {
+  stroke:currentColor;
+  stroke-width:1.05px;
+  fill:#fff;
+  vector-effect:non-scaling-stroke;
+  stroke-linejoin:miter;
+  transition:stroke .2s ease;
+}
+#workflowView .wb-block:hover .wb-stage-frame,
+#workflowView .wb-block.wb-selected .wb-stage-frame {
+  color:color-mix(in srgb,var(--stage-accent) 72%,#777c84);
+}
+#workflowView .wb-board .wb-preview > .wb-index,
+#workflowView .wb-board .wb-preview > .wb-name,
+#workflowView .wb-board .wb-preview > .wb-drawing,
+#workflowView .wb-board .wb-preview > .wb-material-layout {
+  position:relative;
+  z-index:1;
+}
+#workflowView .wb-board .wb-preview > .wb-plus { z-index:2; right:14px;top:11px; }
+#workflowView .wb-board .wb-preview .wb-drawing {
+  width:min(100%,170px);
+  margin:7px auto 0;
+  align-items:center;
+  justify-content:flex-start;
+  text-align:center;
+}
+#workflowView .wb-board .wb-preview .wb-drawing img {
+  width:100%;
+  display:block;
+  margin-inline:auto;
+  object-fit:contain;
+  object-position:center;
+}
+#workflowView .wb-board .wb-preview .wb-drawing figcaption {
+  max-width:100%;
+  margin:8px auto 0;
+  align-self:center;
+  text-align:center;
+  width:fit-content;
+  padding:4px 7px;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  color:color-mix(in srgb,var(--stage-accent) 55%,#42494e);
+  font-size:8px;
+  line-height:1.4;
+  letter-spacing:-.02em;
+}
+#workflowView .wb-board .wb-preview .wb-drawing figcaption::before {
+  content:"";
+  display:none;
+}
+#workflowView .wb-board .wb-preview:hover .wb-drawing figcaption,
+#workflowView .wb-board .wb-block.wb-selected .wb-drawing figcaption {
+  background:transparent;
+  border:0;
+}
+#workflowView .wb-board .wb-block .wb-index {
+  margin-left:0;
+  border-bottom:0;
+  padding-bottom:0;
+}
+#workflowView .wb-board .wb-block .wb-name {
+  margin:2px 15px 5px 0;
+  line-height:1.15;
+}
+#workflowView .wb-material-layout {
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+#workflowView .wb-material-layout .wb-drawing {
+  width:min(100%,170px);
+  flex:0 1 170px;
+  margin:7px auto 0;
+}
+#workflowView .wb-gcode .wb-drawing,
+#workflowView .wb-material-layout .wb-drawing {
+  width:min(100%,155px);
+}
+#workflowView .wb-material-layout .wb-drawing {flex-basis:155px;}
+#workflowView .wb-assembly .wb-preview {
+  align-items:stretch;
+  text-align:left;
+  padding:17px clamp(18px,3vw,37px) 23px;
+}
+#workflowView .wb-assembly .wb-drawing {
+  width:min(100%,690px);
+  margin:4px auto 0;
+}
+#workflowView .wb-assembly .wb-drawing img { aspect-ratio:135/65; }
+#workflowView .wb-assembly .wb-drawing figcaption { align-self:center; }
+#workflowView .wb-assembly .wb-preview::before {right:35px;top:18px;z-index:2;}
+#workflowView .wb-drying {
+  background:#fff;
+  border:1px solid #b9bec3;
+  border-radius:0;
+  clip-path:polygon(0 0,93% 0,100% 26%,100% 100%,8% 100%,0 70%);
+  padding:5px 8px;
+  width:16%;
+  text-align:center;
+  letter-spacing:-.025em;
+  color:#32363a;
+}
+
+/* The small, parallel work packages share the exact same architectural
+ * outline idea, but stay purposefully monochrome and unconnected. */
+#workflowView .wp-cluster {
+  align-items:stretch;
+  gap:18px;
+  border-top:1px solid #dee0e3;
+  padding-top:22px;
+}
+#workflowView .wp-cluster .wp-island {
+  --stage-accent:#6d737a;
+  --stage-wash:transparent;
+  padding:0;
+  margin:0;
+  border:0;
+  opacity:1;
+  min-height:220px;
+}
+#workflowView .wp-cluster .wp-island::before {display:none;}
+#workflowView .wp-cluster .wp-island-summary {
+  padding:16px 13px 15px;
+  min-height:220px;
+  align-items:center;
+  text-align:center;
+  isolation:isolate;
+  position:relative;
+}
+#workflowView .wp-island-summary > .wb-stage-frame {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  color:#a4a6aa;
+  pointer-events:none;
+}
+#workflowView .wp-island-summary > .wp-title,
+#workflowView .wp-island-summary > .wp-art { position:relative; z-index:1; }
+#workflowView .wp-island-summary > .wp-title {
+  margin:0 auto 8px;
+  color:#3d4146;
+  font:600 13px/1.25 "Manrope","DM Sans",sans-serif!important;
+  letter-spacing:-.025em;
+}
+#workflowView .wp-island-summary > .wp-art {
+  display:block;
+  width:min(100%,145px);
+  max-height:155px;
+  height:auto;
+  margin:auto;
+  filter:grayscale(1);
+  object-fit:contain;
+  object-position:center;
+  opacity:.8;
+}
+#workflowView .wp-island-summary > .wp-plus { z-index:2;right:13px;top:13px;color:#82878e; }
+#workflowView .wp-island:hover .wb-stage-frame {color:#676a6e;}
+#workflowView .wp-island:hover .wp-title,
+#workflowView .wp-island.wb-selected .wp-title { color:#111!important; }
+#workflowView .wp-island:hover .wp-art {filter:grayscale(1);opacity:1;}
+.wb-process-dialog[data-stage="computational"],
+.wb-process-dialog[data-stage="construction"],
+.wb-process-dialog[data-stage="environment"],
+.wb-process-dialog[data-stage="hrc"] {
+  --stage-accent:#62676b;
+  --stage-wash:rgba(25,29,33,.035);
+}
+
+/* An editorial boundary around the dominant title, rather than a standard
+ * UI card. The small subtitle retains its offset from the big main text. */
+#workflowView .wb-mast h1 {
+  position:relative;
+  z-index:0;
+  isolation:isolate;
+  display:block;
+  width:fit-content;
+  max-width:100%;
+  padding:17px 47px 22px 22px;
+  margin:10px 0 0;
+}
+#workflowView .wb-mast h1::before {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M2 1H95L99 10V90L93 99H1V9Z' vector-effect='non-scaling-stroke' fill='white' stroke='%23292e31' stroke-width='1.1'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+}
+#workflowView .wb-title-main {letter-spacing:-.073em;}
+#workflowView .wb-title-secondary {margin-top:-2px;}
+
+/* The narrow version keeps the outlines but avoids SVGs touching text. */
+@media(max-width:850px) {
+  #workflowView .wb-board .wb-preview {padding:11px 10px 12px;}
+  #workflowView .wb-board .wb-block .wb-name {margin-right:13px;}
+  #workflowView .wb-assembly .wb-preview {padding:13px 14px 18px;}
+  #workflowView .wp-island-summary {min-height:200px;}
+}
+@media(max-width:620px) {
+  #workflowView .wb-mast h1 {padding:14px 22px 17px 14px;}
+  #workflowView .wb-board .wb-preview {padding:10px 8px;}
+  #workflowView .wb-board .wb-block .wb-name {margin-right:8px;}
+  #workflowView .wb-board .wb-preview .wb-drawing {margin-top:5px;}
+  #workflowView .wb-board .wb-preview .wb-drawing figcaption {font-size:7px;padding:3px 2px;}
+  #workflowView .wb-board .wb-phase {z-index:3;}
+  #workflowView .wp-island-summary {min-height:170px;padding:14px 9px;}
+}
