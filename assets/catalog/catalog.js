@@ -3,6 +3,9 @@
  * Module records come from shared Supabase (fallback: current Rhino/Tracker).
  * One image-rich technical sheet per module, optional summary cover.
  */
+import { idOrder, parseGcode3D, drawSheet as drawVectorSheet, drawCover as drawVectorCover }
+  from './vector-sheet.js?v=20261019-v1';
+
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
   dialog.className = 'catalog-dialog';
@@ -15,14 +18,14 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="selected">Selected module / one sheet</option></select></label>' +
-      '<label class="catalog-field">MAIN VISUAL' +
-        '<select class="catalog-media"><option value="auto">Auto / photo → G-code → 3D</option>' +
+      '<label class="catalog-field">LARGE IMAGE' +
+        '<select class="catalog-media"><option value="auto">Auto / photo → 3D → axonometric G-code</option>' +
         '<option value="photo">Photograph first</option>' +
-        '<option value="gcode">G-code toolpath first</option>' +
-        '<option value="model">Isolated Rhino 3D first</option></select></label>' +
+        '<option value="model">Isolated Rhino 3D first</option>' +
+        '<option value="gcode">G-code axonometric first</option></select></label>' +
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
         '<span>Include overview / cover page in full catalogue</span></label>' +
-      '<p class="catalog-footnote">Reads current shared data. Blank fields are marked —. G-code preview shows XY linear moves (G0/G1); it does not replace machine simulation.</p>' +
+      '<p class="catalog-footnote">One A4 page per module · vector CAD tables and axonometric linework · photo / model / G-code shown together. G0/G1 paths are documentation, not machine simulation.</p>' +
       '<div class="catalog-progress" hidden><div class="catalog-track"><div class="catalog-progress-fill"></div></div>' +
         '<span class="catalog-status" role="status" aria-live="polite"></span></div>' +
       '<div class="catalog-actions"><button type="button" class="catalog-cancel">Cancel</button>' +
@@ -78,9 +81,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     dialog.showModal();
   }
   // Module records take priority over the current viewport filter/search.
-  const compareIds = (a,b) => String(a.record.Object_ID || '')
-    .localeCompare(String(b.record.Object_ID || ''), undefined,
-      {numeric: true, sensitivity:'variant', caseFirst:'upper'});
+  const compareIds = (a,b) => idOrder(a.record.Object_ID,b.record.Object_ID);
 
   function clean(v) {
     return (v === undefined || v === null || String(v).trim() === '')
@@ -436,7 +437,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     try {
       renderer=new THREE.WebGLRenderer({ antialias:true,preserveDrawingBuffer:true,alpha:false });
       renderer.setPixelRatio(1);
-      renderer.setSize(1130,780,false);
+      renderer.setSize(1650,1100,false);
       renderer.outputColorSpace=THREE.SRGBColorSpace;
     } catch(error) { console.warn('Catalogue isolated 3D renderer:',error); return null; }
     const render = part => {
@@ -461,7 +462,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       const center=box.getCenter(new THREE.Vector3());
       const size=box.getSize(new THREE.Vector3());
       const radius=Math.max(size.length()/2,0.01);
-      const camera=new THREE.PerspectiveCamera(32,1130/780,0.01,Math.max(10000,radius*60));
+      const camera=new THREE.PerspectiveCamera(32,1650/1100,0.01,Math.max(10000,radius*60));
       const direction=new THREE.Vector3(1,-1,0.86).normalize();
       const distance=Math.max(2.75*radius,radius/Math.sin(16*Math.PI/180)*1.12);
       camera.position.copy(center).addScaledVector(direction,distance);
@@ -562,88 +563,103 @@ export function setupCatalog({ THREE, getState, notify }) {
     }
     return null;
   }
+  async function moduleAssets(state,entry,photos,capture,visualPref) {
+    const asset={photo:null,model:null,gcode:[],primary:visualPref};
+    // Failure of one media file must not block other modules or the PDF export.
+    if(photos.has(entry.key) && state.client) {
+      try {
+        const loaded=await photoVisual(state.client,state.photoBucket,photos.get(entry.key));
+        asset.photo=loaded?.canvas||null;
+      } catch(error) {
+        console.warn('Catalogue photo '+entry.key+':',error);
+      }
+    }
+    if(entry.part && capture) {
+      try {asset.model=capture.render(entry.part);}catch(error) {
+        console.warn('Catalogue Rhino capture '+entry.key+':',error);
+      }
+    }
+    const path=String(entry.record.GCode_File||'').trim();
+    if(path.startsWith(state.projectId+'/') && state.client){
+      try{
+        const {data,error}=await state.client.storage.from(state.gcodeBucket).download(path);
+        if(error)throw error;
+        asset.gcode=parseGcode3D(await data.slice(0,8*1024*1024).text());
+      }catch(error){
+        console.warn('Catalogue G-code '+entry.key+':',error);
+      }
+    }
+    return asset;
+  }
   download.addEventListener('click',async()=>{
     if(busy)return;
-    const pdfClass=window.jspdf?.jsPDF;
-    if(!pdfClass){
-      message('PDF export library not loaded. Check your connection and refresh.');
+    const Class=window.jspdf?.jsPDF;
+    if(!Class){
+      message('PDF library unavailable. Check your connection and reload.');
       return;
     }
     busy=true;cancelled=false;download.disabled=true;scope.disabled=true;media.disabled=true;
     cover.disabled=true;
-    const originally=download.textContent;
+    const original=download.textContent;
     download.textContent='Generating…';
-    let capture;
-    try {
+    let capture=null;
+    try{
       const state=getState();
-      message('Reading fabrication records…',0);
-      // Wait for readable browser fonts before rasterising sheets into PDF pages.
-      if(document.fonts?.ready) await document.fonts.ready;
+      message('Reading shared fabrication data…',0);
+      if(document.fonts?.ready)await document.fonts.ready;
       const all=await gatherRecords(state);
-      let entries=all;
-      if(scope.value==='selected'){
-        entries=all.filter(entry=>entry.key===String(state.selectedKey));
-      }
-      if(!entries.length)throw new Error('No modules found. Load the Rhino model or sync shared data first.');
+      let entries=scope.value==='selected'
+        ? all.filter(e=>e.key===String(state.selectedKey)) : all;
+      if(!entries.length)throw new Error('No modules found. Load or sync the Tracker first.');
       const photos=await gatherPhotos(state);
-      const pdf=new pdfClass({
-        orientation:'landscape',unit:'mm',format:'a4',
-        compress:true,putOnlyUsedFonts:true
-      });
-      pdf.setProperties({
-        title:'Pavilion Fabrication Catalogue',
-        subject:'Soil-based pavilion - module production records',
-        author:'Pavilion Fabrication Tracker'
-      });
-      let page=0,hasFirst=false;
-      const appendCanvas=(canvas)=>{
-        if(hasFirst)pdf.addPage('a4','landscape');
-        const image=canvas.toDataURL('image/jpeg',0.79);
-        pdf.addImage(image,'JPEG',0,0,297,210,undefined,'FAST');
-        hasFirst=true;page++;
+      const pdf=new Class({orientation:'landscape',unit:'mm',format:'a4',
+        compress:true,putOnlyUsedFonts:true,precision:4});
+      pdf.setProperties({title:'Pavilion Fabrication Catalogue',
+        subject:'CAD fabrication module records',author:'Pavilion Fabrication Tracker'});
+      let pages=0;
+      const next=()=>{
+        if(pages)pdf.addPage('a4','landscape');
+        pages++;
       };
-      if(scope.value==='all' && cover.checked){
-        appendCanvas(drawCover(entries,photos.size,
-          entries.filter(e=>String(e.record.GCode_File||'').trim()).length));
+      if(scope.value==='all'&&cover.checked){
+        next();
+        drawVectorCover(pdf,entries,photos.size,
+          entries.filter(e=>String(e.record.GCode_File||'').trim()).length);
       }
-      // Only make a second WebGL context if needed.
       capture=createIsolatedCapture();
       for(let i=0;i<entries.length;i++){
         if(cancelled)throw new Error('Catalogue cancelled.');
         const entry=entries[i];
-        message('Sheet '+(i+1)+' / '+entries.length+
-          ' · '+clean(entry.record.Object_ID), i/entries.length);
-        const image=await visualFor(state,entry,photos,media.value,capture);
-        const sheet=drawSheet(entry,image,i+1,entries.length);
-        appendCanvas(sheet.canvas);
-        if(sheet.hasOverflow) {
-          for(const additional of drawAppendixPages(entry,i+1,entries.length)) {
-            appendCanvas(additional);
-          }
-        }
-        if(image?.canvas && typeof image.canvas.close==='function')image.canvas.close();
-        // Yield to the UI: 100+ images must not monopolize the main thread.
-        if(i%3===0)await new Promise(resolve=>setTimeout(resolve,0));
+        message('CAD sheet '+(i+1)+' / '+entries.length+' · '+clean(entry.record.Object_ID),
+          (i+.1)/entries.length);
+        const asset=await moduleAssets(state,entry,photos,capture,media.value);
+        next();
+        drawVectorSheet(pdf,entry,asset,{
+          THREE,number:i+1,total:entries.length
+        });
+        if(asset.photo?.close)asset.photo.close();
+        if(i%2===0)await new Promise(resolve=>setTimeout(resolve,0));
       }
       if(cancelled)throw new Error('Catalogue cancelled.');
-      message('Saving '+page+' PDF pages…',1);
+      message('Saving '+pages+' vector PDF pages…',1);
       const stamp=new Date().toISOString().slice(0,10).replace(/-/g,'');
       const name=scope.value==='selected'
         ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
         : 'Pavilion_Fabrication_Catalogue_'+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
-      message('Saved '+page+' PDF pages · '+entries.length+' module records.',1);
-      notify?.('Catalogue PDF ready · '+entries.length+' modules.');
-    } catch(error) {
-      message(error.message || 'Could not generate PDF.');
-      if(!cancelled)notify?.('Catalogue PDF failed: '+(error.message || error),true);
-    } finally {
+      message('Saved '+pages+' pages · '+entries.length+' modules · vector CAD.',1);
+      notify?.('Vector PDF ready · '+entries.length+' module sheets.');
+    }catch(error){
+      message(error?.message||'Could not generate the catalogue PDF.');
+      if(!cancelled)notify?.('Catalogue PDF failed: '+(error?.message||error),true);
+    }finally{
       capture?.dispose();
       busy=false;cancelled=false;
       download.disabled=false;scope.disabled=false;media.disabled=false;
       cover.disabled=scope.value==='selected';
-      download.textContent=originally;
+      download.textContent=original;
     }
   });
+
   return {open};
 }
