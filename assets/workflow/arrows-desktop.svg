@@ -9,9 +9,14 @@
 <path d="M418 481 C420 526 363 532 350 580" marker-end="url(#arr)"/>
 <path d="M822 508 C736 568 612 523 516 637" marker-end="url(#arr)"/>
 <path d="M942 517 C991 534 1003 557 983 580" marker-end="url(#arr)"/>
-<path d="M350 869 C323 918 251 928 241 959" marker-end="url(#arr)" stroke-dasharray="4 6"/>
-<path d="M501 859 C607 961 729 1012 796 1119" marker-end="url(#arr)"/>
-<path d="M883 850 C944 941 965 1035 903 1118" marker-end="url(#arr)"/>
+<!-- 3D printing + rammed earth both lead into the unnumbered Drying stage -->
+<path d="M480 815 C506 835 537 846 565 869" marker-end="url(#arr)"/>
+<path d="M883 806 C806 820 730 832 683 869" marker-end="url(#arr)"/>
+<!-- Firing / Glazing is an optional branch after drying -->
+<path d="M550 913 C485 950 383 937 306 963" marker-end="url(#arr)" stroke-dasharray="4 6"/>
+<!-- Dried but unfired components can still be assembled -->
+<path d="M678 913 C759 967 810 1047 800 1119" marker-end="url(#arr)"/>
+<!-- The optional fired/glazed route joins the common assembly -->
 <path d="M326 1160 C496 1240 597 1204 742 1231" marker-end="url(#arr)" stroke-dasharray="4 6"/>
 </g>
 </svg>
