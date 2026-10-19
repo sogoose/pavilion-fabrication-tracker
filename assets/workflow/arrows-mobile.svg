@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 360 1640" fill="none">
-<title>Fabrication process connections — mobile (separate editable curves)</title>
-<defs><marker id="arr" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M.5 .5L6 3.5L.5 6.5" fill="none" stroke="#aaa79e" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<title>Workflow process connections — readable stacked mobile layout</title>
+<defs>
+  <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+    <path d="M.5 .5L6 3.5L.5 6.5" fill="none" stroke="#aaa79e" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
 <g stroke="#b6b3a7" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" opacity=".93">
-<path d="M168 146 C183 113 205 112 215 144" marker-end="url(#arr)"/>
-<path d="M250 269 C263 305 169 281 150 306" marker-end="url(#arr)"/>
-<path d="M304 270 C350 288 328 299 293 311" marker-end="url(#arr)"/>
-<path d="M146 504 C202 536 184 730 148 829" marker-end="url(#arr)"/>
-<path d="M210 536 C188 607 181 720 164 826" marker-end="url(#arr)"/>
-<path d="M348 530 C366 588 365 744 306 834" marker-end="url(#arr)"/>
-<!-- Both fabrication routes converge on Drying; it carries no index -->
-<path d="M155 1053 C160 1071 167 1079 161 1097" marker-end="url(#arr)"/>
-<path d="M292 1035 C272 1059 235 1079 222 1097" marker-end="url(#arr)"/>
-<!-- Firing / Glazing only for selected dried modules -->
-<path d="M145 1135 C121 1154 111 1173 95 1188" marker-end="url(#arr)" stroke-dasharray="3 6"/>
-<path d="M223 1134 C283 1200 279 1290 270 1371" marker-end="url(#arr)"/>
-<path d="M142 1360 C186 1390 216 1424 201 1480" marker-end="url(#arr)" stroke-dasharray="3 6"/>
+  <path d="M169 157 C182 137 201 132 212 154" marker-end="url(#arr)"/>
+  <path d="M247 296 C258 316 188 290 160 310" marker-end="url(#arr)"/>
+  <path d="M308 298 C346 299 326 314 288 318" marker-end="url(#arr)"/>
+  <path d="M147 582 C192 618 189 743 149 835" marker-end="url(#arr)"/>
+  <path d="M214 590 C188 669 184 777 168 834" marker-end="url(#arr)"/>
+  <path d="M348 583 C366 666 354 784 305 835" marker-end="url(#arr)"/>
+  <!-- 3D printing and rammed earth join the unnumbered Drying process -->
+  <path d="M150 1080 C165 1090 174 1091 164 1100" marker-end="url(#arr)"/>
+  <path d="M290 1074 C266 1087 240 1087 220 1100" marker-end="url(#arr)"/>
+  <!-- Optional firing, plus the direct unfired route to assembly -->
+  <path d="M149 1143 C126 1155 113 1174 96 1192" stroke-dasharray="3 6" marker-end="url(#arr)"/>
+  <path d="M223 1141 C275 1200 275 1308 269 1370" marker-end="url(#arr)"/>
+  <path d="M140 1402 C192 1432 206 1455 213 1474" stroke-dasharray="3 6" marker-end="url(#arr)"/>
 </g>
 </svg>
