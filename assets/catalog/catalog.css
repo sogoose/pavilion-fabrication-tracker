@@ -1,0 +1,93 @@
+/* Catalogue PDF UI — a technical publication tool, not a dashboard card. */
+#downloadCatalog {
+  border:1px solid #252823;
+  background:#252823;
+  color:#fff;
+  font-weight:600;
+  letter-spacing:.005em;
+  white-space:nowrap;
+}
+#downloadCatalog:hover {background:#454a40;border-color:#454a40;}
+#downloadModulePDF {
+  display:inline-flex;align-items:center;gap:5px;
+  margin:4px 0 10px;
+  border:1px solid #c5c9bc;
+  background:#f7f7f3;color:#303832;
+  font-size:11px;font-weight:600;
+  letter-spacing:.02em;
+  border-radius:5px;
+  padding:7px 10px;
+}
+#downloadModulePDF:hover {background:#eeeee8;}
+.catalog-dialog {
+  box-sizing:border-box;
+  width:min(570px,calc(100vw - 28px));
+  max-height:min(92vh,830px);
+  overflow:auto;
+  border:1px solid #777c72;
+  border-radius:0;
+  padding:0;
+  background:#fbfbf8;
+  color:#282d29;
+  box-shadow:0 16px 56px rgba(0,0,0,.16);
+}
+.catalog-dialog::backdrop {background:rgba(29,33,29,.48);}
+.catalog-shell {padding:25px 31px 30px;}
+.catalog-head {display:flex;align-items:center;justify-content:space-between;gap:20px;}
+.catalog-kicker {
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;letter-spacing:.065em;color:#7f8078;
+}
+.catalog-close {
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#5c6059;
+  font:400 26px/1 Inter,sans-serif;
+  min-width:28px;
+  border-radius:0;
+}
+.catalog-close:hover {color:#151714;background:transparent;}
+.catalog-shell h2 {
+  font:600 clamp(28px,5vw,41px)/1.07 Syne,Inter,sans-serif;
+  letter-spacing:-.055em;
+  margin:20px 0 10px;
+}
+.catalog-lead {max-width:460px;color:#6e746c;font-size:12px;line-height:1.65;margin:0 0 28px;}
+.catalog-field {
+  display:grid;gap:7px;margin:0 0 15px;
+  color:#767b72;
+  font:400 10px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.045em;
+}
+.catalog-field select {
+  min-width:0;width:100%;min-height:41px;
+  border:1px solid #d1d4cc;border-radius:0;
+  background:white;color:#232822;
+  padding:9px 11px;
+  font:500 13px Inter,Arial,sans-serif;
+}
+.catalog-check {display:flex;align-items:center;gap:10px;margin:20px 0 12px;cursor:pointer;font-size:12px;color:#424740;}
+.catalog-check input {accent-color:#4d574d;}
+.catalog-check input:disabled + span {color:#999e95;}
+.catalog-footnote {
+  color:#8c9086;font:400 11px/1.6 Inter,Arial,sans-serif;
+  max-width:470px;margin:14px 0 25px;
+}
+.catalog-progress {margin:0 0 20px;border-top:1px solid #d9dbd4;padding-top:17px;}
+.catalog-progress[hidden] {display:none;}
+.catalog-track {height:3px;width:100%;background:#e1e3db;overflow:hidden;}
+.catalog-progress-fill {height:100%;width:0;background:#505a51;transition:width .12s linear;}
+.catalog-status {display:block;color:#666c64;font:11px/1.5 "IBM Plex Mono",monospace;margin-top:9px;}
+.catalog-actions {display:flex;justify-content:flex-end;gap:9px;border-top:1px solid #d9dbd3;padding-top:17px;}
+.catalog-actions button {
+  border-radius:0;padding:10px 16px;
+  font:600 12px/1.4 Inter,Arial,sans-serif;
+}
+.catalog-download {background:#222823;color:#fff;border-color:#222823;}
+.catalog-download:hover {background:#414a42;color:#fff;}
+.catalog-download:disabled {opacity:.55;cursor:progress;}
+@media(max-width:520px) {
+  .catalog-shell {padding:22px 19px 25px;}
+  .catalog-actions button {padding:10px 12px;}
+}
