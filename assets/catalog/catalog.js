@@ -271,7 +271,9 @@ export function setupCatalog({ THREE, getState, notify }) {
       };
       if(scope.value!=='selected'&&cover.checked){
         next();
-        drawVectorCover(pdf,entries,photos.size,
+        const currentIds=new Set(entries.map(e=>e.key));
+        const selectedPhotos=[...photos.keys()].filter(key=>currentIds.has(key)).length;
+        drawVectorCover(pdf,entries,selectedPhotos,
           entries.filter(e=>String(e.record.GCode_File||'').trim()).length);
       }
       capture=createIsolatedCapture();
