@@ -383,3 +383,12 @@
 @media (prefers-reduced-motion:reduce) {
   .wb-preview:hover .wb-drawing img { transform:none;transition:none; }
 }
+/* Font lock: all Workflow display text uses Syne, never a cached serif
+ * stylesheet's chapter typography. Does not affect Tracker. */
+#workflowView .wb-mast h1,
+#workflowView .wb-board .wb-block .wb-name,
+#workflowView .wb-board .wb-phase strong {
+  font-family: "Syne", "Inter", Arial, sans-serif !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+}
