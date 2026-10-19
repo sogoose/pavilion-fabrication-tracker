@@ -4,7 +4,7 @@
  */
 const PW=297, PH=210, PTMM=25.4/72;
 const ink=[38,42,38],grey=[116,120,113],rule=[207,209,203];
-const present=v=>v===null||v===undefined||String(v).trim()===''?'—':String(v).trim();
+const present=v=>v===null||v===undefined||String(v).trim()===''?'-':String(v).trim();
 export function idOrder(a,b){
   const aId=String(a||'').trim(),bId=String(b||'').trim();
   const rank=s=>/^[A-Z]/.test(s)?0:/^[a-z]/.test(s)?1:2;
