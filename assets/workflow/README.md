@@ -23,38 +23,45 @@ All eight illustrations are **separate vector files**, not code embedded inside 
 
 Two additional SVG files control the visible process links:
 
-- `arrows-desktop.svg`: soft Bézier arrows on the compact desktop board (viewBox 1100 × 1130)
-- `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1370)
+- `arrows-desktop.svg`: soft Bézier arrows on the compact desktop board (viewBox 1100 × 1450)
+- `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1640)
 
 Edit either in Illustrator and replace the same file on GitHub. You can move a chapter by changing `--x`, `--y`, `--w` in `board.css`; update the corresponding arrow endpoint to keep the connection aligned. The SVGs use arrowheads but no straight orthogonal connectors.
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
-## Team credits and parallel work packages
+## Work-package names and detached SVG islands
 
-**There are two distinct layers on the Workflow page.**
+There is **one Workflow canvas**, not a second Work Packages chapter.
 
-1. The **main fabrication path** retains the editable curved arrow SVGs and the eight process illustrations. Each expandable process has a small `WORK PACKAGE` or `FABRICATION CREW` footnote directly in its `<summary>` in `index.html`.
-2. The **Parallel Work Packages** section sits *outside* the arrow-connected workflow. These separate islands are independent research and support work packages, with team lists and optional file links. Their HTML lives immediately below `<div class="wb-board">` in `index.html` and their layout in `board.css`.
+- The eight arrow-connected production/process stages include participant credits directly in each clickable `<summary>`.
+- Four smaller, disconnected study/support nodes are scattered **inside the same `wb-board`**. They have no arrows and no separate section heading. Each can be opened to read the team's remit and related links.
+- Detached, Illustrator-editable placeholder SVGs: `computational.svg`, `construction.svg`, `environment.svg`, `hrc.svg`. Swap any of these files without changing the page code.
+- To reposition these four islands: modify `--wp-x`, `--wp-y`, `--wp-w` in `board.css` (desktop and mobile media queries). The process node positions use `--x`, `--y`, `--w`.
+- Only arrow-connected fabrication steps are included in `arrows-desktop.svg` and `arrows-mobile.svg`. Side islands must remain unconnected.
 
-Current published team credits, from the supplied roster:
-- Spatial: Yassmina
-- Structural: Rojin, Ruben, Wenxiao
-- G-code: team unconfirmed
-- Materials: Linda, Evgenia, Tamara
-- 3D printing / rammed-earth fabrication: rotating student teams of 2–3 (not the robotic support work-package team)
-- Firing: Hongyuan, Yishan
-- On-site assembly: team unconfirmed
+### Participant roster
 
-Separate work packages:
-- Computational Workflow: Sohyun
-- Construction Management: Niels, Donna
-- Printing/Robotic Setups: Maria, Elisavet
-- HRC Assembly: Suzanne, Parjanya, Matthias, Jin
-- Environmental Monitoring: Sonya, Gergana
-- Computer Vision and Machine Learning: proposed in the studio brief, but **not listed with confirmed members** in the provided work-package roster. Do not represent them as assigned until confirmed.
+- Spatial Design — Yassmina
+- Structural Check — Rojin, Ruben, Wenxiao
+- G-code Generation — Rojin, Niels
+- Material Development — Linda, Evgenia, Tamara
+- Materials Masters — Linda, Joyce, Yishan
+- 3D Printing — rotating student teams of 2–3, guided by WASP Masters Linda, Niels, Joyce, Yishan and COMAU Masters Maria, Elisavet
+- Rammed Earth — rotating student teams of 2–3, guided by Evgenia and Tamara
+- Firing — Hongyuan, Yishan
+- Assembly — all students
 
-To modify a member list, edit only the visible text in `index.html`; no JS/data migration is required. Existing links to the shared material/shift workbook and Tracker are preserved. The team overlays are separate from the production database.
+### Independent teams (no arrows)
+
+- Computational Workflow / Integration — Sohyun
+- Construction Management — Niels, Donna
+- Environmental Monitoring — Sonya, Gergana
+- HRC for Assembly — Suzanne, Parjanya, Matthias, Jin
+
+Standalone Printing/Robotic Setups and unassigned Computer Vision / Machine Learning teams are intentionally **not shown as islands**. Equipment experts are credited within 3D Printing instead.
+
+To edit names, descriptions, or links, modify the Workflow HTML in `index.html`. No database schema or Tracker record migration is needed. The original production data, module attachments, and status tracking stay inside the Tracker.
 
 ## Edit the layout or wording
 
