@@ -274,7 +274,7 @@
  * is tightly cropped to a landscape (132:67) frame, avoiding unused whitespace. */
 .wb-assembly .wb-preview { align-items:center; text-align:center; }
 .wb-assembly .wb-drawing { width:min(100%,690px); }
-.wb-assembly .wb-drawing img { aspect-ratio:132 / 67; }
+.wb-assembly .wb-drawing img { aspect-ratio:135 / 65; }
 .wb-assembly .wb-detail { max-width:345px; margin:10px auto 0; text-align:left; }
 .wb-firing .wb-index { color: #99988f; }
 
