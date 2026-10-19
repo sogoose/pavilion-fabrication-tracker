@@ -43,8 +43,7 @@ The page remains **one Workflow page**. Eight main clickable processes plus a sm
 - Spatial Design — Yassmina
 - Structural Check — Rojin, Ruben, Wenxiao
 - G-code Generation — Rojin, Niels
-- Material Development — Linda, Evgenia, Tamara
-- Materials Masters — Linda, Joyce, Yishan
+- Material Team — Linda, Evgenia, Tamara
 - 3D Printing — rotating student teams of 2–3, guided by WASP Masters Linda, Niels, Joyce, Yishan and COMAU Masters Maria, Elisavet
 - Rammed Earth — rotating student teams of 2–3, guided by Evgenia and Tamara
 - Firing / Glazing — Hongyuan, Yishan
