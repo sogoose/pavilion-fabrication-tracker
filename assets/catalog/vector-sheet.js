@@ -224,7 +224,8 @@ function table(pdf,r){
   section('05  FIRING',[
     ['FIRED?',r.Firing_Status==='Fired'?'Yes':r.Manufacturing_Method==='Rammed Earth'?'N/A':'No',
       'FIRING DATE',r.Firing_Date],
-    ['TEMPERATURE / C',r.Firing_Peak_Temp_C,'ROUTE',r.Firing_Route]
+    ['TEMPERATURE / C',r.Firing_Peak_Temp_C,'ROUTE',r.Firing_Route],
+    ['DURATION / H',r.Firing_Duration_h,'KILN / MACHINE',r.Firing_Kiln || (r.Manufacturing_Method==='3D Printing'?'ROHDE-kiln':'-')]
   ]);
   section('06  ADDITIONAL',[
     ['COMPRESSION / KN',r.Compression_Force_kN,'UPDATED BY',r.Updated_By],
