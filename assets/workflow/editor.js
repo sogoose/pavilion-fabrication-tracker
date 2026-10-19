@@ -160,7 +160,7 @@
       setFeedback('Sending…');
       const { error } = await client.auth.signInWithOtp({
         email: address,
-        options: { emailRedirectTo: location.origin + location.pathname + '#workflow', shouldCreateUser: false }
+        options: { emailRedirectTo: location.origin + location.pathname + '#workflow', shouldCreateUser: true }
       });
       setFeedback(error ? error.message : 'Check your email for the sign-in link. Return to this site after signing in.', !!error);
     }, 'wf-editor-save');
