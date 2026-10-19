@@ -9,9 +9,12 @@
 <path d="M146 504 C202 536 184 730 148 829" marker-end="url(#arr)"/>
 <path d="M210 536 C188 607 181 720 164 826" marker-end="url(#arr)"/>
 <path d="M348 530 C366 588 365 744 306 834" marker-end="url(#arr)"/>
-<path d="M100 1092 C69 1139 68 1158 91 1186" marker-end="url(#arr)" stroke-dasharray="3 6"/>
-<path d="M167 1093 C233 1210 249 1313 263 1371" marker-end="url(#arr)"/>
-<path d="M293 1089 C336 1196 339 1323 291 1371" marker-end="url(#arr)"/>
+<!-- Both fabrication routes converge on Drying; it carries no index -->
+<path d="M155 1053 C160 1071 167 1079 161 1097" marker-end="url(#arr)"/>
+<path d="M292 1035 C272 1059 235 1079 222 1097" marker-end="url(#arr)"/>
+<!-- Firing / Glazing only for selected dried modules -->
+<path d="M145 1135 C121 1154 111 1173 95 1188" marker-end="url(#arr)" stroke-dasharray="3 6"/>
+<path d="M223 1134 C283 1200 279 1290 270 1371" marker-end="url(#arr)"/>
 <path d="M142 1360 C186 1390 216 1424 201 1480" marker-end="url(#arr)" stroke-dasharray="3 6"/>
 </g>
 </svg>
