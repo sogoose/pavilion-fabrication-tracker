@@ -128,19 +128,24 @@
       const [id] = field;
       const element = pageNodes.get(id);
       if (!element || typeof value[id] !== 'string') return;
-      if (id === 'title' && value[id].includes('&')) {
-        // Preserve the existing understated accent on ampersands.
-        const fragments = value[id].split('&');
-        element.replaceChildren();
-        fragments.forEach((fragment, index) => {
-          element.append(document.createTextNode(fragment));
-          if (index !== fragments.length - 1) {
-            const accent = document.createElement('span');
-            accent.className = 'wb-title-amp';
-            accent.textContent = '&';
-            element.append(accent);
-          }
-        });
+      if (id === 'title') {
+        // Keep the editorial large-title/small-subtitle hierarchy even after
+        // team-edited text is reloaded from the shared Workflow database.
+        const raw = value[id];
+        const split = raw.indexOf('&');
+        const main = document.createElement('span');
+        main.className = 'wb-title-main';
+        main.textContent = (split < 0 ? raw : raw.slice(0, split)).trim();
+        element.replaceChildren(main);
+        if (split >= 0) {
+          const secondary = document.createElement('span');
+          secondary.className = 'wb-title-secondary';
+          const accent = document.createElement('span');
+          accent.className = 'wb-title-amp';
+          accent.textContent = '&';
+          secondary.append(accent, document.createTextNode(' ' + raw.slice(split + 1).trim()));
+          element.append(secondary);
+        }
       } else {
         element.textContent = value[id];
       }
