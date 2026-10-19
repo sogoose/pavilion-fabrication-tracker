@@ -17,6 +17,8 @@ The **01 / Workflow** page is an **asymmetric architectural process diagram with
 3. **Export as SVG**, preserving the filename. Each main process now uses a **portrait, near-square 1:1.1 artboard**: `viewBox="0 -42 135 149"`, intrinsic size `135 × 149`. Its original horizontal drawing is centred within this new artboard **without nonuniform scaling or distortion**. If redrawing in Illustrator, use the same near-square portrait size and fill the extra vertical room as desired. The page displays SVGs with `object-fit:contain`.
 4. Replace only the SVG in GitHub, then Commit. GitHub Pages will publish the updated drawing. The website will load that file automatically.
 
+**Exception — Assembly:** `assembly.svg` uses a landscape `132 × 67` artboard with `viewBox="1 0 132 67"` because its pavilion diagram spans much more horizontally than vertically. The illustration itself is unchanged; only excess SVG margin is removed. The page renders it at up to **690px on desktop / 345px on mobile**, in its own full-width ending stage.
+
 All eight illustrations are **separate vector files**, not code embedded inside `index.html`.
 
 ## Curved arrows — editable SVGs
@@ -38,7 +40,7 @@ The older experimental study assets (`contour-fragment.svg`, `deposition-fragmen
 
 ## Process credits and compact support studies
 
-The page remains **one Workflow page**. Assembly sits on its own centered final row, with an enlarged illustration (up to 330px desktop / 255px mobile). The solid path from Drying and optional dashed path from Firing / Glazing both lead into Assembly. Eight main clickable processes plus a small **noninteractive Drying marker** are connected by editable SVG Bézier arrows; the numbered indices remain `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`. Both fabrication routes pass through Drying. Firing / Glazing is optional for selected dried components; dried components can also proceed directly to Assembly.
+The page remains **one Workflow page**. Assembly sits on its own centered final row, with an enlarged landscape illustration (up to 690px desktop / 345px mobile). The solid path from Drying and optional dashed path from Firing / Glazing both lead into Assembly. Eight main clickable processes plus a small **noninteractive Drying marker** are connected by editable SVG Bézier arrows; the numbered indices remain `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`. Both fabrication routes pass through Drying. Firing / Glazing is optional for selected dried components; dried components can also proceed directly to Assembly.
 
 **All names are hidden until a process or team is clicked.** A main process reveals its team credits alongside notes and files. The four support/research teams are quietly collected **beneath the process diagram**, without an extra section heading or connecting arrows; their names, descriptions and links are visible only upon expansion.
 
