@@ -42,6 +42,7 @@
   const snapshot = node => ({
     title: titleNode(node)?.textContent.trim() || '',
     description: bodyNode(node)?.querySelector('p')?.textContent.trim() || '',
+    caption: node.querySelector('.wb-drawing figcaption')?.textContent.trim() || '',
     credits: parseCredits(node),
     links: [...node.querySelectorAll('.wb-links a, .wp-links a')].map(a => [
       a.textContent.replace(/\s*↗\s*$/, '').trim(), a.getAttribute('href') || ''
@@ -52,6 +53,8 @@
     if (!node || !value || typeof value !== 'object') return;
     const data = { ...originals.get(id), ...value };
     if (typeof data.title === 'string') titleNode(node).textContent = data.title;
+    const captionNode = node.querySelector('.wb-drawing figcaption');
+    if (captionNode && typeof data.caption === 'string') captionNode.textContent = data.caption;
     const body = bodyNode(node);
     const paragraph = body?.querySelector('p');
     if (paragraph && typeof data.description === 'string') paragraph.textContent = data.description;
@@ -93,6 +96,56 @@
     node.querySelector('.wb-preview, .wp-island-summary')?.setAttribute('aria-label', 'View ' + data.title + ' details');
   };
 
+  // Page labels and guide copy use the same owner-only storage as process notes.
+  // Plain text is assigned through textContent, never as arbitrary HTML.
+  const pageFields = [
+    ['eyebrow', 'Small top label', '.wb-eyebrow', 'input', 120],
+    ['title', 'Main heading', '.wb-mast h1', 'input', 120],
+    ['intro', 'Introduction', '.wb-intro', 'textarea', 1000],
+    ['hint', 'Instruction label', '.wb-hint', 'input', 200],
+    ['management_label', 'Construction Management heading', '.wb-management-label', 'input', 120],
+    ['management_description', 'Construction Management notes', '.wb-management p', 'textarea', 1000],
+    ['management_link_label', 'Construction Management link text', '.wb-management a', 'input', 140],
+    ['phase_label', 'Fabrication heading', '.wb-phase strong', 'input', 120],
+    ['phase_note', 'Fabrication phase note', '.wb-phase span', 'input', 120],
+    ['drying_label', 'Drying label', '.wb-drying', 'input', 120],
+    ['footer', 'Workflow footer', '.wb-bottom span:first-child', 'input', 180]
+  ];
+  const pageNodes = new Map(pageFields.map(field => [field[0], root.querySelector(field[2])]));
+  const pageDefaults = Object.fromEntries(pageFields.map(field => [
+    field[0], pageNodes.get(field[0])?.textContent.trim() || ''
+  ]));
+  const managementAnchor = root.querySelector('.wb-management a');
+  pageDefaults.management_link_href = managementAnchor?.getAttribute('href') || '';
+  const applyPage = value => {
+    if (!value || typeof value !== 'object') return;
+    pageFields.forEach(field => {
+      const [id] = field;
+      const element = pageNodes.get(id);
+      if (!element || typeof value[id] !== 'string') return;
+      if (id === 'title' && value[id].includes('&')) {
+        // Preserve the existing understated accent on ampersands.
+        const fragments = value[id].split('&');
+        element.replaceChildren();
+        fragments.forEach((fragment, index) => {
+          element.append(document.createTextNode(fragment));
+          if (index !== fragments.length - 1) {
+            const accent = document.createElement('span');
+            accent.className = 'wb-title-amp';
+            accent.textContent = '&';
+            element.append(accent);
+          }
+        });
+      } else {
+        element.textContent = value[id];
+      }
+    });
+    if (managementAnchor && typeof value.management_link_href === 'string') {
+      const href = safeHref(value.management_link_href);
+      if (href && href !== '#tracker') managementAnchor.href = href;
+    }
+  };
+
   root.querySelectorAll('details.wb-block, details.wp-island').forEach(node => {
     const id = getSectionId(node);
     if (!id || sections.has(id)) return;
@@ -111,9 +164,10 @@
 
   const actions = document.createElement('div');
   actions.className = 'wf-owner-actions';
-  actions.innerHTML = '<button type="button" class="wf-login" aria-label="Workflow editor login">Editor login</button><button type="button" class="wf-logout" hidden>Sign out</button><span class="wf-editor-state" role="status" aria-live="polite"></span>';
+  actions.innerHTML = '<button type="button" class="wf-login" aria-label="Workflow editor login">Editor login</button><button type="button" class="wf-page-edit" hidden>Edit page</button><button type="button" class="wf-logout" hidden>Sign out</button><span class="wf-editor-state" role="status" aria-live="polite"></span>';
   root.querySelector('.wb-mast > div')?.append(actions);
   const loginButton = actions.querySelector('.wf-login');
+  const pageButton = actions.querySelector('.wf-page-edit');
   const logoutButton = actions.querySelector('.wf-logout');
   const stateLabel = actions.querySelector('.wf-editor-state');
 
@@ -176,6 +230,7 @@
   const updatePermissions = () => {
     loginButton.hidden = !!currentUser;
     logoutButton.hidden = !currentUser;
+    pageButton.hidden = !canEdit;
     stateLabel.textContent = canEdit ? 'EDITOR ACCESS' : currentUser ? 'READ ONLY' : '';
     root.querySelectorAll('.wf-edit-trigger').forEach(button => { button.hidden = !canEdit; });
   };
@@ -189,6 +244,8 @@
     const credits = addField('Participants — one ROLE | names per line',
       (data.credits || []).map(pair => pair.join(' | ')).join('\n'));
     const description = addField('Description', data.description);
+    const caption = sections.get(id)?.querySelector('.wb-drawing figcaption')
+      ? addField('Drawing caption', data.caption || '', 'input') : null;
     const links = addField('File links — one LABEL | https://... per line (or #tracker)',
       (data.links || []).map(pair => pair.join(' | ')).join('\n'));
     credits.rows = 3; description.rows = 4; links.rows = 4;
@@ -203,6 +260,7 @@
         value = {
           title: trimLimit(title.value, 90),
           description: trimLimit(description.value, 1800),
+          ...(caption ? { caption: trimLimit(caption.value, 220) } : {}),
           credits: parseRows(credits.value, 12).map(pair => [pair[0], pair[1].slice(0, 400)]),
           links: parseRows(links.value, 16)
         };
@@ -220,6 +278,43 @@
     addButton('Cancel', closeDialog);
     dialog.showModal(); title.focus();
   };
+
+  const showPageEditor = () => {
+    if (!canEdit || !currentUser) return;
+    editingId = '__page';
+    fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
+    const data = { ...pageDefaults, ...(published.get('__page') || {}) };
+    const inputs = new Map();
+    pageFields.forEach(([key, label, selector, type]) => {
+      if (pageNodes.get(key)) inputs.set(key, addField(label, data[key], type));
+    });
+    const linkHref = addField('Construction Management file URL (https://...)',
+      data.management_link_href || '', 'input');
+    addButton('Save page', async () => {
+      const value = {};
+      pageFields.forEach(([key, label, selector, type, max]) => {
+        if (inputs.has(key)) value[key] = trimLimit(inputs.get(key).value, max);
+      });
+      value.management_link_href = trimLimit(linkHref.value, 1700);
+      if (!value.title) { setFeedback('Please enter a page title.', true); return; }
+      if (!safeHref(value.management_link_href) || value.management_link_href === '#tracker') {
+        setFeedback('The Construction Management URL must begin with https://', true); return;
+      }
+      setFeedback('Saving page text…');
+      const { error } = await client.from('pavilion_workflow_content').upsert({
+        project_id: PROJECT, section_id: '__page', content: value,
+        updated_by: currentUser.id, updated_at: new Date().toISOString()
+      }, { onConflict: 'project_id,section_id' });
+      if (error) { setFeedback('Save failed: ' + error.message, true); return; }
+      published.set('__page', value); applyPage(value); closeDialog();
+    }, 'wf-editor-save');
+    addButton('Cancel', closeDialog);
+    dialog.showModal();
+  };
+  pageButton.addEventListener('click', showPageEditor);
+  root.querySelector('.wb-mast h1')?.addEventListener('dblclick', event => {
+    if (canEdit) { event.preventDefault(); showPageEditor(); }
+  });
 
   sections.forEach((node, id) => {
     const trigger = document.createElement('button');
@@ -241,6 +336,11 @@
       .select('section_id,content').eq('project_id', PROJECT);
     if (error) { console.warn('Workflow content unavailable:', error.message); return; }
     (data || []).forEach(row => {
+      if (row.section_id === '__page') {
+        published.set('__page', row.content);
+        applyPage(row.content);
+        return;
+      }
       if (!sections.has(row.section_id)) return;
       published.set(row.section_id, row.content);
       apply(row.section_id, row.content);
