@@ -1,6 +1,6 @@
 # Editable workflow board assets
 
-The **01 / Workflow** page is now an editorial architectural presentation board with differently scaled technical illustrations, material samples, and expandable annotations. The existing **02 / Tracker** and its 3D viewer/data remain separate.
+The **01 / Workflow** page is an **asymmetric, floating architectural drawing atlas** titled **Overall Workflow**. Differently scaled drawings, technical fragments, material studies and faint reference lines share a large editorial canvas. Click a process to expand its original notes and links inline. The existing **02 / Tracker** and its 3D viewer/data remain separate.
 
 ## Edit an illustration in Illustrator
 
@@ -18,6 +18,21 @@ The **01 / Workflow** page is now an editorial architectural presentation board 
 4. Replace only the SVG in GitHub, then Commit. GitHub Pages will publish the updated drawing. The website will load that file automatically.
 
 All eight illustrations are **separate vector files**, not code embedded inside `index.html`.
+
+## Floating studies — also editable SVGs
+
+Five extra study drawings are separate editable files, not flattened into the site:
+
+- `contour-fragment.svg` — offset geometry study
+- `deposition-fragment.svg` — exploded layers
+- `soil-fragment.svg` — dispersed grain/soil study
+- `mould-fragment.svg` — exploded formwork detail
+- `diagram-guides.svg` — very faint connecting/registration lines
+
+They are deliberately **decorative and noninteractive**; the eight primary processes remain the only clickable drawings. On narrow screens the extra studies are hidden and the primary drawings are still staggered in a responsive vertical sequence.
+
+Edit SVG artwork in Illustrator and replace the file under the same name. For placement/rotation/scale, modify `board.css` under **LOOSE ATLAS / V2**. In that CSS, each primary process has `--block-x`, `--block-y`, `--block-width`; floating fragments use `--study-width` and `--study-rotation`. The `board.css` media queries define separate tablet/phone layouts.
+
 
 ## Edit the layout or wording
 
