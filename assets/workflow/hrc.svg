@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="90" viewBox="0 0 180 90" fill="none" stroke="#77746d" stroke-width="1" stroke-linejoin="round" stroke-linecap="round">
+<title>HRC for Assembly — editable placeholder</title>
+<g opacity=".88">
+<path d="M9 77H73M21 76L28 58L53 61L59 76M40 57L63 40L82 51L68 64L51 61Z"/>
+<path d="M68 39L94 12L108 25L83 52Z M95 13L108 5L123 19L109 26"/>
+<circle cx="68" cy="49" r="4"/><circle cx="104" cy="17" r="3"/>
+<path d="M124 27L132 35L142 27M132 35L129 47M132 35L141 46" stroke-dasharray="3 3"/>
+<path d="M100 63L121 52L145 64L123 76Z M100 63V73L123 85L145 75V64M123 76V85"/>
+<path d="M139 56L154 48L172 58L156 66Z M139 56V65L156 75L172 67V58M156 66V75"/>
+</g></svg>
