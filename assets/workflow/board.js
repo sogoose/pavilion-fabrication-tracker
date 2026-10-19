@@ -128,23 +128,24 @@
   dialog.setAttribute('aria-label', 'Fabrication process archive');
   dialog.innerHTML =
     '<div class="wb-process-shell">' +
-      '<header class="wb-process-top">' +
-      '<button type="button" class="wb-process-close" aria-label="Close process card">×</button></header>' +
+      '<div class="wb-process-top"><button type="button" class="wb-process-close" aria-label="Close process card">×</button></div>' +
       '<div class="wb-process-columns">' +
-        '<section class="wb-tarot" aria-label="Process card">' +
+        '<section class="wb-tarot" aria-label="Process information">' +
           '<div class="wb-tarot-meta"><span class="wb-card-number"></span></div>' +
-          '<div class="wb-card-art"></div><h2 class="wb-card-title"></h2>' +
+          '<h2 class="wb-card-title"></h2><div class="wb-card-art"></div>' +
           '<div class="wb-card-tag"></div><p class="wb-card-description"></p>' +
           '<div class="wb-card-credits"></div>' +
         '</section>' +
-        '<section class="wb-archive" aria-label="Process gallery and files">' +
-          '<div class="wb-archive-heading"><div><h3>Gallery</h3></div>' +
-          '<button type="button" class="wb-archive-edit">✎ Edit / Upload</button></div>' +
+        '<section class="wb-archive" aria-label="Photographs and attachments">' +
+          '<div class="wb-archive-heading"><h3>Gallery</h3>' +
+          '<button type="button" class="wb-archive-edit">Edit contents ↗</button></div>' +
           '<div class="wb-gallery-stage"></div>' +
-          '<div class="wb-gallery-controls"><button type="button" class="wb-gallery-prev" aria-label="Previous photo">←</button>' +
-          '<span class="wb-gallery-count"></span><button type="button" class="wb-gallery-next" aria-label="Next photo">→</button></div>' +
+          '<div class="wb-gallery-controls"><span class="wb-gallery-count"></span>' +
+          '<div class="wb-gallery-nav"><button type="button" class="wb-gallery-prev" aria-label="Previous photo">←</button>' +
+          '<button type="button" class="wb-gallery-next" aria-label="Next photo">→</button></div></div>' +
           '<div class="wb-gallery-thumbs"></div>' +
-          '<div class="wb-attachments-heading"><h3>Attachments</h3></div>' +
+          '<div class="wb-attachments-heading"><h3>Files &amp; Links</h3>' +
+          '<button type="button" class="wb-add-file">+ Upload file</button></div>' +
           '<div class="wb-attachment-links"></div>' +
         '</section>' +
       '</div>' +
@@ -175,6 +176,8 @@
     img.alt = 'Fabrication gallery image ' + (activePhotoIndex + 1);
     img.loading = 'eager';
     img.decoding = 'async';
+    // Respect small source photos' natural dimensions rather than upscaling.
+    img.addEventListener('load', () => { if (img.naturalWidth < 450) img.classList.add('wb-image-small'); });
     stage.append(img);
     activePhotos.forEach((src, i) => {
       const thumb = element('button', 'wb-gallery-thumb' + (i === activePhotoIndex ? ' is-active' : ''));
@@ -263,11 +266,20 @@
           document.getElementById('navTracker')?.click();
         });
       }
+      let extension = 'URL';
+      if (href !== '#tracker') {
+        const match = new URL(href).pathname.match(/\.([a-z0-9]{2,6})$/i);
+        if (match && /^(pdf|docx|xlsx|pptx|zip|csv|txt|3dm|gcode|dxf|stl)$/i.test(match[1])) {
+          extension = match[1].toUpperCase();
+        }
+      }
+      a.prepend(element('span', 'wb-attachment-kind', extension));
       a.append(element('span', 'wb-attachment-arrow', '↗'));
       links.append(a);
     });
     if (!links.children.length) links.append(element('span', 'wb-attachment-empty', 'Links will appear here when added.'));
     q('.wb-archive-edit').hidden = !node.querySelector('.wf-edit-trigger');
+    q('.wb-add-file').hidden = !node.querySelector('.wf-edit-trigger');
     dialog.showModal();
   };
   root.querySelectorAll('details.wb-block > summary, details.wp-island > summary').forEach(summary => {
@@ -286,12 +298,15 @@
   });
   q('.wb-gallery-prev').addEventListener('click', () => { activePhotoIndex--; renderPhoto(); });
   q('.wb-gallery-next').addEventListener('click', () => { activePhotoIndex++; renderPhoto(); });
-  q('.wb-archive-edit').addEventListener('click', () => {
+  const openEditor = (mode = '') => {
     const edit = activeNode?.querySelector('.wf-edit-trigger');
     if (!edit) return;
+    if (mode === 'files') activeNode.dataset.wfFocus = 'files';
     close();
     edit.click();
-  });
+  };
+  q('.wb-archive-edit').addEventListener('click', () => openEditor());
+  q('.wb-add-file').addEventListener('click', () => openEditor('files'));
   // Preserve the existing shortcut for links outside the modal.
   root.addEventListener('click', e => {
     const link = e.target.closest('.wb-tracker-link');
