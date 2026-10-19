@@ -17,6 +17,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<p class="catalog-lead">A4 landscape · one CAD-style fabrication record per module · photographs, toolpaths and model drawings.</p>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
+        '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
         '<option value="selected">Selected module / one sheet</option></select></label>' +
       '<label class="catalog-field">LARGE IMAGE' +
         '<select class="catalog-media"><option value="auto">Auto / photo → 3D → axonometric G-code</option>' +
@@ -253,7 +254,10 @@ export function setupCatalog({ THREE, getState, notify }) {
       if(document.fonts?.ready)await document.fonts.ready;
       const all=await gatherRecords(state);
       let entries=scope.value==='selected'
-        ? all.filter(e=>e.key===String(state.selectedKey)) : all;
+        ? all.filter(e=>e.key===String(state.selectedKey))
+        : scope.value==='upper'
+        ? all.filter(e=>/^[A-Z]/.test(String(e.record.Object_ID||'')))
+        : all;
       if(!entries.length)throw new Error('No modules found. Load or sync the Tracker first.');
       const photos=await gatherPhotos(state);
       const pdf=new Class({orientation:'landscape',unit:'mm',format:'a4',
@@ -265,7 +269,7 @@ export function setupCatalog({ THREE, getState, notify }) {
         if(pages)pdf.addPage('a4','landscape');
         pages++;
       };
-      if(scope.value==='all'&&cover.checked){
+      if(scope.value!=='selected'&&cover.checked){
         next();
         drawVectorCover(pdf,entries,photos.size,
           entries.filter(e=>String(e.record.GCode_File||'').trim()).length);
@@ -289,7 +293,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       const stamp=new Date().toISOString().slice(0,10).replace(/-/g,'');
       const name=scope.value==='selected'
         ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
-        : 'Pavilion_Fabrication_Catalogue_'+stamp+'.pdf';
+        : 'Pavilion_Fabrication_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
       message('Saved '+pages+' pages · '+entries.length+' modules · vector CAD.',1);
       notify?.('Vector PDF ready · '+entries.length+' module sheets.');
