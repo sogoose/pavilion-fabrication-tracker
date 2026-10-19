@@ -50,23 +50,23 @@
   dialog.setAttribute('aria-label', 'Fabrication process archive');
   dialog.innerHTML =
     '<div class="wb-process-shell">' +
-      '<header class="wb-process-top"><span class="wb-process-kicker">PAVILION / PROCESS ARCHIVE</span>' +
+      '<header class="wb-process-top">' +
       '<button type="button" class="wb-process-close" aria-label="Close process card">×</button></header>' +
       '<div class="wb-process-columns">' +
         '<section class="wb-tarot" aria-label="Process card">' +
-          '<div class="wb-tarot-meta"><span class="wb-card-number"></span><span class="wb-card-category">FABRICATION CARD</span></div>' +
+          '<div class="wb-tarot-meta"><span class="wb-card-number"></span></div>' +
           '<div class="wb-card-art"></div><h2 class="wb-card-title"></h2>' +
           '<div class="wb-card-tag"></div><p class="wb-card-description"></p>' +
           '<div class="wb-card-credits"></div>' +
         '</section>' +
         '<section class="wb-archive" aria-label="Process gallery and files">' +
-          '<div class="wb-archive-heading"><div><span class="wb-archive-overline">FIELD NOTES</span><h3>Process Gallery</h3></div>' +
+          '<div class="wb-archive-heading"><div><h3>Gallery</h3></div>' +
           '<button type="button" class="wb-archive-edit">✎ Edit / Upload</button></div>' +
           '<div class="wb-gallery-stage"></div>' +
           '<div class="wb-gallery-controls"><button type="button" class="wb-gallery-prev" aria-label="Previous photo">←</button>' +
           '<span class="wb-gallery-count"></span><button type="button" class="wb-gallery-next" aria-label="Next photo">→</button></div>' +
           '<div class="wb-gallery-thumbs"></div>' +
-          '<div class="wb-attachments-heading"><span class="wb-archive-overline">RESOURCES</span><h3>Attachments & Links</h3></div>' +
+          '<div class="wb-attachments-heading"><h3>Attachments</h3></div>' +
           '<div class="wb-attachment-links"></div>' +
         '</section>' +
       '</div>' +
@@ -127,7 +127,6 @@
     const caption = getText(node, '.wb-drawing figcaption');
     const content = node.querySelector('.wb-detail, .wp-description');
     q('.wb-card-number').textContent = number;
-    q('.wb-card-category').textContent = id === 'firing' ? 'OPTIONAL FINISH' : id === 'assembly' ? 'FINAL PROCESS' : 'PROCESS CARD';
     q('.wb-card-title').textContent = title;
     const cardTag = q('.wb-card-tag');
     cardTag.replaceChildren();
