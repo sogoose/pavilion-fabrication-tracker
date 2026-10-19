@@ -1848,3 +1848,185 @@
   #workflowView .wb-management-body {width:min(300px,calc(100vw - 35px));}
   #workflowView .wb-board .wb-assembly .wb-preview > .wb-name {font-size:21px!important;}
 }
+
+
+/* REFERENCE PALETTE / saturated chapter accents, round numeral stamps, quiet footer
+   Uses the six strong colors from the supplied color-study reference.
+   Main SVG contours remain slightly rounded; parallel study items stay B&W.
+   --stage-fill is deliberately darker than the brand accent so inverted
+   WHITE stage labels remain readable on hover. */
+#workflowView .wb-spatial, .wb-process-dialog[data-stage="spatial"] {
+  --stage-accent:#A785FE; --stage-fill:#7050C9; --stage-number-ink:#171419; --stage-wash:rgba(167,133,254,.13);
+}
+#workflowView .wb-structural, .wb-process-dialog[data-stage="structural"] {
+  --stage-accent:#537CDE; --stage-fill:#3B60B7; --stage-number-ink:#fff; --stage-wash:rgba(83,124,222,.13);
+}
+#workflowView .wb-gcode, .wb-process-dialog[data-stage="gcode"] {
+  --stage-accent:#946FEA; --stage-fill:#6746BC; --stage-number-ink:#fff; --stage-wash:rgba(148,111,234,.13);
+}
+#workflowView .wb-material, .wb-process-dialog[data-stage="material"] {
+  --stage-accent:#EAA9CB; --stage-fill:#A54178; --stage-number-ink:#242028; --stage-wash:rgba(234,169,203,.17);
+}
+#workflowView .wb-printing, .wb-process-dialog[data-stage="printing"] {
+  --stage-accent:#FF3B1C; --stage-fill:#CF2C17; --stage-number-ink:#fff; --stage-wash:rgba(255,59,28,.12);
+}
+#workflowView .wb-rammed, .wb-process-dialog[data-stage="rammed"] {
+  --stage-accent:#00B65C; --stage-fill:#087B48; --stage-number-ink:#152719; --stage-wash:rgba(0,182,92,.13);
+}
+#workflowView .wb-firing, .wb-process-dialog[data-stage="firing"] {
+  --stage-accent:#D5EF72; --stage-fill:#627B1D; --stage-number-ink:#283011; --stage-wash:rgba(213,239,114,.19);
+}
+#workflowView .wb-assembly, .wb-process-dialog[data-stage="assembly"] {
+  --stage-accent:#537CDE; --stage-fill:#3557B0; --stage-number-ink:#fff; --stage-wash:rgba(83,124,222,.13);
+}
+#workflowView .wb-board .wb-block .wb-stage-frame {
+  color:var(--stage-accent);
+}
+#workflowView .wb-board .wb-block .wb-stage-frame path {
+  stroke:var(--stage-accent);
+  stroke-width:1.35px;
+  fill:color-mix(in srgb,var(--stage-accent) 5%,white);
+}
+#workflowView .wb-board .wb-block:hover .wb-stage-frame path,
+#workflowView .wb-board .wb-block.wb-selected .wb-stage-frame path {
+  fill:var(--stage-fill);
+  stroke:var(--stage-fill);
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-index {
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  align-self:flex-start;
+  width:29px;
+  height:29px;
+  min-width:29px;
+  margin:2px 0 5px 4px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:var(--stage-accent);
+  color:var(--stage-number-ink,#fff)!important;
+  font:750 10px/1 "Manrope","DM Sans",Arial,sans-serif!important;
+  letter-spacing:-.035em;
+  text-align:center;
+  box-shadow:none;
+  transition:background-color .16s ease,color .16s ease;
+}
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-index,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-index {
+  color:var(--stage-fill)!important;
+  background:#fff;
+}
+#workflowView .wb-board .wb-block .wb-preview .wb-drawing figcaption {
+  color:var(--stage-fill);
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-name {
+  font-weight:650!important;
+}
+.wb-process-dialog .wb-tarot {
+  border-top-color:var(--stage-accent);
+}
+.wb-process-dialog .wb-card-number,
+.wb-process-dialog .wb-card-credit-label,
+.wb-process-dialog .wb-card-tag span,
+.wb-process-dialog .wb-archive-edit {
+  color:var(--stage-fill,var(--stage-accent));
+}
+
+/* The main title is a SINGLE centered line, no metadata above or below.
+   Scale continuously to fit a narrow phone without introducing a second line. */
+#workflowView .wb-mast {
+  padding:24px 0 18px;
+  text-align:center;
+}
+#workflowView .wb-mast h1 {
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  text-align:center;
+  line-height:1.06;
+}
+#workflowView .wb-mast .wb-title-main {
+  display:block;
+  width:100%;
+  max-width:100%;
+  margin:0 auto;
+  white-space:nowrap;
+  font:750 clamp(27px,5.3vw,72px)/1.08 "Manrope","DM Sans",Arial,sans-serif!important;
+  letter-spacing:-.066em;
+  text-align:center;
+  color:#131515;
+}
+#workflowView .wb-mast .wb-title-secondary,
+#workflowView .wb-eyebrow,
+#workflowView .wb-mast .wb-intro,
+#workflowView .wb-mast .wb-hint {
+  display:none!important;
+}
+#workflowView .wb-board {
+  margin-top:70px;
+}
+
+/* Small announcement sits just ABOVE chapter 01, not in the arrow corridor
+   between Spatial Design and Structural Check. */
+#workflowView .wb-board > .wb-management {
+  top:-44px;
+  left:calc(8% + 12px);
+  transform:none;
+}
+#workflowView .wb-management-body {
+  left:0;
+  transform:none;
+}
+
+/* TU Delft copyright is at the END of the entire workflow, below support teams.
+   There is deliberately no copyright line under the main heading. */
+#workflowView .wb-bottom {
+  display:flex!important;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  margin:30px auto 0;
+  padding:24px 0 6px;
+  border-top:1px solid #e5e7e8;
+  border-bottom:0;
+  text-align:center;
+  color:#64686e;
+}
+#workflowView .wb-copyright {
+  font:500 10px/1.5 "IBM Plex Mono",monospace;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+
+/* Underlying toolpaths are unchanged. On small screens, keep the badge,
+   centered heading and small folder inside the screen width. */
+@media(max-width:850px) {
+  #workflowView .wb-mast {padding:21px 0 13px;}
+  #workflowView .wb-mast .wb-title-main {
+    font-size:clamp(24px,5.3vw,53px)!important;
+  }
+  #workflowView .wb-board {margin-top:69px;}
+  #workflowView .wb-board > .wb-management {
+    top:-46px;
+    left:calc(4% + 8px);
+    transform:none;
+  }
+  #workflowView .wb-board .wb-block .wb-preview > .wb-index {
+    width:25px;height:25px;min-width:25px;font-size:9px!important;
+    margin:1px 0 3px 2px;
+  }
+}
+@media(max-width:460px) {
+  #workflowView .wb-mast .wb-title-main {
+    font-size:clamp(19px,5.25vw,25px)!important;
+    letter-spacing:-.075em;
+  }
+  #workflowView .wb-board {margin-top:68px;}
+  #workflowView .wb-board > .wb-management {
+    top:-47px;
+    left:calc(4% + 5px);
+  }
+  #workflowView .wb-copyright {font-size:9px;}
+}
