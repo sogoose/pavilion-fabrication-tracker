@@ -103,23 +103,35 @@ export function setupCatalog({ THREE, getState, notify }) {
   }
   async function gatherRecords(state) {
     const partById = new Map((state.parts || []).map(part => [String(part.key),part]));
-    const all = new Map();
+    const local = new Map();
     for (const [key, record] of Object.entries(state.records || {})) {
-      all.set(String(key), {key:String(key), record:{...record}, part:partById.get(String(key))});
+      local.set(String(key), {key:String(key), record:{...record}, part:partById.get(String(key))});
     }
+    let all = local;
     if (state.client && state.liveMode) {
       const response = await state.client.from('pavilion_parts')
         .select('*').eq('project_id',state.projectId).range(0, 1999);
-      if (response.error) throw new Error('Shared module data unavailable: ' + response.error.message);
-      for (const row of response.data || []) {
-        const key = String(row.rhino_guid || '');
-        if (!key) continue;
-        const existing = all.get(key);
-        all.set(key,{
-          key,
-          part:partById.get(key),
-          record:{...(existing?.record || {}), ...mapCloud(row,state.dbMap)}
-        });
+      if (response.error) {
+        console.warn('Catalogue: shared records unavailable; using current local records.',response.error.message);
+      } else {
+        // Shared DB is the authoritative catalogue. Exclude stale browser-cache
+        // modules from previously loaded Rhino models.
+        all = new Map();
+        for (const row of response.data || []) {
+          const key = String(row.rhino_guid || '');
+          if (!key) continue;
+          all.set(key,{
+            key,
+            part:partById.get(key),
+            record:{...(local.get(key)?.record || {}), ...mapCloud(row,state.dbMap)}
+          });
+        }
+        // Include unsynced modules only if they belong to the current Rhino model.
+        for (const [key,entry] of local) {
+          if (!all.has(key) && (partById.has(key) || key===String(state.selectedKey))) {
+            all.set(key,entry);
+          }
+        }
       }
     }
     return [...all.values()].sort(compareIds);
