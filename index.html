@@ -346,6 +346,7 @@ header{gap:6px;padding:10px 16px}
 /* Standalone SVG artwork in assets/workflow; same placement as original inline drawings */
 .pm-art{object-fit:contain;display:block}
 </style>
+<link rel="stylesheet" href="./assets/workflow/board.css">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -403,37 +404,96 @@ header{gap:6px;padding:10px 16px}
   </header>
 
   
-<section id="workflowView" class="workflowScreen" aria-label="Interactive fabrication process map">
-<div class="pm-page">
-
-<div class="pm-title"><h1>Workflow</h1><span>📍 WE ARE HERE / FABRICATION <i></i></span></div>
-<aside class="pm-management"><span class="pm-aside-index">📋 CONSTRUCTION MANAGEMENT</span><p>For detailed tasks and shift coordination, follow the Construction Management team's guidance.</p><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN TASK SHEET ↗</a></aside><div class="pm-scroll"><div class="pm-grid">
-<svg class="pm-connections" viewBox="0 0 1000 850" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke="#b0b0a9" stroke-width=".85">
-<defs><marker id="pm-arr" orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3"><path d="M0 0L6 3L0 6" stroke="#b0b0a9" fill="none"/></marker></defs>
-<path d="M270 98H530" marker-end="url(#pm-arr)"/>
-<path d="M660 156V202H270V238" marker-end="url(#pm-arr)"/>
-<path d="M660 156V238" marker-end="url(#pm-arr)"/>
-<path d="M270 395V460H500V483" marker-end="url(#pm-arr)"/>
-<path d="M660 395V460H500"/>
-<path d="M270 655V697" marker-end="url(#pm-arr)" stroke-dasharray="5 5"/>
-<path d="M270 655V755H660V786" marker-end="url(#pm-arr)"/>
-<path d="M660 655V786" marker-end="url(#pm-arr)"/>
-</svg>
-<div class="pm-fabrication-zone"><div class="pm-zone-head"><span>05 &nbsp; FABRICATION</span><span>📍 WE ARE HERE</span></div></div>
-<div class="pm-node-layer"><div class="pm-node pm-spatial" style="--nx:13%;--ny:6%" data-process="spatial"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="SPATIAL DESIGN details details"><span class="pm-node-label"><span class="pm-number">01</span>SPATIAL DESIGN</span><img class="pm-art" src="./assets/workflow/spatial.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-structural" style="--nx:53%;--ny:6%" data-process="structural"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="STRUCTURAL CHECK details details"><span class="pm-node-label"><span class="pm-number">02</span>STRUCTURAL CHECK</span><img class="pm-art" src="./assets/workflow/structural.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-gcode" style="--nx:13%;--ny:28%" data-process="gcode"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="G-CODE GENERATION details details"><span class="pm-node-label"><span class="pm-number">03</span>G-CODE GENERATION</span><img class="pm-art" src="./assets/workflow/gcode.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-material" style="--nx:53%;--ny:28%" data-process="material"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="MATERIAL PREPARATION details details"><span class="pm-node-label"><span class="pm-number">04</span>MATERIAL PREPARATION</span><img class="pm-art" src="./assets/workflow/material.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-printing" style="--nx:13%;--ny:54%" data-process="printing"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="3D PRINTING details details"><span class="pm-node-label"><span class="pm-number">A</span>3D PRINTING</span><img class="pm-art" src="./assets/workflow/printing.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-rammed" style="--nx:53%;--ny:54%" data-process="rammed"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="RAMMED EARTH details details"><span class="pm-node-label"><span class="pm-number">B</span>RAMMED EARTH</span><img class="pm-art" src="./assets/workflow/rammed.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-firing" style="--nx:13%;--ny:76%" data-process="firing"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="FIRING / SELECTIVE details details"><span class="pm-node-label"><span class="pm-number">06</span>FIRING / SELECTIVE</span><img class="pm-art" src="./assets/workflow/firing.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div>
-<div class="pm-node pm-assembly" style="--nx:53%;--ny:87%" data-process="assembly"><button class="pm-node-toggle" type="button" aria-expanded="false" aria-label="ASSEMBLY / UPCOMING details details"><span class="pm-node-label"><span class="pm-number">07</span>ASSEMBLY / UPCOMING</span><img class="pm-art" src="./assets/workflow/assembly.svg" alt="" aria-hidden="true" loading="eager" decoding="async"><span class="pm-node-more">+</span></button><div class="pm-node-detail" hidden><p class="pm-inline-text"></p><div class="pm-inline-links"></div></div></div></div>
-<div class="pm-connector-caption">OPTIONAL POST-PROCESSING ↓</div>
-</div></div>
-
-
+<section id="workflowView" class="workflowScreen" aria-label="Pavilion workflow board">
+<div class="wb-shell">
+  <div class="wb-mast">
+    <div>
+      <span class="wb-eyebrow">PAVILION / PROCESS DOCUMENTATION &nbsp; 2026</span>
+      <h1>From model<br><em>to matter.</em></h1>
+    </div>
+    <aside class="wb-management">
+      <span class="wb-management-label">📋 CONSTRUCTION MANAGEMENT</span>
+      <p>For detailed tasks and shift coordination, follow the Construction Management team's guidance.</p>
+      <a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a>
+    </aside>
+  </div>
+  <div class="wb-board">
+  <details class="wb-block wb-spatial" name="workflow-detail" data-process="spatial">
+  <summary class="wb-preview" aria-label="View Spatial Design details">
+    <span class="wb-index">01 / GEOMETRY</span>
+    <span class="wb-name">Spatial Design</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/spatial.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>RHINO / MODULE GEOMETRY — DIGITAL MODEL</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Rhino-based module geometry and the evolving pavilion configuration.</p><div class="wb-links"><a href="https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng" target="_blank" rel="noopener noreferrer">DESIGN FILES ↗</a></div></div>
+</details>
+<details class="wb-block wb-structural" name="workflow-detail" data-process="structural">
+  <summary class="wb-preview" aria-label="View Structural Check details">
+    <span class="wb-index">02 / TESTING</span>
+    <span class="wb-name">Structural Check</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/structural.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>COMPRESSIVE LOAD / SOIL BLOCK</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Structural verification, including compression testing and checks before fabrication.</p><span class="wb-note">REFERENCE FILES TO FOLLOW</span></div>
+</details>
+<details class="wb-block wb-gcode" name="workflow-detail" data-process="gcode">
+  <summary class="wb-preview" aria-label="View G-code Generation details">
+    <span class="wb-index">03 / TOOLPATH</span>
+    <span class="wb-name">G-code Generation</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/gcode.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>OFFSET / INFILL / MACHINE PATH</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Toolpaths grouped by machine and module in Teams. Module-level G-code attachments stay in the existing Tracker.</p><div class="wb-links"><a href="https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng" target="_blank" rel="noopener noreferrer">G-CODE SOURCE ↗</a></div></div>
+</details>
+<details class="wb-block wb-material" name="workflow-detail" data-process="material">
+  <summary class="wb-preview" aria-label="View Material Preparation details">
+    <span class="wb-index">04 / MIXING</span>
+    <span class="wb-name">Material Preparation</span>
+    <div class="wb-material-layout"><figure class="wb-drawing"><img src="./assets/workflow/material.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>WEIGHING / MIXING / MATERIAL BATCH</figcaption></figure><div class="wb-sample" aria-hidden="true"></div></div>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Soil composition and material preparation. Batch and shift records are documented in the shared workbook.</p><div class="wb-links"><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">MATERIAL WORKBOOK ↗</a></div></div>
+</details>
+<div class="wb-phase" aria-label="Current project phase — fabrication"><strong>Fabrication</strong><span>↘ WE ARE HERE &nbsp; / &nbsp; 2026</span></div>
+<details class="wb-block wb-printing" name="workflow-detail" data-process="printing">
+  <summary class="wb-preview" aria-label="View 3D Printing details">
+    <span class="wb-index">05.A / FABRICATION</span>
+    <span class="wb-name">3D Printing</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/printing.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>SOIL EXTRUSION / LAYERED MODULE</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>WASP, UR5 and COMAU manufacturing. Module-specific settings, attachments, statuses and photographs remain in the Tracker.</p><div class="wb-links"><a href="#tracker" class="wb-tracker-link">OPEN MODULE TRACKER ↗</a></div></div>
+</details>
+<details class="wb-block wb-rammed" name="workflow-detail" data-process="rammed">
+  <summary class="wb-preview" aria-label="View Rammed Earth details">
+    <span class="wb-index">05.B / FABRICATION</span>
+    <span class="wb-name">Rammed Earth</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/rammed.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>PLYWOOD MOULD / MANUAL COMPACTION</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Mould preparation, batch filling and compaction. See the shared shift plan and the module records.</p><div class="wb-links"><a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">RAMMED EARTH SHIFTS ↗</a><a href="#tracker" class="wb-tracker-link">OPEN MODULE TRACKER ↗</a></div></div>
+</details>
+<details class="wb-block wb-firing" name="workflow-detail" data-process="firing">
+  <summary class="wb-preview" aria-label="View Firing details">
+    <span class="wb-index">06 / SELECTIVE PROCESS</span>
+    <span class="wb-name">Firing</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/firing.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>KILN / SELECTED PRINTED BLOCKS</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Optional firing for selected 3D-printed modules. Firing records remain in the Tracker; no separate firing view is needed.</p><div class="wb-links"><a href="#tracker" class="wb-tracker-link">OPEN MODULE TRACKER ↗</a></div></div>
+</details>
+<details class="wb-block wb-assembly" name="workflow-detail" data-process="assembly">
+  <summary class="wb-preview" aria-label="View Assembly details">
+    <span class="wb-index">07 / UPCOMING</span>
+    <span class="wb-name">Assembly</span>
+    <figure class="wb-drawing"><img src="./assets/workflow/assembly.svg" alt="" aria-hidden="true" loading="lazy"><figcaption>PAVILION / TWO-WING CONFIGURATION</figcaption></figure>
+    <span class="wb-plus" aria-hidden="true">+</span>
+  </summary>
+  <div class="wb-detail"><p>Future assembly stage. The overall pavilion geometry is documented in the final model; construction follows production and any relevant post-processing.</p><span class="wb-note">PLANNED / NEXT PHASE</span></div>
+</details>
+  </div>
+  <footer class="wb-bottom"><span>DESIGN → MATERIAL → FABRICATION → ASSEMBLY</span><span>01 / WORKFLOW</span></footer>
 </div>
-<div class="pm-overlay" id="pmOverlay" aria-hidden="true"><button type="button" class="pm-backdrop" id="pmBackdrop" aria-label="Close detail"></button><aside class="pm-drawer" role="dialog" aria-label="Process details"><div class="pm-drawer-top"><span id="pmDrawerIndex">01 / PROCESS</span><button type="button" id="pmClose" aria-label="Close">×</button></div><div id="pmDrawerArt"></div><h2 id="pmDrawerTitle"></h2><p id="pmDrawerText"></p><div class="pm-drawer-links" id="pmDrawerLinks"></div></aside></div>
 </section>
 
   <div class="main">
@@ -2099,42 +2159,7 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
 })();
 </script>
 
-<script>
-(function(){
- const data={
- spatial:{index:"01",title:"Spatial Design",text:"Design geometry and modular Rhino source. Open the shared Teams resource.",links:[["OPEN RHINO / TEAMS FILES","https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng"]]},
- structural:{index:"02",title:"Structural Check",text:"Verification of module geometry and structural stability before fabrication. Supporting references can be added when they are available.",links:[]},
- gcode:{index:"03",title:"G-code Generation",text:"Toolpaths are arranged in Teams by machine and then by module. Existing module G-code attachments remain unchanged in the Tracker.",links:[["OPEN G-CODE FILES","https://tud365.sharepoint.com/:u:/s/course-CreativeRobotics2026/IQC0_TID6ThuQKhmg2cld6caAReP8-PWn71km8KFFBnKFng"]]},
- material:{index:"04",title:"Material Preparation",text:"Preparation and mixing of soil-based composites. The workbook contains material and fabrication records.",links:[["OPEN MATERIALS / SHIFTS","https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c"]]},
- printing:{index:"05A",title:"3D Printing",text:"Robotic extrusion with WASP, UR5 and COMAU. UR5 and COMAU require the relevant Arduino setup. Use existing Tracker records for module-level settings and attachments.",links:[["OPEN TRACKER","#tracker"]]},
- rammed:{index:"05B",title:"Rammed Earth",text:"Material filling and compaction in moulds. Shift planning and production records remain in the shared workbook and Tracker.",links:[["OPEN RAMMED EARTH SHIFTS","https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&file=Final_Blocks_Materials.xlsx&action=default&mobileredirect=true&wdwpf=doclib-c"],["OPEN TRACKER","#tracker"]]},
- firing:{index:"06",title:"Firing",text:"Selective post-processing applies only to some 3D-printed modules. Firing status and details stay within existing Tracker fields.",links:[["OPEN TRACKER","#tracker"]]},
- assembly:{index:"07",title:"Assembly",text:"Upcoming construction phase. Placed downstream of optional firing and both fabrication routes.",links:[]}
- };
 
- document.querySelectorAll('.pm-node').forEach(node=>{
-  const d=data[node.dataset.process];if(!d)return;
-  const toggle=node.querySelector('.pm-node-toggle');
-  const detail=node.querySelector('.pm-node-detail');
-  const p=node.querySelector('.pm-inline-text');
-  const links=node.querySelector('.pm-inline-links');
-  p.textContent=d.text;
-  d.links.forEach(([label,url])=>{
-   const a=document.createElement('a');a.textContent=label+' ↗';a.href=url;
-   if(url==='#tracker')a.addEventListener('click',e=>{e.preventDefault();document.getElementById('navTracker').click();});
-   else{a.target='_blank';a.rel='noopener noreferrer';}
-   links.appendChild(a);
-  });
-  toggle.addEventListener('click',()=>{
-   const opening=!node.classList.contains('open');
-   document.querySelectorAll('.pm-node.open').forEach(other=>{
-    other.classList.remove('open');other.querySelector('.pm-node-toggle').setAttribute('aria-expanded','false');other.querySelector('.pm-node-detail').hidden=true;
-   });
-   if(opening){node.classList.add('open');toggle.setAttribute('aria-expanded','true');detail.hidden=false;}
-  });
- });
- document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.pm-node.open').forEach(node=>{node.classList.remove('open');node.querySelector('.pm-node-toggle').setAttribute('aria-expanded','false');node.querySelector('.pm-node-detail').hidden=true;});});
-})();
-</script>
+<script src="./assets/workflow/board.js" defer></script>
 </body>
 </html>
