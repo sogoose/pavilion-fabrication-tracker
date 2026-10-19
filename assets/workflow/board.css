@@ -2222,3 +2222,484 @@
     padding-top:18px;
   }
 }
+
+
+/* PROCESS POSTERS / Swiss editorial layout + native-sized gallery imagery
+   Visual reference: large asymmetrical typography, bold single-color fields,
+   little chrome, straightforward gallery + a tidy list of files.
+   This touches only the process modal and its existing editor, not the board. */
+.wb-process-dialog {
+  --poster-ink:#18191a;
+  --stage-accent:#1d1d1d;
+  width:min(1130px,calc(100vw - 36px));
+  max-width:none;
+  max-height:min(92dvh,930px);
+  padding:0;
+  border:1px solid #d8d8d8;
+  border-radius:3px;
+  background:#fff;
+  box-shadow:0 22px 70px rgba(0,0,0,.23);
+  color:#17191c;
+  font-family:"DM Sans",Arial,sans-serif;
+}
+.wb-process-dialog::backdrop {
+  background:rgba(22,23,24,.58);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
+}
+.wb-process-shell {
+  position:relative;
+  padding:20px;
+}
+.wb-process-top {
+  position:absolute;
+  z-index:4;
+  top:8px;
+  right:8px;
+  margin:0;
+  padding:0;
+  border:0;
+}
+.wb-process-dialog .wb-process-close {
+  box-sizing:border-box;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:0;
+  padding:0;
+  background:#fff;
+  color:#191b1e;
+  font:400 23px/1 "DM Sans",Arial,sans-serif;
+}
+.wb-process-dialog .wb-process-close:hover {
+  background:#eeeeee;
+}
+.wb-process-columns {
+  display:grid;
+  grid-template-columns:minmax(285px,.88fr) minmax(0,1.12fr);
+  align-items:stretch;
+  gap:clamp(20px,2.8vw,34px);
+}
+.wb-process-dialog[data-stage="structural"],
+.wb-process-dialog[data-stage="assembly"] { --poster-ink:#fff; }
+.wb-process-dialog[data-stage="computational"],
+.wb-process-dialog[data-stage="construction"],
+.wb-process-dialog[data-stage="environment"],
+.wb-process-dialog[data-stage="hrc"] {
+  --stage-accent:#222;
+  --stage-fill:#222;
+  --poster-ink:#fff;
+}
+.wb-process-dialog .wb-tarot {
+  display:flex;
+  flex-direction:column;
+  min-height:570px;
+  padding:clamp(23px,3vw,35px);
+  background:var(--stage-accent);
+  color:var(--poster-ink);
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.wb-process-dialog .wb-tarot-meta {
+  display:flex;
+  justify-content:flex-start;
+  align-items:flex-start;
+  min-height:69px;
+  padding:0;
+}
+.wb-process-dialog .wb-card-number {
+  font:750 clamp(41px,4vw,57px)/.98 "Manrope","DM Sans",Arial,sans-serif!important;
+  letter-spacing:-.09em;
+  color:var(--poster-ink)!important;
+}
+.wb-process-dialog .wb-card-title {
+  margin:0;
+  font:700 clamp(33px,3.55vw,49px)/1.03 "Manrope","DM Sans",Arial,sans-serif!important;
+  letter-spacing:-.075em;
+  color:var(--poster-ink)!important;
+  text-align:left;
+  overflow-wrap:break-word;
+}
+.wb-process-dialog .wb-card-art {
+  display:grid;
+  place-items:center;
+  flex:1 0 155px;
+  min-height:145px;
+  max-height:235px;
+  width:100%;
+  margin:9px 0 8px;
+}
+.wb-process-dialog .wb-card-art img {
+  display:block;
+  max-width:98%;
+  max-height:215px;
+  width:auto;
+  height:auto;
+  margin:auto;
+  object-fit:contain;
+  filter:brightness(0);
+}
+.wb-process-dialog[data-stage="structural"] .wb-card-art img,
+.wb-process-dialog[data-stage="assembly"] .wb-card-art img,
+.wb-process-dialog[data-stage="computational"] .wb-card-art img,
+.wb-process-dialog[data-stage="construction"] .wb-card-art img,
+.wb-process-dialog[data-stage="environment"] .wb-card-art img,
+.wb-process-dialog[data-stage="hrc"] .wb-card-art img {
+  filter:brightness(0) invert(1);
+}
+.wb-process-dialog .wb-card-tag {
+  display:block;
+  margin:0 0 15px;
+  max-width:100%;
+  text-align:left;
+}
+.wb-process-dialog .wb-card-tag span {
+  display:inline;
+  max-width:100%;
+  border:0;
+  border-radius:0;
+  padding:0;
+  background:transparent;
+  color:var(--poster-ink)!important;
+  font:500 9px/1.55 "IBM Plex Mono",monospace;
+  letter-spacing:.015em;
+  opacity:.82;
+  overflow-wrap:anywhere;
+}
+.wb-process-dialog .wb-card-description {
+  max-width:100%;
+  margin:0 0 20px;
+  font:500 14px/1.5 "DM Sans",Arial,sans-serif;
+  color:var(--poster-ink)!important;
+  text-align:left;
+}
+.wb-process-dialog .wb-card-credits {
+  display:grid;
+  margin-top:auto;
+  padding:13px 0 0;
+  gap:8px;
+  border-top:1px solid currentColor;
+  color:var(--poster-ink);
+}
+.wb-process-dialog .wb-card-credit {
+  display:grid;
+  grid-template-columns:minmax(90px,.75fr) minmax(0,1.25fr);
+  gap:10px;
+  align-items:baseline;
+}
+.wb-process-dialog .wb-card-credit-label {
+  color:var(--poster-ink)!important;
+  font:500 9px/1.35 "IBM Plex Mono",monospace;
+  letter-spacing:.025em;
+  opacity:.83;
+}
+.wb-process-dialog .wb-card-credit-name {
+  color:var(--poster-ink)!important;
+  font:650 12px/1.42 "DM Sans",Arial,sans-serif;
+  overflow-wrap:anywhere;
+}
+.wb-process-dialog .wb-card-no-credits {color:var(--poster-ink);opacity:.8;}
+
+.wb-process-dialog .wb-archive {
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  min-width:0;
+  padding:17px 4px 1px 0;
+}
+.wb-process-dialog .wb-archive-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  padding:0 29px 12px 0;
+  margin:0;
+}
+.wb-process-dialog .wb-archive h3 {
+  margin:0;
+  font:700 26px/1.1 "Manrope","DM Sans",sans-serif;
+  letter-spacing:-.065em;
+  color:#121314;
+}
+.wb-process-dialog .wb-archive-edit,
+.wb-process-dialog .wb-add-file {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  padding:4px 0;
+  border:0;
+  border-bottom:1px solid #151515;
+  border-radius:0;
+  background:transparent;
+  font:650 11px/1.2 "DM Sans",Arial,sans-serif;
+  text-transform:none;
+  letter-spacing:0;
+  color:#161719;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.wb-process-dialog .wb-archive-edit:hover,
+.wb-process-dialog .wb-add-file:hover {
+  background:transparent;
+  border-bottom-color:var(--stage-fill,var(--stage-accent));
+  color:var(--stage-fill,var(--stage-accent));
+}
+.wb-process-dialog .wb-archive-edit[hidden],
+.wb-process-dialog .wb-add-file[hidden] {display:none!important;}
+.wb-process-dialog .wb-gallery-stage {
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:clamp(270px,31vw,380px);
+  min-height:0;
+  aspect-ratio:auto;
+  overflow:hidden;
+  padding:10px;
+  background:#f5f5f4;
+  border:0;
+  border-top:3px solid var(--stage-accent);
+  border-bottom:1px solid #d6d6d6;
+  border-radius:0;
+}
+.wb-process-dialog .wb-gallery-featured {
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+  margin:auto;
+  image-rendering:auto;
+}
+.wb-process-dialog .wb-gallery-featured.wb-image-small {
+  width:auto;
+  max-width:100%;
+  height:auto;
+  max-height:100%;
+}
+.wb-process-dialog .wb-gallery-empty {
+  color:#5f6469;
+  margin:auto;
+  max-width:290px;
+  padding:20px;
+  text-align:left;
+  font:500 13px/1.6 "DM Sans",sans-serif;
+}
+.wb-process-dialog .wb-gallery-controls {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin:0;
+  padding:10px 0 9px;
+}
+.wb-process-dialog .wb-gallery-count {
+  color:#282d31;
+  font:600 11px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.04em;
+}
+.wb-process-dialog .wb-gallery-nav {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.wb-process-dialog .wb-gallery-controls button {
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#151719;
+  cursor:pointer;
+  font:600 18px/1 "Manrope",sans-serif;
+}
+.wb-process-dialog .wb-gallery-controls button:hover {
+  color:var(--stage-fill,var(--stage-accent));
+}
+.wb-process-dialog .wb-gallery-controls button:disabled {
+  opacity:.25;
+  cursor:default;
+}
+.wb-process-dialog .wb-gallery-thumbs {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:start;
+  gap:7px;
+  min-height:49px;
+}
+.wb-process-dialog .wb-gallery-thumb {
+  width:65px;
+  height:50px;
+  padding:3px;
+  background:#f4f4f4;
+  border:1px solid #dadada;
+  border-radius:0;
+  cursor:pointer;
+}
+.wb-process-dialog .wb-gallery-thumb.is-active {
+  border:2px solid var(--stage-accent);
+  box-shadow:none;
+}
+.wb-process-dialog .wb-gallery-thumb img {object-fit:contain;}
+.wb-process-dialog .wb-attachments-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:17px 0 10px;
+  margin:18px 0 0;
+  border-top:1px solid #d2d2d2;
+}
+.wb-process-dialog .wb-attachment-links {
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  width:100%;
+  padding:0;
+}
+.wb-process-dialog .wb-attachment {
+  display:grid;
+  grid-template-columns:48px minmax(0,1fr) 18px;
+  align-items:center;
+  column-gap:11px;
+  min-height:39px;
+  padding:9px 2px;
+  border:0;
+  border-bottom:1px solid #e7e7e7;
+  border-radius:0;
+  background:transparent;
+  color:#181a1d;
+  text-decoration:none;
+  font:550 13px/1.32 "DM Sans",sans-serif;
+  overflow-wrap:anywhere;
+}
+.wb-process-dialog .wb-attachment:hover {
+  background:#f5f5f4;
+  color:var(--stage-fill,var(--stage-accent));
+  border-color:#d6d6d6;
+}
+.wb-process-dialog .wb-attachment-kind {
+  color:#73777c;
+  font:600 9px/1.2 "IBM Plex Mono",monospace;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+}
+.wb-process-dialog .wb-attachment-arrow {
+  text-align:right;
+  color:#181a1d;
+  font:500 17px/1 "DM Sans",Arial,sans-serif;
+}
+.wb-process-dialog .wb-attachment-empty {
+  color:#6e7378;
+  font:400 13px/1.6 "DM Sans",sans-serif;
+  padding:12px 0 0;
+}
+
+/* Workflow editor: monochrome, crisp labels, obvious native file inputs. */
+.wf-edit-dialog {
+  box-sizing:border-box;
+  width:min(700px,calc(100vw - 24px));
+  max-height:min(92dvh,850px);
+  background:#fff;
+  color:#181a1c;
+  border:1px solid #b9bdc1;
+  border-radius:3px;
+  box-shadow:0 24px 80px rgba(0,0,0,.18);
+}
+.wf-edit-dialog .wf-editor-heading strong {
+  font:750 19px/1.2 "Manrope",sans-serif;
+  letter-spacing:-.04em;
+}
+.wf-edit-dialog .wf-editor-field span {
+  font-family:"IBM Plex Mono",monospace;
+  font-size:10px;
+  letter-spacing:.02em;
+}
+.wf-edit-dialog .wf-editor-field input,
+.wf-edit-dialog .wf-editor-field textarea {
+  box-sizing:border-box;
+  background:#fff;
+  border-radius:0;
+  border-color:#bfc4c9;
+  font:400 13px/1.5 "DM Sans",sans-serif;
+}
+.wf-edit-dialog .wf-file-uploader input[type=file],
+.wf-edit-dialog .wf-photo-uploader input[type=file] {
+  width:100%;
+  padding:10px 5px;
+  cursor:pointer;
+}
+.wf-edit-dialog .wf-file-help,
+.wf-edit-dialog .wf-photo-help {
+  color:#656b70;
+  font:400 11px/1.55 "DM Sans",sans-serif;
+  margin:4px 0 8px;
+}
+.wf-edit-dialog .wf-upload-files,
+.wf-edit-dialog .wf-upload-photos {
+  border:1px solid #151515;
+  border-radius:0;
+  padding:10px 13px;
+  background:#171717;
+  color:#fff;
+  font:650 12px/1.2 "DM Sans",sans-serif;
+  cursor:pointer;
+  text-align:center;
+}
+.wf-edit-dialog .wf-upload-files:hover,
+.wf-edit-dialog .wf-upload-photos:hover {
+  background:#383838;
+}
+.wf-edit-dialog .wf-upload-files:disabled,
+.wf-edit-dialog .wf-upload-photos:disabled {
+  opacity:.45;
+  cursor:wait;
+}
+
+@media(max-width:760px) {
+  .wb-process-dialog {
+    width:calc(100vw - 14px);
+    max-height:96dvh;
+    border-radius:2px;
+  }
+  .wb-process-shell {padding:12px;}
+  .wb-process-columns {grid-template-columns:1fr;gap:15px;}
+  .wb-process-dialog .wb-tarot {
+    min-height:0;
+    padding:22px;
+  }
+  .wb-process-dialog .wb-tarot-meta {min-height:52px;}
+  .wb-process-dialog .wb-card-number {font-size:43px!important;}
+  .wb-process-dialog .wb-card-title {font-size:clamp(29px,8vw,41px)!important;}
+  .wb-process-dialog .wb-card-art {
+    min-height:120px;
+    height:155px;
+    max-height:180px;
+    margin:5px 0;
+    flex:0 1 auto;
+  }
+  .wb-process-dialog .wb-card-art img {max-height:155px;}
+  .wb-process-dialog .wb-card-description {font-size:13px;line-height:1.5;}
+  .wb-process-dialog .wb-card-credits {margin-top:12px;}
+  .wb-process-dialog .wb-archive {padding:0 1px 8px;}
+  .wb-process-dialog .wb-archive h3 {font-size:24px;}
+  .wb-process-dialog .wb-gallery-stage {height:280px;}
+  .wb-process-dialog .wb-archive-heading {padding-right:32px;}
+}
+@media(max-width:390px) {
+  .wb-process-dialog .wb-gallery-stage {height:245px;}
+  .wb-process-dialog .wb-card-title {font-size:28px!important;}
+  .wb-process-dialog .wb-archive h3 {font-size:21px;}
+  .wb-process-dialog .wb-archive-edit {font-size:10px;}
+  .wb-process-dialog .wb-attachment {grid-template-columns:41px minmax(0,1fr) 16px;gap:6px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .wb-process-dialog[open] {animation:none;}
+}
