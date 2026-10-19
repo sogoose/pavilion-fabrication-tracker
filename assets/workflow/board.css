@@ -233,6 +233,22 @@
 .wb-rammed    { --x:70%;  --y:587px; --w:24%; --image-h:132px; }
 .wb-firing    { --x:14%;  --y:970px; --w:17%; --image-h:91px; }
 .wb-assembly  { --x:68%;  --y:1130px; --w:23%; --image-h:127px; }
+/* Drying is a deliberately unnumbered, noninteractive process marker. */
+.wb-drying {
+  position:absolute;
+  left:49%;
+  top:881px;
+  width:16%;
+  z-index:2;
+  padding:2px 7px;
+  background:#faf9f5;
+  color:#595850;
+  font:600 19px/1.22 "Syne","Inter",Arial,sans-serif;
+  letter-spacing:-.035em;
+  text-align:center;
+  pointer-events:none;
+}
+
 
 .wb-spatial .wb-name { font-size: 23px; }
 .wb-structural .wb-name { font-size: 20px; }
@@ -339,6 +355,8 @@
   .wb-rammed     { --x:58%; --y:850px;  --w:40%; --image-h:100px; }
   .wb-firing     { --x:7%;  --y:1198px;  --w:35%; --image-h:80px; }
   .wb-assembly   { --x:56%; --y:1380px; --w:43%; --image-h:124px; }
+  .wb-drying { left:35%; top:1105px; width:32%; font-size:18px; }
+
   .wb-phase      { top: 732px; left: 25%; width: 54%; }
   .wb-phase strong { font-size: 27px; }
   .wb-phase::before { height: 26px; top: 6px; }
