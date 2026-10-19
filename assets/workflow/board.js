@@ -36,6 +36,41 @@
     if (text != null) el.textContent = String(text);
     return el;
   };
+  // Architectural cut-corner frames: a whole chapter (title, illustration,
+  // caption) is one unit. Every path is deliberately different, while all
+  // drawings remain independent, editable SVG files.
+  const FRAME_PATHS = {
+    spatial:      'M22 1 H272 L299 28 V214 L272 259 H19 L1 241 V22 Z',
+    structural:   'M1 1 H260 L299 39 V233 L279 259 H22 L1 233 Z',
+    gcode:        'M20 1 H299 V204 L252 259 H1 V21 Z',
+    material:     'M1 28 L30 1 H273 L299 27 V238 L279 259 H1 Z',
+    printing:     'M18 1 H258 L299 42 V216 L259 259 H1 V18 Z',
+    rammed:       'M1 1 H281 L299 18 V235 L275 259 H42 L1 219 Z',
+    firing:       'M28 1 H299 V234 L273 259 H1 V28 Z',
+    assembly:     'M1 19 L23 1 H277 L299 22 V237 L277 259 H1 Z',
+    computational:'M19 1 H278 L299 21 V234 L272 259 H1 V19 Z',
+    construction: 'M1 1 H279 L299 22 V218 L258 259 H19 L1 241 Z',
+    environment:  'M24 1 H299 V224 L264 259 H1 V24 Z',
+    hrc:          'M1 19 L20 1 H265 L299 35 V239 L279 259 H1 Z'
+  };
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  nodes.forEach(node => {
+    const id = sectionId(node);
+    const summary = node.querySelector(':scope > summary');
+    if (summary && FRAME_PATHS[id] && !summary.querySelector('.wb-stage-frame')) {
+      const frame = document.createElementNS(SVG_NS, 'svg');
+      frame.setAttribute('class', 'wb-stage-frame');
+      frame.setAttribute('viewBox', '0 0 300 260');
+      frame.setAttribute('preserveAspectRatio', 'none');
+      frame.setAttribute('aria-hidden', 'true');
+      frame.setAttribute('focusable', 'false');
+      const boundary = document.createElementNS(SVG_NS, 'path');
+      boundary.setAttribute('d', FRAME_PATHS[id]);
+      boundary.setAttribute('vector-effect', 'non-scaling-stroke');
+      frame.append(boundary);
+      summary.prepend(frame);
+    }
+  });
   nodes.forEach(node => {
     const id = sectionId(node);
     if (id && !node.dataset.workflowGallery) {
