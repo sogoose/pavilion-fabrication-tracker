@@ -282,6 +282,18 @@
 .pm-node.open:hover{box-shadow:4px 4px 0 rgba(20,20,20,.13)}
 .pm-printing,.pm-rammed{background:#fffbed}
 @media(max-width:760px){.pm-node-label{font-size:19px}.pm-node.open{width:43%}.pm-node-toggle{padding:12px}.pm-node.open .pm-node-detail{padding:0 12px 12px}}
+
+.app{grid-template-rows:auto minmax(0,1fr) auto}
+.firing-legend{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:9px 16px;background:#fff;border-top:1px solid var(--line);font:10px/1.4 Arial,sans-serif;min-height:41px}
+.firing-legend-title{font-weight:700;letter-spacing:.07em}
+.firing-legend-sub{font-weight:400;color:#999;margin-left:7px}
+.firing-legend-item{display:inline-flex;align-items:center;gap:6px;color:#555;white-space:nowrap}
+.firing-legend-item b{font-weight:700;color:#111;margin-left:2px}
+.firing-dot{display:inline-block;width:9px;height:9px;border:1px solid rgba(0,0,0,.2);border-radius:1px}
+.firing-ready{background:#a8c7e8}.firing-progress{background:#e7c971}.firing-done{background:#79aa7a}
+.firing-legend-note{margin-left:auto;color:#999;font-size:10px}
+.app.workflow-active .firing-legend{display:none}
+@media(max-width:900px){.app{grid-template-rows:auto auto auto}.firing-legend{gap:11px}.firing-legend-note{margin-left:0}}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -330,8 +342,6 @@
       <input id="search" type="search" placeholder="Search ID / person / material / method / firing" />
       <label>Explode</label>
       <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" />
-      <button id="viewProduction" class="primary">PRODUCTION</button>
-      <button id="viewFiring">FIRING</button>
       <button id="fitView">Fit view</button>
       <button id="toggleObjectLabels">Module labels</button>
       <button id="toggleModuleOutlines">Module outlines</button>
@@ -387,7 +397,6 @@
       <div id="dropzone" class="dropzone">Drop a Rhino .3dm file here</div>
     </section>
 
-    <section id="firingOverview" style="display:none;overflow:auto;padding:22px;background:#f5f5f2"></section>
     <aside id="detailPanel" class="panel">
       <div class="empty">
         Click a block in the 3D model to edit its fabrication / construction data.<br><br>
@@ -395,6 +404,13 @@
       </div>
     </aside>
   </div>
+  <section id="firingLegend" class="firing-legend" aria-label="Firing status legend">
+    <span class="firing-legend-title">FIRING <span class="firing-legend-sub">3D PRINTING / SELECTIVE</span></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-ready"></i>TO BE FIRED <b id="firingCountPlanned">0</b></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-progress"></i>IN KILN / COOLING <b id="firingCountActive">0</b></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-done"></i>FIRED <b id="firingCountDone">0</b></span>
+    <span class="firing-legend-note">Edit firing details directly in a printed module.</span>
+  </section>
 </div>
 
 <div id="attachmentsModal" class="attachmentsModal" aria-hidden="true">
@@ -1543,7 +1559,6 @@ function firingPanel(r){
 }
 
 function renderPanel(){
-  if(document.getElementById("firingOverview")?.style.display==="block")renderFiringOverview();
   if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
   const r=records[selectedKey];
   derive(r);
@@ -1748,6 +1763,10 @@ function updateAllUI(){
   const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
   const toFire=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status!=='Fired').length;
   const firingNow=rs.filter(r=>r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status)).length;
+  const fired=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status==='Fired').length;
+  document.getElementById('firingCountPlanned').textContent=toFire;
+  document.getElementById('firingCountActive').textContent=firingNow;
+  document.getElementById('firingCountDone').textContent=fired;
   document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${toFire}</b>to fire</span><span class="kpi"><b>${firingNow}</b>firing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
@@ -1982,24 +2001,6 @@ async function importExcel(file){
   updateAllUI(); applyColors(); renderPanel(); showMessage(`Imported spreadsheet: ${matched} row${matched===1?'':'s'} matched to model objects${liveMode?' and shared with the team':''}.`);
 }
 
-function renderFiringOverview(){
-  const target=document.getElementById('firingOverview');if(!target)return;
-  const rs=parts.map(p=>({key:p.key,r:records[p.key]})).filter(x=>x.r?.Manufacturing_Method==='3D Printing');
-  const planned=rs.filter(x=>x.r.Firing_Route==='To be fired');
-  const count=status=>planned.filter(x=>(x.r.Firing_Status||'Not Ready')===status).length;
-  const esc=escapeHtml;
-  const rows=planned.slice().sort((a,b)=>String(a.r.Firing_Batch||'').localeCompare(String(b.r.Firing_Batch||''))||String(a.r.Object_ID).localeCompare(String(b.r.Object_ID)));
-  target.innerHTML='<h2 style="margin:0 0 6px">FIRING / OVERVIEW</h2><p style="color:#777">3D-printed modules scheduled for kiln firing · select a module to edit its process record.</p>'+
-  '<div style="display:flex;flex-wrap:wrap;gap:9px;margin:18px 0">'+[['To be fired',planned.length],['Ready',count('Ready')],['In kiln',count('In Kiln')],['Cooling',count('Cooling')],['Fired',count('Fired')],['Failed',count('Failed')],['Unfired',rs.filter(x=>x.r.Firing_Route==='Unfired').length],['TBD',rs.filter(x=>x.r.Firing_Route==='TBD').length]].map(([label,n])=>'<div style="padding:12px 16px;background:white;border:1px solid #ddd;border-radius:8px;min-width:108px"><div style="font-size:11px;color:#777">'+label+'</div><strong style="font-size:24px">'+n+'</strong></div>').join('')+'</div>'+
-  '<div style="overflow-x:auto;background:white;border:1px solid #ddd;border-radius:8px"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px"><thead><tr>'+['MODULE','BATCH','KILN','STATUS','PEAK °C','DATE'].map(x=>'<th style="padding:12px;border-bottom:1px solid #ddd">'+x+'</th>').join('')+'</tr></thead><tbody>'+
-  (rows.length?rows.map(x=>'<tr data-firing-key="'+esc(x.key)+'" style="cursor:pointer"><td style="padding:11px;border-bottom:1px solid #eee"><b>'+esc(x.r.Object_ID)+'</b></td>'+[x.r.Firing_Batch,x.r.Firing_Kiln,x.r.Firing_Status,x.r.Firing_Peak_Temp_C,x.r.Firing_Date].map(v=>'<td style="padding:11px;border-bottom:1px solid #eee">'+esc(v||'—')+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="6" style="padding:18px;color:#777">No blocks assigned to firing yet. Select a 3D-printed module and choose TO BE FIRED.</td></tr>')+'</tbody></table></div>';
-  target.querySelectorAll('[data-firing-key]').forEach(el=>el.addEventListener('click',()=>{selectedKey=el.dataset.firingKey;renderPanel();}));
-}
-function setTrackerView(view){
- const firing=view==='firing';document.getElementById('firingOverview').style.display=firing?'block':'none';document.getElementById('viewerWrap').style.display=firing?'none':'';
- document.getElementById('viewProduction').classList.toggle('primary',!firing);document.getElementById('viewFiring').classList.toggle('primary',firing);
- if(firing)renderFiringOverview();else {requestAnimationFrame(()=>{if(typeof onWindowResize==='function')onWindowResize();});}
-}
 function wireUI(){
   document.getElementById('viewProduction').onclick=()=>setTrackerView('production');
   document.getElementById('viewFiring').onclick=()=>setTrackerView('firing');
