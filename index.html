@@ -349,7 +349,7 @@ header{gap:6px;padding:10px 16px}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-soft-puzzle-corners-v1">
+<link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-compact-header-folder-v2">
 <link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -413,18 +413,12 @@ header{gap:6px;padding:10px 16px}
 <section id="workflowView" class="workflowScreen" aria-label="Pavilion workflow board">
 <div class="wb-shell">
   <div class="wb-mast">
-    <div>
-      <span class="wb-eyebrow">26/27 · TU DELFT / CREATIVE ROBOTICS IN SPATIAL DESIGN</span>
-      <h1><span class="wb-title-main">Workflow Guide </span><span class="wb-title-secondary"><span class="wb-title-amp">&amp;</span> File Index</span></h1>
+    <div class="wb-heading">
+      <h1><span class="wb-title-main">Workflow + File</span><span class="wb-title-secondary">Guide</span></h1>
+      <span class="wb-eyebrow">© 2026/27 · ALL RIGHTS RESERVED</span>
       <p class="wb-intro">An overview of the soil-based pavilion’s fabrication workflow, with links to the files and resources used for final production.</p>
       <p class="wb-hint">SELECT A PROCESS TO VIEW NOTES &amp; FILE LINKS ↗</p>
     </div>
-    <aside class="wb-management">
-      <img class="wb-management-logo" src="./assets/workflow/tudelft-logo.png?v=20261020-compact" alt="TU Delft" width="280" height="110" decoding="async">
-      <span class="wb-management-label">📋 CONSTRUCTION MANAGEMENT</span>
-      <p>For detailed tasks and shift coordination, follow the Construction Management team's guidance.</p>
-      <a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a>
-    </aside>
   </div>
   <div class="wb-board">
     <div class="wb-decorations" aria-hidden="true">
@@ -437,9 +431,26 @@ header{gap:6px;padding:10px 16px}
       <img class="wb-deco wb-deco-printed-module" src="./assets/workflow/decor/printed-module.webp?v=20261019-v1" alt="3D printed clay module" loading="lazy">
     </div>
     <div class="wb-arrows" aria-hidden="true">
-      <img class="wb-arrows-desktop" src="./assets/workflow/arrows-desktop.svg?v=20261020-simplified-route-v1" alt="" decoding="async" loading="eager">
-      <img class="wb-arrows-mobile" src="./assets/workflow/arrows-mobile.svg?v=20261020-simplified-route-v1" alt="" decoding="async" loading="eager">
+      <img class="wb-arrows-desktop" src="./assets/workflow/arrows-desktop.svg?v=20261020-soft-route-v2" alt="" decoding="async" loading="eager">
+      <img class="wb-arrows-mobile" src="./assets/workflow/arrows-mobile.svg?v=20261020-soft-route-v2" alt="" decoding="async" loading="eager">
     </div>
+    <!-- Compact announcement folder, positioned between chapters 01 & 02. -->
+    <details class="wb-management">
+      <summary class="wb-management-toggle" aria-label="Open letter from Construction Management" title="Construction Management announcement">
+        <svg class="wb-management-folder" viewBox="0 0 68 54" aria-hidden="true" focusable="false">
+          <path d="M4 9H24L30 3H64V15H66V49H4Z" />
+        </svg>
+        <svg class="wb-management-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M3 10v4c0 1 1 2 2 2h3l3 5h3l-2.4-5H14l7 4V4l-7 4H5c-1 0-2 1-2 2Z"/>
+          <path d="M14 8v8"/>
+        </svg>
+      </summary>
+      <div class="wb-management-body">
+        <span class="wb-management-label">LETTER FROM THE CONSTRUCTION MANAGEMENT TEAM</span>
+        <p>For detailed tasks and shift coordination, follow the Construction Management team's guidance.</p>
+        <a href="https://tud365.sharepoint.com/:x:/r/sites/course-CreativeRobotics2026/_layouts/15/Doc.aspx?sourcedoc=%7BAB64D3D7-A193-4736-A566-2410C6472E2B%7D&amp;file=Final_Blocks_Materials.xlsx&amp;action=default&amp;mobileredirect=true&amp;wdwpf=doclib-c" target="_blank" rel="noopener noreferrer">OPEN SHARED WORKBOOK ↗</a>
+      </div>
+    </details>
   <details class="wb-block wb-spatial" name="workflow-detail" data-process="spatial">
   <summary class="wb-preview" aria-label="View Spatial Design details">
     <span class="wb-index">01</span>
@@ -584,7 +595,7 @@ header{gap:6px;padding:10px 16px}
 </details>
   </div>
 
-  <footer class="wb-bottom"><span>DESIGN → MATERIAL → FABRICATION → DRYING → ASSEMBLY</span><span>01 / WORKFLOW</span></footer>
+  <footer class="wb-bottom" aria-hidden="true"></footer>
 </div>
 </section>
 
@@ -2301,6 +2312,6 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
 
 
 <script src="./assets/workflow/board.js?v=20261020-soft-puzzle-corners-v1" defer></script>
-<script src="./assets/workflow/editor.js?v=20261019-editorial-title-v3" defer></script>
+<script src="./assets/workflow/editor.js?v=20261020-centered-title-v2" defer></script>
 </body>
 </html>
