@@ -32,7 +32,7 @@ The older experimental study assets (`contour-fragment.svg`, `deposition-fragmen
 
 ## Edit the layout or wording
 
-The page uses Google Fonts **Instrument Serif** (main title and stage names), **Inter** (body) and **IBM Plex Mono** (indices/captions). Fallbacks are included if external fonts do not load.
+The page uses Google Fonts **Syne SemiBold** (main Overall Workflow title), **Instrument Serif** (stage names), **Inter** (body) and **IBM Plex Mono** (indices/captions). Fallbacks are included if external fonts do not load.
 
 
 - `board.css`: column sizes, white space, visual hierarchy, yellow Fabrication highlight and responsive mobile arrangement.
