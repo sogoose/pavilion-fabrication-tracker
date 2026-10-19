@@ -2,6 +2,9 @@
 -- Existing Rammed Earth modules labeled TBD genuinely belong to the Rammed route.
 -- Existing 3D Printing modules labeled TBD are still undecided: use NULL, not Rammed.
 -- Newly inserted routes are unset unless the user explicitly chooses a route.
+alter table public.pavilion_parts
+  alter column firing_route drop not null;
+
 update public.pavilion_parts
 set firing_route = case
   when manufacturing_method = 'Rammed Earth' then 'Rammed'
