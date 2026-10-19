@@ -1515,3 +1515,139 @@
   #workflowView .wb-board .wb-structural .wb-preview .wb-drawing img {height:83px;}
   #workflowView .wp-cluster .wp-island-summary {min-height:145px;padding:7px 5px;}
 }
+
+
+/* 2026-10-20 / final legibility and route cleanup
+ * Keep the title free of decorative borders, move the step labels inward
+ * WITHOUT shifting the centered illustrations, and let the photo/logo breathe. */
+
+/* No decorative ㄴ/L-shaped title border. */
+#workflowView .wb-mast h1 {
+  padding:0;
+  margin:12px 0 0;
+}
+#workflowView .wb-mast h1::before {
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+#workflowView .wb-title-main, #workflowView .wb-title-secondary {
+  position:relative;
+}
+#workflowView .wb-management {
+  align-self:end;
+  padding:0;
+  border:0!important;
+}
+#workflowView .wb-management-logo {
+  display:block;
+  width:156px;
+  max-width:74%;
+  height:auto;
+  margin:0 0 14px 0;
+  object-fit:contain;
+  object-position:left center;
+}
+#workflowView .wb-management-label {
+  display:block;
+  font-family:"Manrope","DM Sans",Arial,sans-serif!important;
+  font-size:15px!important;
+  line-height:1.24;
+  font-weight:650!important;
+  letter-spacing:-.035em;
+  text-transform:none;
+  color:#212529!important;
+}
+#workflowView .wb-management p {
+  margin-top:9px;
+}
+#workflowView .wb-management::before {
+  display:none!important;
+}
+
+/* Tight stage label inset: artwork below stays truly center-aligned. */
+#workflowView .wb-board .wb-spatial .wb-preview,
+#workflowView .wb-board .wb-gcode .wb-preview,
+#workflowView .wb-board .wb-material .wb-preview,
+#workflowView .wb-board .wb-printing .wb-preview,
+#workflowView .wb-board .wb-rammed .wb-preview,
+#workflowView .wb-board .wb-firing .wb-preview {
+  padding-left:clamp(20px,2.25vw,29px);
+  padding-right:clamp(18px,2vw,27px);
+}
+#workflowView .wb-board .wb-assembly .wb-preview {
+  padding-left:clamp(24px,4vw,48px);
+  padding-right:clamp(24px,4vw,48px);
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-index,
+#workflowView .wb-board .wb-block .wb-preview > .wb-name {
+  box-sizing:border-box;
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-name {
+  max-width:calc(100% - 12px);
+  margin-right:0;
+  overflow-wrap:normal;
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-plus {
+  top:12px;
+  right:12px;
+  font-size:15px;
+}
+/* Move only the image canvas centrally; don't allow different header
+ * padding values to influence the illustration's position. */
+#workflowView .wb-board .wb-preview > .wb-drawing,
+#workflowView .wb-board .wb-preview > .wb-material-layout {
+  align-self:center;
+  margin-left:auto;
+  margin-right:auto;
+}
+#workflowView .wb-board .wb-preview .wb-drawing {
+  align-items:center;
+  text-align:center;
+}
+#workflowView .wb-board .wb-material {
+  --x:67%;
+}
+/* Keep Drying truly centered against the 1200px arrow plane. */
+#workflowView .wb-board .wb-drying {
+  left:50%;
+  transform:translateX(-50%);
+  width:fit-content;
+  min-width:102px;
+  box-sizing:border-box;
+  text-align:center;
+  padding:3px 9px;
+  line-height:1.2;
+}
+@media(max-width:850px) {
+  #workflowView .wb-board .wb-material {--x:56%;}
+  #workflowView .wb-board .wb-drying {left:50%;transform:translateX(-50%);}
+  #workflowView .wb-management-logo {width:145px;margin-bottom:10px;}
+  #workflowView .wb-board .wb-spatial .wb-preview,
+  #workflowView .wb-board .wb-gcode .wb-preview,
+  #workflowView .wb-board .wb-material .wb-preview,
+  #workflowView .wb-board .wb-printing .wb-preview,
+  #workflowView .wb-board .wb-rammed .wb-preview,
+  #workflowView .wb-board .wb-firing .wb-preview {
+    padding-left:clamp(11px,2.5vw,18px);
+    padding-right:clamp(10px,2vw,15px);
+  }
+  #workflowView .wb-board .wb-assembly .wb-preview {
+    padding-left:17px;
+    padding-right:17px;
+  }
+  #workflowView .wb-management-label {font-size:14px!important;}
+}
+@media(max-width:390px) {
+  #workflowView .wb-board .wb-block .wb-preview > .wb-name {
+    max-width:100%;
+  }
+  #workflowView .wb-board .wb-block .wb-preview > .wb-plus {
+    right:8px;
+    top:8px;
+    font-size:13px;
+  }
+  #workflowView .wb-board .wb-drying {
+    min-width:80px;
+  }
+}
