@@ -122,6 +122,8 @@
     activeNode = node;
     nodes.forEach(other => { other.open = false; other.classList.toggle('wb-selected', other === node); });
     const id = sectionId(node);
+    // Color follows the selected chapter while the modal itself stays white.
+    dialog.dataset.stage = id;
     const title = getText(node, '.wb-name, .wp-title');
     const number = getText(node, '.wb-index') || '↗';
     const caption = getText(node, '.wb-drawing figcaption');
