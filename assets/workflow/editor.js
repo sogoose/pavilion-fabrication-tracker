@@ -20,6 +20,19 @@
   const titleNode = node => node.querySelector('.wb-name, .wp-title');
   const bodyNode = node => node.querySelector('.wb-detail, .wp-description');
   const linkNode = node => node.querySelector('.wb-links, .wp-links');
+  // File attachments share a dedicated, 15 MiB public workflow bucket.
+  // Unknown extensions and active web/script formats are not accepted.
+  const WORKFLOW_FILE_MIME = Object.freeze({
+    pdf: 'application/pdf',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    zip: 'application/zip',
+    csv: 'text/csv', txt: 'text/plain', gcode: 'text/plain',
+    '3dm': 'application/octet-stream',
+    dxf: 'application/octet-stream', stl: 'application/octet-stream'
+  });
+  const MAX_WORKFLOW_FILE_BYTES = 15 * 1024 * 1024;
   const safeHref = value => {
     const href = safeText(value).trim();
     if (href === '#tracker') return href;
@@ -213,7 +226,7 @@
     const description = addField('Description', data.description);
     const caption = sections.get(id)?.querySelector('.wb-drawing figcaption')
       ? addField('Drawing caption', data.caption || '', 'input') : null;
-    const links = addField('File links — one LABEL | https://... per line (or #tracker)',
+    const links = addField('Files & external links — LABEL | https://... (one per line; #tracker also works)',
       (data.links || []).map(pair => pair.join(' | ')).join('\n'));
     const gallery = addField('Gallery photos — one HTTPS image URL per line (first photo is the cover)',
       (data.gallery || []).join('\n'));
@@ -279,7 +292,84 @@
         setFeedback('Photo upload failed: ' + (error.message || 'Please try again.'), true);
       } finally { uploadButton.disabled = false; }
     });
+    // Upload PDFs, spreadsheets and digital fabrication source files directly.
+    // Uploaded URLs join the existing shared links list; the user still needs
+    // Save changes to publish the updated list to the Workflow database.
+    const fileWrap = document.createElement('label');
+    fileWrap.className = 'wf-editor-field wf-file-uploader';
+    const fileLabel = document.createElement('span');
+    fileLabel.textContent = 'ATTACH FILES · MAX 15 MB EACH';
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.accept = Object.keys(WORKFLOW_FILE_MIME).map(ext => '.' + ext).join(',');
+    fileWrap.append(fileLabel, fileInput);
+    fields.append(fileWrap);
+    const fileHelp = document.createElement('p');
+    fileHelp.className = 'wf-file-help';
+    fileHelp.textContent = 'PDF · DOCX · XLSX · PPTX · ZIP · CSV · TXT · 3DM · GCODE · DXF · STL. Shared files are accessible to anyone with the link.';
+    fields.append(fileHelp);
+    const fileUploadBtn = document.createElement('button');
+    fileUploadBtn.type = 'button';
+    fileUploadBtn.className = 'wf-upload-files';
+    fileUploadBtn.textContent = '+ Upload files';
+    fields.append(fileUploadBtn);
+    let uploadingFiles = false;
+    fileUploadBtn.addEventListener('click', async () => {
+      if (uploadingFiles) return;
+      const selected = [...fileInput.files];
+      if (!selected.length) { setFeedback('Choose one or more files to attach.', true); return; }
+      const existing = links.value.split(/\r?\n/).filter(line => line.trim());
+      if (existing.length + selected.length > 24) {
+        setFeedback('Maximum 24 links and attached files per chapter.', true); return;
+      }
+      const checked = [];
+      for (const file of selected) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!ext || !Object.hasOwn(WORKFLOW_FILE_MIME, ext)) {
+          setFeedback('Unsupported file type: ' + file.name, true); return;
+        }
+        if (!file.size || file.size > MAX_WORKFLOW_FILE_BYTES) {
+          setFeedback('Files must be non-empty and under 15 MB: ' + file.name, true); return;
+        }
+        checked.push({ file, ext });
+      }
+      uploadingFiles = true;
+      fileUploadBtn.disabled = true;
+      const saveButton = buttons.querySelector('.wf-editor-save');
+      if (saveButton) saveButton.disabled = true;
+      const uploaded = [];
+      try {
+        for (const {file, ext} of checked) {
+          setFeedback('Uploading ' + file.name + ' (' + (uploaded.length + 1) + '/' + checked.length + ')…');
+          const uuid = typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
+          const key = PROJECT + '/workflow/' + id + '/' + uuid + '.' + ext;
+          const storage = client.storage.from('pavilion-workflow-files');
+          const {error} = await storage.upload(key, file, {
+            contentType: WORKFLOW_FILE_MIME[ext], upsert:false, cacheControl:'3600'
+          });
+          if (error) throw error;
+          const {data: result} = storage.getPublicUrl(key);
+          if (!result?.publicUrl || !safeHref(result.publicUrl)) {
+            throw new Error('Uploaded file URL was not returned.');
+          }
+          const safeName = file.name.replace(/[\r\n|]/g, ' ').trim().slice(0, 100);
+          uploaded.push(safeName + ' | ' + result.publicUrl);
+          links.value = [...existing, ...uploaded].join('\n');
+        }
+        fileInput.value = '';
+        setFeedback('Uploaded ' + uploaded.length + ' file(s). Click Save changes to publish the attachments.');
+      } catch (error) {
+        setFeedback('File upload failed: ' + (error.message || 'Please try again.'), true);
+      } finally {
+        uploadingFiles = false;
+        fileUploadBtn.disabled = false;
+        if (saveButton) saveButton.disabled = false;
+      }
+    });
     addButton('Save changes', async () => {
+      if (uploadingFiles) { setFeedback('Wait for the files to finish uploading.', true); return; }
       const parseRows = (value, maxRows) => value.split(/\r?\n/).filter(line => line.trim()).slice(0, maxRows).map(line => {
         const index = line.indexOf('|');
         if (index < 0) throw new Error('Each participant/link row needs a | separator.');
@@ -292,7 +382,7 @@
           description: trimLimit(description.value, 1800),
           ...(caption ? { caption: trimLimit(caption.value, 220) } : {}),
           credits: parseRows(credits.value, 12).map(pair => [pair[0], pair[1].slice(0, 400)]),
-          links: parseRows(links.value, 16),
+          links: parseRows(links.value, 24),
           gallery: gallery.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean).slice(0, 9)
         };
         if (!value.title) throw new Error('A title is required.');
@@ -314,7 +404,14 @@
       published.set(id, value); apply(id, value); closeDialog();
     }, 'wf-editor-save');
     addButton('Cancel', closeDialog);
-    dialog.showModal(); title.focus();
+    dialog.showModal();
+    const section = sections.get(id);
+    const focusUpload = section?.dataset.wfFocus === 'files';
+    if (section) delete section.dataset.wfFocus;
+    if (focusUpload) {
+      fileInput.focus();
+      fileInput.scrollIntoView({block:'center', behavior:'instant'});
+    } else title.focus();
   };
 
   const showPageEditor = () => {
