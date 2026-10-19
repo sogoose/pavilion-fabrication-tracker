@@ -330,6 +330,18 @@ header{gap:6px;padding:10px 16px}
  .pm-management a{font-size:11px}
 }
 
+
+/* Viewer legends: firing directly beneath production status */
+.app{grid-template-rows:auto minmax(0,1fr)}
+.viewerLegends{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;align-items:stretch;gap:7px;z-index:2;width:205px;max-width:calc(100% - 28px)}
+.viewerLegends #legend.legend{position:static;width:100%;max-width:none;min-width:0;margin:0;border-radius:8px;padding:10px}
+.viewerLegends .firing-legend{display:flex;flex-direction:column;align-items:stretch;gap:5px;position:static;width:100%;min-height:0;margin:0;padding:10px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:8px;font-size:10px}
+.viewerLegends .firing-legend-title{margin-bottom:2px}
+.viewerLegends .firing-legend-sub{display:block;font-size:9px;margin:3px 0 0}
+.viewerLegends .firing-legend-note{display:none}
+.viewerLegends .firing-legend-item{justify-content:space-between;gap:7px}
+.viewerLegends .firing-legend-item b{margin-left:auto}
+@media(max-width:900px){.app{grid-template-rows:auto auto}.viewerLegends{right:10px;bottom:10px;width:190px}.viewerLegends .firing-legend{padding:8px}.viewerLegends #legend.legend{padding:8px}}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -430,7 +442,15 @@ header{gap:6px;padding:10px 16px}
       <div class="viewerOverlay">
         <button id="homeView">Axonometric</button>
       </div>
-      <div id="legend" class="legend"></div>
+      <div class="viewerLegends"><div id="legend" class="legend"></div>
+  <section id="firingLegend" class="firing-legend" aria-label="Firing status legend">
+    <span class="firing-legend-title">FIRING <span class="firing-legend-sub">3D PRINTING / SELECTIVE</span></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-ready"></i>TO BE FIRED <b id="firingCountPlanned">0</b></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-progress"></i>IN KILN / COOLING <b id="firingCountActive">0</b></span>
+    <span class="firing-legend-item"><i class="firing-dot firing-done"></i>FIRED <b id="firingCountDone">0</b></span>
+    <span class="firing-legend-note">Edit firing details directly in a printed module.</span>
+  </section>
+      </div>
       <div id="dropzone" class="dropzone">Drop a Rhino .3dm file here</div>
     </section>
 
@@ -441,13 +461,7 @@ header{gap:6px;padding:10px 16px}
       </div>
     </aside>
   </div>
-  <section id="firingLegend" class="firing-legend" aria-label="Firing status legend">
-    <span class="firing-legend-title">FIRING <span class="firing-legend-sub">3D PRINTING / SELECTIVE</span></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-ready"></i>TO BE FIRED <b id="firingCountPlanned">0</b></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-progress"></i>IN KILN / COOLING <b id="firingCountActive">0</b></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-done"></i>FIRED <b id="firingCountDone">0</b></span>
-    <span class="firing-legend-note">Edit firing details directly in a printed module.</span>
-  </section>
+
 </div>
 
 <div id="attachmentsModal" class="attachmentsModal" aria-hidden="true">
