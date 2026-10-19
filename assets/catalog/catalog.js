@@ -40,7 +40,6 @@ export function setupCatalog({ THREE, getState, notify }) {
   const download = $('.catalog-download');
   const cancel = $('.catalog-cancel');
   let busy = false, cancelled = false;
-  let previousScope = 'all';
 
   function message(text, fraction) {
     progress.hidden = false;
@@ -271,7 +270,10 @@ export function setupCatalog({ THREE, getState, notify }) {
     stroke(ctx,vx,vy,vw,vh);
     label(ctx,'01  /  '+(mediaResult?.kind || 'MODULE DOCUMENTATION'),vx,774);
     ctx.font='400 15px Inter,Arial,sans-serif';ctx.fillStyle='#77796f';
-    ctx.fillText(truncate(ctx,mediaResult?.note || 'Produced from live fabrication records',790),vx,801);
+    ctx.fillText(truncate(ctx,mediaResult?.note || 'Produced from live fabrication records',790),vx,794);
+    ctx.font='400 13px Inter,Arial,sans-serif';
+    ctx.fillStyle='#797b72';
+    ctx.fillText(truncate(ctx,'RHINO OBJECT / '+clean(record.Rhino_Object_Name),790),vx,813);
 
     // CAD data table: fixed groups and paired values; all numeric parameters.
     let y=186;
@@ -562,6 +564,8 @@ export function setupCatalog({ THREE, getState, notify }) {
     try {
       const state=getState();
       message('Reading fabrication records…',0);
+      // Wait for readable browser fonts before rasterising sheets into PDF pages.
+      if(document.fonts?.ready) await document.fonts.ready;
       const all=await gatherRecords(state);
       let entries=all;
       if(scope.value==='selected'){
