@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Structural — Pavilion Workflow</title>
+<!-- actual block between compression platens -->
+<path d="M29 7H106V12H29ZM21 55H114V61H21Z"/>
+<path d="M42 15V22M93 15V22M42 47V54M93 47V54" stroke-dasharray="2 3" opacity=".55"/>
+<path d="M51 45L44 38L49 30L60 28L67 21L74 28L86 30L91 38L84 45H75L68 39L59 45Z"/>
+<path d="M51 45V51L59 55L68 48L75 55L84 51V45M44 38V44L51 51M91 38V44L84 51"/>
+<path d="M59 33L68 29L77 33L68 38Z M59 33V39L68 44L77 39V33" opacity=".65"/>
+<path d="M68 1V16M63 11L68 17L73 11 M68 62V64" stroke-width="1.4"/>
+<path d="M18 30H35M100 30H117" stroke-dasharray="3 3" opacity=".45"/>
+</svg>
