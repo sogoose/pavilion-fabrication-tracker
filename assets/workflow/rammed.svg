@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="149" viewBox="0 -42 135 149" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
   <title>Rammed — Pavilion Workflow</title>
 <!-- overhead plywood outer frame, irregular curved mould inserts and tie rods -->
 <path d="M15 10L100 5L124 22L37 29Z M15 10V45L37 60V29M37 60L124 49V22"/>
