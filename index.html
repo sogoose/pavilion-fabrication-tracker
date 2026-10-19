@@ -350,8 +350,10 @@ header{gap:6px;padding:10px 16px}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;family=Syne:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css?v=20261019-bottom-editor-v1">
+<link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./config.js"></script>
   <script type="importmap">
@@ -374,7 +376,8 @@ header{gap:6px;padding:10px 16px}
       <span id="syncBadge" class="badge sync-offline">LOCAL MODE</span>
       <label class="editorBox">Editing as <input id="editorName" list="peopleList" placeholder="Your name" /></label>
       <button id="syncNow">Sync now</button>
-      <button id="downloadExcel" class="primary">Download Excel</button>
+      <button id="downloadCatalog" class="primary" title="Download a CAD-style PDF catalogue of pavilion modules">Catalogue PDF ↗</button>
+      <button id="downloadExcel">Download Excel</button>
       <label class="button fileBtn">Import Excel<input id="excelInput" type="file" accept=".xlsx,.xls,.csv" /></label>
       <label class="button fileBtn">Load 3DM<input id="modelInput" type="file" accept=".3dm" /></label>
     </div>
@@ -628,6 +631,7 @@ header{gap:6px;padding:10px 16px}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
+import { setupCatalog } from './assets/catalog/catalog.js?v=20261019-v1';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -710,6 +714,17 @@ const objectLabel = document.getElementById('objectLabel');
 const allObjectLabels = document.getElementById('allObjectLabels');
 const syncBadge = document.getElementById('syncBadge');
 const editorName = document.getElementById('editorName');
+
+// The PDF catalogue reads current module records without altering Tracker state.
+const catalogue = setupCatalog({
+  THREE,
+  getState: () => ({
+    records, parts, selectedKey,
+    client: supabaseClient, liveMode, projectId: PROJECT_ID,
+    dbMap, photoBucket: PHOTO_BUCKET, gcodeBucket: GCODE_BUCKET
+  }),
+  notify: showMessage
+});
 
 initThree();
 restoreLocal();
@@ -1758,6 +1773,7 @@ function renderPanel(){
   const machineOptions=r.Manufacturing_Method==='Rammed Earth'?lists.Machine_Rammed:lists.Machine_3DP;
   panel.innerHTML=`
     <h2 class="partTitle">${escapeHtml(r.Object_ID||'Unnamed block')}</h2>
+    <button type="button" id="downloadModulePDF">↗ Module PDF Sheet</button>
     <div class="sub">Rhino object: ${escapeHtml(r.Rhino_Object_Name||'—')}</div>
     <div class="methodCard ${methodClass}"><div><div class="sub">MANUFACTURING</div><strong>${escapeHtml(r.Manufacturing_Method)}</strong></div><div><div class="sub">MACHINE</div><strong>${escapeHtml(r.Machine||'—')}</strong></div></div>
     <div class="grid2">
@@ -1828,6 +1844,7 @@ function renderPanel(){
     <div class="footerActions"><button id="stampNow">Stamp updated time</button><button id="focusSelected">Focus object</button></div>
     <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.'}</div>`;
 
+  document.getElementById('downloadModulePDF')?.addEventListener('click',()=>catalogue.open('selected'));
   panel.querySelectorAll('[data-field]').forEach(el=>{
     const sync=()=>{
       const field=el.dataset.field; r[field]=el.value;
@@ -2204,6 +2221,7 @@ async function importExcel(file){
 function wireUI(){
   document.getElementById('modelInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(f)await loadModelFile(f);e.target.value='';});
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
+  document.getElementById('downloadCatalog').onclick=()=>catalogue.open('all');
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
   document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
