@@ -278,26 +278,8 @@
 .wb-assembly .wb-detail { max-width:345px; margin:10px auto 0; text-align:left; }
 .wb-firing .wb-index { color: #99988f; }
 
-.wb-material-layout { display: flex; align-items: center; gap: 8px; }
-.wb-material-layout .wb-drawing { width: min(67%,170px); flex: 0 1 170px; }
-.wb-sample {
-  width: 47px;
-  height: 55px;
-  flex-shrink: 0;
-  margin: 0;
-  background: #c6b599;
-  clip-path: polygon(2% 3%,96% 0,100% 90%,8% 100%);
-  opacity: .75;
-  position: relative;
-  overflow: hidden;
-}
-.wb-sample::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(15deg,transparent 0 7px,rgba(91,80,68,.21) 8px 9px);
-}
-.wb-sample::after { content:""; }
+.wb-material-layout { display:flex; align-items:center; }
+.wb-material-layout .wb-drawing { width:min(100%,170px); flex:0 1 170px; }
 
 .wb-phase {
   position: absolute;
@@ -380,8 +362,6 @@
   .wb-firing .wb-name { font-size: 18px; }
   .wb-assembly .wb-name { font-size: 26px; }
   .wb-assembly .wb-drawing { width:min(100%,345px); }
-  .wb-material .wb-sample { width: 26px; height: 43px; }
-  .wb-material-layout { gap: 1px; }
   .wb-management p { font-size: 11px; }
 }
 
