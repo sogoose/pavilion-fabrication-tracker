@@ -1,4 +1,5 @@
-/* Workflow password editing. Read access remains public. Writes use the private Edge API. */
+/* Shared Workflow editor. Everyone can edit text and file links without a login.
+   Separate from the 3D Tracker, whose existing collaborative permissions remain intact. */
 (() => {
   const root = document.getElementById('workflowView');
   const config = window.PAVILION_CONFIG || {};
@@ -11,34 +12,7 @@
   const sections = new Map();
   const originals = new Map();
   const published = new Map();
-  let canEdit = false;
   let editingId = null;
-  const SESSION_KEY = 'pavilion-workflow-editor-session';
-  let editorToken = null;
-  try { editorToken = sessionStorage.getItem(SESSION_KEY); } catch {}
-  const setSession = value => {
-    editorToken = value || null;
-    try {
-      if (editorToken) sessionStorage.setItem(SESSION_KEY, editorToken);
-      else sessionStorage.removeItem(SESSION_KEY);
-    } catch {}
-  };
-  const requestEditor = async (action, payload = {}) => {
-    const url = config.supabaseUrl.replace(/\/$/, '') + '/functions/v1/pavilion-workflow-editor';
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: config.supabaseAnonKey },
-      body: JSON.stringify({ action, ...payload })
-    });
-    let data = {};
-    try { data = await response.json(); } catch {}
-    if (!response.ok || !data.ok) {
-      const error = new Error(data.error || 'Workflow editor unavailable.');
-      error.status = response.status;
-      throw error;
-    }
-    return data;
-  };
 
   const safeText = value => String(value == null ? '' : value);
   const trimLimit = (value, max) => safeText(value).trim().slice(0, max);
@@ -191,14 +165,12 @@
 
   const actions = document.createElement('div');
   actions.className = 'wf-owner-actions';
-  actions.innerHTML = '<button type="button" class="wf-login" aria-label="Workflow editor login">Editor login</button><button type="button" class="wf-page-edit" hidden>Edit page</button><button type="button" class="wf-logout" hidden>Sign out</button><span class="wf-editor-state" role="status" aria-live="polite"></span>';
-  // Keep the editor controls out of the visual workflow header.
-  // Place them after the closing board footer, at the very bottom of Workflow.
+  actions.innerHTML =
+    '<button type="button" class="wf-page-edit">Edit page</button>' +
+    '<span class="wf-editor-state">OPEN TEAM EDITING</span>';
+  // Keep the controls at the end of the Workflow, away from the diagram.
   (root.querySelector('.wb-bottom') || root.querySelector('.wb-shell'))?.after(actions);
-  const loginButton = actions.querySelector('.wf-login');
   const pageButton = actions.querySelector('.wf-page-edit');
-  const logoutButton = actions.querySelector('.wf-logout');
-  const stateLabel = actions.querySelector('.wf-editor-state');
 
   const dialog = document.createElement('dialog');
   dialog.className = 'wf-edit-dialog';
@@ -233,47 +205,8 @@
   dialog.querySelector('.wf-editor-close').addEventListener('click', closeDialog);
   dialog.addEventListener('click', event => { if (event.target === dialog) closeDialog(); });
 
-  const updatePermissions = () => {
-    loginButton.hidden = canEdit;
-    logoutButton.hidden = !canEdit;
-    pageButton.hidden = !canEdit;
-    stateLabel.textContent = canEdit ? 'EDITOR ACCESS' : '';
-    root.querySelectorAll('.wf-edit-trigger').forEach(button => { button.hidden = !canEdit; });
-  };
-  const showLogin = () => {
-    editingId = null; fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
-    const password = addField('Editor password', '', 'input');
-    password.type = 'password';
-    password.autocomplete = 'current-password';
-    password.placeholder = 'Password';
-    const unlock = addButton('Unlock editor', async () => {
-      if (!password.value) { setFeedback('Enter a password.', true); return; }
-      unlock.disabled = true; setFeedback('Checking password…');
-      try {
-        const result = await requestEditor('login', { password: password.value });
-        password.value = '';
-        setSession(result.token); canEdit = true;
-        updatePermissions(); closeDialog();
-      } catch (error) {
-        password.value = '';
-        unlock.disabled = false;
-        setFeedback(error.message || 'Login unavailable.', true);
-        password.focus();
-      }
-    }, 'wf-editor-save');
-    password.addEventListener('keydown', event => {
-      if (event.key === 'Enter') { event.preventDefault(); unlock.click(); }
-    });
-    addButton('Cancel', closeDialog);
-    dialog.showModal(); password.focus();
-  };
-  loginButton.addEventListener('click', showLogin);
-  logoutButton.addEventListener('click', () => {
-    setSession(null); canEdit = false; updatePermissions();
-  });
-
   const showEditor = id => {
-    if (!canEdit || !editorToken || !sections.has(id)) return;
+    if (!sections.has(id)) return;
     editingId = id;
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
     const data = { ...originals.get(id), ...published.get(id) };
@@ -306,12 +239,13 @@
       } catch (err) { setFeedback(err.message, true); return; }
       setFeedback('Saving Workflow…');
       try {
-        await requestEditor('save', { token: editorToken, section_id: id, content: value });
+        const { error } = await client.from('pavilion_workflow_content').upsert({
+          project_id: PROJECT, section_id: id, content: value, updated_by: null,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'project_id,section_id' });
+        if (error) throw error;
       } catch (error) {
-        if (error.status === 401) {
-          setSession(null); canEdit = false; updatePermissions();
-        }
-        setFeedback('Save failed: ' + error.message, true);
+        setFeedback('Save failed: ' + (error.message || 'Please try again.'), true);
         return;
       }
       published.set(id, value); apply(id, value); closeDialog();
@@ -321,7 +255,7 @@
   };
 
   const showPageEditor = () => {
-    if (!canEdit || !editorToken) return;
+    // Available to all visitors; Supabase RLS allows only Workflow-scoped writes.
     editingId = '__page';
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
     const data = { ...pageDefaults, ...(published.get('__page') || {}) };
@@ -343,12 +277,13 @@
       }
       setFeedback('Saving Workflow…');
       try {
-        await requestEditor('save', { token: editorToken, section_id: '__page', content: value });
+        const { error } = await client.from('pavilion_workflow_content').upsert({
+          project_id: PROJECT, section_id: '__page', content: value, updated_by: null,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'project_id,section_id' });
+        if (error) throw error;
       } catch (error) {
-        if (error.status === 401) {
-          setSession(null); canEdit = false; updatePermissions();
-        }
-        setFeedback('Save failed: ' + error.message, true);
+        setFeedback('Save failed: ' + (error.message || 'Please try again.'), true);
         return;
       }
       published.set('__page', value); applyPage(value); closeDialog();
@@ -358,20 +293,20 @@
   };
   pageButton.addEventListener('click', showPageEditor);
   root.querySelector('.wb-mast h1')?.addEventListener('dblclick', event => {
-    if (canEdit) { event.preventDefault(); showPageEditor(); }
+    event.preventDefault(); showPageEditor();
   });
 
   sections.forEach((node, id) => {
     const trigger = document.createElement('button');
     trigger.type = 'button'; trigger.className = 'wf-edit-trigger';
-    trigger.textContent = 'EDIT'; trigger.hidden = true;
+    trigger.textContent = 'EDIT';
     trigger.setAttribute('aria-label', 'Edit ' + originals.get(id).title);
     trigger.addEventListener('click', event => {
       event.preventDefault(); event.stopPropagation(); showEditor(id);
     });
     bodyNode(node)?.append(trigger);
     node.addEventListener('dblclick', event => {
-      if (!canEdit || event.target.closest('a,button,input,textarea')) return;
+      if (event.target.closest('a,button,input,textarea')) return;
       event.preventDefault(); showEditor(id);
     });
   });
@@ -391,16 +326,5 @@
       apply(row.section_id, row.content);
     });
   };
-  const resumeEditorSession = async () => {
-    if (!editorToken) { canEdit = false; updatePermissions(); return; }
-    try {
-      await requestEditor('verify', { token: editorToken });
-      canEdit = true;
-    } catch {
-      setSession(null); canEdit = false;
-    }
-    updatePermissions();
-  };
-  Promise.all([loadContent(), resumeEditorSession()])
-    .catch(error => console.warn('Workflow editor:', error));
+  loadContent().catch(error => console.warn('Workflow content:', error));
 })();
