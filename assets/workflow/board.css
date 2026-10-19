@@ -161,7 +161,7 @@
 .wb-board{
   position:relative;
   display:block;
-  min-height:1870px;
+  min-height:1970px;
   margin-top:28px;
   padding:0;
   isolation:isolate;
@@ -367,7 +367,7 @@
 .wb-bottom{border-top-color:#cdcbc1;margin-top:0}
 
 /* Tablet: an irregular, but naturally flowing, two-column atlas. */
-@media(max-width:1010px){
+@media(max-width:1100px){
   .wb-mast{grid-template-columns:1fr 255px}
   .wb-board{
     display:grid;
