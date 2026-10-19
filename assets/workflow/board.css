@@ -88,14 +88,16 @@
 .wb-board {
   position: relative;
   width: min(1100px,100%);
-  height: 1130px;
+  height: 1630px;
   margin: 20px auto 0;
   isolation: isolate;
   overflow: visible;
 }
 .wb-arrows {
   position: absolute;
-  inset: 0;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1450px;
   z-index: 0;
   overflow: visible;
   pointer-events: none;
@@ -226,11 +228,11 @@
 .wb-spatial   { --x:8.5%; --y:54px;  --w:21%; --image-h:127px; }
 .wb-structural{ --x:56%;  --y:54px;  --w:21%; --image-h:97px; }
 .wb-gcode     { --x:30%;  --y:281px; --w:18%; --image-h:114px; }
-.wb-material  { --x:74%;  --y:279px; --w:21%; --image-h:111px; }
-.wb-printing  { --x:22%;  --y:586px; --w:23%; --image-h:150px; }
-.wb-rammed    { --x:70%;  --y:587px; --w:21%; --image-h:137px; }
-.wb-firing    { --x:14%;  --y:838px; --w:17%; --image-h:91px; }
-.wb-assembly  { --x:68%;  --y:925px; --w:23%; --image-h:127px; }
+.wb-material  { --x:73%;  --y:279px; --w:23%; --image-h:107px; }
+.wb-printing  { --x:21%;  --y:586px; --w:26%; --image-h:145px; }
+.wb-rammed    { --x:70%;  --y:587px; --w:24%; --image-h:132px; }
+.wb-firing    { --x:14%;  --y:970px; --w:17%; --image-h:91px; }
+.wb-assembly  { --x:68%;  --y:1130px; --w:23%; --image-h:127px; }
 
 .wb-spatial .wb-name { font-size: 23px; }
 .wb-structural .wb-name { font-size: 20px; }
@@ -324,19 +326,20 @@
   .wb-mast { gap: 20px; }
   .wb-mast h1 { font-size: clamp(34px,4.6vw,48px); }
   .wb-management { width: 236px; }
-  .wb-board { width: min(460px,100%); height: 1370px; margin-top: 14px; }
+  .wb-board { width: min(460px,100%); height: 1940px; margin-top: 14px; }
+  .wb-arrows { height: 1640px; }
   .wb-arrows-desktop { display: none !important; }
   .wb-arrows-mobile { display: block !important; }
 
   .wb-spatial    { --x:4%;  --y:34px;   --w:44%; --image-h:100px; }
   .wb-structural { --x:58%; --y:68px;   --w:40%; --image-h:84px; }
-  .wb-gcode      { --x:7%;  --y:277px;  --w:43%; --image-h:96px; }
-  .wb-material   { --x:56%; --y:279px;  --w:42%; --image-h:86px; }
-  .wb-printing   { --x:4%;  --y:618px;  --w:46%; --image-h:120px; }
-  .wb-rammed     { --x:58%; --y:649px;  --w:40%; --image-h:103px; }
-  .wb-firing     { --x:7%;  --y:922px;  --w:35%; --image-h:80px; }
-  .wb-assembly   { --x:56%; --y:1041px; --w:43%; --image-h:128px; }
-  .wb-phase      { top: 510px; left: 25%; width: 54%; }
+  .wb-gcode      { --x:7%;  --y:315px;  --w:43%; --image-h:96px; }
+  .wb-material   { --x:56%; --y:320px;  --w:42%; --image-h:86px; }
+  .wb-printing   { --x:4%;  --y:845px;  --w:46%; --image-h:112px; }
+  .wb-rammed     { --x:58%; --y:850px;  --w:40%; --image-h:100px; }
+  .wb-firing     { --x:7%;  --y:1198px;  --w:35%; --image-h:80px; }
+  .wb-assembly   { --x:56%; --y:1380px; --w:43%; --image-h:124px; }
+  .wb-phase      { top: 732px; left: 25%; width: 54%; }
   .wb-phase strong { font-size: 27px; }
   .wb-phase::before { height: 26px; top: 6px; }
 
@@ -394,184 +397,151 @@
 }
 
 
-/* ───── TEAM CREDITS / PROCESS FOOTNOTES ───── */
+
+/* PROCESS PARTICIPANTS: compact stacked credits beneath each editable SVG. */
 #workflowView .wb-credits {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-  margin-top: 9px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(151,149,137,.33);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-top:8px;
+  padding-top:6px;
+  border-top:1px solid rgba(151,149,137,.35);
+  min-width:0;
 }
+#workflowView .wb-credit-row { display:flex; flex-direction:column; gap:1px; min-width:0; }
 #workflowView .wb-credits-key {
-  color: #96948a;
-  font: 400 8px/1.35 "IBM Plex Mono", monospace;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font:400 8px/1.3 "IBM Plex Mono",monospace;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+  color:#98958b;
 }
 #workflowView .wb-credits-names {
-  max-width: 100%;
-  color: #45443e;
-  font: 500 10px/1.5 "Inter",Arial,sans-serif;
-  overflow-wrap: break-word;
+  font:500 10px/1.35 "Inter",Arial,sans-serif;
+  color:#45443e;
+  overflow-wrap:anywhere;
 }
-#workflowView .wb-credits-pending .wb-credits-names { color: #97938a; font-style: italic; }
 #workflowView .wb-block[open] .wb-credits-key,
-#workflowView .wb-block[open] .wb-credits-names { color: #977542; }
+#workflowView .wb-block[open] .wb-credits-names { color:#977542; }
 
-/* ───── WORK PACKAGE ISLANDS / ADDITIONS ─────
-   Separate research & support streams: deliberately no connectors
-   to the fabrication flow and no large cards.
-*/
-#workflowView .wp-section {
-  width: min(1100px,100%);
-  margin: 42px auto 0;
-  padding: 30px 0 45px;
-  border-top: 1px solid #c3c0b6;
-  position: relative;
+/* FOUR DETACHED ISLANDS ON THE SAME ARROW MAP.
+ * Unlike production processes, they have no incoming/outgoing connection;
+ * the SVG artworks stay independent for easy replacement in Illustrator.
+ */
+#workflowView .wb-board > .wp-island {
+  position:absolute;
+  top:var(--wp-y);
+  left:var(--wp-x);
+  width:var(--wp-w);
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+  border-top:1px solid #c6c3b9;
+  background:#faf9f5;
+  z-index:3;
+  opacity:.86;
 }
-#workflowView .wp-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 39px;
-}
-#workflowView .wp-heading-copy { max-width: 690px; }
-#workflowView .wp-section-label,
-#workflowView .wp-detached-label {
-  color: #96928a;
-  font: 400 9px/1.4 "IBM Plex Mono",monospace;
-  letter-spacing: .06em;
-}
-#workflowView .wp-heading h2 {
-  margin: 8px 0 9px;
-  font: 600 clamp(23px,3vw,34px)/1.18 "Syne","Inter",Arial,sans-serif;
-  letter-spacing: -.048em;
-}
-#workflowView .wp-heading p {
-  margin: 0;
-  color: #7a7870;
-  font: 400 11px/1.6 "Inter",Arial,sans-serif;
-  max-width: 560px;
-}
-#workflowView .wp-detached-label { padding: 8px 0 0; white-space: nowrap; }
-#workflowView .wp-islands {
-  display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  column-gap: clamp(23px,4vw,67px);
-  row-gap: 28px;
-  align-items: start;
-  margin: 0 0 34px;
-}
-#workflowView .wp-island {
-  position: relative;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  border-top: 1px solid #c5c2ba;
-  background: transparent;
-}
-#workflowView .wp-island:nth-child(3n + 2) { margin-top: 32px; }
-#workflowView .wp-island:nth-child(3n) { margin-top: 10px; }
-#workflowView .wp-island::before {
-  content: "";
-  position: absolute;
-  right: 2px;
-  top: -4px;
-  z-index: 1;
-  width: 6px;
-  height: 6px;
-  border: 1px solid #bbb4a8;
-  border-radius: 50%;
-  background: #faf9f5;
-  pointer-events: none;
-}
-#workflowView .wp-island[open]::before { background:#c4a26a; border-color:#c4a26a; }
+#workflowView .wb-board > .wp-island[open] { z-index:17; opacity:1; }
 #workflowView .wp-island-summary {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  cursor: pointer;
-  padding: 11px 18px 8px 0;
-  list-style: none;
-  min-height: 83px;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  padding:7px 10px 7px 0;
+  margin:0;
+  list-style:none;
+  cursor:pointer;
+  outline-offset:5px;
 }
 #workflowView .wp-island-summary::-webkit-details-marker { display:none; }
-#workflowView .wp-island-summary:focus-visible { outline: 1px solid #a48f4f; outline-offset: 4px; }
+#workflowView .wp-island-summary:focus-visible { outline:1px solid #b29c66; }
 #workflowView .wp-meta {
-  color: #96948a;
-  font: 400 9px/1.5 "IBM Plex Mono",monospace;
-  letter-spacing: .01em;
+  color:#aba79a;
+  font:400 8px/1.3 "IBM Plex Mono",monospace;
+  letter-spacing:.01em;
 }
 #workflowView .wp-title {
-  color: #34342f;
-  font: 600 17px/1.28 "Syne","Inter",Arial,sans-serif;
-  letter-spacing: -.03em;
-  margin-top: 5px;
+  margin:6px 17px 5px 0;
+  color:#666359;
+  font:600 16px/1.2 "Syne","Inter",Arial,sans-serif;
+  letter-spacing:-.035em;
+  overflow-wrap:break-word;
+}
+#workflowView .wp-art {
+  width:100%;
+  height:66px;
+  display:block;
+  object-fit:contain;
+  opacity:.72;
+  filter:none;
+  transition:filter .2s ease;
+}
+#workflowView .wp-sketch-caption {
+  font:400 8px/1.4 "IBM Plex Mono",monospace;
+  color:#aaa69c;
+  letter-spacing:.015em;
+  margin:3px 0 5px;
 }
 #workflowView .wp-members {
-  color: #646158;
-  font: 400 10px/1.5 "Inter",Arial,sans-serif;
-  margin-top: 7px;
+  color:#5e5c54;
+  font:500 10px/1.45 "Inter",Arial,sans-serif;
+  overflow-wrap:anywhere;
 }
 #workflowView .wp-plus {
-  position: absolute;
-  top: 13px;
-  right: 2px;
-  font: 400 16px/1 "Inter",Arial,sans-serif;
-  color: #a29f95;
+  position:absolute;
+  right:1px;
+  top:6px;
+  font:400 14px/1 "Inter",Arial,sans-serif;
+  color:#a49f94;
 }
+#workflowView .wp-island-summary:hover .wp-title,
 #workflowView .wp-island[open] .wp-title,
+#workflowView .wp-island[open] .wp-meta,
 #workflowView .wp-island[open] .wp-members,
-#workflowView .wp-island[open] .wp-meta { color:#977542; }
-#workflowView .wp-island[open] .wp-plus { transform:none; color:#977542; }
-#workflowView .wp-island-summary:hover .wp-title { color:#977542; }
+#workflowView .wp-island[open] .wp-sketch-caption,
+#workflowView .wp-island[open] .wp-plus { color:#977542; }
+#workflowView .wp-island[open] .wp-art {
+  opacity:1;
+  filter:brightness(0) saturate(100%) invert(46%) sepia(30%) saturate(640%) hue-rotate(2deg) brightness(96%) contrast(87%);
+}
 #workflowView .wp-description {
-  padding: 3px 15px 13px 0;
-  max-width: 360px;
+  padding:7px 7px 11px 0;
+  background:#faf9f5;
+  border-top:1px dotted #d1cdc1;
 }
-#workflowView .wp-description p { margin:0 0 9px; color:#77736c; font:11px/1.6 "Inter",Arial,sans-serif; }
-#workflowView .wp-links { display:flex;flex-wrap:wrap;gap:12px; }
-#workflowView .wp-links a { color:#5f5139;font:400 10px/1.4 "IBM Plex Mono",monospace;text-decoration:underline;text-underline-offset:3px; }
-#workflowView .wp-pending .wp-members { color:#a29d91; font-style:italic; }
-#workflowView .wp-clarifier {
-  max-width: 740px;
-  padding: 13px 0 0;
-  margin: 3px 0 0;
-  border-top: 1px dotted #d9d6cd;
-  color: #99968c;
-  font: 400 10px/1.6 "IBM Plex Mono",monospace;
+#workflowView .wp-description p {
+  margin:0 0 9px;
+  color:#76736b;
+  font:400 11px/1.55 "Inter",Arial,sans-serif;
 }
+#workflowView .wp-links { display:flex; flex-wrap:wrap; gap:10px; }
+#workflowView .wp-links a {
+  font:400 9px/1.45 "IBM Plex Mono",monospace;
+  color:#6b5631;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+#workflowView .wp-computational { --wp-x:2.5%; --wp-y:340px; --wp-w:17.5%; }
+#workflowView .wp-construction { --wp-x:79%; --wp-y:56px; --wp-w:19%; }
+#workflowView .wp-environment { --wp-x:2%; --wp-y:676px; --wp-w:18%; }
+#workflowView .wp-hrc { --wp-x:40%; --wp-y:1350px; --wp-w:22%; }
 @media (max-width: 850px) {
-  #workflowView .wb-credits { margin-top: 6px; padding-top:5px; }
-  #workflowView .wb-credits-key { font-size: 7px; }
-  #workflowView .wb-credits-names { font-size: 9px; line-height:1.4; }
-  #workflowView .wp-islands { grid-template-columns: repeat(2,minmax(0,1fr)); column-gap:22px; row-gap:23px; }
-  #workflowView .wp-island:nth-child(n) { margin-top: 0; }
-  #workflowView .wp-island:nth-child(2n) { margin-top: 26px; }
-  #workflowView .wp-title { font-size:16px; }
-  #workflowView .wp-section { margin-top:26px; }
-}
-@media (max-width: 620px) {
-  #workflowView .wp-section { margin-top:24px; padding-top:21px; }
-  #workflowView .wp-heading { display:block; margin-bottom:24px; }
-  #workflowView .wp-heading h2 { font-size:25px; }
-  #workflowView .wp-detached-label { display:block; margin-top:10px; }
-  #workflowView .wp-islands { column-gap:18px; row-gap:21px; }
-  #workflowView .wp-title { font-size:14px; }
-  #workflowView .wp-meta { font-size:8px; }
+  #workflowView .wb-credits { gap:3px; margin-top:6px; padding-top:5px; }
+  #workflowView .wb-credits-key { font-size:7px; }
+  #workflowView .wb-credits-names { font-size:9px; line-height:1.33; }
+  #workflowView .wp-art { height:52px; }
+  #workflowView .wp-title { font-size:14px; margin-top:5px; }
+  #workflowView .wp-meta,#workflowView .wp-sketch-caption { font-size:7px; }
   #workflowView .wp-members { font-size:9px; }
-  #workflowView .wp-island-summary { min-height:86px; }
   #workflowView .wp-description p { font-size:10px; }
-  #workflowView .wp-clarifier { font-size:9px; }
+  #workflowView .wp-computational { --wp-x:3%; --wp-y:557px; --wp-w:42%; }
+  #workflowView .wp-environment { --wp-x:56%; --wp-y:563px; --wp-w:42%; }
+  #workflowView .wp-construction { --wp-x:3%; --wp-y:1649px; --wp-w:42%; }
+  #workflowView .wp-hrc { --wp-x:55%; --wp-y:1652px; --wp-w:43%; }
 }
 @media (max-width: 390px) {
-  #workflowView .wp-islands { grid-template-columns: 1fr;row-gap:18px; }
-  #workflowView .wp-island:nth-child(n) { margin-top: 0; }
-  #workflowView .wp-island-summary { min-height:0; padding-bottom:13px; }
-  #workflowView .wp-title { font-size:17px; }
+  #workflowView .wp-title { font-size:12px; }
+  #workflowView .wp-members { font-size:8px; }
+  #workflowView .wp-art { height:46px; }
+  #workflowView .wp-sketch-caption { font-size:6.5px; }
   #workflowView .wb-credits-names { font-size:8px; }
 }
