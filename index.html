@@ -641,14 +641,14 @@ const GCODE_BUCKET = 'pavilion-gcode-files';
 const MAX_PHOTOS_PER_MODULE = 5;
 const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
-  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
 const lists = {
   Manufacturing_Method:['3D Printing','Rammed Earth','Other'],
   Firing_Route:['Unfired','To be fired','Rammed'],
-  Firing_Status:['Not Ready','Ready','In Kiln','Cooling','Fired','Failed'],
+  Firing_Status:['Not fired','Fired'],
   Structural_Status:['Pending','Checking','Approved','Revision'],
   Production_Status:['Not Started','Queued','Printing','Printed','Failed'],
   Drying_QC_Status:['Not Started','Drying','QC Pending','Approved','Rework'],
@@ -677,7 +677,7 @@ const PROJECT_ID = CONFIG.projectId || 'pavilion-2026';
 const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
 const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
-  Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method',
+  Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method', Fabrication_Date:'fabrication_date',
   Firing_Route:'firing_route', Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Program:'firing_program', Firing_Date:'firing_date',
   Firing_Dimension_Before_mm:'firing_dimension_before_mm', Firing_Dimension_After_mm:'firing_dimension_after_mm', Firing_Shrinkage_pct:'firing_shrinkage_pct', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
@@ -802,7 +802,7 @@ function toDbRecord(r){
     if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
     // PostgreSQL DATE rejects an empty string. Unsupplied firing dates are SQL NULL.
     // This applies to individual autosaves and bulk/cloud sync through toDbRecord().
-    if(app==='Firing_Date') v = String(v ?? '').trim() || null;
+    if(app==='Firing_Date' || app==='Fabrication_Date') v = String(v ?? '').trim() || null;
     if(app==='Firing_Route') v = String(v ?? '').trim() || null;
     if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
     out[db]=v;
@@ -1050,7 +1050,7 @@ function defaultRecord(part,i){
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
     Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing',
-    Firing_Route:'', Firing_Status:'', Firing_Batch:'', Firing_Kiln:'', Firing_Peak_Temp_C:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
+    Fabrication_Date:'', Firing_Route:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'', Firing_Peak_Temp_C:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'', Infill_Density_pct:'',
     Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
@@ -1077,7 +1077,7 @@ function derive(r){
     if(!lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
     // Legacy "TBD" denotes an undecided printing route, not Rammed Earth.
     if(!['Unfired','To be fired'].includes(r.Firing_Route)) r.Firing_Route='';
-    if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not Ready';
+    if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not fired';
   }
   const dimBefore=Number(r.Firing_Dimension_Before_mm);
   const dimAfter=Number(r.Firing_Dimension_After_mm);
@@ -1744,24 +1744,15 @@ function firingRouteToggle(r){
     '<div class="routeHint">Choose UNFIRED or TO BE FIRED for 3D-printed blocks; RAMMED marks rammed-earth components. Only TO BE FIRED opens kiln details.</div>';
 }
 function firingPanel(r){
-  if(r.Manufacturing_Method!=='3D Printing' || r.Firing_Route!=='To be fired') return '';
-  const shrink=(r.Firing_Shrinkage_pct!=='' && r.Firing_Shrinkage_pct!==null && r.Firing_Shrinkage_pct!==undefined) ? escapeHtml(r.Firing_Shrinkage_pct)+'%' : '—';
+  if(r.Manufacturing_Method!=='3D Printing') return '';
+  const performed = r.Firing_Status==='Fired' ? 'Fired' : 'Not fired';
   return '<div class="sectionTitle">Firing</div>'+
     '<div class="firingPanel">'+
-      selectField('Firing_Status','Firing status',r.Firing_Status||'Not Ready',lists.Firing_Status)+
       '<div class="grid2">'+
-        inputField('Firing_Batch','Firing batch',r.Firing_Batch,'text')+
-        inputField('Firing_Kiln','Kiln',r.Firing_Kiln,'text')+
-        inputField('Firing_Peak_Temp_C','Peak temperature (°C)',r.Firing_Peak_Temp_C,'number','1')+
+        selectField('Firing_Status','Firing performed?',performed,lists.Firing_Status)+
         inputField('Firing_Date','Firing date',r.Firing_Date,'date')+
+        inputField('Firing_Peak_Temp_C','Peak temperature (°C)',r.Firing_Peak_Temp_C,'number','1')+
       '</div>'+
-      inputField('Firing_Program','Firing program',r.Firing_Program,'text')+
-      '<div class="grid2">'+
-        inputField('Firing_Dimension_Before_mm','Ref. dimension before (mm)',r.Firing_Dimension_Before_mm,'number','0.01')+
-        inputField('Firing_Dimension_After_mm','Ref. dimension after (mm)',r.Firing_Dimension_After_mm,'number','0.01')+
-      '</div>'+
-      '<div class="autoStatus"><span>Measured shrinkage</span><b>'+shrink+'</b></div>'+
-      '<div class="routeHint" style="margin:8px 0 10px">Shrinkage is calculated from the same reference dimension before and after firing.</div>'+
     '</div>';
 }
 
@@ -1794,6 +1785,7 @@ function renderPanel(){
     ${firingRouteToggle(r)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
     ${inputField('Weight_kg','Module weight (kg)',r.Weight_kg,'number','0.01')}
+    ${inputField('Fabrication_Date','Fabrication date',r.Fabrication_Date,'date')}
 
     <div class="divider"></div>
     <div class="sectionTitle">Structural</div>
@@ -1849,6 +1841,7 @@ function renderPanel(){
     const sync=()=>{
       const field=el.dataset.field; r[field]=el.value;
       if(['Module_No','Level','Sequence'].includes(field)) autoId(r);
+      if(field==='Firing_Status' && r.Firing_Status==='Fired' && r.Firing_Route==='Unfired') r.Firing_Route='To be fired';
       if(field==='Manufacturing_Method'){
         if(r.Manufacturing_Method==='Rammed Earth'){ r.Machine='HAND'; r.Firing_Route='Rammed'; }
         else if(r.Manufacturing_Method==='3D Printing'){
@@ -1873,7 +1866,8 @@ function renderPanel(){
         r.Machine='WASP';
       }
       r.Firing_Route=nextRoute;
-      if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not Ready';
+      if(nextRoute==='Unfired') r.Firing_Status='Not fired';
+      if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not fired';
       derive(r);
       r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');
       r.Updated_By=currentEditor();
@@ -2019,7 +2013,10 @@ async function exportExcel(){
     const av=String(a.Object_ID||''), bv=String(b.Object_ID||'');
     if(!av && bv) return 1;
     if(av && !bv) return -1;
-    return av.localeCompare(bv,undefined,{numeric:true,sensitivity:'case',caseFirst:'upper'});
+    // Keep all uppercase IDs together before lowercase IDs (A01, B01, a01, b01).
+    const rank = v => /^[A-Z]/.test(v)?0:/^[a-z]/.test(v)?1:2;
+    if(rank(av)!==rank(bv)) return rank(av)-rank(bv);
+    return av.localeCompare(bv,undefined,{numeric:true,sensitivity:'variant',caseFirst:'upper'});
   });
 
   let snapshot='';
