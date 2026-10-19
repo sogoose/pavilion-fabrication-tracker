@@ -443,13 +443,7 @@ header{gap:6px;padding:10px 16px}
         <button id="homeView">Axonometric</button>
       </div>
       <div class="viewerLegends"><div id="legend" class="legend"></div>
-  <section id="firingLegend" class="firing-legend" aria-label="Firing status legend">
-    <span class="firing-legend-title">FIRING <span class="firing-legend-sub">3D PRINTING / SELECTIVE</span></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-ready"></i>TO BE FIRED <b id="firingCountPlanned">0</b></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-progress"></i>IN KILN / COOLING <b id="firingCountActive">0</b></span>
-    <span class="firing-legend-item"><i class="firing-dot firing-done"></i>FIRED <b id="firingCountDone">0</b></span>
-    <span class="firing-legend-note">Edit firing details directly in a printed module.</span>
-  </section>
+  
       </div>
       <div id="dropzone" class="dropzone">Drop a Rhino .3dm file here</div>
     </section>
@@ -1815,9 +1809,6 @@ function updateAllUI(){
   const toFire=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status!=='Fired').length;
   const firingNow=rs.filter(r=>r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status)).length;
   const fired=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status==='Fired').length;
-  document.getElementById('firingCountPlanned').textContent=toFire;
-  document.getElementById('firingCountActive').textContent=firingNow;
-  document.getElementById('firingCountDone').textContent=fired;
   document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${toFire}</b>to fire</span><span class="kpi"><b>${firingNow}</b>firing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
