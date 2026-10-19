@@ -168,7 +168,7 @@
   color: #99968d;
   font: 17px/1 "Inter",sans-serif;
 }
-.wb-block[open] .wb-plus { transform: rotate(45deg); }
+.wb-block[open] .wb-plus { transform: none; }
 
 .wb-drawing {
   display: block;
@@ -527,7 +527,7 @@
 #workflowView .wp-island[open] .wp-title,
 #workflowView .wp-island[open] .wp-members,
 #workflowView .wp-island[open] .wp-meta { color:#977542; }
-#workflowView .wp-island[open] .wp-plus { transform:rotate(45deg); color:#977542; }
+#workflowView .wp-island[open] .wp-plus { transform:none; color:#977542; }
 #workflowView .wp-island-summary:hover .wp-title { color:#977542; }
 #workflowView .wp-description {
   padding: 3px 15px 13px 0;
