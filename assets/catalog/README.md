@@ -1,6 +1,6 @@
 # Pavilion Fabrication Catalogue — current-model-only PDF
 
-The Tracker exports an **A4 landscape catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional cover. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
+The Tracker exports an **A4 landscape catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional **two-part front matter**: first a labelled, colour-coded Rhino model showing Production Status, then a large Module Register. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
 
 ## Current model and historical records
 
@@ -20,18 +20,31 @@ The authoritative inventory is `assets/catalog/model-inventory.json`. GitHub Act
 
 ## PDF page layout
 
-The left-hand **main image** is the current module's isolated shaded Rhino 3D capture, displayed in a **107 mm-high viewport** instead of the old 89 mm viewport (approximately 20% taller). This image is the primary visual; it falls back to a photograph or axonometric G-code only when a 3D capture is unavailable.
+### Front matter — full-catalogue downloads only
 
-Below the image, the two former Rhino vector-line-art / axonometric slots now show up to **two uploaded site photographs**, newest first. The photos are fitted as high-resolution cropped thumbnails for better legibility. Empty slots show a vector G-code axonometric where available, or a small no-photo indication. The problematic Rhino edge-line-art preview has been removed entirely.
+**Page 1 / Production Status Map:** the currently loaded Rhino geometry is rendered together as one **orthographic axonometric**, with each module coloured using the same **Production Status palette and user-edited legend colours as the Tracker**. Small vector module ID tags sit at the projected object centres, and a large **Production Status / Key Map** displays the colour, status and total for Not Started, Queued, Printing, Printed and Failed. Total modules, 3D Printing and Rammed Earth counts sit beside the drawing.
 
-The right side retains the CAD-style **vector-data table** (method, machine, date, mix, infill, motor settings, production/drying/assembly status, firing date, temperature, duration in hours and kiln name). Below the visuals, **MATERIAL COMPOSITION / RECIPE** uses the existing Tracker **Material Details → Composition / quantity** field, not free-form notes. There is no separate Fabrication Note, Module Documentation, or Rhino GUID in the PDF. All module records fit within **one A4 landscape page**, without appendix sheets.
+**Page 2 / Module Register:** the module names are no longer crowded into tiny lines on the cover. Instead they appear on a dedicated, readable A4 register: ID, colour swatch, Production Status and abbreviated manufacturing method. Records sort with uppercase IDs first. The register supports 88 entries per page; very large models use further register pages.
 
-Headers, table borders, Latin-text labels and G-code vector toolpaths are native PDF vector geometry; rasterized shaded 3D captures and uploaded site photos remain photos. Selected Korean/non-Latin text may be rasterized at the individual field level due to the built-in PDF font.
+These two preliminary pages can be disabled using the checkbox in the PDF download dialog; individual-module PDFs never include them.
+
+### Module sheets — one landscape A4 per block
+
+- **Main left / 3D:** a roughly square, high-resolution shaded capture of the current Rhino module.
+- **Upper right / G-code:** an enlarged **53 × 73 mm 3D axonometric** of G1 machining/printing moves. The print geometry fits the panel instead of being shrunk by long nonprinting G0 travel moves. The drawing stays native PDF vector linework.
+- **Lower right / site photo 01:** one large photo frame, newest uploaded image first.
+- **Bottom left / site photo 02:** a secondary strip for the next uploaded photograph when it exists.
+
+The table on the right retains identity, method/machine, material, infill, production status, Fabrication Date, Drying/Assembly, printing parameters, Firing Date/Temperature/Duration and Kiln. In **06 / ADDITIONAL**, the report now includes compression force and G-code filename **but omits Updated By and Last Updated**.
+
+Below the media, **MATERIAL COMPOSITION / RECIPE** uses the existing Tracker **Material Details → Composition / quantity** field, not Fabrication Note. Module Documentation and Rhino GUID are excluded. Every module still fits onto exactly one page.
+
+Raster content is restricted to shaded 3D renders and actual photographs. Vector headers, table borders, English/Latin text, status swatches, module tags and G-code toolpaths remain sharp when zoomed. Unsupported non-Latin text may be rasterised at the individual field level.
 
 ## Download instructions
 
 1. In **02 / Tracker**, wait for the bundled Rhino model to finish loading.
-2. Choose **Catalogue PDF ↗** to export all currently modelled modules; you can also select **Uppercase IDs only**.
+2. Choose **Catalogue PDF ↗** to export all currently modelled modules (with optional **Production Status Map + Module Register** front matter); you can also select **Uppercase IDs only**.
 3. For one selected module, use **↗ Module PDF Sheet** in the side panel.
 4. The files download directly to the visitor's browser; no PDF is uploaded to Supabase.
 
