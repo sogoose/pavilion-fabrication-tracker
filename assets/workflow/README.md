@@ -14,7 +14,7 @@ The **01 / Workflow** page is a **compact, asymmetric architectural process diag
    - `firing.svg`
    - `assembly.svg`
 2. Edit it in Illustrator, Inkscape, or another vector editor.
-3. **Export as SVG**, preserving the filename. The current viewBox is `0 0 135 65`. You can replace the drawing entirely; maintaining this aspect ratio is helpful but not mandatory (the page uses `object-fit:contain`).
+3. **Export as SVG**, preserving the filename. Each main process now uses a **portrait, near-square 1:1.1 artboard**: `viewBox="0 -42 135 149"`, intrinsic size `135 × 149`. Its original horizontal drawing is centred within this new artboard **without nonuniform scaling or distortion**. If redrawing in Illustrator, use the same near-square portrait size and fill the extra vertical room as desired. The page displays SVGs with `object-fit:contain`.
 4. Replace only the SVG in GitHub, then Commit. GitHub Pages will publish the updated drawing. The website will load that file automatically.
 
 All eight illustrations are **separate vector files**, not code embedded inside `index.html`.
@@ -23,12 +23,16 @@ All eight illustrations are **separate vector files**, not code embedded inside 
 
 Two additional SVG files control the visible process links:
 
-- `arrows-desktop.svg`: soft Bézier arrows on the compact desktop board (viewBox 1100 × 1450)
+- `arrows-desktop.svg`: soft Bézier arrows on the near-square desktop board (**viewBox 1200 × 1320**, 1:1.1)
 - `arrows-mobile.svg`: independent curves for the narrow mobile layout (viewBox 360 × 1640)
 
 Drying has no number, icon, participant field or expandable detail: it is an inline label in `index.html`, positioned using `.wb-drying` in `board.css`. Curved arrows in these two SVG files now connect 3D Printing and Rammed Earth to Drying, then optionally Firing / Glazing or directly Assembly.
 
 Edit either in Illustrator and replace the same file on GitHub. You can move a chapter by changing `--x`, `--y`, `--w` in `board.css`; update the corresponding arrow endpoint to keep the connection aligned. The SVGs use arrowheads but no straight orthogonal connectors.
+
+The four detached support-team artboards now also use **1:1.1 portrait proportions**, `180 × 198` with `viewBox="0 -54 180 198"`. Stage artwork is centred in a taller `170 × 187`-pixel frame on desktop. Since the art geometry remains unchanged, Illustrator layers and stroke proportions stay editable and intact.
+
+Mobile keeps a long `360 × 1640` route map so that names and edit controls remain legible; the individual SVG artwork is still portrait. The mobile arrows are authored separately to match the taller images.
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
