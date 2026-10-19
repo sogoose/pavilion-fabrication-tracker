@@ -8,7 +8,7 @@ import {
   drawSheet as drawVectorSheet,
   drawStatusCover as drawVectorCover,
   drawRegisterPage as drawVectorRegister
-} from './vector-sheet.js?v=20261019-status-map-v1';
+} from './vector-sheet.js?v=20261019-connected-gcode-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
