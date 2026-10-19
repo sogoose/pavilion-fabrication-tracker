@@ -110,14 +110,14 @@
 /* Each stage is a small, captioned diagram — not a card. */
 /* Small process photographs, arranged around rather than inside workflow cards. */
 .wb-decorations { position:absolute; inset:0; pointer-events:none; z-index:1; }
-.wb-deco { position:absolute; display:block; width:var(--dw); height:auto; max-height:260px; object-fit:contain; opacity:.78; filter:saturate(.77); }
-.wb-deco-rammed-blocks { left:1%; top:525px; --dw:125px; transform:rotate(-8deg); }
-.wb-deco-rammed-block { right:1%; top:830px; --dw:102px; transform:rotate(8deg); }
-.wb-deco-rammed-mould { right:35%; top:710px; --dw:145px; transform:rotate(-4deg); }
-.wb-deco-hybrid { right:4%; top:1190px; --dw:118px; transform:rotate(6deg); }
-.wb-deco-robot { left:37%; top:800px; --dw:118px; transform:rotate(5deg); }
-.wb-deco-printer { left:2%; top:1080px; --dw:125px; transform:rotate(-5deg); }
-.wb-deco-printed-module { left:6%; top:1440px; --dw:135px; transform:rotate(-8deg); }
+.wb-deco { position:absolute; display:block; width:var(--dw); height:auto; max-height:156px; object-fit:contain; opacity:.78; filter:saturate(.77); }
+.wb-deco-rammed-blocks { left:1%; top:525px; --dw:75px; transform:rotate(-8deg); }
+.wb-deco-rammed-block { right:1%; top:830px; --dw:61.2px; transform:rotate(8deg); }
+.wb-deco-rammed-mould { right:35%; top:710px; --dw:87px; transform:rotate(-4deg); }
+.wb-deco-hybrid { right:4%; top:1190px; --dw:70.8px; transform:rotate(6deg); }
+.wb-deco-robot { left:37%; top:800px; --dw:70.8px; transform:rotate(5deg); }
+.wb-deco-printer { left:2%; top:1080px; --dw:75px; transform:rotate(-5deg); }
+.wb-deco-printed-module { left:6%; top:1440px; --dw:81px; transform:rotate(-8deg); }
 @media(max-width:760px) { .wb-decorations { display:none !important; } }
 .wb-board > .wb-block {
   position: absolute;
