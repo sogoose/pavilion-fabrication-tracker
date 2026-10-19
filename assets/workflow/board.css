@@ -410,7 +410,7 @@
 #workflowView .wb-mast h1,
 #workflowView .wb-board .wb-block .wb-name,
 #workflowView .wb-board .wb-phase strong {
-  font-family: "Fredoka", "Nunito", Arial, sans-serif !important;
+  font-family: "Manrope", "DM Sans", Arial, sans-serif !important;
   font-style: normal !important;
   font-weight: 600 !important;
 }
@@ -622,15 +622,15 @@
 
 
 /* ==== 2026 Process Archive refresh: rounded typography / translucent tags / dialog ==== */
-#workflowView.workflowScreen { font-family:"Nunito",Arial,sans-serif; }
+#workflowView.workflowScreen { font-family:"DM Sans",Arial,sans-serif; }
 #workflowView .wb-mast h1,
 #workflowView .wb-name,
 #workflowView .wb-phase strong,
 #workflowView .wb-drying,
 #workflowView .wp-title,
 #workflowView .wf-editor-heading strong {
-  font-family:"Fredoka","Nunito",Arial,sans-serif !important;
-  font-weight:500 !important;
+  font-family:"Manrope","DM Sans",Arial,sans-serif !important;
+  font-weight:600 !important;
   letter-spacing:-.025em;
 }
 #workflowView .wb-intro,
@@ -639,25 +639,25 @@
 #workflowView .wb-credits-names,
 #workflowView .wp-members,
 #workflowView .wp-description p {
-  font-family:"Nunito",Arial,sans-serif;
+  font-family:"DM Sans",Arial,sans-serif;
   font-size:max(12px,1em);
 }
 #workflowView .wb-preview .wb-drawing figcaption {
-  display:inline-flex;
+  display:inline-block;
   align-items:center;
   align-self:flex-start;
   max-width:100%;
   width:fit-content;
-  margin-top:12px;
-  padding:7px 10px;
-  background:rgba(246,235,210,.50);
-  border:1px solid rgba(177,154,113,.28);
-  border-radius:999px;
-  box-shadow:0 3px 12px rgba(71,57,31,.035);
+  margin-top:6px;
+  padding:4px 7px;
+  background:rgba(246,235,210,.38);
+  border:1px solid rgba(177,154,113,.26);
+  border-radius:9px;
+  box-shadow:none;
   -webkit-backdrop-filter:blur(6px);
   backdrop-filter:blur(6px);
-  font:400 9px/1.55 "IBM Plex Mono",monospace;
-  letter-spacing:-.015em;
+  font:400 8px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:-.02em;
   color:#766750;
   overflow-wrap:break-word;
   text-wrap:balance;
@@ -691,13 +691,13 @@
   max-height:min(92dvh,920px);
   margin:auto;
   border:1px solid #d1c7b3;
-  border-radius:26px;
+  border-radius:12px;
   padding:0;
   color:#292921;
   background:#faf8f1;
   box-shadow:0 28px 95px rgba(24,22,16,.25);
   overflow:auto;
-  font-family:"Nunito",Arial,sans-serif;
+  font-family:"DM Sans",Arial,sans-serif;
 }
 .wb-process-dialog::backdrop {
   background:rgba(32,30,25,.52);
@@ -711,11 +711,11 @@
   from { opacity:0; transform:translateY(12px) scale(.965); }
   to { opacity:1; transform:translateY(0) scale(1); }
 }
-.wb-process-shell { padding:20px clamp(17px,3vw,34px) 32px; }
+.wb-process-shell { position:relative; padding:22px clamp(17px,3vw,34px) 29px; }
 .wb-process-top {
-  display:flex; align-items:center; justify-content:space-between;
-  gap:14px; padding-bottom:15px;
-  margin-bottom:14px; border-bottom:1px solid #d9d3c5;
+  position:absolute;top:11px;right:11px;z-index:3;
+  display:flex;align-items:center;justify-content:flex-end;
+  border:0;padding:0;margin:0;
 }
 .wb-process-kicker,
 .wb-archive-overline,
@@ -730,10 +730,10 @@
 .wb-process-close {
   appearance:none; cursor:pointer;
   display:grid;place-items:center;
-  width:35px;height:35px;border-radius:50%;
-  padding:0; background:#f0ebdf; color:#5f5545;
-  border:1px solid #d6cfbf;
-  font:400 25px/1 "Nunito",sans-serif;
+  width:26px;height:26px;border-radius:7px;
+  padding:0; background:#f5f0e6; color:#81796d;
+  border:1px solid #ded5c8;
+  font:400 17px/1 "DM Sans",sans-serif;
 }
 .wb-process-close:hover { background:#e9dec8; }
 .wb-process-columns {
@@ -746,9 +746,9 @@
   display:flex; flex-direction:column;
   min-height:520px;
   border:1px solid #cfc0a2;
-  border-radius:clamp(115px,16vw,180px) clamp(115px,16vw,180px) 23px 23px;
+  border-radius:20px;
   background:linear-gradient(170deg,#f7f3e9 0%,#fffdf8 58%,#f7f0e1 100%);
-  box-shadow:0 12px 28px rgba(95,73,38,.09),inset 0 0 0 7px rgba(255,255,255,.65);
+  box-shadow:0 10px 24px rgba(95,73,38,.06),inset 0 0 0 5px rgba(255,255,255,.55);
   padding:27px clamp(18px,2vw,29px) 28px;
 }
 .wb-tarot-meta { display:flex;gap:8px;justify-content:space-between;align-items:center; }
@@ -764,14 +764,14 @@
   filter:grayscale(1);
 }
 .wb-card-title {
-  font:500 clamp(30px,3vw,42px)/1.1 "Fredoka","Nunito",sans-serif;
+  font:600 clamp(27px,2.8vw,37px)/1.17 "Manrope","DM Sans",sans-serif;
   letter-spacing:-.035em;
   text-align:center;
   margin:3px 0 11px;
 }
 .wb-card-tag {display:flex;justify-content:center; flex-wrap:wrap; margin:0 0 15px;}
 .wb-card-tag span {
-  max-width:100%;padding:6px 12px;border-radius:999px;
+  max-width:100%;padding:5px 9px;border-radius:8px;
   border:1px solid #d9c9a9;background:rgba(237,218,183,.34);
   font:400 10px/1.5 "IBM Plex Mono",monospace;
   color:#806e51;
@@ -779,7 +779,7 @@
 }
 .wb-card-description {
   margin:0 auto 16px;max-width:360px;
-  font:400 15px/1.68 "Nunito",Arial,sans-serif;
+  font:400 15px/1.68 "DM Sans",Arial,sans-serif;
   color:#59554d;text-align:center;
 }
 .wb-card-credits {
@@ -788,18 +788,18 @@
 }
 .wb-card-credit { display:grid;grid-template-columns:minmax(90px,1fr) 1.6fr;gap:8px;align-items:baseline; }
 .wb-card-credit-label { font-size:9px; }
-.wb-card-credit-name { font:600 13px/1.45 "Nunito",sans-serif;color:#423e36;overflow-wrap:anywhere; }
+.wb-card-credit-name { font:600 13px/1.45 "DM Sans",sans-serif;color:#423e36;overflow-wrap:anywhere; }
 .wb-card-no-credits {font-size:12px;color:#999188;}
 .wb-archive {min-width:0;padding:14px 0 0;display:flex;flex-direction:column;}
-.wb-archive-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.wb-archive-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding-right:28px;}
 .wb-archive h3 {
-  font:500 25px/1.15 "Fredoka",sans-serif;
+  font:600 23px/1.2 "Manrope",sans-serif;
   letter-spacing:-.02em;margin:4px 0 0;color:#353229;
 }
 .wb-archive-edit {
   border:1px solid #d0c6b5;background:#fffaf2;
-  border-radius:999px;padding:9px 12px;
-  font:600 12px/1.3 "Nunito",sans-serif;color:#6e5c43;
+  border-radius:8px;padding:8px 11px;
+  font:600 12px/1.3 "DM Sans",sans-serif;color:#6e5c43;
   white-space:nowrap;cursor:pointer;
 }
 .wb-archive-edit:hover {background:#f0e5d0;}
@@ -809,12 +809,12 @@
   width:100%;
   border:1px solid #e3dfd5;
   background:#f2eee5;
-  border-radius:16px;
+  border-radius:10px;
   overflow:hidden;
   display:grid;place-items:center;
 }
 .wb-gallery-featured {width:100%;height:100%;object-fit:contain;display:block;}
-.wb-gallery-empty {max-width:290px;padding:20px;text-align:center;font:400 14px/1.65 "Nunito",sans-serif;color:#8e8577;}
+.wb-gallery-empty {max-width:290px;padding:20px;text-align:center;font:400 14px/1.65 "DM Sans",sans-serif;color:#8e8577;}
 .wb-gallery-controls {display:flex;justify-content:space-between;align-items:center;gap:10px;margin:9px 0;}
 .wb-gallery-controls button {
   border:1px solid #d7d1c5;background:#faf6ec;
@@ -824,7 +824,7 @@
 .wb-gallery-thumbs {display:flex;gap:8px;flex-wrap:wrap;min-height:53px;align-items:flex-start;}
 .wb-gallery-thumb {
   display:block;width:65px;height:52px;border:1px solid #dcd4c6;
-  padding:3px;background:#f9f8f4;border-radius:8px;overflow:hidden;cursor:pointer;
+  padding:3px;background:#f9f8f4;border-radius:6px;overflow:hidden;cursor:pointer;
 }
 .wb-gallery-thumb.is-active {border-color:#a27f49;box-shadow:0 0 0 1px #a27f49;}
 .wb-gallery-thumb img {width:100%;height:100%;object-fit:contain;}
@@ -836,9 +836,9 @@
 .wb-attachment {
   display:flex;align-items:center;justify-content:space-between;gap:8px;
   background:#f7f3e8;border:1px solid #dcd1c0;
-  padding:12px 13px;border-radius:11px;
+  padding:12px 13px;border-radius:8px;
   text-decoration:none;color:#595140;
-  font:600 13px/1.4 "Nunito",sans-serif;
+  font:600 13px/1.4 "DM Sans",sans-serif;
   overflow-wrap:anywhere;
 }
 .wb-attachment:hover {background:#ece2cd;border-color:#c7af87;}
@@ -848,23 +848,23 @@
 .wf-edit-dialog {
   width:min(640px,calc(100vw - 26px));
   max-height:90dvh;
-  border-radius:17px;
-  font-family:"Nunito",sans-serif;
+  border-radius:10px;
+  font-family:"DM Sans",sans-serif;
 }
-.wf-editor-heading strong {font-family:"Fredoka","Nunito",sans-serif;font-size:21px;}
-.wf-editor-field input,.wf-editor-field textarea {border-radius:9px;font-family:"Nunito",sans-serif;font-size:13px;}
+.wf-editor-heading strong {font-family:"Manrope","DM Sans",sans-serif;font-size:21px;}
+.wf-editor-field input,.wf-editor-field textarea {border-radius:9px;font-family:"DM Sans",sans-serif;font-size:13px;}
 .wf-photo-uploader input[type=file] {padding:10px;cursor:pointer;}
 .wf-photo-help {margin:-5px 0 0;color:#827769;font-size:12px;line-height:1.55;}
 .wf-upload-photos {border:1px solid #c2b39a;border-radius:10px;padding:10px 14px;background:#f5ead4;color:#594a33;cursor:pointer;font-weight:600;}
 .wf-upload-photos:disabled {opacity:.5;cursor:wait;}
 @media(max-width:760px) {
-  .wb-process-dialog {width:calc(100vw - 18px);max-height:94dvh;border-radius:18px;}
+  .wb-process-dialog {width:calc(100vw - 18px);max-height:94dvh;border-radius:10px;}
   .wb-process-shell {padding:15px;}
   .wb-process-columns {grid-template-columns:1fr;gap:21px;}
-  .wb-tarot {min-height:0;border-radius:120px 120px 19px 19px;padding:23px 20px 24px;}
+  .wb-tarot {min-height:0;border-radius:16px;padding:23px 20px 24px;}
   .wb-card-art {height:130px;margin:8px auto 5px;}
   .wb-card-art img {max-height:126px;}
-  .wb-card-title {font-size:31px;}
+  .wb-card-title {font-size:29px;}
   .wb-archive {padding:0 1px 7px;}
   .wb-archive h3 {font-size:22px;}
   .wb-gallery-stage {aspect-ratio:1.3 / 1;}
@@ -876,4 +876,11 @@
 }
 @media(prefers-reduced-motion:reduce) {
   .wb-process-dialog[open] {animation:none;}
+}
+
+/* Caption spacing: keep the G-code and Material tags clear of the Fabrication banner. */
+#workflowView .wb-gcode .wb-drawing { width:min(100%,155px); }
+#workflowView .wb-material-layout .wb-drawing { width:min(100%,155px);flex-basis:155px; }
+@media(min-width:851px) {
+  #workflowView .wb-phase { top:606px; }
 }
