@@ -30,17 +30,13 @@ Edit either in Illustrator and replace the same file on GitHub. You can move a c
 
 The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
 
-## Work-package names and detached SVG islands
+## Process credits and compact support studies
 
-There is **one Workflow canvas**, not a second Work Packages chapter.
+The page remains **one Workflow page**. Eight main processes are connected by editable SVG Bézier arrows; all process indices are deliberately concise: `01`, `02`, `03`, `04`, `05A`, `05B`, `06`, `07`.
 
-- The eight arrow-connected production/process stages include participant credits directly in each clickable `<summary>`.
-- Four smaller, disconnected study/support nodes are scattered **inside the same `wb-board`**. They have no arrows and no separate section heading. Each can be opened to read the team's remit and related links.
-- Detached, Illustrator-editable placeholder SVGs: `computational.svg`, `construction.svg`, `environment.svg`, `hrc.svg`. Swap any of these files without changing the page code.
-- To reposition these four islands: modify `--wp-x`, `--wp-y`, `--wp-w` in `board.css` (desktop and mobile media queries). The process node positions use `--x`, `--y`, `--w`.
-- Only arrow-connected fabrication steps are included in `arrows-desktop.svg` and `arrows-mobile.svg`. Side islands must remain unconnected.
+**All names are hidden until a process or team is clicked.** A main process reveals its team credits alongside notes and files. The four support/research teams are quietly collected **beneath the process diagram**, without an extra section heading or connecting arrows; their names, descriptions and links are visible only upon expansion.
 
-### Participant roster
+### Process roster
 
 - Spatial Design — Yassmina
 - Structural Check — Rojin, Ruben, Wenxiao
@@ -52,16 +48,14 @@ There is **one Workflow canvas**, not a second Work Packages chapter.
 - Firing — Hongyuan, Yishan
 - Assembly — all students
 
-### Independent teams (no arrows)
+### Detached support teams
 
-- Computational Workflow / Integration — Sohyun
-- Construction Management — Niels, Donna
-- Environmental Monitoring — Sonya, Gergana
-- HRC for Assembly — Suzanne, Parjanya, Matthias, Jin
+- Computational Workflow — Sohyun (`computational.svg`)
+- Construction Management — Niels, Donna (`construction.svg`)
+- Environmental Monitoring — Sonya, Gergana (`environment.svg`)
+- HRC for Assembly — Suzanne, Parjanya, Matthias, Jin (`hrc.svg`)
 
-Standalone Printing/Robotic Setups and unassigned Computer Vision / Machine Learning teams are intentionally **not shown as islands**. Equipment experts are credited within 3D Printing instead.
-
-To edit names, descriptions, or links, modify the Workflow HTML in `index.html`. No database schema or Tracker record migration is needed. The original production data, module attachments, and status tracking stay inside the Tracker.
+SVGs are editable separately in Illustrator; these four are placeholders intended for replacement. To adjust their grouped layout, edit `.wp-cluster` in `board.css`. To edit credits, descriptions or links, edit the Workflow HTML in `index.html`. The existing 3D Tracker database and its records are unaffected.
 
 ## Edit the layout or wording
 
