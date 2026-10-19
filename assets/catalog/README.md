@@ -1,44 +1,52 @@
-# Fabrication Catalogue — high-resolution vector PDF
+# Pavilion Fabrication Catalogue — current-model-only PDF
 
-The Tracker exports **A4 landscape CAD-style PDFs** with exactly **one page per module**. A summary cover page is optional in full-catalogue mode. You can export **all modules**, **uppercase-leading IDs only**, or **one selected module**. No overflow/appendix pages are produced.
+The Tracker exports an **A4 landscape catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional cover. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
 
-## How to export
+## Current model and historical records
 
-In **02 / Tracker**, use **Catalogue PDF ↗** to download every module or select a module and use **↗ Module PDF Sheet** for a single A4 sheet. The main visual defaults to photo → shaded 3D model → 3D G-code; the dialog can prioritize a different main view. The *two smaller axonometric panels* are always included on every module sheet:
-- **3D / Rhino axonometric:** linework reconstructed from Rhino render meshes and drawn as vector lines when geometry exists. If edges cannot be reconstructed but 3D raster preview exists, that preview is used.
-- **G-code / 3D axonometric:** projected G0/G1 toolpath with X, Y and Z coordinates, drawn as vector PDF lines, not an XY top view. Travel lines are lighter.
+The published Rhino file was inventoried via GitHub Actions. At the cleanup on 19 October 2026:
+- `model.3dm` contains **88 mesh modules** (and 4 curve objects).
+- The active Supabase Tracker contained 163 entries. **75 outdated module rows** whose Rhino GUIDs were missing from the actual 3DM were backed up and then retired.
+- **88 live entries** remain in `public.pavilion_parts`.
+- The 75 former rows are recoverable in the private `public.pavilion_retired_parts_backup` table with the source model hash; this backup is not exposed to public/anonymous visitors.
+- All 6 site photos and all 18 G-code attachments belong to active modules and were preserved.
+- Historical event logs are retained for auditing.
 
-The larger photo area remains in the top-left. When the module has no photograph it shows the isolated shaded Rhino model or G-code axonometric as a fallback. Missing source files show a clear placeholder rather than losing the module page.
+The authoritative inventory is `assets/catalog/model-inventory.json`. GitHub Actions automatically rebuilds it when `model.3dm` changes, using `scripts/build_model_inventory.py`.
 
-## One-page CAD table
+**PDF safety:** `assets/catalog/catalog.js` filters freshly downloaded Supabase rows by exact Rhino GUIDs from `state.parts` (the loaded 3D mesh objects) **before** generating any sheet. A stale cloud or browser-cache entry cannot produce a PDF page. If the model fails to load, the export displays an error rather than incorrectly returning all old records or performing any cleanup. PDF export is entirely read-only.
 
-The table uses smaller vector type and includes module ID, module number, level, sequence, assignee, material, weight, manufacturing method, machine, infill, density, **Fabrication Date**, statuses, motor speed, manual adjustment, air pressure, first-layer height, layer height, duration, compression force, **Firing performed (yes/no), Firing Date and Peak Temperature**, G-code filename, and updated-by metadata.
+**Tracker cache:** once a valid Rhino model loads, local records from older model versions whose GUIDs are not in the current geometry are removed from that browser cache. A failed model load never purges local records.
 
-The **MATERIAL COMPOSITION / RECIPE** panel displays the Tracker's existing **Material Details → Composition / quantity** field (`material_details`), *not* the free-form fabrication note. Long recipes are fitted into the fixed allotted space; extreme text length may require smaller lettering or visual truncation to honor the one-page limit. Fabrication notes, separate "Module Documentation" text, and Rhino GUID are deliberately excluded from the PDF.
+## PDF page layout
 
-## Vector quality
+The left-hand **main image** is the current module's isolated shaded Rhino 3D capture, displayed in a **107 mm-high viewport** instead of the old 89 mm viewport (approximately 20% taller). This image is the primary visual; it falls back to a photograph or axonometric G-code only when a 3D capture is unavailable.
 
-PDF headers, CAD table text (Latin text), lines, borders, Rhino outline segments, G-code projections and cover index are **native PDF vectors**. They remain sharp when zooming. Uploaded photographs and shaded Rhino previews are intentionally embedded as high-quality JPEGs; those source images cannot become vectors. Non-Latin field values (such as Korean text) are rasterized **individually at elevated resolution** when the standard built-in PDF font lacks the glyphs, so they remain readable while the table and the rest of the page retain vector properties.
+Below the image, the two former Rhino vector-line-art / axonometric slots now show up to **two uploaded site photographs**, newest first. The photos are fitted as high-resolution cropped thumbnails for better legibility. Empty slots show a vector G-code axonometric where available, or a small no-photo indication. The problematic Rhino edge-line-art preview has been removed entirely.
 
-## Sorting
+The right side retains the CAD-style **vector-data table** (method, machine, date, mix, infill, motor settings, production/drying/assembly status, firing details). Below the visuals, **MATERIAL COMPOSITION / RECIPE** uses the existing Tracker **Material Details → Composition / quantity** field, not free-form notes. There is no separate Fabrication Note, Module Documentation, or Rhino GUID in the PDF. All module records fit within **one A4 landscape page**, without appendix sheets.
 
-Both PDF catalogue and Excel export place **uppercase-leading IDs first**, in natural alphanumeric order. Example: `A01`, `A02`, `B01`, `a01`, `b01`. IDs remain unchanged in the database.
+Headers, table borders, Latin-text labels and G-code vector toolpaths are native PDF vector geometry; rasterized shaded 3D captures and uploaded site photos remain photos. Selected Korean/non-Latin text may be rasterized at the individual field level due to the built-in PDF font.
 
-## Website / database
+## Download instructions
 
-The Tracker has a shared **Fabrication Date** field of type `date` (`pavilion_parts.fabrication_date`), separate from Firing Date; blank dates are sent as SQL `NULL`. Firing inputs now show only **Firing performed?** (`Firing_Status`: Not fired/Fired), **Firing date**, and **Peak temperature (°C)**. The previous Unfired / To Be Fired / Rammed route selection remains. Older columns (kiln, batch, program, shrinkage etc.) are preserved in Supabase for historical integrity, but hidden from the simplified form and catalogue.
+1. In **02 / Tracker**, wait for the bundled Rhino model to finish loading.
+2. Choose **Catalogue PDF ↗** to export all currently modelled modules; you can also select **Uppercase IDs only**.
+3. For one selected module, use **↗ Module PDF Sheet** in the side panel.
+4. The files download directly to the visitor's browser; no PDF is uploaded to Supabase.
 
-The PDF data source is the current shared Supabase records, with the local Rhino model as the source of the isolated geometry. No data is modified by PDF export. Existing shared editing, photo uploads, G-code storage and Excel tools remain intact.
+Uppercase ID records sort first (A01, B01, ... followed by a01, ...). IDs themselves are not renamed.
 
-## Code
+## Source files
 
-- `assets/catalog/catalog.js` — UI dialog, shared data/attachment loading and PDF assembly.
-- `assets/catalog/vector-sheet.js` — **native vector PDF** sheet/cover, G-code 3D motion parser and Rhino edge projection.
-- `assets/catalog/catalog.css` — PDF-export interface.
-- `index.html` — Tracker input fields and download entrypoints.
-- `supabase/migrations/20261019_fabrication_date.sql` — schema addition.
-- Library: jsPDF UMD (client-side).
+- `assets/catalog/catalog.js` — catalogue dialog, current-model-only record gathering, site photo selection, single-module 3D capture, PDF download.
+- `assets/catalog/vector-sheet.js` — one-page CAD-style vector PDF layout, 3D G-code parser/projection and high-resolution photo inserts.
+- `assets/catalog/catalog.css` — dialog controls.
+- `assets/catalog/model-inventory.json` — trusted current source geometry manifest, generated by CI.
+- `scripts/build_model_inventory.py` and `.github/workflows/model-inventory.yml` — automatic Rhino manifest updates.
+- `supabase/migrations/20261019_retired_model_parts_backup.sql` — private archive table used to preserve deleted records.
+- `index.html` — PDF controls and Tracker’s current-model cache filtering.
 
-## Technical limitations
+## Known limits
 
-G-code projection understands linear **G0/G1**, relative/absolute positioning and changes to XYZ, but does not implement G2/G3 arcs, extruder semantics or robot-specific kinematics. Preview is documentation, not CNC validation. The parser processes the first 8 MB of uploaded G-code. Dense meshes/path files are reduced to a reasonable count of segments to keep very large catalogues printable. The PDF generation indicator can take several minutes for all 163 modules; selecting a single module is a faster way to verify layout.
+The 3D toolpath parser supports linear G0/G1 with XYZ, relative/absolute coordinates and metric/inch changes. It is not robot-controller simulation or G2/G3 arc support. Very long paths are downsampled. A multi-module export can still take time because each model is rendered individually. If a Rhino file is deliberately replaced, catalogue pages always follow the *newly loaded* geometry; retire additional legacy database rows only after validating the new model inventory and making a new backup.
