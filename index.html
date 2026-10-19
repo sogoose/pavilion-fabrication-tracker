@@ -785,6 +785,9 @@ function toDbRecord(r){
   for(const [app,db] of Object.entries(dbMap)){
     let v=r?.[app] ?? null;
     if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
+    // PostgreSQL DATE rejects an empty string. Unsupplied firing dates are SQL NULL.
+    // This applies to individual autosaves and bulk/cloud sync through toDbRecord().
+    if(app==='Firing_Date') v = String(v ?? '').trim() || null;
     if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
     out[db]=v;
   }
