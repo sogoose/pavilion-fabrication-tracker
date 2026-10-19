@@ -169,22 +169,112 @@ export function parseGcode3D(text) {
   }
   return paths;
 }
-export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=9000){
-  if(!paths?.length)return false;
-  // Plot only extrusion/feed paths when available. A distant G0 approach
-  // used to dominate the bounds and reduce the printed geometry to a dot.
+// Representative, continuous printing contours for a *legible* compact 3D view.
+// IMPORTANT: Never subsample individual line segments. Doing so turns continuous
+// toolpaths into the disconnected black dashes visible in older PDF exports.
+function toolpathRuns(paths,select=null) {
+  const result=[];
+  let run=null;
+  const flush=()=>{
+    if(run&&run.length>1)result.push(run);
+    run=null;
+  };
+  let previousIndex=-2;
+  const distance=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+  for(let i=0;i<paths.length;i++){
+    const seg=paths[i];
+    if(seg.travel||(select&&!select(i,seg))){flush();continue;}
+    if(!seg.a.every(Number.isFinite)||!seg.b.every(Number.isFinite)){flush();continue;}
+    const continuous=run&&previousIndex===i-1&&distance(run[run.length-1],seg.a)<.03;
+    if(!continuous){flush();run=[seg.a];}
+    run.push(seg.b);
+    previousIndex=i;
+  }
+  flush();
+  return result;
+}
+function reducedToolpathRuns(paths,maxSegments=6500) {
   const work=paths.some(s=>!s.travel)?paths.filter(s=>!s.travel):paths;
-  const segs=sample(work,maxSegments),vertices=[];
-  for(const segment of segs)vertices.push(iso(segment.a),iso(segment.b));
+  if(!work.length)return [];
+  const xs=[],ys=[],zs=[];
+  for(let i=0;i<work.length;i+=Math.max(1,Math.floor(work.length/4000))){
+    xs.push(work[i].a[0],work[i].b[0]);
+    ys.push(work[i].a[1],work[i].b[1]);
+    zs.push(work[i].a[2],work[i].b[2]);
+  }
+  const zmin=Math.min(...zs),zmax=Math.max(...zs),height=zmax-zmin;
+  const diag=Math.hypot(Math.max(...xs)-Math.min(...xs),
+    Math.max(...ys)-Math.min(...ys),height);
+  let runs=toolpathRuns(work);
+  let usedLayerSelection=false;
+  // Dense clay prints may contain tens of thousands of G1 micro-segments.
+  // Show complete representative Z bands, rather than all overlapping layers.
+  if(work.length>maxSegments*1.55 && height>Math.max(.8,diag*.012)){
+    const count=11;
+    const centres=Array.from({length:count},(_,i)=>zmin+
+      (height*i/(count-1)));
+    for(const widthFactor of [.015,.032]){
+      const halfWidth=Math.max(.18,height*widthFactor);
+      const chosen=toolpathRuns(work,(_,seg)=>{
+        const mid=(seg.a[2]+seg.b[2])*.5;
+        return centres.some(z=>Math.abs(mid-z)<=halfWidth);
+      });
+      const segments=chosen.reduce((sum,points)=>sum+points.length-1,0);
+      const meaningful=chosen.filter(points=>points.length>=4);
+      const meaningfulEdges=meaningful.reduce((sum,points)=>sum+points.length-1,0);
+      if(segments>=Math.min(160,maxSegments*.06)&&meaningfulEdges>=segments*.45){
+        runs=chosen;
+        usedLayerSelection=true;
+        break;
+      }
+    }
+  }
+  if(!runs.length)return [];
+  // Remove isolated infill specks ONLY when a substantial number of connected
+  // contours remains. Never hide genuinely short jobs.
+  if(runs.length>30) {
+    const substantive=runs.filter(points=>points.length>=4);
+    const totalSubstantive=substantive.reduce((sum,p)=>sum+p.length-1,0);
+    if(substantive.length && totalSubstantive>=Math.max(80,maxSegments*.2)){
+      runs=substantive;
+    }
+  }
+  // Preserve links inside *every* selected path: compress by joining adjacent
+  // vertices, not by skipping and drawing scattered original segments.
+  const totalEdges=runs.reduce((sum,p)=>sum+p.length-1,0);
+  const stride=Math.max(1,Math.ceil(totalEdges/maxSegments));
+  const cleaned=[];
+  for(const run of runs){
+    const simplified=[run[0]];
+    for(let i=stride;i<run.length-1;i+=stride)simplified.push(run[i]);
+    simplified.push(run[run.length-1]);
+    // Suppress minuscule isolated strokes when they dominate the view.
+    if(totalEdges>maxSegments && run.length<3 &&
+       Math.hypot(...run[0].map((v,i)=>v-run.at(-1)[i]))<diag*.006)continue;
+    if(simplified.length>=2)cleaned.push(simplified);
+  }
+  // An unfiltered small file still retains all its original toolpath edges.
+  return cleaned;
+}
+export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=6500){
+  if(!paths?.length)return false;
+  const runs=reducedToolpathRuns(paths,maxSegments);
+  if(!runs.length)return false;
+  const vertices=[];
+  for(const run of runs)for(const point of run)vertices.push(iso(point));
   const fit=viewport(vertices,x,y,w,h);
   if(!fit)return false;
-  pdf.setDrawColor(44,53,46);
-  pdf.setLineWidth(.11);
-  for(const segment of segs){
-    const a=fit(iso(segment.a)),b=fit(iso(segment.b));
-    pdf.line(a[0],a[1],b[0],b[1]);
+  pdf.setDrawColor(48,56,49);
+  pdf.setLineWidth(.12);
+  let count=0;
+  for(const run of runs){
+    for(let i=1;i<run.length;i++){
+      const a=fit(iso(run[i-1])),b=fit(iso(run[i]));
+      pdf.line(a[0],a[1],b[0],b[1]);
+      count++;
+    }
   }
-  return true;
+  return count>0;
 }
 function table(pdf,r){
   const x=175,w=112,half=54;
@@ -328,40 +418,20 @@ function drawStatusKeymap(pdf,entries,palette,x=224,y=53,w=63){
 }
 function placedLabels(pdf,positions,x,y,w,h,palette){
   if(!positions?.length)return;
-  const used=[];
-  const bounds={x,y,w,h};
-  const ordered=[...positions].sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
-  const candidates=[[0,0],[4,0],[-4,0],[0,4.5],[0,-4.5],
-    [7,4],[-7,-4],[8,-6],[-8,6],[13,0],[-13,0],
-    [0,9],[0,-9],[12,9],[-12,-9],[-12,9],[12,-9],
-    [18,4],[-18,-4],[18,-10],[-18,10],[0,15],[0,-15]];
-  for(const point of ordered){
+  // Place plain module names directly on their projected Rhino coordinates.
+  // No white box, colour swatch, leader line or collision displacement.
+  pdf.setFont('helvetica','bold');
+  pdf.setFontSize(5.7);
+  pdf.setTextColor(27,32,29);
+  for(const point of positions) {
     if(!Number.isFinite(point.u)||!Number.isFinite(point.v))continue;
     const id=present(point.id).slice(0,12);
-    pdf.setFont('helvetica','bold');pdf.setFontSize(5.7);
-    const pw=Math.max(7,pdf.getTextWidth(id)+4.5),ph=4.2;
-    const anchorX=x+point.u*w,anchorY=y+point.v*h;
-    let target=null;
-    for(const [dx,dy] of candidates) {
-      const tx=Math.max(bounds.x+1,Math.min(bounds.x+w-pw-1,anchorX-pw/2+dx));
-      const ty=Math.max(bounds.y+1,Math.min(bounds.y+h-ph-1,anchorY-ph/2+dy));
-      const hit=used.some(b=>tx<b.x+b.w+1&&tx+pw+1>b.x&&ty<b.y+b.h+1&&ty+ph+1>b.y);
-      if(!hit){target={x:tx,y:ty,w:pw,h:ph};break;}
-    }
-    if(!target)target={
-      x:Math.max(bounds.x+1,Math.min(bounds.x+w-pw-1,anchorX-pw/2)),
-      y:Math.max(bounds.y+1,Math.min(bounds.y+h-ph-1,anchorY-ph/2)),
-      w:pw,h:ph
-    };
-    used.push(target);
-    const xc=target.x+pw/2,yc=target.y+ph/2;
-    if(Math.hypot(xc-anchorX,yc-anchorY)>2.6)
-      stroke(pdf,anchorX,anchorY,xc,yc,[109,113,103],.09);
-    bg(pdf,target.x,target.y,pw,ph,[253,253,250]);
-    swatch(pdf,target.x+.65,target.y+.98,point.status,palette,1.7,2);
-    print(pdf,id,target.x+3.25,target.y+2.98,pw-3.55,5.7,true,ink);
+    const px=Math.max(x+1,Math.min(x+w-1,x+point.u*w));
+    const py=Math.max(y+2,Math.min(y+h-1,y+point.v*h));
+    pdf.text(id,px,py,{align:'center',baseline:'middle'});
   }
 }
+
 export function drawStatusCover(pdf,entries,overview,{palette={}}={}){
   bg(pdf,0,0,PW,PH,[252,252,249]);
   label(pdf,'TU DELFT  /  SOIL-BASED PAVILION',10,11);
