@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 1370" fill="none">
+<title>Curved connections — Overall Workflow mobile</title>
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0.5 0.5L6 3.5L0.5 6.5" fill="none" stroke="#aaa79e" stroke-width="1.1" stroke-linejoin="round"/></marker></defs>
+<g stroke="#b8b5aa" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" opacity=".96">
+<path d="M157 124 C178 87 205 81 224 123" marker-end="url(#arrow)"/>
+<path d="M250 180 C260 223 159 198 132 269" marker-end="url(#arrow)"/>
+<path d="M310 190 C350 223 316 258 283 281" marker-end="url(#arrow)"/>
+<path d="M99 404 C53 459 69 535 95 609" marker-end="url(#arrow)"/>
+<path d="M233 432 C225 506 168 536 141 628" marker-end="url(#arrow)"/>
+<path d="M306 430 C330 489 311 547 295 646" marker-end="url(#arrow)"/>
+<path d="M86 778 C77 830 98 857 98 917" marker-end="url(#arrow)" stroke-dasharray="3 6"/>
+<path d="M155 771 C242 828 264 946 263 1023" marker-end="url(#arrow)"/>
+<path d="M296 792 C329 866 318 952 285 1022" marker-end="url(#arrow)"/>
+<path d="M130 1054 C191 1104 229 1083 250 1090" marker-end="url(#arrow)" stroke-dasharray="3 6"/>
+</g>
+</svg>
