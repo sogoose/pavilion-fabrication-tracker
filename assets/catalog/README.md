@@ -24,7 +24,7 @@ The left-hand **main image** is the current module's isolated shaded Rhino 3D ca
 
 Below the image, the two former Rhino vector-line-art / axonometric slots now show up to **two uploaded site photographs**, newest first. The photos are fitted as high-resolution cropped thumbnails for better legibility. Empty slots show a vector G-code axonometric where available, or a small no-photo indication. The problematic Rhino edge-line-art preview has been removed entirely.
 
-The right side retains the CAD-style **vector-data table** (method, machine, date, mix, infill, motor settings, production/drying/assembly status, firing details). Below the visuals, **MATERIAL COMPOSITION / RECIPE** uses the existing Tracker **Material Details → Composition / quantity** field, not free-form notes. There is no separate Fabrication Note, Module Documentation, or Rhino GUID in the PDF. All module records fit within **one A4 landscape page**, without appendix sheets.
+The right side retains the CAD-style **vector-data table** (method, machine, date, mix, infill, motor settings, production/drying/assembly status, firing date, temperature, duration in hours and kiln name). Below the visuals, **MATERIAL COMPOSITION / RECIPE** uses the existing Tracker **Material Details → Composition / quantity** field, not free-form notes. There is no separate Fabrication Note, Module Documentation, or Rhino GUID in the PDF. All module records fit within **one A4 landscape page**, without appendix sheets.
 
 Headers, table borders, Latin-text labels and G-code vector toolpaths are native PDF vector geometry; rasterized shaded 3D captures and uploaded site photos remain photos. Selected Korean/non-Latin text may be rasterized at the individual field level due to the built-in PDF font.
 
