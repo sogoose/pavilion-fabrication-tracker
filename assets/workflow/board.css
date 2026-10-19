@@ -1161,7 +1161,8 @@
   stroke-width:1.05px;
   fill:#fff;
   vector-effect:non-scaling-stroke;
-  stroke-linejoin:miter;
+  stroke-linejoin:round;
+  stroke-linecap:round;
   transition:stroke .2s ease;
 }
 #workflowView .wb-block:hover .wb-stage-frame,
