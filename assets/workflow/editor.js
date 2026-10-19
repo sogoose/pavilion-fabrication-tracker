@@ -1,5 +1,4 @@
-/* Owner-only Workflow editor. Read access stays public; write access is RLS-protected.
-   No privileged keys or email allowlists are shipped to the browser. */
+/* Workflow password editing. Read access remains public. Writes use the private Edge API. */
 (() => {
   const root = document.getElementById('workflowView');
   const config = window.PAVILION_CONFIG || {};
@@ -7,14 +6,39 @@
 
   const PROJECT = config.projectId || 'pavilion-2026';
   const client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'pavilion-workflow-auth' }
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
   });
   const sections = new Map();
   const originals = new Map();
   const published = new Map();
-  let currentUser = null;
   let canEdit = false;
   let editingId = null;
+  const SESSION_KEY = 'pavilion-workflow-editor-session';
+  let editorToken = null;
+  try { editorToken = sessionStorage.getItem(SESSION_KEY); } catch {}
+  const setSession = value => {
+    editorToken = value || null;
+    try {
+      if (editorToken) sessionStorage.setItem(SESSION_KEY, editorToken);
+      else sessionStorage.removeItem(SESSION_KEY);
+    } catch {}
+  };
+  const requestEditor = async (action, payload = {}) => {
+    const url = config.supabaseUrl.replace(/\/$/, '') + '/functions/v1/pavilion-workflow-editor';
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: config.supabaseAnonKey },
+      body: JSON.stringify({ action, ...payload })
+    });
+    let data = {};
+    try { data = await response.json(); } catch {}
+    if (!response.ok || !data.ok) {
+      const error = new Error(data.error || 'Workflow editor unavailable.');
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  };
 
   const safeText = value => String(value == null ? '' : value);
   const trimLimit = (value, max) => safeText(value).trim().slice(0, max);
@@ -209,63 +233,47 @@
   dialog.querySelector('.wf-editor-close').addEventListener('click', closeDialog);
   dialog.addEventListener('click', event => { if (event.target === dialog) closeDialog(); });
 
-  const showLogin = () => {
-    editingId = null; fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
-    const email = addField('Your editor email', '', 'input');
-    email.type = 'email'; email.autocomplete = 'email'; email.placeholder = 'you@example.com';
-    const send = addButton('Send sign-in link', async () => {
-      const address = email.value.trim();
-      if (!address || !email.checkValidity()) { setFeedback('Enter a valid email address.', true); return; }
-      send.disabled = true;
-      send.textContent = 'Sending…';
-      setFeedback('Requesting one sign-in email…');
-      let error;
-      try {
-        ({ error } = await client.auth.signInWithOtp({
-          email: address,
-          options: {
-            emailRedirectTo: location.origin + location.pathname + '#workflow',
-            // Editors are pre-approved; visitors must not create new accounts here.
-            shouldCreateUser: false
-          }
-        }));
-      } catch (requestError) {
-        error = requestError;
-      }
-      if (error) {
-        const limited = error.status === 429 || /rate limit|too many requests/i.test(error.message || '');
-        if (limited) {
-          send.textContent = 'Email temporarily limited';
-          setFeedback('Supabase has reached its email sending limit. Please do not resend repeatedly. Check any recent sign-in email, then retry after the provider limit resets (often at least an hour). Also verify that your Supabase Site URL points to this GitHub Pages site.', true);
-          return;
-        }
-        send.disabled = false;
-        send.textContent = 'Send sign-in link';
-        setFeedback(error.message || 'Could not request the sign-in email. Try again later.', true);
-        return;
-      }
-      send.textContent = 'Email requested';
-      setFeedback('One sign-in link requested. Check your inbox and spam folder. Please do not request another while waiting.');
-    }, 'wf-editor-save');
-    addButton('Cancel', closeDialog);
-    dialog.showModal(); email.focus();
-  };
-  loginButton.addEventListener('click', showLogin);
-  logoutButton.addEventListener('click', async () => {
-    await client.auth.signOut();
-    currentUser = null; canEdit = false; updatePermissions();
-  });
-
   const updatePermissions = () => {
-    loginButton.hidden = !!currentUser;
-    logoutButton.hidden = !currentUser;
+    loginButton.hidden = canEdit;
+    logoutButton.hidden = !canEdit;
     pageButton.hidden = !canEdit;
-    stateLabel.textContent = canEdit ? 'EDITOR ACCESS' : currentUser ? 'READ ONLY' : '';
+    stateLabel.textContent = canEdit ? 'EDITOR ACCESS' : '';
     root.querySelectorAll('.wf-edit-trigger').forEach(button => { button.hidden = !canEdit; });
   };
+  const showLogin = () => {
+    editingId = null; fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
+    const password = addField('Editor password', '', 'input');
+    password.type = 'password';
+    password.autocomplete = 'current-password';
+    password.placeholder = 'Password';
+    const unlock = addButton('Unlock editor', async () => {
+      if (!password.value) { setFeedback('Enter a password.', true); return; }
+      unlock.disabled = true; setFeedback('Checking password…');
+      try {
+        const result = await requestEditor('login', { password: password.value });
+        password.value = '';
+        setSession(result.token); canEdit = true;
+        updatePermissions(); closeDialog();
+      } catch (error) {
+        password.value = '';
+        unlock.disabled = false;
+        setFeedback(error.message || 'Login unavailable.', true);
+        password.focus();
+      }
+    }, 'wf-editor-save');
+    password.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); unlock.click(); }
+    });
+    addButton('Cancel', closeDialog);
+    dialog.showModal(); password.focus();
+  };
+  loginButton.addEventListener('click', showLogin);
+  logoutButton.addEventListener('click', () => {
+    setSession(null); canEdit = false; updatePermissions();
+  });
 
   const showEditor = id => {
-    if (!canEdit || !currentUser || !sections.has(id)) return;
+    if (!canEdit || !editorToken || !sections.has(id)) return;
     editingId = id;
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
     const data = { ...originals.get(id), ...published.get(id) };
@@ -296,12 +304,16 @@
         if (!value.title) throw new Error('A title is required.');
         for (const pair of value.links) if (!pair[0] || !safeHref(pair[1])) throw new Error('Links must use https:// or #tracker.');
       } catch (err) { setFeedback(err.message, true); return; }
-      setFeedback('Saving to shared Workflow…');
-      const { error } = await client.from('pavilion_workflow_content').upsert({
-        project_id: PROJECT, section_id: id, content: value,
-        updated_by: currentUser.id, updated_at: new Date().toISOString()
-      }, { onConflict: 'project_id,section_id' });
-      if (error) { setFeedback('Save failed: ' + error.message, true); return; }
+      setFeedback('Saving Workflow…');
+      try {
+        await requestEditor('save', { token: editorToken, section_id: id, content: value });
+      } catch (error) {
+        if (error.status === 401) {
+          setSession(null); canEdit = false; updatePermissions();
+        }
+        setFeedback('Save failed: ' + error.message, true);
+        return;
+      }
       published.set(id, value); apply(id, value); closeDialog();
     }, 'wf-editor-save');
     addButton('Cancel', closeDialog);
@@ -309,7 +321,7 @@
   };
 
   const showPageEditor = () => {
-    if (!canEdit || !currentUser) return;
+    if (!canEdit || !editorToken) return;
     editingId = '__page';
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
     const data = { ...pageDefaults, ...(published.get('__page') || {}) };
@@ -329,12 +341,16 @@
       if (!safeHref(value.management_link_href) || value.management_link_href === '#tracker') {
         setFeedback('The Construction Management URL must begin with https://', true); return;
       }
-      setFeedback('Saving page text…');
-      const { error } = await client.from('pavilion_workflow_content').upsert({
-        project_id: PROJECT, section_id: '__page', content: value,
-        updated_by: currentUser.id, updated_at: new Date().toISOString()
-      }, { onConflict: 'project_id,section_id' });
-      if (error) { setFeedback('Save failed: ' + error.message, true); return; }
+      setFeedback('Saving Workflow…');
+      try {
+        await requestEditor('save', { token: editorToken, section_id: '__page', content: value });
+      } catch (error) {
+        if (error.status === 401) {
+          setSession(null); canEdit = false; updatePermissions();
+        }
+        setFeedback('Save failed: ' + error.message, true);
+        return;
+      }
       published.set('__page', value); applyPage(value); closeDialog();
     }, 'wf-editor-save');
     addButton('Cancel', closeDialog);
@@ -375,21 +391,16 @@
       apply(row.section_id, row.content);
     });
   };
-  const refreshAuth = async () => {
-    const { data: { user }, error } = await client.auth.getUser();
-    currentUser = error ? null : user;
-    canEdit = false;
-    if (currentUser) {
-      const { data } = await client.from('pavilion_workflow_editors')
-        .select('user_id').eq('user_id', currentUser.id).maybeSingle();
-      canEdit = !!data;
+  const resumeEditorSession = async () => {
+    if (!editorToken) { canEdit = false; updatePermissions(); return; }
+    try {
+      await requestEditor('verify', { token: editorToken });
+      canEdit = true;
+    } catch {
+      setSession(null); canEdit = false;
     }
     updatePermissions();
   };
-
-  client.auth.onAuthStateChange(() => {
-    // Avoid running Supabase queries inside the auth callback itself.
-    setTimeout(() => { refreshAuth(); }, 0);
-  });
-  Promise.all([loadContent(), refreshAuth()]).catch(error => console.warn('Workflow editor:', error));
+  Promise.all([loadContent(), resumeEditorSession()])
+    .catch(error => console.warn('Workflow editor:', error));
 })();
