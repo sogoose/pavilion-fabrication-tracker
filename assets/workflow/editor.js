@@ -44,13 +44,17 @@
     credits: parseCredits(node),
     links: [...node.querySelectorAll('.wb-links a, .wp-links a')].map(a => [
       a.textContent.replace(/\s*↗\s*$/, '').trim(), a.getAttribute('href') || ''
-    ])
+    ]),
+    gallery: (() => { try { return JSON.parse(node.dataset.workflowGallery || '[]'); } catch (_) { return []; } })()
   });
   const apply = (id, value) => {
     const node = sections.get(id);
     if (!node || !value || typeof value !== 'object') return;
     const data = { ...originals.get(id), ...value };
     if (typeof data.title === 'string') titleNode(node).textContent = data.title;
+    if (Array.isArray(data.gallery)) {
+      node.dataset.workflowGallery = JSON.stringify(data.gallery.slice(0, 8).filter(url => safeHref(url) && url !== '#tracker'));
+    }
     const captionNode = node.querySelector('.wb-drawing figcaption');
     if (captionNode && typeof data.caption === 'string') captionNode.textContent = data.caption;
     const body = bodyNode(node);
@@ -218,7 +222,70 @@
       ? addField('Drawing caption', data.caption || '', 'input') : null;
     const links = addField('File links — one LABEL | https://... per line (or #tracker)',
       (data.links || []).map(pair => pair.join(' | ')).join('\n'));
-    credits.rows = 3; description.rows = 4; links.rows = 4;
+    const gallery = addField('Gallery photos — one HTTPS image URL per line (first photo is the cover)',
+      (data.gallery || []).join('\n'));
+    credits.rows = 3; description.rows = 4; links.rows = 4; gallery.rows = 4;
+    const uploader = document.createElement('label'); uploader.className = 'wf-editor-field wf-photo-uploader';
+    const uploaderLabel = document.createElement('span'); uploaderLabel.textContent = 'UPLOAD SMALL PHOTOS · JPG / PNG / WEBP · UP TO 8';
+    const photoInput = document.createElement('input'); photoInput.type = 'file';
+    photoInput.accept = 'image/jpeg,image/png,image/webp'; photoInput.multiple = true;
+    uploader.append(uploaderLabel, photoInput); fields.append(uploader);
+    const uploadHelp = document.createElement('p'); uploadHelp.className = 'wf-photo-help';
+    uploadHelp.textContent = 'Photos are converted to WebP (up to 1200px) before upload. Click Save changes to publish them in the gallery.';
+    fields.append(uploadHelp);
+    const uploadButton = document.createElement('button'); uploadButton.type = 'button';
+    uploadButton.className = 'wf-upload-photos'; uploadButton.textContent = '↑ Upload selected photos';
+    fields.append(uploadButton);
+    uploadButton.addEventListener('click', async () => {
+      const images = [...photoInput.files];
+      if (!images.length) { setFeedback('Select one or more photos first.', true); return; }
+      const existing = gallery.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+      if (existing.length + images.length > 8) { setFeedback('Maximum 8 photos per process.', true); return; }
+      uploadButton.disabled = true;
+      try {
+        const toWebp = file => new Promise((resolve, reject) => {
+          if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 15 * 1024 * 1024) {
+            reject(new Error('Only JPG, PNG or WebP photos up to 15MB are supported.')); return;
+          }
+          const objectUrl = URL.createObjectURL(file);
+          const image = new Image();
+          image.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(image.width * scale));
+            canvas.height = Math.max(1, Math.round(image.height * scale));
+            canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+            const encode = quality => canvas.toBlob(blob => {
+              if (!blob) { reject(new Error('Image conversion failed.')); return; }
+              if (blob.size > 650000 && quality > .48) encode(quality - .12);
+              else resolve(blob);
+            }, 'image/webp', quality);
+            encode(.78);
+          };
+          image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Could not read ' + file.name)); };
+          image.src = objectUrl;
+        });
+        const uploaded = [];
+        for (const file of images) {
+          setFeedback('Compressing and uploading ' + file.name + '…');
+          const blob = await toWebp(file);
+          const key = PROJECT + '/workflow/' + id + '/' + Date.now() + '-' +
+            Math.random().toString(36).slice(2, 12) + '.webp';
+          const bucket = client.storage.from('pavilion-module-photos');
+          const { error } = await bucket.upload(key, blob, {contentType:'image/webp', cacheControl:'3600', upsert:false});
+          if (error) throw error;
+          const { data: publicData } = bucket.getPublicUrl(key);
+          if (!publicData?.publicUrl) throw new Error('Uploaded photo URL was not returned.');
+          uploaded.push(publicData.publicUrl);
+          gallery.value = [...existing, ...uploaded].join('\n');
+        }
+        photoInput.value = '';
+        setFeedback('Uploaded ' + uploaded.length + ' photo(s). Click Save changes to publish gallery.');
+      } catch (error) {
+        setFeedback('Photo upload failed: ' + (error.message || 'Please try again.'), true);
+      } finally { uploadButton.disabled = false; }
+    });
     addButton('Save changes', async () => {
       const parseRows = (value, maxRows) => value.split(/\r?\n/).filter(line => line.trim()).slice(0, maxRows).map(line => {
         const index = line.indexOf('|');
@@ -232,10 +299,13 @@
           description: trimLimit(description.value, 1800),
           ...(caption ? { caption: trimLimit(caption.value, 220) } : {}),
           credits: parseRows(credits.value, 12).map(pair => [pair[0], pair[1].slice(0, 400)]),
-          links: parseRows(links.value, 16)
+          links: parseRows(links.value, 16),
+          gallery: gallery.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean).slice(0, 9)
         };
         if (!value.title) throw new Error('A title is required.');
         for (const pair of value.links) if (!pair[0] || !safeHref(pair[1])) throw new Error('Links must use https:// or #tracker.');
+        if (value.gallery.length > 8 || value.gallery.some(url => !safeHref(url) || url === '#tracker'))
+          throw new Error('Gallery supports up to 8 HTTPS image URLs.');
       } catch (err) { setFeedback(err.message, true); return; }
       setFeedback('Saving Workflow…');
       try {
