@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1200 1930" fill="none">
-<title>Workflow process connections — Assembly-focused portrait desktop board</title>
+<title>Workflow connections — simplified straight-edged desktop routes</title>
 <defs>
   <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="14" refY="9" orient="auto">
     <path d="M1.5 2L14 9L1.5 16" fill="none" stroke="#a8a69c" stroke-width="1.35" stroke-linejoin="round" stroke-linecap="round"/>
   </marker>
 </defs>
 <g stroke="#b3afa4" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".91">
-  <!-- Design verification -->
-  <path d="M363 143 C487 100 640 99 795 143" marker-end="url(#arr)"/>
-  <!-- Structural check branches to toolpaths and material preparation -->
-  <path d="M850 297 C781 313 714 283 638 316" marker-end="url(#arr)"/>
-  <path d="M990 297 C1020 303 1056 307 1088 316" marker-end="url(#arr)"/>
-  <!-- Digital G-code and material preparation feed the two fabrication processes -->
-  <path d="M491 564 C454 609 378 611 320 653" marker-end="url(#arr)"/>
-  <path d="M872 564 C770 613 551 598 439 652" marker-end="url(#arr)"/>
-  <path d="M1090 564 C1125 586 1105 621 1038 653" marker-end="url(#arr)"/>
-  <!-- Both fabrication streams converge at the unnumbered drying marker -->
-  <path d="M401 925 C475 937 530 933 555 946" marker-end="url(#arr)"/>
-  <path d="M943 925 C863 933 766 940 698 946" marker-end="url(#arr)"/>
-  <!-- Firing is an optional branch; dried blocks can go directly to assembly -->
-  <path d="M550 996 C486 1024 432 1021 379 1044" stroke-dasharray="4 6" marker-end="url(#arr)"/>
-  <path d="M698 994 C952 1120 1015 1242 778 1406" marker-end="url(#arr)"/>
-  <!-- Optional fired components rejoin the assembly stage -->
-  <path d="M367 1249 C457 1302 405 1362 488 1406" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <!-- Spatial Design → Structural Check -->
+  <path d="M375 159 L793 159" marker-end="url(#arr)"/>
+  <!-- Structural Check → G-code Generation -->
+  <path d="M820 265 L644 308" marker-end="url(#arr)"/>
+  <!-- Structural Check → Material Preparation (direct vertical) -->
+  <path d="M954 257 V311" marker-end="url(#arr)"/>
+  <!-- G-code Generation → 3D Printing -->
+  <path d="M492 565 L331 648" marker-end="url(#arr)"/>
+  <!-- Material Preparation → Rammed Earth -->
+  <path d="M1042 573 L1032 653" marker-end="url(#arr)"/>
+  <!-- 3D Printing → Drying -->
+  <path d="M402 926 L552 947" marker-end="url(#arr)"/>
+  <!-- Rammed Earth → Drying -->
+  <path d="M945 927 L656 947" marker-end="url(#arr)"/>
+  <!-- Drying → optional Firing / Glazing -->
+  <path d="M545 991 L383 1046" stroke-dasharray="4 6" marker-end="url(#arr)"/>
+  <!-- Drying → Assembly (bypass Fabrication label) -->
+  <path d="M679 996 L935 1380 L868 1405" marker-end="url(#arr)"/>
+  <!-- Firing / Glazing → Assembly -->
+  <path d="M370 1260 L456 1370 L490 1406" stroke-dasharray="4 6" marker-end="url(#arr)"/>
 </g>
 </svg>
