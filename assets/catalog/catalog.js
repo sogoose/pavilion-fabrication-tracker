@@ -200,16 +200,17 @@ export function setupCatalog({ THREE, getState, notify }) {
     return valueText+'…';
   }
   function techCell(ctx,x,y,w,key,val) {
-    label(ctx,key.toUpperCase(),x,y,'#8b8b84');
-    ctx.font='500 18px Inter,Arial,sans-serif';
+    ctx.font='600 10px "IBM Plex Mono",monospace';
+    ctx.fillStyle='#85877f'; ctx.fillText(key.toUpperCase(),x,y);
+    ctx.font='500 15px Inter,Arial,sans-serif';
     ctx.fillStyle='#191d1b';
-    ctx.fillText(truncate(ctx,val,w-12),x,y+23);
+    ctx.fillText(truncate(ctx,val,w-12),x,y+18);
   }
   function drawSection(ctx,x,y,title,pairs,width=500) {
     const gap=14;
     ctx.fillStyle='#30342f'; ctx.fillRect(x,y,width,2);
-    label(ctx,title,x,y+21,'#393e38');
-    let py=y+48;
+    label(ctx,title,x,y+19,'#393e38');
+    let py=y+37;
     const cellWidth=(width-gap)/2;
     for(let i=0;i<pairs.length;i+=2) {
       const [k1,v1]=pairs[i];
@@ -218,9 +219,9 @@ export function setupCatalog({ THREE, getState, notify }) {
         const [k2,v2]=pairs[i+1];
         techCell(ctx,x+cellWidth+gap,py,cellWidth,k2,v2);
       }
-      py+=51;
+      py+=31;
     }
-    return py+10;
+    return py+8;
   }
   function drawLong(ctx,title,value,x,y,width,maxLines) {
     label(ctx,title,x,y);
@@ -228,8 +229,8 @@ export function setupCatalog({ THREE, getState, notify }) {
     ctx.fillStyle='#30322d';
     const items=wrapped(ctx,value,width,maxLines);
     items.lines.forEach((line,i) => ctx.fillText(line,x,y+30+25*i));
-    if(items.total>maxLines){
-      label(ctx,'CONTINUES ON ADDITIONAL DATA SHEET ↗',x,y+39+25*maxLines,'#9a8562');
+    if(items.total>maxLines) {
+      label(ctx,'CONTINUED ↗',x+650,y,'#9a8562');
     }
     return items.total>maxLines;
   }
@@ -301,49 +302,75 @@ export function setupCatalog({ THREE, getState, notify }) {
       ['DATE',fieldValue(record,'Firing_Date')],['SHRINKAGE (%)',fieldValue(record,'Firing_Shrinkage_pct')],
       ['BEFORE (MM)',fieldValue(record,'Firing_Dimension_Before_mm')],['AFTER (MM)',fieldValue(record,'Firing_Dimension_After_mm')]
     ],rightW);
-    // Tiny status references beneath the table.
-    label(ctx,'LAST UPDATED  '+prettyDate(record.Last_Updated),rightX,950);
-    label(ctx,'UPDATED BY  '+fieldValue(record,'Updated_By'),rightX,972);
+    // Complete source references are also repeated without truncation
+    // on a continuation sheet when they are long.
+    label(ctx,'G-CODE / '+truncate(ctx,record.GCode_File,485),rightX,921);
+    label(ctx,'FIRING PROGRAM / '+truncate(ctx,record.Firing_Program,440),rightX,940);
+    label(ctx,'UPDATED / '+prettyDate(record.Last_Updated)+'  BY '+truncate(ctx,record.Updated_By,180),rightX,963);
 
     ctx.fillStyle='#d2d2ca';ctx.fillRect(56,821,805,1);
     const extra1=drawLong(ctx,'MATERIAL COMPOSITION / RECIPE',record.Material_Details,56,847,790,2);
     const extra2=drawLong(ctx,'FABRICATION NOTES',record.Notes,56,927,790,1);
     footer(ctx,i,total,record);
     ctx.restore();
-    return {canvas,hasOverflow:extra1||extra2 || clean(record.Firing_Program).length>32 ||
-      clean(record.GCode_File).length>60 || clean(record.Rhino_Object_Name).length>45};
+    return {canvas,hasOverflow:extra1||extra2 ||
+      ['Firing_Program','GCode_File','Rhino_Object_Name','Material',
+       'Infill_Pattern','Assigned_To','Updated_By'].some(key=>clean(record[key]).length>45)};
   }
 
-  function drawAppendix(entry,i,total) {
-    const r=entry.record, canvas=buildCanvas();
-    const ctx=canvas.getContext('2d',{alpha:false});
-    ctx.save();ctx.scale(canvas.width/1490,canvas.height/1050);
-    ctx.fillStyle='#fbfbf8';ctx.fillRect(0,0,1490,1050);
-    label(ctx,'PAVILION  /  FABRICATION CATALOGUE',56,67);
-    ctx.fillStyle='#262b27';ctx.font='600 47px Syne,Inter,Arial,sans-serif';
-    ctx.fillText(clean(r.Object_ID)+'  /  ADDITIONAL DATA',56,136);
-    ctx.fillStyle='#cfcec5';ctx.fillRect(56,162,1378,2);
-    let y=204;
+  function drawAppendixPages(entry,i,total) {
+    const r=entry.record;
     const blocks=[
       ['RHINO OBJECT NAME',r.Rhino_Object_Name],
       ['FULL RHINO GUID',r.Rhino_GUID],
+      ['MATERIAL / SPECIFICATION',r.Material],
       ['MATERIAL COMPOSITION / MIX',r.Material_Details],
       ['FABRICATION NOTES',r.Notes],
+      ['ASSIGNED TO',r.Assigned_To],
       ['FIRING PROGRAM',r.Firing_Program],
       ['G-CODE FILE / REFERENCE',r.GCode_File],
-      ['OTHER DETAILS', 'Module: '+clean(r.Module_No)+'  /  Method: '+clean(r.Manufacturing_Method)]
+      ['OTHER DETAILS','Module '+clean(r.Module_No)+' / '+clean(r.Manufacturing_Method)]
     ];
-    blocks.forEach(([head,body])=>{
-      label(ctx,head,56,y);
-      ctx.font='400 20px Inter,Arial,sans-serif';
+    const pages=[];
+    let canvas,ctx,y=200;
+    const start=()=>{
+      canvas=buildCanvas();
+      ctx=canvas.getContext('2d',{alpha:false});
+      ctx.save();ctx.scale(canvas.width/1490,canvas.height/1050);
+      ctx.fillStyle='#fbfbf8';ctx.fillRect(0,0,1490,1050);
+      label(ctx,'PAVILION  /  FABRICATION CATALOGUE',56,67);
+      ctx.fillStyle='#262b27';ctx.font='600 47px Syne,Inter,Arial,sans-serif';
+      ctx.fillText(truncate(ctx,clean(r.Object_ID)+' / ADDITIONAL DATA',1335),56,136);
+      ctx.fillStyle='#cfcec5';ctx.fillRect(56,162,1378,2);
+      y=200;
+    };
+    const finish=()=>{
+      footer(ctx,i,total,r);
+      ctx.restore();
+      pages.push(canvas);
+    };
+    start();
+    for(const [heading,raw] of blocks) {
+      ctx.font='400 19px Inter,Arial,sans-serif';
+      const lines=wrapped(ctx,raw,1325,Infinity).lines;
+      if(y+65>953){ finish();start(); }
+      label(ctx,heading,56,y);
+      y+=38;
+      ctx.font='400 19px Inter,Arial,sans-serif';
       ctx.fillStyle='#2f312c';
-      const lines=wrapped(ctx,body,1325,8);
-      lines.lines.forEach((line,n) => ctx.fillText(line,56,y+35+n*29));
-      y+=Math.max(1,lines.lines.length)*29+68;
-    });
-    footer(ctx,i,total,r);
-    ctx.restore();
-    return canvas;
+      for(const line of lines) {
+        if(y+27>959) {
+          finish();start();
+          label(ctx,heading+' / CONTINUED',56,y);
+          y+=38;
+        }
+        ctx.fillText(line,56,y);
+        y+=29;
+      }
+      y+=31;
+    }
+    finish();
+    return pages;
   }
   function drawCover(all,photoCount,gcodeCount) {
     const canvas=buildCanvas();
@@ -572,7 +599,11 @@ export function setupCatalog({ THREE, getState, notify }) {
         const image=await visualFor(state,entry,photos,media.value,capture);
         const sheet=drawSheet(entry,image,i+1,entries.length);
         appendCanvas(sheet.canvas);
-        if(sheet.hasOverflow)appendCanvas(drawAppendix(entry,i+1,entries.length));
+        if(sheet.hasOverflow) {
+          for(const additional of drawAppendixPages(entry,i+1,entries.length)) {
+            appendCanvas(additional);
+          }
+        }
         if(image?.canvas && typeof image.canvas.close==='function')image.canvas.close();
         // Yield to the UI: 100+ images must not monopolize the main thread.
         if(i%3===0)await new Promise(resolve=>setTimeout(resolve,0));
