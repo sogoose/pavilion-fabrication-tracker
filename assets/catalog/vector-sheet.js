@@ -361,37 +361,31 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   pageBase(pdf,number,total);
   print(pdf,present(r.Object_ID),10,23,165,22,true,ink);
 
-  // As requested: square module close-up on the left, a real-sized independent
-  // G-code axonometric at upper right and photographs in the remaining slots.
-  // Never overlay the toolpath on a tiny cropped site-photo frame.
+  // Single tall Rhino render on the LEFT. This merges the old Photo/02
+  // footprint into the main figure; the separate second-photo box is removed.
   const hero=asset.model || asset.photos?.[0] || null;
-  bg(pdf,10,33,101,102,[246,246,242]);
+  bg(pdf,10,33,101,137,[246,246,242]);
   if(hero){
-    try { photoFit(pdf,hero,11,34,99,100); }
+    try { photoFit(pdf,hero,11,34,99,135); }
     catch(err){console.warn('PDF module hero:',err);}
-  }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,90)) {
-    print(pdf,'NO 3D MODEL',35,89,65,8,false,grey);
+  }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,124)) {
+    print(pdf,'NO 3D MODEL',35,104,65,8,false,grey);
   }
-  frame(pdf,10,33,101,102);
-  label(pdf,asset.model?'RHINO / MODULE 3D':'MODULE VISUAL',10,139);
+  frame(pdf,10,33,101,137);
+  label(pdf,asset.model?'RHINO / MODULE 3D':'MODULE VISUAL',10,173.6);
 
-  // Large 3D toolpath panel: 53 × 73 mm, compared with the former 73 × 14 mm.
+  // Upper RIGHT: independent, vector G-code axonometric.
   box(pdf,114,33,53,73,'G-CODE / 3D AXONOMETRIC');
   if(!drawGcode3D(pdf,asset.gcode,116,41,49,63,9500)) {
     label(pdf,'NO G-CODE LINK',123,70);
   }
-  const photos=asset.photos || [];
-  // The first uploaded photograph fills the prominent lower-right square.
-  box(pdf,114,109,53,61,'SITE PHOTO / 01');
-  if(photos[0]){
-    try { photoThumbnail(pdf,photos[0],115,116,51,53); } catch(err){console.warn('Site photo 1:',err);}
-  }else label(pdf,'NO UPLOADED PHOTO',120,139);
 
-  // A second photograph (when present) runs below the main Rhino capture.
-  box(pdf,10,143,101,27,'SITE PHOTO / 02');
-  if(photos[1]){
-    try { photoThumbnail(pdf,photos[1],11,150,99,19); } catch(err){console.warn('Site photo 2:',err);}
-  }else label(pdf,'NO SECOND PHOTO',37,160);
+  // Lower RIGHT: latest uploaded site photo only. Older photos remain stored.
+  box(pdf,114,109,53,61,'SITE PHOTO / 01');
+  if(asset.photos?.[0]){
+    try { photoThumbnail(pdf,asset.photos[0],115,116,51,53); }
+    catch(err){console.warn('Site photo:',err);}
+  }else label(pdf,'NO UPLOADED PHOTO',120,139);
 
   // Mix recipe is independent from annotations and module notes.
   stroke(pdf,10,175.2,167,175.2,[75,79,72],.17);
@@ -442,17 +436,57 @@ function drawStatusKeymap(pdf,entries,palette,x=224,y=53,w=63){
 }
 function placedLabels(pdf,positions,x,y,w,h,palette){
   if(!positions?.length)return;
-  // Place plain module names directly on their projected Rhino coordinates.
-  // No white box, colour swatch, leader line or collision displacement.
+  // Minimal label design: native PDF letters directly over the exploded Rhino.
+  // An 8-direction white halo keeps dark ink legible over status colours.
+  // Candidate positions avoid label-vs-label overlaps; no boxes or swatches.
+  const used=[];
+  const placed=[];
+  const minX=x+1.0,minY=y+1.7,maxX=x+w-1.0,maxY=y+h-1.0;
+  const height=2.25;
+  const order=[...positions].filter(p=>Number.isFinite(p.u)&&Number.isFinite(p.v))
+    .sort((a,b)=>String(a.id).localeCompare(String(b.id),undefined,{numeric:true}));
   pdf.setFont('helvetica','bold');
-  pdf.setFontSize(5.7);
-  pdf.setTextColor(27,32,29);
-  for(const point of positions) {
-    if(!Number.isFinite(point.u)||!Number.isFinite(point.v))continue;
-    const id=present(point.id).slice(0,12);
-    const px=Math.max(x+1,Math.min(x+w-1,x+point.u*w));
-    const py=Math.max(y+2,Math.min(y+h-1,y+point.v*h));
-    pdf.text(id,px,py,{align:'center',baseline:'middle'});
+  pdf.setFontSize(5.6);
+  for(const point of order){
+    const name=present(point.id).slice(0,13);
+    const tw=Math.max(2,pdf.getTextWidth(name));
+    const anchorX=x+point.u*w,anchorY=y+point.v*h;
+    let candidate=null;
+    // Search close to the original module centre first. Avoid collisions even
+    // for dense, near-overlapping geometries; only adjust label positions.
+    for(let ring=0;ring<=16 && !candidate;ring++){
+      const radius=ring*1.5;
+      const steps=ring===0?1:Math.max(12,Math.round(2*Math.PI*radius/2));
+      for(let i=0;i<steps;i++){
+        const angle=2*Math.PI*i/steps;
+        const tx=Math.max(minX+tw/2,Math.min(maxX-tw/2,anchorX+Math.cos(angle)*radius));
+        const ty=Math.max(minY+height/2,Math.min(maxY-height/2,anchorY+Math.sin(angle)*radius));
+        const left=tx-tw/2,top=ty-height/2;
+        if(used.every(b=>left>b.x+b.w+.45||left+tw+.45<b.x||
+            top>b.y+b.h+.25||top+height+.25<b.y)){
+          candidate={cx:tx,cy:ty,x:left,y:top,w:tw,h:height};
+          break;
+        }
+      }
+    }
+    if(!candidate){
+      // Register page still contains all IDs if a particularly dense view
+      // cannot accommodate more labels without collisions.
+      continue;
+    }
+    used.push(candidate);
+    placed.push({name,...candidate});
+  }
+  pdf.setFont('helvetica','bold');
+  pdf.setFontSize(5.6);
+  const offsets=[[-.25,0],[.25,0],[0,-.25],[0,.25],
+    [-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]];
+  for(const p of placed){
+    pdf.setTextColor(255,255,252);
+    for(const [dx,dy] of offsets)
+      pdf.text(p.name,p.cx+dx,p.cy+dy,{align:'center',baseline:'middle'});
+    pdf.setTextColor(25,30,26);
+    pdf.text(p.name,p.cx,p.cy,{align:'center',baseline:'middle'});
   }
 }
 
