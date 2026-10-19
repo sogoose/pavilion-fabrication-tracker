@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1130" fill="none">
+<title>Curved connections — Overall Workflow desktop</title>
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M1 1L7 4.5L1 8" fill="none" stroke="#a7a59a" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g stroke="#b2afa4" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round" opacity=".9">
+<!-- early design check -->
+<path d="M320 134 C416 102 514 91 620 129" marker-end="url(#arrow)"/>
+<!-- structural validation branches into toolpath and material prep -->
+<path d="M672 198 C647 262 549 236 501 299" marker-end="url(#arrow)"/>
+<path d="M772 192 C812 221 810 255 832 284" marker-end="url(#arrow)"/>
+<!-- G-code and recipes converge on printed modules -->
+<path d="M389 420 C410 476 324 505 322 586" marker-end="url(#arrow)"/>
+<path d="M807 426 C728 504 554 513 499 610" marker-end="url(#arrow)"/>
+<!-- material is also used for rammed earth -->
+<path d="M946 424 C979 489 925 531 893 586" marker-end="url(#arrow)"/>
+<!-- printing branches into firing and assembly -->
+<path d="M298 770 C271 794 234 809 223 837" marker-end="url(#arrow)" stroke-dasharray="4 6"/>
+<path d="M471 768 C573 838 683 832 774 937" marker-end="url(#arrow)"/>
+<!-- rammed earth is part of assembly -->
+<path d="M884 763 C932 815 927 874 879 927" marker-end="url(#arrow)"/>
+<!-- optional firing joins the assembly path -->
+<path d="M297 972 C458 1042 609 1009 759 1019" marker-end="url(#arrow)" stroke-dasharray="4 6"/>
+</g>
+</svg>
