@@ -294,7 +294,10 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   if(end>197)console.warn('Catalogue: table exceeds page footer',end);
 }
 export function drawCover(pdf,entries,photos,gcodes) {
-  pageBase(pdf,0,entries.length);
+  bg(pdf,0,0,PW,PH,[252,252,249]);
+  stroke(pdf,10,198.4,287,198.4,[76,80,72],.18);
+  label(pdf,'SOIL-BASED PAVILION / FABRICATION RECORDS',10,204);
+  label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),226,204);
   label(pdf,'TU DELFT  /  SOIL-BASED PAVILION',10,14);
   print(pdf,'FABRICATION',10,52,270,35,true,ink);
   print(pdf,'CATALOGUE',10,69,270,35,true,ink);
