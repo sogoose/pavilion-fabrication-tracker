@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Gcode — Pavilion Workflow</title>
+<!-- offset contours + hatching + travel/print head -->
+<path d="M21 16L87 7L118 23L107 50L39 58L13 40Z"/>
+<path d="M28 23L85 15L109 26L101 44L41 51L22 38Z"/>
+<path d="M37 28L82 22L99 28L94 39L45 44L32 37Z"/>
+<path d="M38 41L54 27M49 44L66 24M62 43L78 23M75 42L88 25M88 40L98 30" opacity=".64"/>
+<path d="M17 51L29 58L45 60" stroke-dasharray="2 3" opacity=".4"/>
+<path d="M91 2V12L85 16L94 20L101 15V5Z" stroke-width="1"/>
+<path d="M93 20V27" stroke-dasharray="2 2" opacity=".7"/>
+</svg>
