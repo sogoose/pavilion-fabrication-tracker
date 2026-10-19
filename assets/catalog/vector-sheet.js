@@ -106,6 +106,19 @@ function photoFit(pdf,img,x,y,w,h){
   pdf.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',
     x+(w-iwmm)/2,y+(h-ihmm)/2,iwmm,ihmm,undefined,'FAST');
 }
+function photoThumbnail(pdf,img,x,y,w,h){
+  const iw=img.width||img.videoWidth||1,ih=img.height||img.videoHeight||1;
+  // A centred, high-resolution cropped thumbnail fills the narrow photo cells.
+  const sourceRatio=iw/ih,targetRatio=w/h;
+  const cropW=sourceRatio>targetRatio?ih*targetRatio:iw;
+  const cropH=sourceRatio>targetRatio?ih:iw/targetRatio;
+  const sx=(iw-cropW)/2,sy=(ih-cropH)/2;
+  const cv=document.createElement('canvas');
+  cv.width=Math.max(1,Math.round(w*12));
+  cv.height=Math.max(1,Math.round(h*12));
+  cv.getContext('2d').drawImage(img,sx,sy,cropW,cropH,0,0,cv.width,cv.height);
+  pdf.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',x,y,w,h,undefined,'FAST');
+}
 function iso([x,y,z]){
   return [(x-y)*.7071067812,(x+y)*.4082482905-z*.8164965809];
 }
@@ -168,41 +181,6 @@ export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=7000){
     const a=fit(iso(s.a)),b=fit(iso(s.b));
     pdf.line(a[0],a[1],b[0],b[1]);
   }
-  return true;
-}
-export function drawModel3D(pdf,THREE,part,x,y,w,h){
-  if(!part?.meshes?.length||!THREE?.EdgesGeometry)return false;
-  const segments=[],points=[];
-  const maxEdges=5200;
-  let budget=maxEdges;
-  try{
-    for(const mesh of part.meshes){
-      if(budget<=0)break;
-      if(!mesh.geometry)continue;
-      mesh.updateWorldMatrix(true,false);
-      const g=new THREE.EdgesGeometry(mesh.geometry,17);
-      const pos=g.getAttribute('position');
-      const vec=new THREE.Vector3();
-      if(pos){
-        // Bound the number of native PDF line segments per module, including
-        // meshes with multiple disconnected parts.
-        const perMesh=Math.min(budget,Math.max(150,Math.floor(maxEdges/part.meshes.length)));
-        const step=Math.max(2,2*Math.ceil((pos.count/2)/perMesh));
-        for(let i=0;i+1<pos.count&&budget>0;i+=step){
-          const a=vec.set(pos.getX(i),pos.getY(i),pos.getZ(i)).applyMatrix4(mesh.matrixWorld);
-          const p=iso([a.x,a.y,a.z]);
-          const b=vec.set(pos.getX(i+1),pos.getY(i+1),pos.getZ(i+1)).applyMatrix4(mesh.matrixWorld);
-          const q=iso([b.x,b.y,b.z]);
-          points.push(p,q);segments.push([p,q]);budget--;
-        }
-      }
-      g.dispose();
-    }
-  }catch(e){console.warn('Vector Rhino outlines unavailable:',e);return false;}
-  if(!segments.length)return false;
-  const fit=viewport(points,x,y,w,h);
-  pdf.setDrawColor(57,64,58);pdf.setLineWidth(.075);
-  for(const [p,q] of segments){const a=fit(p),b=fit(q);pdf.line(a[0],a[1],b[0],b[1]);}
   return true;
 }
 function table(pdf,r){
@@ -283,7 +261,7 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
     const x=i===0?10:90,w=i===0?76:77;
     box(pdf,x,147, w,23, 'SITE PHOTO / '+String(i+1).padStart(2,'0'));
     if(thumbs[i]) {
-      try{photoFit(pdf,thumbs[i],x+1,154,w-2,15);}catch(e){}
+      try{photoThumbnail(pdf,thumbs[i],x+1,154,w-2,15);}catch(e){}
     } else if(i===thumbs.length && asset.gcode?.length) {
       // Preserve a vector G-code axonometric fallback where photos are absent.
       drawGcode3D(pdf,asset.gcode,x+3,154,w-6,14,5500);
