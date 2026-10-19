@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Printing — Pavilion Workflow</title>
+<!-- three-prong printed clay block photographed in studio -->
+<path d="M21 25Q29 15 41 20Q48 23 50 35L59 41Q65 44 68 35L78 18Q90 12 99 20L107 35Q117 37 120 46L116 55Q108 61 100 58L84 52L74 56L62 52L49 55L39 61Q23 60 20 51Z"/>
+<path d="M21 25V49M50 35V51M78 18V46M99 20V53M120 46V53" opacity=".7"/>
+<path d="M23 29Q35 25 48 34M22 34Q35 30 50 39M22 39Q35 35 50 44M21 44Q35 40 50 49M22 49Q35 45 49 54" opacity=".7"/>
+<path d="M76 23Q88 19 103 28M75 28Q90 24 105 33M73 33Q91 29 109 38M72 38Q92 35 115 43M72 43Q92 41 116 48M68 48Q91 46 116 53" opacity=".7"/>
+<path d="M26 23Q34 19 43 24L47 31L37 35L24 30Z M80 20Q90 16 99 22L102 30L90 34L78 28Z M96 46Q105 41 115 46L118 52L107 56L96 51Z"/>
+<ellipse cx="35" cy="27" rx="5" ry="3"/><ellipse cx="90" cy="25" rx="5" ry="3"/><ellipse cx="107" cy="49" rx="4" ry="2.5"/>
+<path d="M26 29L30 25L34 31L38 26L43 30M80 26L83 22L88 30L94 24L99 28M99 51l4-3 4 5 4-4" stroke-width=".65" opacity=".72"/>
+<path d="M48 36L58 42L64 43M50 41L58 47L67 47" opacity=".7"/>
+</svg>
