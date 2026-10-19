@@ -50,6 +50,52 @@
     firing:     'M1 26 L28 1 H299 V189 L270 220 V259 H22 L1 237 Z',
     assembly:   'M1 21 L28 1 H242 L270 22 H299 V216 L264 259 H1 V238 H23 V64 H1 Z'
   };
+  // Gently soften the *geometry* of puzzle frames, not only their thin strokes.
+  // Keep the original M/L/H/V paths editable; each corner gets a tiny Q curve.
+  const softlyRoundedFrame = (path, radius = 7) => {
+    const tokens = path.match(/[MLHVZ]|-?\d+(?:\.\d+)?/g);
+    if (!tokens) return path;
+    const points = [];
+    let x = 0, y = 0, i = 0;
+    while (i < tokens.length) {
+      const command = tokens[i++];
+      if (command === 'Z') break;
+      if (command === 'M' || command === 'L') {
+        x = Number(tokens[i++]);
+        y = Number(tokens[i++]);
+      } else if (command === 'H') {
+        x = Number(tokens[i++]);
+      } else if (command === 'V') {
+        y = Number(tokens[i++]);
+      } else {
+        return path;
+      }
+      points.push({x, y});
+    }
+    if (points.length < 3) return path;
+    const fmt = v => Number(v.toFixed(2));
+    const corners = points.map((point, j) => {
+      const before = points[(j + points.length - 1) % points.length];
+      const after = points[(j + 1) % points.length];
+      const a = Math.hypot(before.x - point.x, before.y - point.y);
+      const b = Math.hypot(after.x - point.x, after.y - point.y);
+      const r = Math.min(radius, a * .28, b * .28);
+      const entry = {x: fmt(point.x + (before.x - point.x) * r / a),
+                     y: fmt(point.y + (before.y - point.y) * r / a)};
+      const exit = {x: fmt(point.x + (after.x - point.x) * r / b),
+                    y: fmt(point.y + (after.y - point.y) * r / b)};
+      return {point, entry, exit};
+    });
+    const first = corners[0].exit;
+    const segments = ['M' + first.x + ' ' + first.y];
+    for (let j = 1; j <= corners.length; j++) {
+      const c = corners[j % corners.length];
+      segments.push('L' + c.entry.x + ' ' + c.entry.y);
+      segments.push('Q' + c.point.x + ' ' + c.point.y + ' ' + c.exit.x + ' ' + c.exit.y);
+    }
+    segments.push('Z');
+    return segments.join(' ');
+  };
   const SVG_NS = 'http://www.w3.org/2000/svg';
   nodes.forEach(node => {
     const id = sectionId(node);
@@ -62,7 +108,7 @@
       frame.setAttribute('aria-hidden', 'true');
       frame.setAttribute('focusable', 'false');
       const boundary = document.createElementNS(SVG_NS, 'path');
-      boundary.setAttribute('d', FRAME_PATHS[id]);
+      boundary.setAttribute('d', softlyRoundedFrame(FRAME_PATHS[id]));
       boundary.setAttribute('vector-effect', 'non-scaling-stroke');
       frame.append(boundary);
       summary.prepend(frame);
