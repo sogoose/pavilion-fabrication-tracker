@@ -2,8 +2,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 360 2010" fill="none">
 <title>Workflow process connections — readable stacked mobile layout</title>
 <defs>
-  <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-    <path d="M.5 .5L6 3.5L.5 6.5" fill="none" stroke="#aaa79e" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <marker id="arr" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" refX="10.5" refY="6.5" orient="auto">
+    <path d="M1 1L10.5 6.5L1 12" fill="none" stroke="#aaa79e" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
   </marker>
 </defs>
 <g stroke="#b6b3a7" stroke-width="1.15" stroke-linejoin="round" stroke-linecap="round" opacity=".93">
