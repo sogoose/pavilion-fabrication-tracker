@@ -14,12 +14,12 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<div class="catalog-head"><span class="catalog-kicker">PAVILION / DOCUMENTATION</span>' +
       '<button type="button" class="catalog-close" aria-label="Close">×</button></div>' +
       '<h2>Fabrication Catalogue</h2>' +
-      '<p class="catalog-lead">A4 landscape · one CAD-style fabrication record per module · photographs, toolpaths and model drawings.</p>' +
+      '<p class="catalog-lead">A4 landscape · currently modelled modules only · one CAD sheet per module.</p>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
         '<option value="selected">Selected module / one sheet</option></select></label>' +
-      '<p class="catalog-lead">Main image: isolated Rhino model capture (+20% height). Below: up to two uploaded photos.</p>' +
+
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
         '<span>Include overview / cover page in full catalogue</span></label>' +
       '<p class="catalog-footnote">Only modules in the currently loaded Rhino file are included. One A4 sheet per module. The larger render and latest two site photos are placed beside vector CAD data.</p>' +
@@ -32,7 +32,6 @@ export function setupCatalog({ THREE, getState, notify }) {
 
   const $ = s => dialog.querySelector(s);
   const scope = $('.catalog-scope');
-  const media = null;
   const cover = $('.catalog-cover');
   const progress = $('.catalog-progress');
   const progressFill = $('.catalog-progress-fill');
