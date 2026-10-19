@@ -169,16 +169,19 @@ export function parseGcode3D(text) {
   }
   return paths;
 }
-export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=7000){
+export function drawGcode3D(pdf,paths,x,y,w,h,maxSegments=9000){
   if(!paths?.length)return false;
-  const segs=sample(paths,maxSegments),vertices=[];
-  for(const s of segs)vertices.push(iso(s.a),iso(s.b));
+  // Plot only extrusion/feed paths when available. A distant G0 approach
+  // used to dominate the bounds and reduce the printed geometry to a dot.
+  const work=paths.some(s=>!s.travel)?paths.filter(s=>!s.travel):paths;
+  const segs=sample(work,maxSegments),vertices=[];
+  for(const segment of segs)vertices.push(iso(segment.a),iso(segment.b));
   const fit=viewport(vertices,x,y,w,h);
   if(!fit)return false;
-  pdf.setLineWidth(.07);
-  for(const s of segs){
-    pdf.setDrawColor(...(s.travel?[188,192,184]:[51,60,53]));
-    const a=fit(iso(s.a)),b=fit(iso(s.b));
+  pdf.setDrawColor(44,53,46);
+  pdf.setLineWidth(.11);
+  for(const segment of segs){
+    const a=fit(iso(segment.a)),b=fit(iso(segment.b));
     pdf.line(a[0],a[1],b[0],b[1]);
   }
   return true;
@@ -228,9 +231,8 @@ function table(pdf,r){
     ['DURATION / H',r.Firing_Duration_h,'KILN / MACHINE',r.Firing_Kiln || (r.Manufacturing_Method==='3D Printing'?'ROHDE-kiln':'-')]
   ]);
   section('06  ADDITIONAL',[
-    ['COMPRESSION / KN',r.Compression_Force_kN,'UPDATED BY',r.Updated_By],
-    ['G-CODE FILE',r.GCode_File?String(r.GCode_File).split('/').pop().replace(/^\d+_/,''):'-',
-      'LAST UPDATED',r.Last_Updated]
+    ['COMPRESSION / KN',r.Compression_Force_kN,'G-CODE FILE',
+      r.GCode_File?String(r.GCode_File).split('/').pop().replace(/^\d+_/,''):'-']
   ]);
   return y;
 }
@@ -244,66 +246,179 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   const r=entry.record;
   pageBase(pdf,number,total);
   print(pdf,present(r.Object_ID),10,23,165,22,true,ink);
-  // Main Rhino module capture: 107mm high instead of 89mm (+20%).
-  // The bad edge-line-art preview is intentionally removed.
-  bg(pdf,10,33,157,107,[246,246,242]);
+
+  // As requested: square module close-up on the left, a real-sized independent
+  // G-code axonometric at upper right and photographs in the remaining slots.
+  // Never overlay the toolpath on a tiny cropped site-photo frame.
   const hero=asset.model || asset.photos?.[0] || null;
-  if(hero) {
-    try { photoFit(pdf,hero,11,34,155,105); }
-    catch(e) { console.warn('Catalogue module capture:',e); }
-  } else if (!drawGcode3D(pdf,asset.gcode,15,41,147,91,8500)) {
-    print(pdf,'NO MODULE CAPTURE AVAILABLE',30,90,115,8,false,grey);
+  bg(pdf,10,33,101,102,[246,246,242]);
+  if(hero){
+    try { photoFit(pdf,hero,11,34,99,100); }
+    catch(err){console.warn('PDF module hero:',err);}
+  }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,90)) {
+    print(pdf,'NO 3D MODEL',35,89,65,8,false,grey);
   }
-  frame(pdf,10,33,157,107);
-  label(pdf,asset.model?'ISOLATED MODULE / RHINO 3D':hero?'SITE PHOTO / MODULE':'G-CODE / 3D AXONOMETRIC',10,144);
-  // Two optional site photos in place of the old Rhino line-art / axo panels.
-  const thumbs = asset.photos || [];
-  for(let i=0;i<2;i++) {
-    const x=i===0?10:90,w=i===0?76:77;
-    box(pdf,x,147, w,23, 'SITE PHOTO / '+String(i+1).padStart(2,'0'));
-    if(thumbs[i]) {
-      try{photoThumbnail(pdf,thumbs[i],x+1,154,w-2,15);}catch(e){}
-    } else if(i===thumbs.length && asset.gcode?.length) {
-      // Preserve a vector G-code axonometric fallback where photos are absent.
-      drawGcode3D(pdf,asset.gcode,x+3,154,w-6,14,5500);
-    } else {
-      label(pdf,'NO UPLOADED PHOTO',x+13,161);
-    }
+  frame(pdf,10,33,101,102);
+  label(pdf,asset.model?'RHINO / MODULE 3D':'MODULE VISUAL',10,139);
+
+  // Large 3D toolpath panel: 53 × 73 mm, compared with the former 73 × 14 mm.
+  box(pdf,114,33,53,73,'G-CODE / 3D AXONOMETRIC');
+  if(!drawGcode3D(pdf,asset.gcode,116,41,49,63,9500)) {
+    label(pdf,'NO G-CODE LINK',123,70);
   }
-  // The recipe belongs to the Material section's 'Composition / quantity' field.
+  const photos=asset.photos || [];
+  // The first uploaded photograph fills the prominent lower-right square.
+  box(pdf,114,109,53,61,'SITE PHOTO / 01');
+  if(photos[0]){
+    try { photoThumbnail(pdf,photos[0],115,116,51,53); } catch(err){console.warn('Site photo 1:',err);}
+  }else label(pdf,'NO UPLOADED PHOTO',120,139);
+
+  // A second photograph (when present) runs below the main Rhino capture.
+  box(pdf,10,143,101,27,'SITE PHOTO / 02');
+  if(photos[1]){
+    try { photoThumbnail(pdf,photos[1],11,150,99,19); } catch(err){console.warn('Site photo 2:',err);}
+  }else label(pdf,'NO SECOND PHOTO',37,160);
+
+  // Mix recipe is independent from annotations and module notes.
   stroke(pdf,10,175.2,167,175.2,[75,79,72],.17);
   label(pdf,'MATERIAL COMPOSITION / RECIPE',10,179.4);
   const recipe=wrap(pdf,r.Material_Details,156,5);
-  recipe.lines.forEach((ln,i)=>print(pdf,ln,10,184+i*2.7,156,recipe.size,false,ink));
+  recipe.lines.forEach((txt,i)=>print(pdf,txt,10,184+i*2.7,156,recipe.size,false,ink));
   const end=table(pdf,r);
-  if(end>197)console.warn('Catalogue: table exceeds page footer',end);
+  if(end>197)console.warn('Catalogue: table exceeds footer',end);
 }
-export function drawCover(pdf,entries,photos,gcodes) {
+
+const STATUS_ORDER=['Not Started','Queued','Printing','Printed','Failed'];
+const DEFAULT_STATUS_COLORS={
+  'Not Started':'#d6d6d1','Queued':'#a8c7e8',
+  'Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'
+};
+function statusColor(value,palette){
+  return (palette && palette[value]) || DEFAULT_STATUS_COLORS[value] || '#bbbdb7';
+}
+function rgb(value){
+  let hex=String(value||'').trim();
+  if(!/^#[0-9a-f]{6}$/i.test(hex))hex='#b8bab4';
+  return [1,3,5].map(start=>parseInt(hex.slice(start,start+2),16));
+}
+function swatch(pdf,x,y,status,palette,w=3.6,h=3.6){
+  pdf.setFillColor(...rgb(statusColor(status,palette)));
+  pdf.rect(x,y,w,h,'F');
+}
+function statusCounts(entries){
+  const totals={};
+  for(const entry of entries){
+    const status=present(entry.record.Production_Status);
+    totals[status]=(totals[status]||0)+1;
+  }
+  return totals;
+}
+function drawStatusKeymap(pdf,entries,palette,x=224,y=53,w=63){
+  const totals=statusCounts(entries);
+  stroke(pdf,x,y,x+w,y,[65,70,63],.24);
+  label(pdf,'PRODUCTION STATUS / KEY MAP',x,y+5,[48,56,47],6.1);
+  let rowY=y+12;
+  for(const status of [...STATUS_ORDER,...Object.keys(totals).filter(key=>!STATUS_ORDER.includes(key))]){
+    swatch(pdf,x+1,rowY-3,status,palette,4.4,4.4);
+    print(pdf,status,x+8.5,rowY+.4,w-23,8,false,ink);
+    print(pdf,String(totals[status]||0),x+w-11,rowY+.4,10,8,true,ink);
+    rowY+=9.7;
+  }
+  return rowY;
+}
+function placedLabels(pdf,positions,x,y,w,h,palette){
+  if(!positions?.length)return;
+  const used=[];
+  const bounds={x,y,w,h};
+  const ordered=[...positions].sort((a,b)=>Number(b.depth||0)-Number(a.depth||0));
+  const candidates=[[0,0],[4,0],[-4,0],[0,4.5],[0,-4.5],
+    [7,4],[-7,-4],[8,-6],[-8,6],[13,0],[-13,0],
+    [0,9],[0,-9],[12,9],[-12,-9],[-12,9],[12,-9],
+    [18,4],[-18,-4],[18,-10],[-18,10],[0,15],[0,-15]];
+  for(const point of ordered){
+    if(!Number.isFinite(point.u)||!Number.isFinite(point.v))continue;
+    const id=present(point.id).slice(0,12);
+    pdf.setFont('helvetica','bold');pdf.setFontSize(5.7);
+    const pw=Math.max(7,pdf.getTextWidth(id)+4.5),ph=4.2;
+    const anchorX=x+point.u*w,anchorY=y+point.v*h;
+    let target=null;
+    for(const [dx,dy] of candidates) {
+      const tx=Math.max(bounds.x+1,Math.min(bounds.x+w-pw-1,anchorX-pw/2+dx));
+      const ty=Math.max(bounds.y+1,Math.min(bounds.y+h-ph-1,anchorY-ph/2+dy));
+      const hit=used.some(b=>tx<b.x+b.w+1&&tx+pw+1>b.x&&ty<b.y+b.h+1&&ty+ph+1>b.y);
+      if(!hit){target={x:tx,y:ty,w:pw,h:ph};break;}
+    }
+    if(!target)target={
+      x:Math.max(bounds.x+1,Math.min(bounds.x+w-pw-1,anchorX-pw/2)),
+      y:Math.max(bounds.y+1,Math.min(bounds.y+h-ph-1,anchorY-ph/2)),
+      w:pw,h:ph
+    };
+    used.push(target);
+    const xc=target.x+pw/2,yc=target.y+ph/2;
+    if(Math.hypot(xc-anchorX,yc-anchorY)>2.6)
+      stroke(pdf,anchorX,anchorY,xc,yc,[109,113,103],.09);
+    bg(pdf,target.x,target.y,pw,ph,[253,253,250]);
+    swatch(pdf,target.x+.65,target.y+.98,point.status,palette,1.7,2);
+    print(pdf,id,target.x+3.25,target.y+2.98,pw-3.55,5.7,true,ink);
+  }
+}
+export function drawStatusCover(pdf,entries,overview,{palette={}}={}){
   bg(pdf,0,0,PW,PH,[252,252,249]);
+  label(pdf,'TU DELFT  /  SOIL-BASED PAVILION',10,11);
+  print(pdf,'FABRICATION / STATUS MAP',10,23,248,25,true,ink);
+  stroke(pdf,10,27.5,287,27.5,[68,71,65],.24);
+  const area={x:10,y:33,w:211,h:151};
+  bg(pdf,area.x,area.y,area.w,area.h,[242,242,238]);
+  if(overview?.canvas){
+    photoFit(pdf,overview.canvas,area.x,area.y,area.w,area.h);
+    placedLabels(pdf,overview.labels,area.x,area.y,area.w,area.h,palette);
+  }else{
+    print(pdf,'3D MODEL OVERVIEW UNAVAILABLE',37,112,155,12,false,grey);
+  }
+  frame(pdf,area.x,area.y,area.w,area.h);
+  const rowEnd=drawStatusKeymap(pdf,entries,palette,225,34,62);
+  stroke(pdf,225,rowEnd+5,287,rowEnd+5,[197,201,192],.14);
+  label(pdf,'MODEL / INVENTORY',225,rowEnd+12);
+  print(pdf,String(entries.length)+' MODULES',225,rowEnd+23,60,15,true,ink);
+  print(pdf,String(entries.filter(e=>e.record.Manufacturing_Method==='3D Printing').length)+' PRINTED',225,rowEnd+31,59,8,false,ink);
+  print(pdf,String(entries.filter(e=>e.record.Manufacturing_Method==='Rammed Earth').length)+' RAMMED',225,rowEnd+38,59,8,false,ink);
+  label(pdf,'MODULE IDS ARE ANNOTATED',10,191);
+  label(pdf,'SEE MODULE REGISTER / NEXT PAGE',125,191);
   stroke(pdf,10,198.4,287,198.4,[76,80,72],.18);
-  label(pdf,'SOIL-BASED PAVILION / FABRICATION RECORDS',10,204);
-  label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),226,204);
-  label(pdf,'TU DELFT  /  SOIL-BASED PAVILION',10,14);
-  print(pdf,'FABRICATION',10,52,270,35,true,ink);
-  print(pdf,'CATALOGUE',10,69,270,35,true,ink);
-  stroke(pdf,10,79,287,79,[67,73,66],.32);
-  const items=[
-    ['MODULES',entries.length],
-    ['3D PRINTING',entries.filter(e=>e.record.Manufacturing_Method==='3D Printing').length],
-    ['RAMMED EARTH',entries.filter(e=>e.record.Manufacturing_Method==='Rammed Earth').length],
-    ['PHOTOS',photos],
-    ['G-CODE FILES',gcodes]
-  ];
-  items.forEach(([key,val],i)=>{
-    const x=10+i*55;
-    label(pdf,key,x,89);
-    print(pdf,String(val),x,105,47,23,true,ink);
-  });
-  stroke(pdf,10,113,287,113,[216,216,210],.15);
-  label(pdf,'MODULE REGISTER   /   UPPERCASE IDS FIRST',10,121);
-  entries.slice(0,168).forEach((entry,i)=>{
-    const col=i%14,row=Math.floor(i/14);
-    print(pdf,entry.record.Object_ID,10+col*19.8,129+row*5.2,18,6.2,false,[84,87,80]);
-  });
-  if(entries.length>168)label(pdf,'+ '+(entries.length-168)+' ADDITIONAL RECORDS',10,194);
+  label(pdf,'SOIL-BASED PAVILION / CURRENT RHINO GEOMETRY',10,204);
+  label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),228,204);
+}
+export function drawRegisterPage(pdf,entries,{palette={},startIndex=0,total=entries.length}={}){
+  bg(pdf,0,0,PW,PH,[252,252,249]);
+  label(pdf,'PAVILION / FABRICATION CATALOGUE',10,11);
+  print(pdf,'MODULE REGISTER',10,24,215,23,true,ink);
+  stroke(pdf,10,28.5,287,28.5,[65,70,63],.22);
+  label(pdf,'OBJECT ID  /  PRODUCTION STATUS  /  METHOD',10,35);
+  label(pdf,'UPPERCASE IDS FIRST  /  CURRENT RHINO ONLY',192,35);
+  const perColumn=22,countCols=4,columnWidth=69.25;
+  for(let i=0;i<entries.length;i++) {
+    const column=Math.floor(i/perColumn);
+    if(column>=countCols)break;
+    const row=i%perColumn;
+    const x=10+column*columnWidth,y=43+row*6.65;
+    const record=entries[i].record;
+    const status=present(record.Production_Status);
+    const shortMethod=record.Manufacturing_Method==='3D Printing'?'3DP':
+      record.Manufacturing_Method==='Rammed Earth'?'RE':'-';
+    swatch(pdf,x,y-3,status,palette,3.2,3.2);
+    print(pdf,record.Object_ID,x+5.1,y,15.5,7.7,true,ink);
+    print(pdf,status,x+23,y,32,6.6,false,ink);
+    print(pdf,shortMethod,x+57,y,11,6.2,false,grey);
+    stroke(pdf,x,y+2.3,x+columnWidth-3,y+2.3,[226,228,221],.085);
+  }
+  stroke(pdf,10,193,287,193,[104,109,100],.16);
+  const totals=statusCounts(entries);
+  let xx=10;
+  for(const status of STATUS_ORDER){
+    swatch(pdf,xx,195.0,status,palette,2.5,2.5);
+    print(pdf,status+' '+String(totals[status]||0),xx+4,197.3,48,5.9,false,ink);
+    xx+=54.9;
+  }
+  label(pdf,'REGISTER '+(startIndex+1)+' - '+(startIndex+entries.length)+' / '+total,10,204);
+  label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),225,204);
 }
