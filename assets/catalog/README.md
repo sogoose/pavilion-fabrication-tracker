@@ -1,46 +1,44 @@
-# Fabrication Catalogue — PDF export
+# Fabrication Catalogue — high-resolution vector PDF
 
-The Tracker now exports module records as a downloadable **A4 landscape PDF**.
+The Tracker exports **A4 landscape CAD-style PDFs** with exactly **one page per module**. A summary cover page is optional in full-catalogue mode. No overflow/appendix pages are produced.
 
-## How to use
+## How to export
 
-- In **02 / Tracker**, click **Catalogue PDF ↗** in the top bar.
-- Choose **Full catalogue** (all modules, with a summary cover) or **Selected module** if a block is selected in the Rhino model.
-- Choose a main visual: **Auto / Photo → G-code → 3D** (recommended), **Photograph first**, **G-code first**, or **Isolated Rhino 3D first**.
-- Click **Download PDF ↗** and wait for the progress indicator. The browser downloads a PDF; it does not upload a new document to Supabase.
-- In the module side panel, click **↗ Module PDF Sheet** to export that particular module.
+In **02 / Tracker**, use **Catalogue PDF ↗** to download every module or select a module and use **↗ Module PDF Sheet** for a single A4 sheet. The main visual defaults to photo → shaded 3D model → 3D G-code; the dialog can prioritize a different main view. The *two smaller axonometric panels* are always included on every module sheet:
+- **3D / Rhino axonometric:** linework reconstructed from Rhino render meshes and drawn as vector lines when geometry exists. If edges cannot be reconstructed but 3D raster preview exists, that preview is used.
+- **G-code / 3D axonometric:** projected G0/G1 toolpath with X, Y and Z coordinates, drawn as vector PDF lines, not an XY top view. Travel lines are lighter.
 
-## Printed layout
+The larger photo area remains in the top-left. When the module has no photograph it shows the isolated shaded Rhino model or G-code axonometric as a fallback. Missing source files show a clear placeholder rather than losing the module page.
 
-Each module receives a CAD-style technical sheet. It contains:
-- A large visual: uploaded module photograph, 2D XY G-code preview, or isolated 3D Rhino geometry.
-- Object ID, module number, level, sequence, assigned students, method, machine, material, weight and infill.
-- Structural, production, drying and assembly statuses.
-- Print settings: speed, manual adjustment, pressure, first-layer height, layer height, duration.
-- Firing/glazing data: route, status, kiln, batch, peak temperature, firing date and shrinkage measurements.
-- Notes, material recipe, G-code filename, updated-by, timestamp and Rhino identifier.
-- If longer notes or references overflow the drawing sheet, additional detail pages preserve the complete values.
+## One-page CAD table
 
-The full catalogue has a simple cover with counts and module-ID index. All module pages are sorted by **Object ID** (natural order, case-sensitive). Missing values are displayed with an em dash.
+The table uses smaller vector type and includes module ID, module number, level, sequence, assignee, material, weight, manufacturing method, machine, infill, density, **Fabrication Date**, statuses, motor speed, manual adjustment, air pressure, first-layer height, layer height, duration, compression force, **Firing performed (yes/no), Firing Date and Peak Temperature**, G-code filename, and updated-by metadata.
 
-## Data and media rules
+The **MATERIAL COMPOSITION / RECIPE** panel displays the Tracker's existing **Material Details → Composition / quantity** field (`material_details`), *not* the free-form fabrication note. Long recipes are fitted into the fixed allotted space; extreme text length may require smaller lettering or visual truncation to honor the one-page limit. Fabrication notes, separate "Module Documentation" text, and Rhino GUID are deliberately excluded from the PDF.
 
-- Source data is fetched fresh from **Supabase** when shared mode is available. Local current-model records provide fallback.
-- One image is chosen per module in this default order: latest uploaded **photo** → attached **G-code** → isolated **Rhino 3D**. Alternative preferences can reorder that fallback.
-- G-code renders the XY projection of **linear G0/G1 moves** (limited to the first 5 MB and 65k segments per preview). It is a documentation view, **not** a certified machine-path simulation; arcs, multi-axis robot instructions and Z layering are not fully visualized.
-- Photos are downloaded from the Tracker's existing Supabase storage bucket. The original uploaded files remain unchanged.
-- The isolated Rhino figure is rendered using a separate canvas and shares existing mesh geometry without altering module records, the model, or the 3D Tracker viewport.
-- All PDF sheets are drawn into high-resolution browser canvas before being inserted into the PDF so non-Latin names and notes can remain visible even when jsPDF's basic fonts do not support them. As a trade-off the PDF text is not selectable.
+## Vector quality
 
-## Architecture and maintenance
+PDF headers, CAD table text (Latin text), lines, borders, Rhino outline segments, G-code projections and cover index are **native PDF vectors**. They remain sharp when zooming. Uploaded photographs and shaded Rhino previews are intentionally embedded as high-quality JPEGs; those source images cannot become vectors. Non-Latin field values (such as Korean text) are rasterized **individually at elevated resolution** when the standard built-in PDF font lacks the glyphs, so they remain readable while the table and the rest of the page retain vector properties.
 
-- **assets/catalog/catalog.js** — user-facing configuration dialog, shared data retrieval, visual fallback, G-code parsing, CAD-style PDF drawing, direct download.
-- **assets/catalog/catalog.css** — dialog and button styling.
-- **index.html** — imports the exporter module and adds the toolbar/side-panel download buttons.
-- A browser-loaded **jsPDF** library builds the final PDF from page canvases. If jsPDF fails to load, the dialog displays an error instead of changing tracker data.
+## Sorting
 
-This feature is **read-only**. It never mutates module data or changes the Tracker's collaborative edit permissions. For 100+ modules, PDF generation and 3D rendering can take time and consume browser memory; the progress indicator updates throughout. For particularly large exports, use selected-module mode or retry in a desktop browser.
+Both PDF catalogue and Excel export place **uppercase-leading IDs first**, in natural alphanumeric order. Example: `A01`, `A02`, `B01`, `a01`, `b01`. IDs remain unchanged in the database.
 
-## Edit the layout
+## Website / database
 
-Module sheets and the cover are authored in `drawSheet()`, `drawAppendixPages()` and `drawCover()` in `catalog.js`. The A4 target size is 297 × 210 mm. Layout is drawn at 1490 × 1050 logical units, then embedded as JPEG pages at a 1700 × 1202 canvas resolution.
+The Tracker has a shared **Fabrication Date** field of type `date` (`pavilion_parts.fabrication_date`), separate from Firing Date; blank dates are sent as SQL `NULL`. Firing inputs now show only **Firing performed?** (`Firing_Status`: Not fired/Fired), **Firing date**, and **Peak temperature (°C)**. The previous Unfired / To Be Fired / Rammed route selection remains. Older columns (kiln, batch, program, shrinkage etc.) are preserved in Supabase for historical integrity, but hidden from the simplified form and catalogue.
+
+The PDF data source is the current shared Supabase records, with the local Rhino model as the source of the isolated geometry. No data is modified by PDF export. Existing shared editing, photo uploads, G-code storage and Excel tools remain intact.
+
+## Code
+
+- `assets/catalog/catalog.js` — UI dialog, shared data/attachment loading and PDF assembly.
+- `assets/catalog/vector-sheet.js` — **native vector PDF** sheet/cover, G-code 3D motion parser and Rhino edge projection.
+- `assets/catalog/catalog.css` — PDF-export interface.
+- `index.html` — Tracker input fields and download entrypoints.
+- `supabase/migrations/20261019_fabrication_date.sql` — schema addition.
+- Library: jsPDF UMD (client-side).
+
+## Technical limitations
+
+G-code projection understands linear **G0/G1**, relative/absolute positioning and changes to XYZ, but does not implement G2/G3 arcs, extruder semantics or robot-specific kinematics. Preview is documentation, not CNC validation. The parser processes the first 8 MB of uploaded G-code. Dense meshes/path files are reduced to a reasonable count of segments to keep very large catalogues printable. The PDF generation indicator can take several minutes for all 163 modules; selecting a single module is a faster way to verify layout.
