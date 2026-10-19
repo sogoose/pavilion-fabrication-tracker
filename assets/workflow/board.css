@@ -236,7 +236,7 @@
 .wb-printing  { --x:12%;  --y:666px;  --w:24%; }
 .wb-rammed    { --x:70%;  --y:666px;  --w:24%; }
 .wb-firing    { --x:11%;  --y:1053px; --w:22%; }
-.wb-assembly  { --x:32%;  --y:1420px; --w:36%; }
+.wb-assembly  { --x:17%;  --y:1420px; --w:66%; }
 /* Drying is a deliberately unnumbered, noninteractive process marker. */
 .wb-drying {
   position:absolute;
@@ -270,10 +270,11 @@
   color: #a19e93;
   font: 9px "IBM Plex Mono",monospace;
 }
-/* The pavilion axonometric is intentionally the single, larger final image. */
+/* The pavilion axonometric is the single enlarged final image. Its SVG artboard
+ * is tightly cropped to a landscape (132:67) frame, avoiding unused whitespace. */
 .wb-assembly .wb-preview { align-items:center; text-align:center; }
-.wb-assembly .wb-drawing { width:min(100%,330px); }
-.wb-assembly .wb-drawing img { aspect-ratio:10 / 11; }
+.wb-assembly .wb-drawing { width:min(100%,690px); }
+.wb-assembly .wb-drawing img { aspect-ratio:132 / 67; }
 .wb-assembly .wb-detail { max-width:345px; margin:10px auto 0; text-align:left; }
 .wb-firing .wb-index { color: #99988f; }
 
@@ -363,7 +364,7 @@
   .wb-printing   { --x:4%;  --y:845px;  --w:46%; --image-h:112px; }
   .wb-rammed     { --x:58%; --y:850px;  --w:40%; --image-h:100px; }
   .wb-firing     { --x:7%;  --y:1198px;  --w:35%; --image-h:80px; }
-  .wb-assembly   { --x:12%; --y:1600px; --w:76%; }
+  .wb-assembly   { --x:7%; --y:1600px; --w:86%; }
   .wb-drying { left:35%; top:1105px; width:32%; font-size:18px; }
 
   .wb-phase      { top: 732px; left: 25%; width: 54%; }
@@ -378,7 +379,7 @@
   .wb-rammed .wb-name { font-size: 20px; }
   .wb-firing .wb-name { font-size: 18px; }
   .wb-assembly .wb-name { font-size: 26px; }
-  .wb-assembly .wb-drawing { width:min(100%,255px); }
+  .wb-assembly .wb-drawing { width:min(100%,345px); }
   .wb-material .wb-sample { width: 26px; height: 43px; }
   .wb-material-layout { gap: 1px; }
   .wb-management p { font-size: 11px; }
