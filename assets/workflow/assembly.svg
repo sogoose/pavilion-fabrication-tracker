@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Assembly — Pavilion Workflow</title>
+<!-- two diverging constructed wing walls from pavilion 3DM -->
+<path d="M13 51Q29 42 48 44Q63 46 66 57M123 53Q110 41 91 40Q80 43 70 55" stroke-width="1.2"/>
+<path d="M11 57Q34 48 52 51L66 62M124 59Q107 49 89 47L70 61" opacity=".6"/>
+<path d="M17 45V36L23 33L29 36V46M35 41V29L42 25L49 29V43M53 43V22L60 19L67 23V49" />
+<path d="M85 39V23L92 19L99 24V42M102 43V30L109 27L116 31V49M117 49V41L123 38L128 42V56"/>
+<path d="M17 36L23 40L29 36M35 29L42 34L49 29M53 22L60 28L67 23M85 23L92 30L99 24M102 30L109 35L116 31" opacity=".85"/>
+<path d="M23 40V49M42 34V47M60 28V54M92 30V51M109 35V53M123 43V56" opacity=".6"/>
+<path d="M23 33L25 25L30 27L35 31M42 25L45 17L51 19L53 22M60 19L63 8L68 11L72 25M92 19L90 7L85 11L80 26M109 27L110 17L105 19L101 32"/>
+<path d="M19 54L30 56L31 61L20 59Z M37 52L49 53L50 60L38 58Z M95 52L107 51L108 57L97 59Z M111 55L122 53L124 60L113 62Z" opacity=".6"/>
+</svg>
