@@ -631,7 +631,7 @@ header{gap:6px;padding:10px 16px}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
-import { setupCatalog } from './assets/catalog/catalog.js?v=20261019-v4';
+import { setupCatalog } from './assets/catalog/catalog.js?v=20261019-v5';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -663,7 +663,7 @@ const statusPalettes = {
   Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
   Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'},
   Firing_Route:{'Unfired':'#c8c8c2','To be fired':'#d9a15b','Rammed':'#b99b72'},
-  Firing_Status:{'Not Ready':'#d6d6d1','Ready':'#a8c7e8','In Kiln':'#d98f55','Cooling':'#e7c971','Fired':'#79aa7a','Failed':'#cc6b62'}
+  Firing_Status:{'Not fired':'#c8c8c2','Fired':'#79aa7a','Not Ready':'#d6d6d1','Ready':'#a8c7e8','In Kiln':'#d98f55','Cooling':'#e7c971','Failed':'#cc6b62'}
 };
 const printingMachinePalette = {
   WASP:'#7da6cc',
@@ -2065,7 +2065,9 @@ async function exportExcel(){
   const typeEntries=Object.entries(typeCounts).sort((a,b)=>{
     if(a[0]==='Other') return 1;
     if(b[0]==='Other') return -1;
-    return a[0].localeCompare(b[0],undefined,{numeric:true,sensitivity:'case',caseFirst:'upper'});
+    const bucket=v=>/^[A-Z]/.test(v)?0:/^[a-z]/.test(v)?1:2;
+    if(bucket(a[0])!==bucket(b[0]))return bucket(a[0])-bucket(b[0]);
+    return a[0].localeCompare(b[0],undefined,{numeric:true,sensitivity:'variant',caseFirst:'upper'});
   });
 
   ws.mergeCells('A8:C8');
