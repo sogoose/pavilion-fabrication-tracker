@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Material — Pavilion Workflow</title>
+<!-- bucket, scoop, measured mix on a digital scale -->
+<path d="M11 24H59L53 56H17L11 24Z M10 24Q10 19 35 19T60 24Q60 29 35 29T10 24Z"/>
+<path d="M17 37Q32 33 54 37M20 48Q35 45 51 48" opacity=".4" stroke-dasharray="2 3"/>
+<path d="M66 57H124V63H66Z M80 47H111L116 57H76Z M86 49H106V55H86Z"/>
+<path d="M86 48L82 28H110L106 48M79 28Q96 35 113 28 M86 42Q96 39 107 42" />
+<path d="M53 5L85 18L80 26L48 13Z M53 5L46 9L48 13M85 18L97 23L95 27L80 26"/>
+<path d="M84 25L88 31M92 27L95 33M101 26L104 32" stroke-dasharray="1 3" opacity=".65"/>
+<path d="M70 62h14M117 62h4" stroke-width=".7" opacity=".5"/>
+</svg>
