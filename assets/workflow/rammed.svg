@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="135" height="65" viewBox="0 0 135 65" fill="none" stroke="#444444" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+  <title>Rammed — Pavilion Workflow</title>
+<!-- overhead plywood outer frame, irregular curved mould inserts and tie rods -->
+<path d="M15 10L100 5L124 22L37 29Z M15 10V45L37 60V29M37 60L124 49V22"/>
+<path d="M20 14L98 10L118 23L38 33Z"/>
+<path d="M29 17L42 31L49 36L39 54L26 45Z M63 15L79 18L103 36L92 48L78 37Z M106 22L117 24L116 45L104 49L98 36Z"/>
+<path d="M29 17L40 22L43 31M63 15L70 10L80 14L79 18M106 22L109 17L118 23" stroke-width="1.7"/>
+<path d="M49 36Q58 22 74 30Q81 36 78 37M39 54Q52 46 62 49Q71 52 78 37M92 48Q97 44 98 36" opacity=".75"/>
+<path d="M16 44L7 46M37 60L31 64M124 49L133 49M121 16L132 15" stroke-width="1.2"/>
+<path d="M7 44V48M31 62V65M132 47V52M131 12V18" opacity=".7"/>
+<path d="M15 10L37 29M100 5L124 22" opacity=".45"/>
+</svg>
