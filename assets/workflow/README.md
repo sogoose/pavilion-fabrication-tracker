@@ -58,30 +58,25 @@ The page remains **one Workflow page**. Eight main clickable processes plus a sm
 
 SVGs are editable separately in Illustrator; these four are placeholders intended for replacement. To adjust their grouped layout, edit `.wp-cluster` in `board.css`. To edit credits, descriptions or links, edit the Workflow HTML in `index.html`. The existing 3D Tracker database and its records are unaffected.
 
-## Owner-only online editing — setup required
+## Password-only Workflow editing
 
-The Workflow page now includes an **Editor login** action. After a verified owner signs in, each expandable process/team has an **EDIT** button (double-click also opens the editor). The form edits titles, team credits, descriptions and external file links, then saves the data to Supabase for everyone to read. Changes never edit the SVG illustrations, arrows, or Rhino Tracker data.
+The public Workflow page has a quiet **Editor login** action below the footer. Click it, enter the private editor password, and select **Unlock editor**. No email or magic links are used.
 
-**Important: the front-end is deployed, but the secure database migration and owner grant must be completed before editing will work.** Until then, the original hard-coded Workflow text remains publicly readable.
+The server checks the password against a salted PBKDF2-SHA256 hash stored in a private Supabase table. The raw password is **not** in this repository, configuration, database, browser storage, or website source. A successful login issues a signed four-hour edit session kept in **sessionStorage** for this browser tab; **Sign out** clears it. Login failures are throttled on the server.
 
-1. In Supabase Dashboard for project `xjhwzhqiixbombbudlpl`, open **SQL Editor** and run `supabase/migrations/20261019_workflow_owner_editing.sql`. It creates `pavilion_workflow_editors` and `pavilion_workflow_content` with RLS: public reads, owner-only writes.
-2. In Supabase **Authentication → URL Configuration**, add `https://sogoose.github.io/pavilion-fabrication-tracker/` (and optionally `https://sogoose.github.io/pavilion-fabrication-tracker/**`) to the redirect allowlist. Ensure email OTP / magic link is enabled.
-3. Visit the website, click **Editor login**, enter the owner's email, and follow the sign-in link. The first sign-in creates the Supabase Auth user but **does not grant edit access**.
-4. In SQL Editor, run this statement **after the first sign-in**, substituting the owner's actual email:
+After unlocking, **Edit page** can change the main title and guide text, management link and labels; process-specific **EDIT** buttons can change headings, captions, teams, notes and HTTPS file links. All approved writes pass through the protected Supabase Edge Function `pavilion-workflow-editor` and are stored in `pavilion_workflow_content`. Ordinary visitors have read-only access to this Workflow content. Original static descriptions are shown whenever a record has not yet been saved.
 
-```sql
-insert into public.pavilion_workflow_editors (user_id)
-select id from auth.users where lower(email) = lower('YOUR-EMAIL@EXAMPLE.COM')
-on conflict (user_id) do nothing;
-```
+**Tracker stays unchanged:** `pavilion_parts`, photos, machine settings, and shared status records retain their existing team editing permissions, with no password required. Workflow permissions are separate.
 
-5. Refresh the website while signed in. **EDITOR ACCESS** and **EDIT** buttons should appear. Everyone else sees **READ ONLY** or the ordinary public page. Test with a non-owner account: writing must be rejected by RLS.
+Implementation:
+- `supabase/functions/pavilion-workflow-editor/index.ts`: server-side login, short-lived session verification and Workflow-only writes
+- `supabase/migrations/20261019_workflow_password_login.sql`: private authentication tables
+- `supabase/migrations/20261019_workflow_password_rate_limits.sql`: atomic login failure limit
+- `assets/workflow/editor.js`: password dialog, inline editor and secure API calls
 
-**Security:** Do not put a service-role key, editor password, or owner email into `config.js` or public GitHub files. The browser only contains a publishable key. Editor authorization is based on the authenticated Supabase user ID in the server-side membership table, never on a client-side email comparison. A shared link alone does not grant editing access. Existing Tracker edit policies are separate and unchanged by this migration.
+To change the password, create a **new salted hash in the private database**, not in GitHub; rotate the signing key at the same time to invalidate existing sessions. Never embed a password or service-role key in a public file. Since a shared password grants editing rights to anyone who knows it, keep it private.
 
-**Editor controls:** Once approved and signed in, use **Edit page** beside the main Workflow heading to change the title, introduction, construction-management link, Fabrication/Drying labels, and footer. Open a process or a detached team and click **EDIT** (or double-click the drawing) to change its title, description, participant credits, existing/new file links, and drawing caption where available. Saving writes the Workflow-only record to Supabase; other visitors see the change on refresh. No GitHub commit is required for these text changes, and editing does not grant Tracker privileges or remove its existing anonymous collaboration.
-
-**Editing format:** participant rows use `ROLE | Person · Person`; file rows use `LABEL | https://example.com/...` or `LABEL | #tracker`. Only HTTPS and the internal Tracker shortcut are accepted. A saved section overrides the original markup for all visitors; empty file lists are supported.
+**Editing format:** credits use `ROLE | Person · Person` per line; file links use `LABEL | https://example.com/...` or `LABEL | #tracker`.
 
 ## Edit the layout or wording
 
