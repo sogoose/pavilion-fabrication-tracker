@@ -22,7 +22,7 @@ The authoritative inventory is `assets/catalog/model-inventory.json`. GitHub Act
 
 ### Front matter — full-catalogue downloads only
 
-**Page 1 / Production Status Map:** the currently loaded Rhino geometry is rendered together as one **orthographic axonometric**, with each module coloured using the same **Production Status palette and user-edited legend colours as the Tracker**. Small vector module ID tags sit at the projected object centres, and a large **Production Status / Key Map** displays the colour, status and total for Not Started, Queued, Printing, Printed and Failed. Total modules, 3D Printing and Rammed Earth counts sit beside the drawing.
+**Page 1 / Production Status Map:** the currently loaded Rhino geometry is rendered as one **orthographic axonometric**, with each module coloured using the same **Production Status palette and user-edited legend colours as the Tracker**. Modules are displaced radially by about **5.5% of the pavilion diagonal** in a PDF-only exploded view: the original Rhino geometry and production data remain unchanged. Small module names appear near their updated, exploded positions with **thin white text halos**, no boxes, no colour pins and no leader lines. A collision-avoidance pass seeks nearby available label positions so their printed names do not overlap. The **Production Status / Key Map** displays the colour, status and total for Not Started, Queued, Printing, Printed and Failed. Total modules, 3D Printing and Rammed Earth counts sit beside the drawing.
 
 **Page 2 / Module Register:** the module names are no longer crowded into tiny lines on the cover. Instead they appear on a dedicated, readable A4 register: ID, colour swatch, Production Status and abbreviated manufacturing method. Records sort with uppercase IDs first. The register supports 88 entries per page; very large models use further register pages.
 
@@ -30,10 +30,9 @@ These two preliminary pages can be disabled using the checkbox in the PDF downlo
 
 ### Module sheets — one landscape A4 per block
 
-- **Main left / 3D:** a roughly square, high-resolution shaded capture of the current Rhino module.
-- **Upper right / G-code:** an enlarged **53 × 73 mm 3D axonometric** of G1 machining/printing moves. The print geometry fits the panel instead of being shrunk by long nonprinting G0 travel moves. The drawing stays native PDF vector linework.
-- **Lower right / site photo 01:** one large photo frame, newest uploaded image first.
-- **Bottom left / site photo 02:** a secondary strip for the next uploaded photograph when it exists.
+- **Main left / 3D:** a tall **101 × 137 mm** shaded Rhino module capture. The former bottom-left `SITE PHOTO / 02` block has been removed and merged into the main Rhino figure.
+- **Upper right / G-code:** an enlarged **53 × 73 mm 3D axonometric** of G1 machining/printing moves, with continuous paths preserved. The drawing stays native PDF vector linework.
+- **Lower right / site photo 01:** one large photo frame for the newest uploaded image. Any other uploaded photographs remain in storage, but do not create extra PDF frames.
 
 The table on the right retains identity, method/machine, material, infill, production status, Fabrication Date, Drying/Assembly, printing parameters, Firing Date/Temperature/Duration and Kiln. In **06 / ADDITIONAL**, the report now includes compression force and G-code filename **but omits Updated By and Last Updated**.
 
