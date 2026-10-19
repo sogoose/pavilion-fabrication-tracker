@@ -244,7 +244,7 @@ function table(pdf,r){
   ]);
   section('06  ADDITIONAL',[
     ['COMPRESSION / KN',r.Compression_Force_kN,'UPDATED BY',r.Updated_By],
-    ['G-CODE FILE',r.GCode_File?String(r.GCode_File).split('/').pop().replace(/^\d+_/,''):'—',
+    ['G-CODE FILE',r.GCode_File?String(r.GCode_File).split('/').pop().replace(/^\d+_/,''):'-',
       'LAST UPDATED',r.Last_Updated]
   ]);
   return y;
