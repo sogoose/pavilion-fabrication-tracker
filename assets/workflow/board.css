@@ -1235,17 +1235,17 @@
   flex:0 1 170px;
   margin:7px auto 0;
 }
-#workflowView .wb-gcode .wb-drawing,
-#workflowView .wb-material-layout .wb-drawing {
+#workflowView .wb-board .wb-gcode .wb-preview .wb-drawing,
+#workflowView .wb-board .wb-material .wb-preview .wb-drawing {
   width:min(100%,155px);
 }
-#workflowView .wb-material-layout .wb-drawing {flex-basis:155px;}
+#workflowView .wb-board .wb-material .wb-preview .wb-drawing {flex-basis:155px;}
 #workflowView .wb-assembly .wb-preview {
   align-items:stretch;
   text-align:left;
   padding:17px clamp(18px,3vw,37px) 23px;
 }
-#workflowView .wb-assembly .wb-drawing {
+#workflowView .wb-board .wb-assembly .wb-preview .wb-drawing {
   width:min(100%,690px);
   margin:4px auto 0;
 }
