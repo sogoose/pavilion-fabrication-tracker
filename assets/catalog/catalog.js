@@ -24,7 +24,8 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
-        '<option value="selected">Selected module / one sheet</option></select></label>' +
+        '<option value="selected">Selected module / one sheet</option>' +
+        '<option value="timeline">Fabrication timeline / 3D map only</option></select></label>' +
 
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
         '<span>Include status map + module register at the front</span></label>' +
@@ -73,18 +74,21 @@ export function setupCatalog({ THREE, getState, notify }) {
     if (e.target === dialog) close();
   });
   scope.addEventListener('change', () => {
-    cover.disabled=scope.value==='selected';
-    // Keep single-module exports to a single sheet by default.
+    const dateOnly=scope.value==='timeline';
+    cover.disabled=scope.value==='selected'||dateOnly;
     datesOption.checked=scope.value!=='selected';
+    datesOption.disabled=dateOnly;
   });
   function open(requested = 'all') {
     if (busy) return;
     const state = getState();
     const hasSelection = !!(state.selectedKey && state.records[state.selectedKey]);
     scope.querySelector('option[value="selected"]').disabled = !hasSelection;
-    scope.value = requested === 'selected' && hasSelection ? 'selected' : 'all';
-    cover.disabled = scope.value === 'selected';
+    scope.value=requested==='timeline'?'timeline':
+      requested==='selected'&&hasSelection?'selected':'all';
+    cover.disabled=scope.value==='selected'||scope.value==='timeline';
     datesOption.checked=scope.value!=='selected';
+    datesOption.disabled=scope.value==='timeline';
     progress.hidden = true;
     progressFill.style.width = '0%';
     status.textContent = '';
@@ -420,7 +424,8 @@ export function setupCatalog({ THREE, getState, notify }) {
         ? all.filter(e=>/^[A-Z]/.test(String(e.record.Object_ID||'')))
         : all;
       if(!entries.length)throw new Error('No modules found. Load or sync the Tracker first.');
-      const photos=await gatherPhotos(state);
+      const timelineOnly=scope.value==='timeline';
+      const photos=timelineOnly?new Map():await gatherPhotos(state);
       const pdf=new Class({orientation:'landscape',unit:'mm',format:'a4',
         compress:true,putOnlyUsedFonts:true,precision:4});
       pdf.setProperties({title:'Pavilion Fabrication Catalogue',
@@ -430,7 +435,7 @@ export function setupCatalog({ THREE, getState, notify }) {
         if(pages)pdf.addPage('a4','landscape');
         pages++;
       };
-      if(scope.value!=='selected'&&cover.checked){
+      if(scope.value!=='selected'&&scope.value!=='timeline'&&cover.checked){
         message('Rendering 3D production-status map…',.025);
         let overview=null;
         try {
@@ -478,8 +483,8 @@ export function setupCatalog({ THREE, getState, notify }) {
           await new Promise(resolve=>setTimeout(resolve,0));
         }
       }
-      capture=createIsolatedCapture();
-      for(let i=0;i<entries.length;i++){
+      if(!timelineOnly)capture=createIsolatedCapture();
+      for(let i=0;!timelineOnly&&i<entries.length;i++){
         if(cancelled)throw new Error('Catalogue cancelled.');
         const entry=entries[i];
         message('CAD sheet '+(i+1)+' / '+entries.length+' · '+clean(entry.record.Object_ID),
@@ -495,12 +500,14 @@ export function setupCatalog({ THREE, getState, notify }) {
       if(cancelled)throw new Error('Catalogue cancelled.');
       message('Saving '+pages+' vector PDF pages…',1);
       const stamp=new Date().toISOString().slice(0,10).replace(/-/g,'');
-      const name=scope.value==='selected'
+      const name=timelineOnly
+        ? 'Pavilion_Fabrication_Timeline_'+stamp+'.pdf'
+        : scope.value==='selected'
         ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
         : 'Pavilion_Fabrication_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
       message('Saved '+pages+' pages · '+entries.length+' modules · vector CAD.',1);
-      notify?.('Vector PDF ready · '+entries.length+' module sheets.');
+      notify?.('Vector PDF ready · '+(timelineOnly?'fabrication timeline':entries.length+' module sheets')+'.');
     }catch(error){
       message(error?.message||'Could not generate the catalogue PDF.');
       if(!cancelled)notify?.('Catalogue PDF failed: '+(error?.message||error),true);
@@ -508,11 +515,15 @@ export function setupCatalog({ THREE, getState, notify }) {
       capture?.dispose();
       busy=false;cancelled=false;
       download.disabled=false;scope.disabled=false;
-      cover.disabled=scope.value==='selected';
-      datesOption.disabled=false;
+      cover.disabled=scope.value==='selected'||scope.value==='timeline';
+      datesOption.disabled=scope.value==='timeline';
       download.textContent=original;
     }
   });
 
-  return {open};
+  return {open,downloadTimeline(){
+    if(busy)return;
+    open('timeline');
+    download.click();
+  }};
 }
