@@ -269,7 +269,7 @@
       let extension = 'URL';
       if (href !== '#tracker') {
         const match = new URL(href).pathname.match(/\.([a-z0-9]{2,6})$/i);
-        if (match && /^(pdf|docx|xlsx|pptx|zip|csv|txt|3dm|gcode|dxf|stl)$/i.test(match[1])) {
+        if (match && /^(pdf|docx|xlsx|pptx|zip|csv|txt|3dm|gcode|dxf|stl|gh|ghx|dwg|ifc|obj|step|stp|igs|iges|3mf|fbx|skp|glb|gltf|py|json|nc|tap)$/i.test(match[1])) {
           extension = match[1].toUpperCase();
         }
       }
