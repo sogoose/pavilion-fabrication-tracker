@@ -354,7 +354,12 @@
             ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
           const key = PROJECT + '/workflow/' + id + '/' + uuid + '.' + ext;
           const storage = client.storage.from('pavilion-workflow-files');
-          const {error} = await storage.upload(key, file, {
+          // Some Windows browsers label ZIP files application/x-zip-compressed.
+          // Explicitly normalize to the standard MIME while preserving bytes.
+          const payload = ext === 'zip'
+            ? new Blob([file], {type: WORKFLOW_FILE_MIME.zip})
+            : file;
+          const {error} = await storage.upload(key, payload, {
             contentType: WORKFLOW_FILE_MIME[ext], upsert:false, cacheControl:'3600'
           });
           if (error) throw error;
