@@ -4,6 +4,8 @@
  */
 const PW=297, PH=210, PTMM=25.4/72;
 const ink=[38,42,38],grey=[116,120,113],rule=[207,209,203];
+// The same RGB is used by the Rhino WebGL capture and its PDF panel.
+export const MODULE_PANEL_RGB=Object.freeze([246,246,242]);
 const present=v=>v===null||v===undefined||String(v).trim()===''?'-':String(v).trim();
 export function idOrder(a,b){
   const aId=String(a||'').trim(),bId=String(b||'').trim();
@@ -96,14 +98,18 @@ function wrap(pdf,str,w,maxLines=4){
   if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]+='...';}
   return {lines,size};
 }
-function photoFit(pdf,img,x,y,w,h){
+function photoFit(pdf,img,x,y,w,h,format='JPEG'){
   const iw=img.width||img.videoWidth||1,ih=img.height||img.videoHeight||1;
   const scale=Math.min(w/iw,h/ih),iwmm=iw*scale,ihmm=ih*scale;
   const cv=document.createElement('canvas');
   const down=Math.min(1800/iw,1300/ih,1);
   cv.width=Math.max(1,Math.round(iw*down));cv.height=Math.max(1,Math.round(ih*down));
   cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
-  pdf.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',
+  // Keep Rhino previews lossless: JPEG can shift the nearly-white
+  // background by 1-2 RGB values, creating a visible rectangular seam.
+  const png=format==='PNG';
+  const data=png?cv.toDataURL('image/png'):cv.toDataURL('image/jpeg',.92);
+  pdf.addImage(data,png?'PNG':'JPEG',
     x+(w-iwmm)/2,y+(h-ihmm)/2,iwmm,ihmm,undefined,'FAST');
 }
 function photoThumbnail(pdf,img,x,y,w,h){
@@ -364,9 +370,9 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   // Single tall Rhino render on the LEFT. This merges the old Photo/02
   // footprint into the main figure; the separate second-photo box is removed.
   const hero=asset.model || asset.photos?.[0] || null;
-  bg(pdf,10,33,101,137,[246,246,242]);
+  bg(pdf,10,33,101,137,MODULE_PANEL_RGB);
   if(hero){
-    try { photoFit(pdf,hero,11,34,99,135); }
+    try { photoFit(pdf,hero,11,34,99,135,asset.model?'PNG':'JPEG'); }
     catch(err){console.warn('PDF module hero:',err);}
   }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,124)) {
     print(pdf,'NO 3D MODEL',35,104,65,8,false,grey);
