@@ -20,7 +20,7 @@
   const titleNode = node => node.querySelector('.wb-name, .wp-title');
   const bodyNode = node => node.querySelector('.wb-detail, .wp-description');
   const linkNode = node => node.querySelector('.wb-links, .wp-links');
-  // File attachments share a dedicated, 15 MiB public workflow bucket.
+  // File attachments share a dedicated, 25 MiB public workflow bucket.
   // Unknown extensions and active web/script formats are not accepted.
   const WORKFLOW_FILE_MIME = Object.freeze({
     pdf: 'application/pdf',
@@ -32,7 +32,7 @@
     '3dm': 'application/octet-stream',
     dxf: 'application/octet-stream', stl: 'application/octet-stream'
   });
-  const MAX_WORKFLOW_FILE_BYTES = 15 * 1024 * 1024;
+  const MAX_WORKFLOW_FILE_BYTES = 25 * 1024 * 1024;
   const safeHref = value => {
     const href = safeText(value).trim();
     if (href === '#tracker') return href;
@@ -298,7 +298,7 @@
     const fileWrap = document.createElement('label');
     fileWrap.className = 'wf-editor-field wf-file-uploader';
     const fileLabel = document.createElement('span');
-    fileLabel.textContent = 'ATTACH FILES · MAX 15 MB EACH';
+    fileLabel.textContent = 'ATTACH FILES · MAX 25 MB EACH';
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.multiple = true;
@@ -330,7 +330,7 @@
           setFeedback('Unsupported file type: ' + file.name, true); return;
         }
         if (!file.size || file.size > MAX_WORKFLOW_FILE_BYTES) {
-          setFeedback('Files must be non-empty and under 15 MB: ' + file.name, true); return;
+          setFeedback('Files must be non-empty and at most 25 MB: ' + file.name, true); return;
         }
         checked.push({ file, ext });
       }
