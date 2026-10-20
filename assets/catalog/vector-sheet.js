@@ -345,10 +345,11 @@ function table(pdf,r){
     ['LAYER / MM',r.Layer_Height_mm,'DURATION / MIN',r.Print_Duration_min]
   ]);
   section('05  FIRING',[
-    ['FIRED?',r.Firing_Status==='Fired'?'Yes':r.Manufacturing_Method==='Rammed Earth'?'N/A':'No',
+    ['FIRING STATUS',r.Manufacturing_Method==='Rammed Earth'?'N/A':(r.Firing_Status||'Not fired'),
       'FIRING DATE',r.Firing_Date],
-    ['TEMPERATURE / C',r.Firing_Peak_Temp_C,'ROUTE',r.Firing_Route],
-    ['DURATION / H',r.Firing_Duration_h,'KILN / MACHINE',r.Firing_Kiln || (r.Manufacturing_Method==='3D Printing'?'ROHDE-kiln':'-')]
+    ['TEMPERATURE / C',r.Firing_Peak_Temp_C,'DURATION / H',r.Firing_Duration_h],
+    ['KILN / MACHINE',r.Manufacturing_Method==='3D Printing'?(r.Firing_Kiln||'ROHDE-kiln'):'-',
+      'FIRING BATCH',r.Firing_Batch]
   ]);
   section('06  ADDITIONAL',[
     ['COMPRESSION / KN',r.Compression_Force_kN,'G-CODE FILE',
