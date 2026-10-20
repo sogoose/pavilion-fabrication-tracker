@@ -1,0 +1,62 @@
+/* Tracker / Fabrication Date timeline — neutral technical board, no chart library. */
+.fab-timeline-dialog{
+  width:min(1030px,calc(100vw - 32px));
+  max-width:none;max-height:92dvh;overflow:auto;
+  padding:0;margin:auto;border:1px solid #c6c9c3;border-radius:3px;
+  background:#fbfbf8;color:#222723;font-family:Inter,Arial,sans-serif;
+  box-shadow:0 22px 78px rgba(20,25,20,.22)
+}
+.fab-timeline-dialog::backdrop{background:rgba(14,18,15,.54);backdrop-filter:blur(3px)}
+.fab-timeline-shell{padding:clamp(20px,3vw,35px)}
+.fab-timeline-head{display:flex;align-items:flex-start;justify-content:space-between;gap:25px;margin-bottom:23px}
+.fab-timeline-eyebrow{font:600 10px/1.4 "IBM Plex Mono",monospace;letter-spacing:.08em;color:#676d69}
+.fab-timeline-head h2{font:700 clamp(27px,4vw,39px)/1.08 Manrope,Inter,sans-serif;letter-spacing:-.055em;margin:8px 0 7px}
+.fab-timeline-head p{font-size:13px;line-height:1.55;color:#686e69;margin:0}
+.fab-timeline-close{flex:none;width:32px;height:32px;border:1px solid #cbd0ca!important;border-radius:0!important;background:transparent!important;font-size:24px!important;line-height:1;display:grid;place-items:center;padding:0!important}
+.fab-timeline-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid #29302b;border-bottom:1px solid #aab0aa}
+.fab-timeline-stat{padding:15px 8px 14px 0;min-width:0;display:flex;flex-direction:column;gap:7px}
+.fab-timeline-stat:not(:first-child){padding-left:12px;border-left:1px solid #dedfd9}
+.fab-timeline-stat strong{font:700 28px/1 Manrope,Inter,sans-serif;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.fab-timeline-stat span{font:600 9px/1.35 "IBM Plex Mono",monospace;color:#6f766f;letter-spacing:.015em}
+.fab-timeline-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:17px 0 11px}
+.fab-timeline-filters{display:flex;flex-wrap:wrap;gap:4px}
+.fab-timeline-dialog .fab-timeline-filters button{padding:7px 11px!important;font-size:11px;border:1px solid #cfd4ce;border-radius:0;background:transparent}
+.fab-timeline-dialog .fab-timeline-filters button[aria-pressed=true]{color:white;background:#232a25;border-color:#232a25}
+.fab-timeline-legend{display:flex;align-items:center;gap:17px;font-size:11px;color:#525b55}
+.fab-timeline-legend span:before{content:"";display:inline-block;width:8px;height:8px;margin-right:6px}
+.fab-legend-print:before{background:#4e85c0}
+.fab-legend-rammed:before{background:#a78252}
+.fab-timeline-chart{width:100%;height:255px;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;background:#f2f3ee;border-top:1px solid #d4d9d3;border-bottom:1px solid #d4d9d3}
+.fab-timeline-bars{display:flex;align-items:flex-end;gap:clamp(7px,1vw,13px);height:100%;min-width:max-content;padding:21px 20px 18px;box-sizing:border-box}
+.fab-timeline-dialog .fab-timeline-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;flex:none;min-width:48px;width:clamp(48px,5.7vw,68px);height:100%;box-sizing:border-box;background:transparent!important;padding:3px 4px!important;border:1px solid transparent!important;border-radius:0!important;cursor:pointer}
+.fab-timeline-dialog .fab-timeline-day:hover{border-color:#979f96!important}
+.fab-timeline-dialog .fab-timeline-day.is-selected{background:rgba(255,255,255,.85)!important;border-color:#303a32!important}
+.fab-timeline-count{font:700 12px/1 "IBM Plex Mono",monospace;color:#303c34}
+.fab-timeline-bar{display:flex;flex-direction:column;flex:none;width:100%;min-height:4px;overflow:hidden;border-radius:0}
+.fab-bar-print{background:#4e85c0}
+.fab-bar-rammed{background:#a78252}
+.fab-bar-other{background:#999f9b}
+.fab-timeline-date{font:500 10px/1.2 "IBM Plex Mono",monospace;color:#48544c;white-space:nowrap}
+.fab-timeline-detail{margin-top:23px}
+.fab-timeline-detail h3{font:700 18px/1.4 Manrope,Inter,sans-serif;letter-spacing:-.025em;margin:0 0 8px}
+.fab-timeline-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}
+.fab-timeline-dialog .fab-timeline-module{display:grid;grid-template-columns:minmax(55px,70px) minmax(0,1fr) 20px;gap:10px;align-items:center;padding:12px 1px;border:0;border-radius:0;border-bottom:1px solid #dedfda;background:transparent;text-align:left}
+.fab-timeline-dialog .fab-timeline-module:hover{color:#234c76;background:#f2f4f2}
+.fab-timeline-module-id{font:700 15px/1.2 Manrope,Inter,sans-serif;overflow-wrap:anywhere}
+.fab-timeline-module-info{display:flex;gap:3px;flex-direction:column;min-width:0;color:#5a615c;font-size:11px;line-height:1.3}
+.fab-timeline-module-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fab-timeline-module-arrow{font-size:18px}
+.fab-timeline-empty{padding:25px 18px;color:#7a817c;font-size:12px;line-height:1.6}
+.fab-timeline-note{border-top:1px solid #dcdfd9;margin:24px 0 0;padding-top:11px;color:#707771;font-size:10px;line-height:1.6}
+@media(max-width:710px){
+ .fab-timeline-dialog{width:calc(100vw - 12px);max-height:96dvh}
+ .fab-timeline-shell{padding:18px 14px}
+ .fab-timeline-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .fab-timeline-stat{padding:10px 5px}
+ .fab-timeline-stat:nth-child(4){border-left:0;padding-left:0}
+ .fab-timeline-stat strong{font-size:24px}
+ .fab-timeline-toolbar{align-items:flex-start;flex-direction:column}
+ .fab-timeline-chart{height:230px}
+ .fab-timeline-bars{padding:15px 12px 16px}
+ .fab-timeline-items{grid-template-columns:1fr}
+}
