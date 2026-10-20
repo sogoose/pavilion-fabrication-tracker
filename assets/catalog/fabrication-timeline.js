@@ -1,7 +1,7 @@
 /* Fabrication Timeline / by actual Fabrication_Date.
    Shows daily module counts by manufacturing method. No schema changes:
    records are read live from the active 3DM-backed Tracker state. */
-export function setupFabricationTimeline({getEntries,selectModule,viewIn3D}) {
+export function setupFabricationTimeline({getEntries,selectModule,viewIn3D,downloadPDF}) {
   const dialog=document.createElement('dialog');
   dialog.className='fab-timeline-dialog';
   dialog.setAttribute('aria-label','Fabrication timeline by date');
@@ -15,7 +15,8 @@ export function setupFabricationTimeline({getEntries,selectModule,viewIn3D}) {
         '<button type="button" data-method="All" aria-pressed="true">All</button>'+
         '<button type="button" data-method="3D Printing" aria-pressed="false">3D Printing</button>'+
         '<button type="button" data-method="Rammed Earth" aria-pressed="false">Rammed Earth</button>'+
-      '</div><div class="fab-timeline-legend"><span class="fab-legend-print">3D Printing</span><span class="fab-legend-rammed">Rammed Earth</span></div></div>'+
+      '</div><div class="fab-timeline-legend"><span class="fab-legend-print">3D Printing</span><span class="fab-legend-rammed">Rammed Earth</span></div>'+
+      '<button type="button" class="fab-timeline-pdf">DOWNLOAD TIMELINE PDF ↗</button></div>'+
       '<div class="fab-timeline-chart" aria-label="Fabrication counts for each recorded date"></div>'+
       '<section class="fab-timeline-detail" aria-label="Modules for selected fabrication date">'+
       '<div class="fab-timeline-detail-head"><h3>Select a date</h3><button type="button" class="fab-timeline-view3d" disabled>VIEW DATE IN 3D ↗</button></div><div class="fab-timeline-items"></div></section>'+
@@ -142,6 +143,10 @@ export function setupFabricationTimeline({getEntries,selectModule,viewIn3D}) {
     chart.scrollLeft=hadSelection?currentScroll:Math.max(0,chart.scrollWidth-chart.clientWidth);
     renderDetails(active);
   };
+  $('.fab-timeline-pdf').addEventListener('click',()=>{
+    dialog.close();
+    downloadPDF?.();
+  });
   viewButton.addEventListener('click',()=>{
     if(!selectedDate)return;
     dialog.close();
