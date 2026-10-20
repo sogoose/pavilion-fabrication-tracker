@@ -7,8 +7,10 @@ import {
   idOrder, parseGcode3D, MODULE_PANEL_RGB,
   drawSheet as drawVectorSheet,
   drawStatusCover as drawVectorCover,
-  drawRegisterPage as drawVectorRegister
-} from './vector-sheet.js?v=20261020-firing-status-timeline-v3';
+  drawRegisterPage as drawVectorRegister,
+  drawFabricationTimelinePage as drawDatePage,
+  fabricationDateGroups
+} from './vector-sheet.js?v=20261020-fabrication-3d-pdf-v4';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -18,7 +20,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<div class="catalog-head"><span class="catalog-kicker">PAVILION / DOCUMENTATION</span>' +
       '<button type="button" class="catalog-close" aria-label="Close">×</button></div>' +
       '<h2>Fabrication Catalogue</h2>' +
-      '<p class="catalog-lead">Full PDF starts with a coloured, labelled 3D production-status map, then a readable module register and individual CAD sheets.</p>' +
+      '<p class="catalog-lead">Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.</p>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
@@ -26,6 +28,8 @@ export function setupCatalog({ THREE, getState, notify }) {
 
       '<label class="catalog-check"><input class="catalog-cover" type="checkbox" checked>' +
         '<span>Include status map + module register at the front</span></label>' +
+      '<label class="catalog-check"><input class="catalog-dates" type="checkbox" checked>' +
+        '<span>Include fabrication timeline + dated 3D pavilion map</span></label>' +
       '<p class="catalog-footnote">Only modules in the current Rhino model are included. Individual sheets show a square Rhino close-up, enlarged 3D G-code, and up to two uploaded photos.</p>' +
       '<div class="catalog-progress" hidden><div class="catalog-track"><div class="catalog-progress-fill"></div></div>' +
         '<span class="catalog-status" role="status" aria-live="polite"></span></div>' +
@@ -37,6 +41,7 @@ export function setupCatalog({ THREE, getState, notify }) {
   const $ = s => dialog.querySelector(s);
   const scope = $('.catalog-scope');
   const cover = $('.catalog-cover');
+  const datesOption = $('.catalog-dates');
   const progress = $('.catalog-progress');
   const progressFill = $('.catalog-progress-fill');
   const status = $('.catalog-status');
@@ -67,7 +72,11 @@ export function setupCatalog({ THREE, getState, notify }) {
   dialog.addEventListener('click', e => {
     if (e.target === dialog) close();
   });
-  scope.addEventListener('change', () => { cover.disabled = scope.value === 'selected'; });
+  scope.addEventListener('change', () => {
+    cover.disabled=scope.value==='selected';
+    // Keep single-module exports to a single sheet by default.
+    datesOption.checked=scope.value!=='selected';
+  });
   function open(requested = 'all') {
     if (busy) return;
     const state = getState();
@@ -75,6 +84,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     scope.querySelector('option[value="selected"]').disabled = !hasSelection;
     scope.value = requested === 'selected' && hasSelection ? 'selected' : 'all';
     cover.disabled = scope.value === 'selected';
+    datesOption.checked=scope.value!=='selected';
     progress.hidden = true;
     progressFill.style.width = '0%';
     status.textContent = '';
@@ -205,12 +215,16 @@ export function setupCatalog({ THREE, getState, notify }) {
     'Not Started':'#d6d6d1','Queued':'#a8c7e8',
     'Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'
   };
-  function captureProductionOverview(state,entries) {
+  function captureProductionOverview(state,entries,{fabricationCutoff=null}={}) {
     // Use a separate scene and material clones: never disturb the interactive
     // Tracker viewer, camera, visibility or its selected-object colors.
     const width=2100,height=1503;
     let overviewRenderer=null;
     const colors={...DEFAULT_PRODUCTION_COLORS,...(state.productionPalette||{})};
+    const fabricationPalette={
+      '3D Printing':'#4e85c0','Rammed Earth':'#a78252',
+      Other:'#859a83',Later:'#bfc3c0',Undated:'#e7e8e4'
+    };
     const materials=new Map();
     try{
       overviewRenderer=new THREE.WebGLRenderer({
@@ -234,8 +248,15 @@ export function setupCatalog({ THREE, getState, notify }) {
       const anchors=[];
       for(const entry of entries) {
         if(!entry.part?.meshes?.length)continue;
-        const status=String(entry.record.Production_Status||'Not Started');
-        const color=colors[status]||'#bbbdb7';
+        let status=String(entry.record.Production_Status||'Not Started');
+        let color=colors[status]||'#bbbdb7';
+        if(fabricationCutoff!==null){
+          const date=String(entry.record.Fabrication_Date||'').trim();
+          const valid=/^\d{4}-\d{2}-\d{2}$/.test(date)&&!Number.isNaN(Date.parse(date+'T12:00:00Z'));
+          status=!valid?'Undated':date>fabricationCutoff?'Later':
+            fabricationPalette[entry.record.Manufacturing_Method]?entry.record.Manufacturing_Method:'Other';
+          color=fabricationPalette[status];
+        }
         if(!materials.has(color))materials.set(color,new THREE.MeshStandardMaterial({
           color,roughness:.9,metalness:0,side:THREE.DoubleSide
         }));
@@ -384,7 +405,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       return;
     }
     busy=true;cancelled=false;download.disabled=true;scope.disabled=true;
-    cover.disabled=true;
+    cover.disabled=true;datesOption.disabled=true;
     const original=download.textContent;
     download.textContent='Generating…';
     let capture=null;
@@ -433,6 +454,30 @@ export function setupCatalog({ THREE, getState, notify }) {
           });
         }
       }
+      if(datesOption.checked){
+        // The same date groups and colours are used for the 3D scrubber
+        // and the native PDF timeline, without changing Tracker state.
+        const dated=fabricationDateGroups(entries);
+        const groups=[];
+        for(let start=0;start<dated.dates.length;start+=27)groups.push(dated.dates.slice(start,start+27));
+        if(!groups.length)groups.push([]);
+        for(let i=0;i<groups.length;i++){
+          if(cancelled)throw new Error('Catalogue cancelled.');
+          const days=groups[i];
+          message('Rendering fabrication date diagram '+(i+1)+' / '+groups.length+'…',.05);
+          let dateOverview=null;
+          try{
+            dateOverview=captureProductionOverview(state,entries,{
+              fabricationCutoff:days.at(-1)?.date||'0000-00-00'
+            });
+            next();
+            drawDatePage(pdf,entries,dateOverview,{
+              dateWindow:days,section:i+1,totalSections:groups.length
+            });
+          }finally{dateOverview?.dispose();}
+          await new Promise(resolve=>setTimeout(resolve,0));
+        }
+      }
       capture=createIsolatedCapture();
       for(let i=0;i<entries.length;i++){
         if(cancelled)throw new Error('Catalogue cancelled.');
@@ -464,6 +509,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       busy=false;cancelled=false;
       download.disabled=false;scope.disabled=false;
       cover.disabled=scope.value==='selected';
+      datesOption.disabled=false;
       download.textContent=original;
     }
   });
