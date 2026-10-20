@@ -752,11 +752,20 @@ const catalogue = setupCatalog({
   notify: showMessage
 });
 
+// Download the 14+ MB Rhino model only when the Tracker is actually opened.
+let bundledModelRequested=false;
+function ensureBundledModel(){
+  if(bundledModelRequested || modelRoot) return;
+  bundledModelRequested=true;
+  void loadBundledModel();
+}
+window.ensurePavilionModel=ensureBundledModel;
+
 initThree();
 restoreLocal();
 initCollaboration();
 wireUI();
-loadBundledModel();
+if(location.hash!=='#workflow') ensureBundledModel();
 
 
 function currentEditor(){ return (editorName?.value || '').trim() || 'Unidentified'; }
@@ -967,7 +976,12 @@ function initThree(){
   resize(); animate();
 }
 
-function animate(){ requestAnimationFrame(animate); controls.update(); updateObjectLabel(); updateAllObjectLabels(); renderer.render(scene,camera); }
+function animate(){
+  requestAnimationFrame(animate);
+  // Don't burn GPU time rendering a hidden canvas while viewing Workflow.
+  if(document.hidden || document.querySelector('.app')?.classList.contains('workflow-active')) return;
+  controls.update(); updateObjectLabel(); updateAllObjectLabels(); renderer.render(scene,camera);
+}
 function resize(){
   const r = viewer.getBoundingClientRect();
   camera.aspect = Math.max(r.width,1)/Math.max(r.height,1); camera.updateProjectionMatrix();
@@ -2299,7 +2313,10 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
   workflow.setAttribute('aria-current',show?'page':'false');
   tracker.setAttribute('aria-current',show?'false':'page');
   document.title=show?'Pavilion / Fabrication Workflow':'Pavilion Fabrication Tracker';
-  if(!show){requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));}
+  if(!show){
+    window.ensurePavilionModel?.();
+    requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+  }
   else document.getElementById('workflowView').scrollTop=0;
  }
  workflow.addEventListener('click',()=>switchChapter('workflow'));
