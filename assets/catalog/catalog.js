@@ -8,7 +8,7 @@ import {
   drawSheet as drawVectorSheet,
   drawStatusCover as drawVectorCover,
   drawRegisterPage as drawVectorRegister
-} from './vector-sheet.js?v=20261020-panel-rgb-match-v2';
+} from './vector-sheet.js?v=20261020-firing-status-timeline-v3';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
