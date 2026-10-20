@@ -2068,15 +2068,17 @@ function updateAllUI(){
   const methodRammed=rs.filter(r=>r.Manufacturing_Method==='Rammed Earth').length;
   const fabricated=rs.filter(r=>r.Production_Status==='Printed').length;
   const notStarted=rs.filter(r=>!r.Production_Status||r.Production_Status==='Not Started').length;
-  const inProgress=rs.filter(r=>['Printing','Queued'].includes(r.Production_Status)).length;
+  const inProgress=rs.filter(r=>r.Production_Status==='Printing').length;
+  const queued=rs.filter(r=>r.Production_Status==='Queued').length;
   const needsReview=rs.filter(r=>r.Production_Status==='Failed').length;
-  const item=(n,label)=>`<span class="summary-item"><b>${n}</b> ${label}</span>`;
+  const item=(n,label,kind='')=>`<span class="summary-item ${kind}"><b>${n}</b> ${label}</span>`;
   document.getElementById('kpis').innerHTML=
     '<div class="summary-cluster"><span class="summary-label">FABRICATION METHOD</span>'+
       item(methodPrint,'3D Printing')+item(methodRammed,'Rammed Earth')+'</div>'+
     '<div class="summary-cluster"><span class="summary-label">PRODUCTION RECORD</span>'+
-      item(fabricated,'Fabricated')+(inProgress?item(inProgress,'In progress'):'')+
-      item(notStarted,'Not started')+(needsReview?item(needsReview,'Needs review'):'')+'</div>';
+      item(fabricated,'Fabricated','fabricated')+(inProgress?item(inProgress,'In progress'):'')+
+      (queued?item(queued,'Queued'):'')+item(notStarted,'Not started')+
+      (needsReview?item(needsReview,'Needs review','issue'):'')+'</div>';
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
