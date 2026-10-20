@@ -351,6 +351,7 @@ header{gap:6px;padding:10px 16px}
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-editorial-archive-upload-v5">
 <link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
+<link rel="stylesheet" href="./assets/catalog/fabrication-timeline.css?v=20261020-timeline-v1">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -392,7 +393,6 @@ header{gap:6px;padding:10px 16px}
         <option value="Assigned_To">Assigned person</option>
         <option value="Material">Material</option>
         <option value="Manufacturing_Method">Manufacturing method</option>
-        <option value="Firing_Route">Firing route</option>
         <option value="Firing_Status">Firing status</option>
         <option value="Infill_Density_pct">Infill density</option>
       </select>
@@ -404,6 +404,7 @@ header{gap:6px;padding:10px 16px}
       <button id="fitView">Fit view</button>
       <button id="toggleObjectLabels">Module labels</button>
       <button id="toggleModuleOutlines">Module outlines</button>
+      <button id="openTimeline" title="View module output by fabrication date">Fabrication Timeline ↗</button>
       <button id="openAttachments">Attachments</button>
       <div id="kpis" class="kpis"></div>
     </div>
@@ -653,6 +654,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
 import { setupCatalog } from './assets/catalog/catalog.js?v=20261020-panel-rgb-match-v2';
+import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-timeline-v1';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -662,13 +664,12 @@ const GCODE_BUCKET = 'pavilion-gcode-files';
 const MAX_PHOTOS_PER_MODULE = 5;
 const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
-  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Route','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
+  'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
   'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
 const lists = {
   Manufacturing_Method:['3D Printing','Rammed Earth','Other'],
-  Firing_Route:['Unfired','To be fired','Rammed'],
   Firing_Status:['Not fired','Fired'],
   Structural_Status:['Pending','Checking','Approved','Revision'],
   Production_Status:['Not Started','Queued','Printing','Printed','Failed'],
@@ -683,7 +684,6 @@ const statusPalettes = {
   Production_Status:{'Not Started':'#d6d6d1','Queued':'#a8c7e8','Printing':'#e7c971','Printed':'#79aa7a','Failed':'#cc6b62'},
   Construction_Status:{'Not Installed':'#d6d6d1','Ready':'#a8c7e8','Installing':'#e7c971','Installed':'#79aa7a','Issue':'#cc6b62'},
   Manufacturing_Method:{'3D Printing':'#7da6cc','Rammed Earth':'#b99b72','Other':'#aaa9a5'},
-  Firing_Route:{'Unfired':'#c8c8c2','To be fired':'#d9a15b','Rammed':'#b99b72'},
   Firing_Status:{'Not fired':'#c8c8c2','Fired':'#79aa7a','Not Ready':'#d6d6d1','Ready':'#a8c7e8','In Kiln':'#d98f55','Cooling':'#e7c971','Failed':'#cc6b62'}
 };
 const printingMachinePalette = {
@@ -699,7 +699,7 @@ const EDITOR_KEY = 'pavilion-fabrication-editor-v1';
 const dbMap = {
   Rhino_GUID:'rhino_guid', Object_ID:'object_id', Module_No:'module_no', Level:'level', Sequence:'sequence',
   Rhino_Object_Name:'rhino_object_name', Material:'material', Material_Details:'material_details', Manufacturing_Method:'manufacturing_method', Fabrication_Date:'fabrication_date',
-  Firing_Route:'firing_route', Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Duration_h:'firing_duration_h', Firing_Program:'firing_program', Firing_Date:'firing_date',
+  Firing_Status:'firing_status', Firing_Batch:'firing_batch', Firing_Kiln:'firing_kiln', Firing_Peak_Temp_C:'firing_peak_temp_c', Firing_Duration_h:'firing_duration_h', Firing_Program:'firing_program', Firing_Date:'firing_date',
   Firing_Dimension_Before_mm:'firing_dimension_before_mm', Firing_Dimension_After_mm:'firing_dimension_after_mm', Firing_Shrinkage_pct:'firing_shrinkage_pct', Assigned_To:'assigned_to',
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
   Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Motor_Speed:'motor_speed', Motor_Speed_Manual_Adjustment_pct:'motor_speed_manual_adjustment_pct',
@@ -750,6 +750,10 @@ const catalogue = setupCatalog({
     dbMap, photoBucket: PHOTO_BUCKET, gcodeBucket: GCODE_BUCKET
   }),
   notify: showMessage
+});
+const fabricationTimeline=setupFabricationTimeline({
+  getEntries:()=>parts.map(part=>({key:part.key,record:records[part.key]})).filter(entry=>entry.record),
+  selectModule:key=>{if(records[key]){selectPart(key);focusPart(key);}}
 });
 
 // Download the 14+ MB Rhino model only when the Tracker is actually opened.
@@ -838,7 +842,6 @@ function toDbRecord(r){
     // PostgreSQL DATE rejects an empty string. Unsupplied firing dates are SQL NULL.
     // This applies to individual autosaves and bulk/cloud sync through toDbRecord().
     if(app==='Firing_Date' || app==='Fabrication_Date') v = String(v ?? '').trim() || null;
-    if(app==='Firing_Route') v = String(v ?? '').trim() || null;
     if(app==='Last_Updated') v = v ? new Date(String(v).replace(' ','T')).toISOString() : new Date().toISOString();
     out[db]=v;
   }
@@ -1090,7 +1093,7 @@ function defaultRecord(part,i){
     Module_No:n,
     Level:'', Sequence:'', Rhino_Object_Name:part.name || '',
     Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing',
-    Fabrication_Date:'', Firing_Route:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'ROHDE-kiln', Firing_Peak_Temp_C:'', Firing_Duration_h:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
+    Fabrication_Date:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'ROHDE-kiln', Firing_Peak_Temp_C:'', Firing_Duration_h:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'', Infill_Density_pct:'',
     Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
@@ -1121,14 +1124,12 @@ function derive(r){
   r.Ready_for_Production = r.Structural_Status==='Approved' ? 'YES' : 'WAIT';
   if(r.Manufacturing_Method==='Rammed Earth'){
     r.Machine='HAND';
-    r.Firing_Route='Rammed';
   }else if(r.Manufacturing_Method==='3D Printing'){
     if(!String(r.Firing_Kiln||'').trim()) r.Firing_Kiln='ROHDE-kiln';
     if(!lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
-    // Legacy "TBD" denotes an undecided printing route, not Rammed Earth.
-    if(!['Unfired','To be fired'].includes(r.Firing_Route)) r.Firing_Route='';
-    if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not fired';
   }
+  // The old firing_route column remains in Supabase for historical records,
+  // but Firing_Status is now the only user-facing firing classification.
   const dimBefore=Number(r.Firing_Dimension_Before_mm);
   const dimAfter=Number(r.Firing_Dimension_After_mm);
   if(Number.isFinite(dimBefore) && dimBefore>0 && Number.isFinite(dimAfter)){
@@ -1136,15 +1137,13 @@ function derive(r){
   }else if(r.Firing_Dimension_Before_mm==='' || r.Firing_Dimension_After_mm===''){
     r.Firing_Shrinkage_pct='';
   }
-  const firingFailed=r.Firing_Route==='To be fired' && r.Firing_Status==='Failed';
-  const firingActive=r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status);
-  const firingComplete=r.Firing_Route!=='To be fired' || r.Firing_Status==='Fired';
   if(r.Construction_Status==='Installed') r.Overall_Status='Installed';
-  else if(r.Construction_Status==='Issue' || r.Structural_Status==='Revision' || r.Production_Status==='Failed' || r.Drying_QC_Status==='Rework' || firingFailed) r.Overall_Status='Issue';
+  else if(r.Construction_Status==='Issue' || r.Structural_Status==='Revision' || r.Production_Status==='Failed' || r.Drying_QC_Status==='Rework') r.Overall_Status='Issue';
   else if(r.Construction_Status==='Installing') r.Overall_Status='In Construction';
-  else if(r.Production_Status==='Printed' && r.Drying_QC_Status==='Approved' && firingComplete) r.Overall_Status='Ready for Assembly';
-  else if(r.Production_Status==='Printing' || firingActive) r.Overall_Status='In Production';
-  else if(r.Production_Status==='Queued' || r.Ready_for_Production==='YES' || (r.Firing_Route==='To be fired' && r.Firing_Status==='Ready')) r.Overall_Status='Planned';
+  // Firing is optional; 'Not fired' alone must not block assembly readiness.
+  else if(r.Production_Status==='Printed' && r.Drying_QC_Status==='Approved') r.Overall_Status='Ready for Assembly';
+  else if(r.Production_Status==='Printing') r.Overall_Status='In Production';
+  else if(r.Production_Status==='Queued' || r.Ready_for_Production==='YES') r.Overall_Status='Planned';
   else r.Overall_Status='Not Started';
 }
 function autoId(r){
@@ -1220,7 +1219,7 @@ function applyFilter(){
         matchesStatus=String(r?.[field]??'')===f;
       }
     }
-    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Machine,r?.Firing_Route,r?.Firing_Status,r?.Firing_Batch,r?.Firing_Kiln,r?.Firing_Program,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
+    const hay=[r?.Object_ID,r?.Rhino_Object_Name,r?.Assigned_To,r?.Material,r?.Material_Details,r?.Manufacturing_Method,r?.Machine,r?.Firing_Status,r?.Firing_Batch,r?.Firing_Kiln,r?.Firing_Program,r?.Infill_Pattern,r?.GCode_File,r?.Notes].join(' ').toLowerCase();
     const matchesSearch=!q || hay.includes(q);
     p.meshes.forEach(m=>m.visible=matchesStatus&&matchesSearch);
   });
@@ -1441,7 +1440,7 @@ function updateObjectLabel(){
   objectLabel.classList.toggle('printed',isPrinted);
   objectLabel.classList.toggle('failed',isFailed);
   objectLabel.classList.toggle('progress',!isPrinted && !isFailed && productionStatus==='Printing');
-  const status=r.Firing_Route==='To be fired' ? productionStatus+' · Firing: '+(r.Firing_Status||'Not Ready') : productionStatus;
+  const status=r.Manufacturing_Method==='3D Printing' && r.Firing_Status==='Fired' ? productionStatus+' · Fired' : productionStatus;
   const note=(r.Notes || '').trim() || 'No notes';
   objectLabel.innerHTML=`<b>${escapeHtml(r.Object_ID||'Unnamed block')}</b><div class="statusLine">${escapeHtml(status)}</div><div class="noteLine">${escapeHtml(note)}</div>`;
 }
@@ -1780,19 +1779,6 @@ function gcodeUploadPanel(r){
 }
 
 
-function firingRouteToggle(r){
-  if(!['3D Printing','Rammed Earth'].includes(r.Manufacturing_Method)) return '';
-  const route = r.Manufacturing_Method==='Rammed Earth' ? 'Rammed' :
-    (['Unfired','To be fired'].includes(r.Firing_Route) ? r.Firing_Route : '');
-  const button=(value,label)=>'<button type="button" class="routeBtn'+(route===value?' active':'')+'" data-firing-route="'+escapeAttr(value)+'">'+escapeHtml(label)+'</button>';
-  return '<div class="sectionTitle">Firing Route</div>'+
-    '<div class="routeToggle">'+
-      button('Unfired','UNFIRED')+
-      button('To be fired','TO BE FIRED')+
-      button('Rammed','RAMMED')+
-    '</div>'+
-    '<div class="routeHint">UNFIRED and TO BE FIRED are 3D-printing routes; RAMMED identifies rammed-earth modules. Firing completion, date and temperature are recorded below.</div>';
-}
 function firingPanel(r){
   if(r.Manufacturing_Method!=='3D Printing') return '';
   const performed = r.Firing_Status==='Fired' ? 'Fired' : 'Not fired';
@@ -1834,7 +1820,6 @@ function renderPanel(){
 
     ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
     ${selectField('Machine','Machine',r.Machine,machineOptions)}
-    ${firingRouteToggle(r)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
     ${inputField('Weight_kg','Module weight (kg)',r.Weight_kg,'number','0.01')}
     ${inputField('Fabrication_Date','Fabrication date',r.Fabrication_Date,'date')}
@@ -1893,38 +1878,15 @@ function renderPanel(){
     const sync=()=>{
       const field=el.dataset.field; r[field]=el.value;
       if(['Module_No','Level','Sequence'].includes(field)) autoId(r);
-      if(field==='Firing_Status' && r.Firing_Status==='Fired' && r.Firing_Route==='Unfired') r.Firing_Route='To be fired';
       if(field==='Manufacturing_Method'){
-        if(r.Manufacturing_Method==='Rammed Earth'){ r.Machine='HAND'; r.Firing_Route='Rammed'; }
-        else if(r.Manufacturing_Method==='3D Printing'){
-          if(r.Firing_Route==='Rammed') r.Firing_Route='';
-          if(!lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
-        }
+        if(r.Manufacturing_Method==='Rammed Earth') r.Machine='HAND';
+        else if(r.Manufacturing_Method==='3D Printing' && !lists.Machine_3DP.includes(r.Machine)) r.Machine='WASP';
       }
       derive(r); r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' '); r.Updated_By=currentEditor();
       persist(selectedKey); updateAllUI(); applyColors(); updateObjectLabel();
     };
     el.addEventListener('change',()=>{sync(); renderPanel();});
     if(el.tagName==='TEXTAREA' || el.getAttribute('list')) el.addEventListener('input',sync);
-  });
-  panel.querySelectorAll('[data-firing-route]').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const nextRoute=btn.dataset.firingRoute;
-      if(nextRoute==='Rammed'){
-        r.Manufacturing_Method='Rammed Earth';
-        r.Machine='HAND';
-      }else if(r.Manufacturing_Method==='Rammed Earth'){
-        r.Manufacturing_Method='3D Printing';
-        r.Machine='WASP';
-      }
-      r.Firing_Route=nextRoute;
-      if(nextRoute==='Unfired') r.Firing_Status='Not fired';
-      if(r.Firing_Route==='To be fired' && !lists.Firing_Status.includes(r.Firing_Status)) r.Firing_Status='Not fired';
-      derive(r);
-      r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');
-      r.Updated_By=currentEditor();
-      persist(selectedKey); updateAllUI(); applyColors(); updateObjectLabel(); renderPanel();
-    });
   });
   document.getElementById('stampNow').onclick=()=>{r.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');r.Updated_By=currentEditor();persist(selectedKey);renderPanel();};
   document.getElementById('focusSelected').onclick=()=>focusPart(selectedKey);
@@ -2027,10 +1989,9 @@ function updateAllUI(){
   const prod=rs.filter(r=>r.Overall_Status==='In Production').length;
   const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
   const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
-  const toFire=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status!=='Fired').length;
-  const firingNow=rs.filter(r=>r.Firing_Route==='To be fired' && ['In Kiln','Cooling'].includes(r.Firing_Status)).length;
-  const fired=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Route==='To be fired' && r.Firing_Status==='Fired').length;
-  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>printing</span><span class="kpi"><b>${toFire}</b>to fire</span><span class="kpi"><b>${firingNow}</b>firing</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+  const fired=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Status==='Fired').length;
+  const dated=rs.filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(String(r.Fabrication_Date||''))).length;
+  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>in production</span><span class="kpi"><b>${fired}</b>fired</span><span class="kpi"><b>${dated}</b>dated</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
@@ -2279,6 +2240,7 @@ function wireUI(){
   document.getElementById('toggleModuleOutlines').onclick=toggleAllModuleOutlines;
   document.getElementById('homeView').onclick=fitView;
   document.getElementById('openAttachments').onclick=openAttachmentsGallery;
+  document.getElementById('openTimeline').onclick=()=>fabricationTimeline.open();
   document.getElementById('closeAttachments').onclick=closeAttachmentsGallery;
   document.getElementById('attachmentsModal').addEventListener('click',e=>{if(e.target.id==='attachmentsModal') closeAttachmentsGallery();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape') closeAttachmentsGallery();});
