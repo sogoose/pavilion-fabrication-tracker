@@ -557,3 +557,143 @@ export function drawRegisterPage(pdf,entries,{palette={},startIndex=0,total=entr
   label(pdf,'REGISTER '+(startIndex+1)+' - '+(startIndex+entries.length)+' / '+total,10,204);
   label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),225,204);
 }
+
+
+/* Fabrication-date report, rendered with native PDF vector operations.
+   Unlike a screenshot of the UI, numbers, dates and bars remain selectable
+   and sharp when printed. The 3D view is a temporary isolated Rhino render. */
+const DATE_METHOD_PALETTE=Object.freeze({
+  '3D Printing':'#4e85c0',
+  'Rammed Earth':'#a78252',
+  'Other':'#859a83',
+  'Later':'#bfc3c0',
+  'Undated':'#e7e8e4'
+});
+export function fabricationDateGroups(entries){
+  const isDate=value=>{
+    const date=String(value||'').trim();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;
+    const parsed=new Date(date+'T12:00:00Z');
+    return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0,10)===date;
+  };
+  const grouped=new Map();
+  let undated=0,printTotal=0,rammedTotal=0,otherTotal=0;
+  for(const item of entries){
+    const r=item.record||{};
+    if(!isDate(r.Fabrication_Date)){undated++;continue;}
+    const date=r.Fabrication_Date;
+    if(!grouped.has(date))grouped.set(date,{date,printing:0,rammed:0,other:0,ids:[]});
+    const bucket=grouped.get(date);
+    if(r.Manufacturing_Method==='3D Printing'){bucket.printing++;printTotal++;}
+    else if(r.Manufacturing_Method==='Rammed Earth'){bucket.rammed++;rammedTotal++;}
+    else {bucket.other++;otherTotal++;}
+    bucket.ids.push(String(r.Object_ID||item.key||'—'));
+  }
+  return {
+    dates:[...grouped.values()].sort((a,b)=>a.date.localeCompare(b.date)),
+    total:entries.length,dated:entries.length-undated,undated,
+    printing:printTotal,rammed:rammedTotal,other:otherTotal
+  };
+}
+export function drawFabricationTimelinePage(pdf,entries,overview,{
+  dateWindow=null,section=1,totalSections=1
+}={}){
+  const counts=fabricationDateGroups(entries);
+  const days=dateWindow||counts.dates;
+  const latest=days.at(-1)?.date||'—';
+  bg(pdf,0,0,PW,PH,[252,252,249]);
+  label(pdf,'PAVILION / FABRICATION CATALOGUE',10,10.5);
+  label(pdf,'DATE REGISTER '+section+' / '+totalSections,235,10.5);
+  print(pdf,'FABRICATION / TIMELINE',10,23,240,23,true,ink);
+  stroke(pdf,10,28,287,28,[60,67,60],.24);
+  const stats=[
+    [String(counts.dated),'DATED MODULES'],
+    [String(counts.dates.length),'DAYS RECORDED'],
+    [String(counts.printing),'3D PRINTING'],
+    [String(counts.rammed),'RAMMED EARTH'],
+    [String(counts.undated),'NO DATE']
+  ];
+  stats.forEach(([value,title],i)=>{
+    const x=10+i*55.4;
+    if(i)stroke(pdf,x-3,31,x-3,46,[214,217,211],.12);
+    print(pdf,value,x,38,38,17,true,ink);
+    label(pdf,title,x,43.8,grey,5.3);
+  });
+  stroke(pdf,10,47.5,287,47.5,[174,178,170],.12);
+  label(pdf,'DAILY MODULE OUTPUT / RECORDED FABRICATION DATE',10,53,[60,69,61],6.3);
+  const keys=[['3D Printing',DATE_METHOD_PALETTE['3D Printing']],['Rammed Earth',DATE_METHOD_PALETTE['Rammed Earth']],['Other',DATE_METHOD_PALETTE.Other]];
+  keys.forEach(([title,c],i)=>{
+    const x=198+i*29.7;
+    pdf.setFillColor(...rgb(c));pdf.rect(x,50.1,3,3,'F');
+    print(pdf,title,x+4,52.7,28,5.6,false,ink);
+  });
+  // Draw a daily stacked bar chart. Up to 27 dates per page for legible ticks.
+  const plot={x:14,y:57,w:269,h:48};
+  stroke(pdf,plot.x,plot.y+plot.h,plot.x+plot.w,plot.y+plot.h,[92,99,90],.18);
+  const max=Math.max(1,...days.map(d=>d.printing+d.rammed+d.other));
+  for(let t=1;t<=3;t++){
+    const y=plot.y+plot.h-t*plot.h/4;
+    stroke(pdf,plot.x,y,plot.x+plot.w,y,[227,229,222],.085);
+  }
+  if(!days.length){
+    print(pdf,'NO FABRICATION DATES RECORDED',85,83,135,12,false,grey);
+  }else{
+    const pitch=plot.w/days.length;
+    const bw=Math.min(11,Math.max(2.5,pitch*.58));
+    days.forEach((day,i)=>{
+      const x=plot.x+pitch*i+(pitch-bw)/2;
+      let y=plot.y+plot.h;
+      const full=day.printing+day.rammed+day.other;
+      const seq=[
+        [day.printing,DATE_METHOD_PALETTE['3D Printing']],
+        [day.rammed,DATE_METHOD_PALETTE['Rammed Earth']],
+        [day.other,DATE_METHOD_PALETTE.Other]
+      ];
+      for(const [value,c] of seq){
+        if(!value)continue;
+        const barH=value/max*(plot.h-6);
+        y-=barH;
+        pdf.setFillColor(...rgb(c));pdf.rect(x,y,bw,barH,'F');
+      }
+      print(pdf,String(full),x+bw/2,Math.max(plot.y+1,y-1.6),10,6.3,true,ink);
+      const dateLabel=day.date.slice(5).replace('-','/');
+      pdf.setFont('helvetica','normal');pdf.setFontSize(days.length>21?5.3:6.3);
+      pdf.setTextColor(...grey);
+      pdf.text(dateLabel,x+bw/2,plot.y+plot.h+5.1,{align:'center'});
+    });
+  }
+  label(pdf,'3D / MODULE GEOMETRY BY FABRICATION DATE',10,117,[60,69,61],6.3);
+  label(pdf,'CUMULATIVE THROUGH '+latest,134,117,grey,5.4);
+  bg(pdf,10,120,113,69,[246,246,242]);
+  if(overview?.canvas){
+    photoFit(pdf,overview.canvas,11,121,111,67,'PNG');
+    // Small, native PDF module labels, not permanent changes to the Rhino file.
+    placedLabels(pdf,overview.labels,11,121,111,67,{
+      '3D Printing':DATE_METHOD_PALETTE['3D Printing'],
+      'Rammed Earth':DATE_METHOD_PALETTE['Rammed Earth'],
+      Other:DATE_METHOD_PALETTE.Other,
+      Later:DATE_METHOD_PALETTE.Later,
+      Undated:DATE_METHOD_PALETTE.Undated
+    });
+  }else{
+    print(pdf,'3D MODEL VIEW UNAVAILABLE',22,157,89,9,false,grey);
+  }
+  frame(pdf,10,120,113,69);
+  stroke(pdf,130,120,130,189,[180,184,177],.14);
+  label(pdf,'DAILY RECORD / MODULES FABRICATED',136,123,[60,69,61],6.2);
+  // Right-side register matches the plotted daily bins, not inferred timestamps.
+  const registerDates=days.slice(-9);
+  for(let i=0;i<registerDates.length;i++){
+    const day=registerDates[i],y=132+i*6.05;
+    print(pdf,day.date.slice(5),136,y,21,7.2,true,ink);
+    print(pdf,String(day.printing)+'  3DP',165,y,25,6.5,false,rgb(DATE_METHOD_PALETTE['3D Printing']));
+    print(pdf,String(day.rammed)+'  RE',193,y,24,6.5,false,rgb(DATE_METHOD_PALETTE['Rammed Earth']));
+    const ids=day.ids.slice(0,5).join(', ')+(day.ids.length>5?' ...':'');
+    print(pdf,ids,221,y,65,6,false,grey);
+    stroke(pdf,136,y+1.8,287,y+1.8,[232,233,227],.08);
+  }
+  label(pdf,'DATES REFLECT RECORDED FABRICATION, NOT SCHEDULED OUTPUT',136,188,grey,5.5);
+  stroke(pdf,10,198,287,198,[75,81,74],.17);
+  label(pdf,'CURRENT RHINO MODULES / SOURCE: TRACKER FABRICATION DATE',10,204);
+  label(pdf,'ISSUED '+new Date().toISOString().slice(0,10),228,204);
+}
