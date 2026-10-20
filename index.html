@@ -661,8 +661,8 @@ header{gap:6px;padding:10px 16px}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
-import { setupCatalog } from './assets/catalog/catalog.js?v=20261020-3d-timeline-pdf-v4';
-import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-3d-timeline-v3';
+import { setupCatalog } from './assets/catalog/catalog.js?v=20261020-3d-timeline-export-v5';
+import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-3d-timeline-export-v4';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -762,7 +762,8 @@ const catalogue = setupCatalog({
 const fabricationTimeline=setupFabricationTimeline({
   getEntries:()=>parts.map(part=>({key:part.key,record:records[part.key]})).filter(entry=>entry.record),
   selectModule:key=>{if(records[key]){selectPart(key);focusPart(key);}},
-  viewIn3D:date=>showFabricationDateOn3D(date)
+  viewIn3D:date=>showFabricationDateOn3D(date),
+  downloadPDF:()=>catalogue.downloadTimeline()
 });
 
 // Download the 14+ MB Rhino model only when the Tracker is actually opened.
