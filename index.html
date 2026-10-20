@@ -2056,13 +2056,19 @@ function updateAllUI(){
   refreshDynamicDatalists();
   document.getElementById('objectBadge').textContent=`${parts.length} objects${parts.length===EXPECTED_PARTS?' ✓':''}`;
   const rs=parts.map(p=>records[p.key]).filter(Boolean);
-  const approved=rs.filter(r=>r.Structural_Status==='Approved').length;
-  const prod=rs.filter(r=>r.Overall_Status==='In Production').length;
-  const installed=rs.filter(r=>r.Overall_Status==='Installed').length;
-  const issues=rs.filter(r=>r.Overall_Status==='Issue').length;
-  const fired=rs.filter(r=>r.Manufacturing_Method==='3D Printing' && r.Firing_Status==='Fired').length;
-  const dated=rs.filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(String(r.Fabrication_Date||''))).length;
-  document.getElementById('kpis').innerHTML=`<span class="kpi"><b>${approved}</b>approved</span><span class="kpi"><b>${prod}</b>in production</span><span class="kpi"><b>${fired}</b>fired</span><span class="kpi"><b>${dated}</b>dated</span><span class="kpi"><b>${installed}</b>installed</span><span class="kpi"><b>${issues}</b>issues</span>`;
+  const methodPrint=rs.filter(r=>r.Manufacturing_Method==='3D Printing').length;
+  const methodRammed=rs.filter(r=>r.Manufacturing_Method==='Rammed Earth').length;
+  const fabricated=rs.filter(r=>r.Production_Status==='Printed').length;
+  const notStarted=rs.filter(r=>!r.Production_Status||r.Production_Status==='Not Started').length;
+  const inProgress=rs.filter(r=>['Printing','Queued'].includes(r.Production_Status)).length;
+  const needsReview=rs.filter(r=>r.Production_Status==='Failed').length;
+  const item=(n,label)=>`<span class="summary-item"><b>${n}</b> ${label}</span>`;
+  document.getElementById('kpis').innerHTML=
+    '<div class="summary-cluster"><span class="summary-label">FABRICATION METHOD</span>'+
+      item(methodPrint,'3D Printing')+item(methodRammed,'Rammed Earth')+'</div>'+
+    '<div class="summary-cluster"><span class="summary-label">PRODUCTION RECORD</span>'+
+      item(fabricated,'Fabricated')+(inProgress?item(inProgress,'In progress'):'')+
+      item(notStarted,'Not started')+(needsReview?item(needsReview,'Needs review'):'')+'</div>';
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
