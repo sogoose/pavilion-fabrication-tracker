@@ -4,11 +4,11 @@
  * One image-rich technical sheet per module, optional summary cover.
  */
 import {
-  idOrder, parseGcode3D,
+  idOrder, parseGcode3D, MODULE_PANEL_RGB,
   drawSheet as drawVectorSheet,
   drawStatusCover as drawVectorCover,
   drawRegisterPage as drawVectorRegister
-} from './vector-sheet.js?v=20261019-explode-halo-v1';
+} from './vector-sheet.js?v=20261020-panel-rgb-match-v2';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -169,7 +169,8 @@ export function setupCatalog({ THREE, getState, notify }) {
     const render = part => {
       if (!part?.meshes?.length) return null;
       const scene=new THREE.Scene();
-      scene.background=new THREE.Color(0xf1f0eb);
+      // Keep the Rhino canvas identical to the PDF figure background.
+      scene.background=new THREE.Color('rgb('+MODULE_PANEL_RGB.join(',')+')');
       scene.add(new THREE.HemisphereLight(0xffffff,0xb7afa0,2.4));
       const light=new THREE.DirectionalLight(0xffffff,3.1);
       light.position.set(7,-9,11);scene.add(light);
