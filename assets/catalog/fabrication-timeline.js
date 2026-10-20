@@ -1,7 +1,7 @@
 /* Fabrication Timeline / by actual Fabrication_Date.
    Shows daily module counts by manufacturing method. No schema changes:
    records are read live from the active 3DM-backed Tracker state. */
-export function setupFabricationTimeline({getEntries,selectModule}) {
+export function setupFabricationTimeline({getEntries,selectModule,viewIn3D}) {
   const dialog=document.createElement('dialog');
   dialog.className='fab-timeline-dialog';
   dialog.setAttribute('aria-label','Fabrication timeline by date');
@@ -18,7 +18,7 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
       '</div><div class="fab-timeline-legend"><span class="fab-legend-print">3D Printing</span><span class="fab-legend-rammed">Rammed Earth</span></div></div>'+
       '<div class="fab-timeline-chart" aria-label="Fabrication counts for each recorded date"></div>'+
       '<section class="fab-timeline-detail" aria-label="Modules for selected fabrication date">'+
-      '<h3>Select a date</h3><div class="fab-timeline-items"></div></section>'+
+      '<div class="fab-timeline-detail-head"><h3>Select a date</h3><button type="button" class="fab-timeline-view3d" disabled>VIEW DATE IN 3D ↗</button></div><div class="fab-timeline-items"></div></section>'+
       '<p class="fab-timeline-note">Dates reflect module records entered in the Tracker; missing dates are excluded from the chart. Each module is counted once. Select a module to locate it in the 3D model.</p>'+
     '</div>';
   document.body.append(dialog);
@@ -27,6 +27,7 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
   const stats=$('.fab-timeline-stats');
   const heading=$('.fab-timeline-detail h3');
   const detail=$('.fab-timeline-items');
+  const viewButton=$('.fab-timeline-view3d');
   let method='All',selectedDate=null;
   const isDate=value=>{
     const text=String(value||'').trim();
@@ -47,6 +48,7 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
   const renderDetails=(entries)=>{
     const items=selectedDate?entries.filter(x=>String(x.record.Fabrication_Date).trim()===selectedDate):[];
     heading.textContent=selectedDate?longDate(selectedDate)+'  /  '+items.length+' MODULE'+(items.length===1?'':'S'):'Select a date';
+    viewButton.disabled=!selectedDate;
     detail.replaceChildren();
     if(!items.length){
       detail.append(text('p','fab-timeline-empty','Select a bar to view its modules.'));
@@ -140,6 +142,11 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
     chart.scrollLeft=hadSelection?currentScroll:Math.max(0,chart.scrollWidth-chart.clientWidth);
     renderDetails(active);
   };
+  viewButton.addEventListener('click',()=>{
+    if(!selectedDate)return;
+    dialog.close();
+    viewIn3D?.(selectedDate);
+  });
   $('.fab-timeline-close').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
   dialog.querySelectorAll('[data-method]').forEach(btn=>{
