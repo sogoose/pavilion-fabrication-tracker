@@ -654,7 +654,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
 import { setupCatalog } from './assets/catalog/catalog.js?v=20261020-firing-status-timeline-v3';
-import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-timeline-v1';
+import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-timeline-v2';
 
 const EXPECTED_PARTS = 70;
 const STORAGE_KEY = 'pavilion-fabrication-tracker-v4';
@@ -1785,7 +1785,7 @@ function firingPanel(r){
   return '<div class="sectionTitle">Firing</div>'+
     '<div class="firingPanel">'+
       '<div class="grid2">'+
-        selectField('Firing_Status','Firing performed?',performed,lists.Firing_Status)+
+        selectField('Firing_Status','Firing status',performed,lists.Firing_Status)+
         inputField('Firing_Date','Firing date',r.Firing_Date,'date')+
         inputField('Firing_Peak_Temp_C','Peak temperature (°C)',r.Firing_Peak_Temp_C,'number','1')+
         inputField('Firing_Duration_h','Firing duration (hours)',r.Firing_Duration_h,'number','0.1')+
