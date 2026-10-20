@@ -34,9 +34,9 @@ Edit either in Illustrator and replace the same file on GitHub. You can move a c
 
 The four detached support-team artboards now also use **1:1.1 portrait proportions**, `180 × 198` with `viewBox="0 -54 180 198"`. Stage artwork is centred in a taller `170 × 187`-pixel frame on desktop. Since the art geometry remains unchanged, Illustrator layers and stroke proportions stay editable and intact.
 
-Mobile keeps a long `360 × 2010` route map so that names and edit controls remain legible; the individual SVG artwork is still portrait. The mobile arrows are authored separately to match the taller images.
+Narrow mobile screens (up to 620px) now use a clean vertical sequence without arrows; the separate mobile-arrow SVG is retained for intermediate-width tablet layouts.
 
-The older experimental study assets (`contour-fragment.svg`, `deposition-fragment.svg`, `soil-fragment.svg`, `mould-fragment.svg`, `diagram-guides.svg`) are archived in this folder but no longer shown on the page. They can be reused if desired.
+The five unused experimental fragment SVGs were removed from the deployed tree during the October 2026 cleanup. They remain recoverable from Git commit history if needed.
 
 ## Process credits and compact support studies
 
@@ -90,6 +90,10 @@ The page uses Google Fonts **Syne SemiBold** for the main title, chapter names a
 ## Adding real process photos later
 
 The current page intentionally does **not** upload or publish photos from the private conversation. You can add authorized photographs under `assets/workflow/photos/` and reference them from a new `<img>` in a Workflow illustration block. Keep a small file size and use descriptive alt text for meaningful photographs.
+
+## Loading and asset optimization
+
+When the site opens directly in **01 / Workflow**, the 14+ MB `model.3dm` download is postponed until someone selects **02 / Tracker**. Rendering the 3D scene also pauses while the Workflow page or browser tab is hidden. The original Rhino file and all module records are preserved. Main-process Illustrator SVGs have only their export metadata/whitespace removed; the G-code preview was quantized to 0.1 SVG unit (less than a display pixel) to reduce transfer size.
 
 ## Project principles
 
