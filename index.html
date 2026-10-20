@@ -108,6 +108,8 @@
     .summary-label{font:600 9px/1.4 "IBM Plex Mono",monospace;letter-spacing:.07em;color:#858b85;margin-right:2px}
     .summary-item{display:inline-flex;align-items:baseline;gap:5px;white-space:nowrap}
     .summary-item b{font:750 17px/1 Manrope,Inter,sans-serif;letter-spacing:-.05em;color:#242a25;font-variant-numeric:tabular-nums}
+    .summary-item.method-print b{color:#386b9c}
+    .summary-item.method-rammed b{color:#8e6f43}
     .summary-item.fabricated b{color:#477e60}
     .summary-item.issue b{color:#b34f45}
     .app.workflow-active header .tracker-summary{display:none}
@@ -2074,7 +2076,7 @@ function updateAllUI(){
   const item=(n,label,kind='')=>`<span class="summary-item ${kind}"><b>${n}</b> ${label}</span>`;
   document.getElementById('kpis').innerHTML=
     '<div class="summary-cluster"><span class="summary-label">FABRICATION METHOD</span>'+
-      item(methodPrint,'3D Printing')+item(methodRammed,'Rammed Earth')+'</div>'+
+      item(methodPrint,'3D Printing','method-print')+item(methodRammed,'Rammed Earth','method-rammed')+'</div>'+
     '<div class="summary-cluster"><span class="summary-label">PRODUCTION RECORD</span>'+
       item(fabricated,'Fabricated','fabricated')+(inProgress?item(inProgress,'In progress'):'')+
       (queued?item(queued,'Queued'):'')+item(notStarted,'Not started')+
