@@ -149,5 +149,5 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
       render();
     });
   });
-  return {open(){render();dialog.showModal();},refresh(){if(dialog.open)render();}};
+  return {open(){dialog.showModal();render();},refresh(){if(dialog.open)render();}};
 }
