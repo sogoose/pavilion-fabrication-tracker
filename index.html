@@ -1240,6 +1240,10 @@ function renderViewerDateTimeline(){
 }
 function applyColors(){
   const field=colorBy.value;
+  if(field==='Fabrication_Date'){
+    const days=fabricationDates();
+    if(!days.includes(currentFabricationDate))currentFabricationDate=days.at(-1)||null;
+  }
   parts.forEach(p=>{
     const r=records[p.key]; if(!r)return;
     const c=field==='Fabrication_Date'
