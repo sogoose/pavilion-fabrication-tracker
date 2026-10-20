@@ -109,3 +109,13 @@
   .viewer-date-readout strong{font-size:19px}
   .viewer-date-key{margin-top:7px;padding-top:7px}
 }
+
+.fab-timeline-dialog .fab-timeline-pdf{
+  display:inline-flex;align-items:center;
+  padding:7px 0!important;border:0!important;
+  border-bottom:1px solid #29392f!important;border-radius:0!important;
+  background:transparent!important;color:#263d30;
+  font:700 10px/1.35 "IBM Plex Mono",monospace;
+  white-space:nowrap;cursor:pointer;
+}
+.fab-timeline-dialog .fab-timeline-pdf:hover{color:#4e85c0;border-bottom-color:#4e85c0!important}
