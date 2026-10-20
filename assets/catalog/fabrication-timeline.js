@@ -81,7 +81,9 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
       groups.get(date).push(item);
     }
     const days=[...groups].sort((a,b)=>a[0].localeCompare(b[0]));
-    if(!days.some(([d])=>d===selectedDate))selectedDate=days.length?days[days.length-1][0]:null;
+    // Keep the horizontal scroll position when a user selects a date.
+    const currentScroll=chart.scrollLeft,hadSelection=days.some(([d])=>d===selectedDate);
+    if(!hadSelection)selectedDate=days.length?days[days.length-1][0]:null;
     const printed=active.filter(x=>x.record.Manufacturing_Method==='3D Printing').length;
     const rammed=active.filter(x=>x.record.Manufacturing_Method==='Rammed Earth').length;
     const values=[
@@ -134,6 +136,8 @@ export function setupFabricationTimeline({getEntries,selectModule}) {
       inner.append(btn);
     });
     chart.append(inner);
+    // On initial open show the most recent date; after clicking, don't jump.
+    chart.scrollLeft=hadSelection?currentScroll:Math.max(0,chart.scrollWidth-chart.clientWidth);
     renderDetails(active);
   };
   $('.fab-timeline-close').addEventListener('click',()=>dialog.close());
