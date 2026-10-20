@@ -29,8 +29,16 @@
     pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     zip: 'application/zip',
     csv: 'text/csv', txt: 'text/plain', gcode: 'text/plain',
-    '3dm': 'application/octet-stream',
-    dxf: 'application/octet-stream', stl: 'application/octet-stream'
+    ghx: 'text/plain', obj: 'text/plain',
+    py: 'text/plain', json: 'text/plain', nc: 'text/plain', tap: 'text/plain',
+    '3dm': 'application/octet-stream', gh: 'application/octet-stream',
+    dxf: 'application/octet-stream', stl: 'application/octet-stream',
+    dwg: 'application/octet-stream', ifc: 'application/octet-stream',
+    step: 'application/octet-stream', stp: 'application/octet-stream',
+    igs: 'application/octet-stream', iges: 'application/octet-stream',
+    '3mf': 'application/octet-stream', fbx: 'application/octet-stream',
+    skp: 'application/octet-stream', glb: 'application/octet-stream',
+    gltf: 'application/octet-stream'
   });
   const MAX_WORKFLOW_FILE_BYTES = 25 * 1024 * 1024;
   const safeHref = value => {
@@ -307,7 +315,7 @@
     fields.append(fileWrap);
     const fileHelp = document.createElement('p');
     fileHelp.className = 'wf-file-help';
-    fileHelp.textContent = 'PDF · DOCX · XLSX · PPTX · ZIP · CSV · TXT · 3DM · GCODE · DXF · STL. Shared files are accessible to anyone with the link.';
+    fileHelp.textContent = 'Grasshopper GH / GHX, Rhino 3DM, DWG, DXF, IFC, STEP, OBJ, FBX, GLB, 3MF, Python, G-code, PDF, Office, ZIP and other CAD files. Shared files are accessible to anyone with the link.';
     fields.append(fileHelp);
     const fileUploadBtn = document.createElement('button');
     fileUploadBtn.type = 'button';
