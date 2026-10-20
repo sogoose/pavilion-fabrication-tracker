@@ -393,6 +393,7 @@ header{gap:6px;padding:10px 16px}
         <option value="Assigned_To">Assigned person</option>
         <option value="Material">Material</option>
         <option value="Manufacturing_Method">Manufacturing method</option>
+        <option value="Fabrication_Date">Fabrication date / 3D timeline</option>
         <option value="Firing_Status">Firing status</option>
         <option value="Infill_Density_pct">Infill density</option>
       </select>
@@ -608,6 +609,13 @@ header{gap:6px;padding:10px 16px}
       <div class="viewerOverlay">
         <button id="homeView">Axonometric</button>
       </div>
+      <div id="viewerDateTimeline" class="viewer-date-timeline" hidden>
+        <div class="viewer-date-title"><span>FABRICATION / 3D TIMELINE</span><button id="exitDateTimeline" type="button" aria-label="Close fabrication date view">×</button></div>
+        <div class="viewer-date-readout"><strong id="viewerDateCurrent">—</strong><span id="viewerDateCount">No dates recorded</span></div>
+        <input id="viewerDateSlider" type="range" min="0" max="0" step="1" value="0" aria-label="Fabrication date — show modules completed by this date"/>
+        <div class="viewer-date-foot"><span id="viewerDateFirst">—</span><span id="viewerDateLast">—</span></div>
+        <div class="viewer-date-key"><span class="date-key-print">3D Printing</span><span class="date-key-rammed">Rammed Earth</span><span class="date-key-future">Later / undated</span></div>
+      </div>
       <div class="viewerLegends"><div id="legend" class="legend"></div>
   
       </div>
@@ -753,7 +761,8 @@ const catalogue = setupCatalog({
 });
 const fabricationTimeline=setupFabricationTimeline({
   getEntries:()=>parts.map(part=>({key:part.key,record:records[part.key]})).filter(entry=>entry.record),
-  selectModule:key=>{if(records[key]){selectPart(key);focusPart(key);}}
+  selectModule:key=>{if(records[key]){selectPart(key);focusPart(key);}},
+  viewIn3D:date=>showFabricationDateOn3D(date)
 });
 
 // Download the 14+ MB Rhino model only when the Tracker is actually opened.
@@ -1193,17 +1202,57 @@ function manufacturingColor(r){
   }
   return colorFor('Manufacturing_Method',method);
 }
+const FAB_DATE_COLORS=Object.freeze({
+  '3D Printing':'#4e85c0','Rammed Earth':'#a78252',
+  other:'#859a83',future:'#bfc3c0',undated:'#e7e8e4'
+});
+let currentFabricationDate=null;
+const isFabricationDate=value=>/^\d{4}-\d{2}-\d{2}$/.test(String(value||'')) && !Number.isNaN(Date.parse(String(value)+'T12:00:00Z'));
+function fabricationDates(){
+  return [...new Set(parts.map(p=>String(records[p.key]?.Fabrication_Date||'').trim()).filter(isFabricationDate))].sort();
+}
+function showFabricationDateOn3D(date){
+  colorBy.value='Fabrication_Date';
+  statusFilter.value='__ALL__';
+  currentFabricationDate=isFabricationDate(date)?String(date):null;
+  applyColors();
+}
+function renderViewerDateTimeline(){
+  const box=document.getElementById('viewerDateTimeline');
+  if(!box)return;
+  box.hidden=colorBy.value!=='Fabrication_Date';
+  if(box.hidden)return;
+  const dates=fabricationDates();
+  if(!dates.includes(currentFabricationDate))currentFabricationDate=dates.at(-1)||null;
+  const slider=document.getElementById('viewerDateSlider');
+  slider.disabled=!dates.length;
+  slider.max=String(Math.max(0,dates.length-1));
+  slider.value=String(Math.max(0,dates.indexOf(currentFabricationDate)));
+  document.getElementById('viewerDateCurrent').textContent=currentFabricationDate||'NO DATES';
+  const produced=parts.map(p=>records[p.key]).filter(r=>r&&isFabricationDate(r.Fabrication_Date)&&currentFabricationDate&&r.Fabrication_Date<=currentFabricationDate);
+  const printed=produced.filter(r=>r.Manufacturing_Method==='3D Printing').length;
+  const rammed=produced.filter(r=>r.Manufacturing_Method==='Rammed Earth').length;
+  document.getElementById('viewerDateCount').textContent=dates.length
+    ? produced.length+' recorded · '+printed+' printing / '+rammed+' rammed'
+    : 'No fabrication dates recorded';
+  document.getElementById('viewerDateFirst').textContent=dates[0]||'—';
+  document.getElementById('viewerDateLast').textContent=dates.at(-1)||'—';
+}
 function applyColors(){
   const field=colorBy.value;
   parts.forEach(p=>{
     const r=records[p.key]; if(!r)return;
-    const c=field==='Manufacturing_Method' ? manufacturingColor(r) : colorFor(field,r[field]);
+    const c=field==='Fabrication_Date'
+      ? !isFabricationDate(r.Fabrication_Date)?FAB_DATE_COLORS.undated
+      : currentFabricationDate && r.Fabrication_Date>currentFabricationDate?FAB_DATE_COLORS.future
+      : FAB_DATE_COLORS[r.Manufacturing_Method]||FAB_DATE_COLORS.other
+      : field==='Manufacturing_Method'?manufacturingColor(r):colorFor(field,r[field]);
     p.meshes.forEach(m=>{
       if(m.material?.color) m.material.color.set(c);
       if(m.material?.emissive){m.material.emissive.set(p.key===selectedKey?0x3a3a3a:0x000000);m.material.emissiveIntensity=p.key===selectedKey?.28:0;}
     });
   });
-  applyFilter(); renderLegend();
+  applyFilter(); renderLegend(); renderViewerDateTimeline();
 }
 function applyFilter(){
   const field=colorBy.value, f=statusFilter.value, q=searchInput.value.trim().toLowerCase();
@@ -1279,6 +1328,23 @@ function renderManufacturingLegend(){
 }
 function renderLegend(){
   const field=colorBy.value;
+  if(field==='Fabrication_Date'){
+    const dated=parts.filter(p=>isFabricationDate(records[p.key]?.Fabrication_Date)).length;
+    const grouped=[
+      ['3D Printing',FAB_DATE_COLORS['3D Printing']],
+      ['Rammed Earth',FAB_DATE_COLORS['Rammed Earth']],
+      ['After selected date',FAB_DATE_COLORS.future],
+      ['No fabrication date',FAB_DATE_COLORS.undated]
+    ];
+    const legend=document.getElementById('legend');
+    legend.innerHTML='<div class="legend-title">Fabrication / 3D timeline <div class="legend-hint">'+
+      'Cumulative through '+escapeHtml(currentFabricationDate||'—')+' · '+dated+' dated modules</div></div>'+
+      grouped.map(([label,color])=>'<div class="legend-row"><span class="swatch" style="background:'+color+'"></span>'+
+        '<span>'+escapeHtml(label)+'</span></div>').join('');
+    statusFilter.innerHTML='<option value="__ALL__">All modules</option>';
+    statusFilter.value='__ALL__';
+    return;
+  }
   if(field==='Manufacturing_Method'){
     renderManufacturingLegend();
     return;
@@ -2251,6 +2317,14 @@ function wireUI(){
     else showMessage('This copy is in local mode. Add your Supabase Project URL + publishable/anon key to config.js, then reload.',true);
   };
   colorBy.onchange=()=>{statusFilter.value='__ALL__';applyColors();};
+  document.getElementById('viewerDateSlider').addEventListener('input',event=>{
+    const dates=fabricationDates();
+    currentFabricationDate=dates[Math.max(0,Math.min(dates.length-1,Number(event.target.value)))]||null;
+    applyColors();
+  });
+  document.getElementById('exitDateTimeline').addEventListener('click',()=>{
+    colorBy.value='Production_Status';statusFilter.value='__ALL__';applyColors();
+  });
   statusFilter.onchange=applyFilter; searchInput.oninput=applyFilter;
   explodeInput.oninput=()=>explode(parseFloat(explodeInput.value));
   const wrap=document.getElementById('viewerWrap'), dz=document.getElementById('dropzone');
