@@ -55,7 +55,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
 <script>
 (async function(){
   'use strict';
-  const $=id=>document.getElementById(id), CACHE='lama-slicer-assets-v3';
+  const $=id=>document.getElementById(id), CACHE='lama-slicer-assets-v4';
   const root=new URL('./',location.href), app=new URL('app/',root);
   const essential=['web/index.html','web/js/app.js','lama_server.py','lama_engine.py',
     'toolpaths/N1/weave_pattern.py','toolpaths/N1/weave_slice.py','toolpaths/N1/weave_gcode.py',
@@ -77,7 +77,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
     await navigator.serviceWorker.register('./sw.js',{scope:'./'});
     await Promise.race([navigator.serviceWorker.ready, new Promise((_,reject)=>setTimeout(()=>reject(new Error('Service Worker activation timed out (20s). Try a normal Chrome/Edge tab.')),20000))]);
     const c=await caches.open(CACHE);
-    if(await c.match(new URL('app/index.html',root).href)){
+    if(await c.match(new URL('app/__installed__',root).href)){
       state(true);progress('Opening original LAMA Slicer…');location.replace(app.href);
       return;
     }
@@ -150,6 +150,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
       await c.put(dest.href,new Response(data,{headers:{'Content-Type':type}}));
       progress('Installing '+relative+'  ('+(++i)+' / '+files.length+')',Math.round(8+90*i/files.length));
     }
+    await c.put(new URL('app/__installed__',root).href, new Response('LAMA original source install complete', {headers:{'Content-Type':'text/plain'}}));
     state(true);
     progress('Original 3D machine workspace ready; opening…',100);
     location.replace(app.href);
