@@ -1,29 +1,27 @@
-# LAMA Slicer — independent web workspace
+# LAMA Slicer — Original N1/N2 robot workspace
 
-URL: https://sogoose.github.io/pavilion-fabrication-tracker/lama-slicer/
+Address: https://sogoose.github.io/pavilion-fabrication-tracker/lama-slicer/
 
-This directory is deliberately independent from the Pavilion Fabrication Tracker homepage. Nothing in this directory is imported by the tracker.
+The **unchanged original user-provided** `LAMA_Slicer.zip` is committed at `lama-slicer/LAMA_Slicer.zip` in this repository (sha1 Git blob `ec4f6cf4391d49bb19d992f4c2f9c0bbea6b5402`). Visitors **do not** upload or download a ZIP manually.
 
-## Original toolpaths, not an approximation
+## What opens
+- The *original* `web/index.html`, `web/css/style.css` and `web/js/app.js` interface, plus its original bundled Three.js controls/loaders.
+- WASP 40100 `web/models/wasp.json`, UR5 `web/models/ur5_station.json`, Comau NJ60-2.2 `web/models/comau_nj60.json`, unchanged. The full robot scene, placement, animation and printing preview code are used.
+- Unchanged N1 and N2 `weave_pattern.py`, `weave_slice.py`, `weave_gcode.py` plus the original `gcode2pdl_arduino.py` converter and `settings.json`.
 
-The source application, machine models, original N1/N2 scripts, G-code writers and Comau PDL converter are read from the user's unchanged `LAMA_Slicer.zip` bundle. The installer stores those files in browser Cache Storage and serves them via a service worker under `/lama-slicer/app/`. The original JS application's `/api/...` requests are routed to `bridge.js` and `py-worker.js`. The worker runs Pyodide Python/WebAssembly with numpy, shapely, scipy and trimesh, calling the original `lama_server.api_slice` / `lama_server.api_export` through an in-process adapter (no server, subprocess or Python installed on the visitor's computer). Machine output is downloaded through a cache-backed URL under this path.
+## Hosting architecture
+1. Loading `/lama-slicer/` downloads the committed original ZIP and unpacks its web files and Python scripts into the **browser Cache Storage** under `/lama-slicer/app/`. This happens automatically without asking the visitor for a file. Later visits reuse the cache until version invalidation or browser storage clearing.
+2. `sw.js` serves only resources within the `/lama-slicer/` scope and never affects the Tracker's root route. The robot models are loaded by the original interface on demand.
+3. The sole JS interface change is a small bridge replacing the original local HTTP `api()` fetch with `window.lamaApi()`, and replacing local output links with browser download links.
+4. `py-worker.js` loads Pyodide, Numpy, Shapely, Scipy, NetworkX and the original Trimesh Python library. Its Emscripten filesystem contains the original scripts. Original `lama_server.api_slice` and `lama_server.api_export` use the original `lama_engine.job_slice` and `lama_engine.job_export` implementations.
+5. Browser output files are downloaded, rather than written into a user's Windows output folder. No persistent slicing Python server is needed.
 
-## Initial use
+## Validation and limitations
+- Verified exact ZIP was committed in GitHub; verified all three model JSONs exist (WASP 3 meshes, UR5 station 5, Comau 23).
+- Verified browser module entry rewrite parses as JavaScript.
+- Verified the **original** `gcode2pdl_arduino.py` locally transforms sample G-code into a PDL file.
+- **Not verified:** full live GitHub Pages end-to-end slicing in a real user browser after Pyodide load. This is a work-in-progress deployment; robot output must not be used unverified.
+- N1/N2 are tailored to their original geometry families and may refuse other solids; original algorithm restrictions still apply.
 
-1. Open the separate LAMA Slicer URL.
-2. Import the original `LAMA_Slicer.zip` from the user's computer once.
-3. Launch LAMA Slicer. The first Python initialization needs an internet connection; it downloads Pyodide and scientific Python packages.
-4. Select a compatible N1/N2 mesh, slice and export G-code/PDL. Click the Download link in the export panel; browsers cannot write directly to local arbitrary folders.
-5. For new LAMA versions, use **Replace ZIP** on the install page.
-
-The original N1/N2 scripts are specifically written for the project's compatible module geometry; they intentionally reject other shapes. Imported G-code is still supported for preview and machine export. This integration does not validate robot kinematics or machine safety. Always verify outputs before physical fabrication.
-
-## Enable automatic setup for the whole team
-
-**Optional one-time deployment:** place the **original, unchanged ZIP** in this GitHub repository at `lama-slicer/LAMA_Slicer.zip`. The installer checks for that file and automatically stores it in each visitor's browser on first visit. This makes manual ZIP selection unnecessary for teammates. Do not extract the ZIP into the tracker root and do not import its large 3D models from the main tracker.
-
-The ZIP is intentionally not committed by the initial text-only GitHub deployment; until you add it, each visitor must select the ZIP once. Local Cache Storage can be cleared by the browser, in which case re-import is required.
-
-## Browser requirements
-
-Recent Chrome, Edge or Firefox; JavaScript, Service Workers, WebAssembly, network access to Pyodide and JSZip CDNs; sufficient memory for models and the Python runtime. Processing stays on the client's machine. 
+## Updating source
+To upgrade LAMA, replace `lama-slicer/LAMA_Slicer.zip` with the new original archive, bump the cache version in `index.html`, `sw.js`, `bridge.js` and run functionality tests. Do not substitute the original algorithms with a generic contour/zigzag slicer.
