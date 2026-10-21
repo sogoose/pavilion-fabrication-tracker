@@ -355,6 +355,40 @@ header{gap:6px;padding:10px 16px}
 
 /* Standalone SVG artwork in assets/workflow; same placement as original inline drawings */
 .pm-art{object-fit:contain;display:block}
+
+/* Unified chapter navigation — buttons and external Slicer link share one rule. */
+.chapterNav > button,
+.chapterNav > a.chapterNavLink {
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  margin:0;
+  padding:8px 0 11px;
+  border:0;
+  border-bottom:1px solid transparent;
+  border-radius:0;
+  background:transparent;
+  color:#858580;
+  font:600 15px/1.35 Inter,Arial,sans-serif;
+  letter-spacing:0;
+  text-decoration:none;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.chapterNav > button:hover,
+.chapterNav > a.chapterNavLink:hover { color:#151515; background:transparent; }
+.chapterNav > button.active,
+.chapterNav > button[aria-current="page"] { color:#151515; border-bottom-color:#151515; }
+.chapterNav > a.chapterNavLink:focus-visible,
+.chapterNav > button:focus-visible { outline:2px solid #333; outline-offset:3px; }
+@media (max-width:760px) {
+  .chapterNav > button, .chapterNav > a.chapterNavLink {
+    font-size:14px;
+    padding:5px 0 9px;
+  }
+}
 </style>
 <link rel="stylesheet" href="./assets/tracker-minimal-ui.css?v=20261021-v1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -380,7 +414,7 @@ header{gap:6px;padding:10px 16px}
 <body>
 <div class="app">
   <header>
-    <nav class="chapterNav" aria-label="Site chapters"><button type="button" id="navWorkflow" aria-current="false">01 / Workflow</button><button type="button" id="navTracker" class="active" aria-current="page">02 / Tracker</button><a href="./lama-slicer/" target="_blank" rel="noopener" style="color:#666;font:inherit;font-size:12px;text-decoration:none;border-bottom:1px solid transparent;padding:6px 0;white-space:nowrap">03 / LAMA Slicer ↗</a></nav>
+    <nav class="chapterNav" aria-label="Site chapters"><button type="button" id="navWorkflow" aria-current="false">01 / Workflow</button><button type="button" id="navTracker" class="active" aria-current="page">02 / Tracker</button><a class="chapterNavLink" href="./lama-slicer/" target="_blank" rel="noopener">03 / LAMA Slicer ↗</a></nav>
     <div class="toprow">
       <div class="brand">PAVILION / FABRICATION <span class="versionTag">V4 · TEAM</span></div>
       <span id="objectBadge" class="badge">0 objects</span>
