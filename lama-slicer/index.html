@@ -1,158 +1,178 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101d2b">
-<title>LAMA Slicer | TU Delft Fabrication</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e1820"><title>LAMA Slicer — Browser Workspace</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#eaf1f6;background:#0d1722;
-background-image:radial-gradient(ellipse 60% 45% at 90% -5%,#1d3852 0,transparent 80%)}
-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #263646;padding:22px clamp(22px,6vw,90px)}
-.wordmark{letter-spacing:.3em;font-size:15px;font-weight:800}.wordmark span{color:#68c7ee;font-weight:300}
-a{color:#9ddcf4;text-decoration:none}a:hover{text-decoration:underline}
-main{width:min(760px,calc(100% - 44px));margin:min(11vh,90px) auto}
-.eyebrow{font:600 11px ui-monospace,Consolas,monospace;letter-spacing:.24em;color:#84b9d0}
-h1{font-size:clamp(40px,8vw,82px);letter-spacing:-.066em;line-height:.99;margin:20px 0 26px}
-h1 em{font-style:normal;color:#60c5ef}p{color:#b0c4d0;line-height:1.7;font-size:15px}
-.panel{border:1px solid #34495a;background:#182938;padding:28px;border-radius:12px;margin:32px 0}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.label{font-size:11px;letter-spacing:.16em;color:#87a1b2;text-transform:uppercase}
-strong{font-weight:650}.sub{font-size:13px;color:#87a2b4;line-height:1.6}
-button,.upload{border:1px solid #78cee9;background:#69c7e8;color:#0c1f30;border-radius:5px;
-font:750 13px inherit;padding:12px 21px;cursor:pointer;display:inline-block;font-size:13px;font-weight:700}
-button:hover,.upload:hover{background:#9ae3f7}button:disabled{opacity:.4;cursor:not-allowed}
-button.secondary{background:transparent;color:#cfe5f0;border-color:#587486}
-input[type=file]{display:none}
-#progress{margin-top:20px;font:12px/1.5 ui-monospace,monospace;color:#a9d5e7;white-space:pre-line}
-#track{height:2px;background:#334655;margin-top:15px;overflow:hidden;display:none}
-#bar{height:100%;background:#6ac9ef;width:0;transition:width .15s}
-#ready{display:none}
-.note{border-top:1px solid #273949;padding-top:21px;margin-top:35px;font-size:12px}
-footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spacing:.05em}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:13px/1.5 Inter,Arial,Helvetica,sans-serif;color:#e5eff3;background:#0c141c}
+button,input,select{font:inherit}button,input,select{border:1px solid #355061;background:#132633;color:#e8f5fa;border-radius:6px;padding:9px 11px}
+button{cursor:pointer;font-weight:650}button:hover{border-color:#67a9cd;background:#1d3747}button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:#5abde7;border-color:#5abde7;color:#0d2030}button.primary:hover{background:#8ad9f3}
+.top{display:flex;align-items:center;gap:18px;padding:14px 26px;border-bottom:1px solid #273845;background:#111d28;flex-wrap:wrap}
+.logo{letter-spacing:.24em;font-weight:800;font-size:15px}.logo span{font-weight:400;color:#80c9e7}
+.top small{letter-spacing:.11em;color:#8da5b6}.top a{margin-left:auto;text-decoration:none;color:#b2d5e6;font-size:11px}
+.intro{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 26px}
+h1{font-size:23px;margin:0 0 4px;letter-spacing:-.04em}p{margin:0;color:#9cb1be}
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr) 285px;gap:12px;padding:0 18px 18px;height:calc(100vh - 147px);min-height:550px}
+.pane{border:1px solid #2b4050;border-radius:8px;background:#111e29;min-height:0;overflow:auto}
+.left,.right{padding:16px}.group{padding-bottom:17px;margin-bottom:16px;border-bottom:1px solid #2b4150}
+.group:last-child{border-bottom:0}.heading{font-size:10px;font-weight:800;color:#7bbad6;letter-spacing:.15em;text-transform:uppercase;margin:0 0 11px}
+.drop{display:block;text-align:center;cursor:pointer;border:1px dashed #5c8398;border-radius:7px;padding:17px 10px;background:#152c3a}
+.drop:hover,.drop.drag{border-color:#8fdcff;background:#1d3a4e}
+.drop strong{display:block;font-size:14px;margin-bottom:4px}.drop small{font-size:11px;color:#91adbc}
+#file{display:none}.field{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 0}
+.field label{font-size:11px;color:#b5c6cf}.field input,.field select{max-width:143px;width:143px;padding:8px 7px;text-align:right}
+.field select{text-align:left}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
+.viewer{display:grid;grid-template-rows:1fr 43%;background:#08121a;overflow:hidden}
+.view{position:relative;min-height:0;overflow:hidden}
+.view+.view{border-top:1px solid #304556}
+canvas{display:block;width:100%;height:100%;cursor:grab}
+.viewtitle{position:absolute;left:14px;top:12px;color:#a0c1d0;letter-spacing:.15em;font:10px ui-monospace,monospace}
+.viewcaption{position:absolute;right:14px;bottom:10px;color:#738e9d;font:10px ui-monospace,monospace}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;pointer-events:none;color:#577889;line-height:1.8;padding:45px}
+h2{margin:0 0 7px;font-size:15px}.value{font:700 23px ui-monospace,monospace;color:#c7edf9}
+.stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2b4050;gap:8px}.stat strong{font:700 12px ui-monospace,monospace}
+#layer{width:100%;accent-color:#6fc8eb}#status{font:11px/1.55 ui-monospace,monospace;color:#91b6c7;white-space:pre-wrap;margin-top:10px;min-height:45px}
+#status.error{color:#efad9d}.progress{height:4px;background:#273d4e;margin:10px 0 15px;border-radius:3px;overflow:hidden}.progress>div{height:100%;background:#70caef;width:0;transition:width .1s}
+.note{font-size:11px;line-height:1.65;color:#8fa8b7;padding:11px;background:#152632;border:1px solid #314959;border-radius:6px}
+.note b{color:#d9ebf4}.hint{font-size:10px;color:#7897aa;margin:8px 0}.pill{border:1px solid #43677b;color:#95cfe8;padding:4px 8px;border-radius:100px;font:10px ui-monospace,monospace}
+@media(max-width:1050px){.grid{grid-template-columns:280px minmax(0,1fr);height:auto}.viewer{min-height:650px}.right{grid-column:1/-1}.right .stat{display:inline-flex;min-width:180px;padding:10px 16px 10px 0;margin-right:12px}}
+@media(max-width:650px){.grid{grid-template-columns:1fr;padding:0 12px 16px}.viewer{min-height:600px}.right{grid-column:auto}.intro{padding:18px 12px}.top{padding:14px 12px}.top a{margin-left:0}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
 </head>
 <body>
-<header><div class="wordmark">LAMA <span>SLICER</span></div><a href="../">← PAVILION FABRICATION TRACKER</a></header>
-<main>
-  <div class="eyebrow">TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN · 2026/27</div>
-  <h1>Fabricate<br><em>in the browser.</em></h1>
-  <p>Independent slicing workspace for the original LAMA N1/N2 generators, WASP, UR5 and Comau. Python and geometry processing run locally inside a browser worker: no processing server and no effect on the fabrication tracker's loading speed.</p>
-  <div class="panel">
-    <div class="row"><div><div class="label">Local slicer engine</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button> <button id="reinstall" class="secondary">Replace ZIP</button></div></div>
-    <div id="installer">
-      <p class="sub">One-time setup: import your original <b>LAMA_Slicer.zip</b>. The full interface and Python toolpaths are stored in this browser for later visits. The ZIP is not uploaded to any server.</p>
-      <label class="upload" for="zip">Select LAMA_Slicer.zip</label>
-      <input id="zip" type="file" accept=".zip,application/zip">
-    </div>
-    <div id="track"><div id="bar"></div></div><div id="progress" aria-live="polite"></div>
+<header class="top"><div class="logo">LAMA <span>SLICER</span></div><small>BROWSER WORKSPACE · 2026/27</small><a href="../">← PAVILION FABRICATION TRACKER</a></header>
+<section class="intro"><div><h1>Web slicing workspace</h1><p>Open an STL / OBJ, calculate layer contours, preview toolpaths and export G-code. No ZIP or installation.</p></div><span class="pill">INDEPENDENT / LOCAL COMPUTATION</span></section>
+<div class="grid">
+<aside class="pane left">
+  <div class="group"><div class="heading">01 / Model</div>
+    <label class="drop" id="drop" for="file"><strong>+ Load geometry</strong><small>STL (binary / ASCII) or OBJ · drop file here</small></label><input id="file" type="file" accept=".stl,.obj">
+    <div id="modelInfo" class="hint">No model loaded</div>
   </div>
-  <div class="note"><p><b>How it works:</b> Import the original ZIP once, then open this page normally. Heavy machine models load only when you enter the slicer. Python scientific packages are fetched on first use and cached by the browser when supported. Machine output must be checked before physical fabrication.</p></div>
-  <footer>© 2026/27 · TU DELFT · LAMA SLICER / PAVILION FABRICATION HUB</footer>
-</main>
+  <div class="group"><div class="heading">02 / Fabrication setup</div>
+    <div class="field"><label for="machine">Machine</label><select id="machine"><option value="wasp">WASP</option><option value="comau">COMAU</option><option value="ur5">UR5 (neutral G-code)</option></select></div>
+    <div class="field"><label for="pattern">Pattern</label><select id="pattern"><option value="zigzag">Parallel / alternating</option><option value="cross">Crosshatch</option></select></div>
+    <div class="field"><label for="nozzle">Bead width (mm)</label><input id="nozzle" type="number" min="1" max="35" step=".5" value="7"></div>
+    <div class="field"><label for="first">First layer (mm)</label><input id="first" type="number" min=".2" max="30" step=".2" value="3"></div>
+    <div class="field"><label for="height">Layer height (mm)</label><input id="height" type="number" min=".2" max="30" step=".2" value="3"></div>
+    <div class="field"><label for="shells">Perimeter passes</label><input id="shells" type="number" min="1" max="5" step="1" value="2"></div>
+    <div class="field"><label for="infill">Infill (%)</label><input id="infill" type="number" min="0" max="80" step="5" value="20"></div>
+  </div>
+  <div class="group"><div class="heading">03 / G-code settings</div>
+    <div class="field"><label for="speed">Print speed (mm/s)</label><input id="speed" type="number" min="1" max="200" value="50"></div>
+    <div class="field"><label for="travel">Travel speed (mm/s)</label><input id="travel" type="number" min="1" max="200" value="100"></div>
+    <div class="field"><label for="extrusion">Extrusion E / mm</label><input id="extrusion" type="number" min=".001" max="20" step=".01" value=".43"></div>
+    <div class="hint">Verify extrusion calibration, printer startup and robot coordinates before running any output.</div>
+  </div>
+  <div class="actions"><button class="primary" id="slice" disabled>Slice model</button><button id="export" disabled>Export G-code ↓</button></div>
+  <div class="progress"><div id="bar"></div></div><div id="status" aria-live="polite">Ready — import a mesh to start.</div>
+</aside>
+<div class="pane viewer">
+  <div class="view"><canvas id="scene"></canvas><span class="viewtitle">01 / MESH VIEW</span><span class="viewcaption">DRAG TO ORBIT · WHEEL TO ZOOM</span><div class="empty" id="empty3d">Import a model to preview its geometry</div></div>
+  <div class="view"><canvas id="plan"></canvas><span class="viewtitle">02 / LAYER TOOLPATH</span><span class="viewcaption">CYAN = SHELL · AMBER = INFILL</span><div class="empty" id="empty2d">Run Slice to generate layer contours</div></div>
+</div>
+<aside class="pane right">
+  <div class="group"><div class="heading">04 / Model register</div><h2 id="filename">—</h2><div class="stat"><span>Mesh triangles</span><strong id="triangleCount">—</strong></div><div class="stat"><span>Width (mm)</span><strong id="width">—</strong></div><div class="stat"><span>Depth (mm)</span><strong id="depth">—</strong></div><div class="stat"><span>Height (mm)</span><strong id="modelHeight">—</strong></div></div>
+  <div class="group"><div class="heading">05 / Layer inspection</div><div class="stat"><span>Layers</span><strong id="layerCount">—</strong></div><div class="stat"><span>Toolpath segments</span><strong id="pathCount">—</strong></div><div class="stat"><span>Current layer</span><strong id="layerText">—</strong></div><input id="layer" type="range" min="0" max="0" value="0" disabled><div class="hint" id="zLabel">Slice to inspect individual layers.</div></div>
+  <div class="group"><div class="heading">Production safety</div><div class="note"><b>Browser geometry edition.</b> This calculates real planar contours and two standard infill styles, but <b>does not reproduce the original Python N1/N2 weave algorithms</b>. Generated robot-neutral G-code is for verification and further post-processing, not direct robot execution. Comau PDL is not supported in this edition.</div></div>
+  <div class="hint">No mesh is uploaded to a server. The slicer runs in a separate worker, keeping the Tracker unaffected.</div>
+</aside>
+</div>
 <script>
-(async function(){
-  'use strict';
-  const $=id=>document.getElementById(id), CACHE='lama-slicer-assets-v1';
-  const root=new URL('./',location.href), app=new URL('app/',root);
-  const essential=['web/index.html','web/js/app.js','lama_server.py','lama_engine.py',
-    'toolpaths/N1/weave_pattern.py','toolpaths/N1/weave_slice.py','toolpaths/N1/weave_gcode.py',
-    'toolpaths/N2/weave_pattern.py','toolpaths/N2/weave_slice.py','toolpaths/N2/weave_gcode.py',
-    'converters/gcode2pdl_arduino.py','converters/settings.json'];
-  let ready=false;
-  function progress(s,n){$('progress').textContent=s;if(n!=null){$('track').style.display='block';$('bar').style.width=n+'%';}}
-  function state(isReady){
-    ready=isReady;
-    $('ready').style.display=isReady?'block':'none';
-    $('installer').style.display=isReady?'none':'block';
-    $('title').textContent=isReady?'Engine installed':'Install LAMA Slicer';
-    $('detail').textContent=isReady?'Original N1/N2 engine ready in this browser':'Install the original source files once';
-  }
-  $('launch').onclick=()=>location.assign(app.href);
-  $('reinstall').onclick=()=>{state(false);progress('Choose a new original LAMA_Slicer.zip to replace this browser installation.');};
-  try{
-    if(!('serviceWorker' in navigator)||!('caches' in window))throw Error('This browser does not support Service Workers / Cache Storage. Use current Chrome, Edge or Firefox.');
-    await navigator.serviceWorker.register('./sw.js',{scope:'./'});
-    await navigator.serviceWorker.ready;
-    const c=await caches.open(CACHE);
-    if(await c.match(new URL('app/.installed',root).href)){
-      state(true);progress('Installed locally. Ready to launch.');
-      return;
-    }
-    state(false);
-    const hosted=await fetch('./LAMA_Slicer.zip',{method:'HEAD',cache:'no-store'}).catch(()=>null);
-    if(hosted?.ok){
-      progress('Found hosted engine bundle. Installing automatically…',3);
-      const resp=await fetch('./LAMA_Slicer.zip',{cache:'no-store'});
-      if(!resp.ok)throw Error('Could not download hosted engine bundle.');
-      await install(await resp.arrayBuffer());
-    } else progress('Select the original LAMA_Slicer.zip to install.');
-  }catch(e){state(false);progress('Setup error: '+e.message);}
-  $('zip').onchange=async event=>{
-    const file=event.target.files?.[0];if(!file)return;
-    try{await install(await file.arrayBuffer());}
-    catch(e){state(false);progress('Import failed: '+e.message);}
-  };
-  async function install(buf){
-    if(!window.JSZip)throw Error('ZIP library unavailable. Check network connection and retry.');
-    progress('Reading ZIP structure…',5);
-    const zip=await JSZip.loadAsync(buf);
-    const paths=Object.keys(zip.files);
-    const rootIndex=paths.find(p=>p.endsWith('/web/index.html')&&!zip.files[p].dir);
-    if(!rootIndex)throw Error('ZIP must contain LAMA_Slicer/web/index.html.');
-    const prefix=rootIndex.slice(0,-'web/index.html'.length);
-    for(const file of essential){
-      if(!zip.file(prefix+file))throw Error('Missing original LAMA file: '+file);
-    }
-    const source=await zip.file(prefix+'web/js/app.js').async('string');
-    if(!/async function api\(path, body\)/.test(source)||!/return r\.json\(\)/.test(source))
-      throw Error('Unexpected app.js version: API connector was not found.');
-    const c=await caches.open(CACHE);
-    let files=paths.filter(p=>p.startsWith(prefix)&&!zip.files[p].dir);
-    files=files.filter(p=>p.startsWith(prefix+'web/')||p.startsWith(prefix+'toolpaths/')||
-      p.startsWith(prefix+'converters/')||p===prefix+'lama_engine.py'||p===prefix+'lama_server.py');
-    // Scripts and geometry stay separated from the Tracker. Only required resources are installed.
-    files=files.filter(p=>!p.endsWith('.pyc')&&!p.endsWith('.keep'));
-    let i=0;
-    for(const path of files){
-      const relative=path.slice(prefix.length);
-      const isWeb=relative.startsWith('web/');
-      const dest=new URL('app/'+(isWeb?relative.slice(4):'py/'+relative),root);
-      let data=await zip.file(path).async('uint8array');
-      let type='application/octet-stream';
-      if(/\.html$/i.test(path)){
-        type='text/html; charset=utf-8';
-        let html=new TextDecoder().decode(data);
-        if(path===rootIndex){
-          const tag='<script type="module" src="js/app.js"></script>';
-          if(!html.includes(tag))throw Error('The original app entry script changed.');
-          html=html.replace(tag,'<script src="../bridge.js"></script>'+tag);
-          html=html.replace('</body>','<a href="../" style="position:fixed;bottom:8px;left:8px;z-index:9000;color:#59c8f0;font:11px monospace;background:#0a1827;padding:5px 9px">← Tracker / Installer</a></body>');
-        }
-        data=new TextEncoder().encode(html);
-      } else if(/\.js$/i.test(path)){
-        type='text/javascript; charset=utf-8';
-        if(relative==='web/js/app.js'){
-          let code=source.replace(/async function api\(path, body\)\s*\{[\s\S]*?return r\.json\(\);\s*\}/,
-            'async function api(path, body) { return window.lamaApi(path, body); }');
-          code=code.replaceAll('/api/file?path=','../download?path=');
-          code=code.replace('>Open folder</button>','>Downloads help</button>');
-          code=code.replace('Saved ${r.files.map(f => f.name).join(\', \')} in ${r.out_dir}', 'Ready to download ${r.files.map(f => f.name).join(\', \')}');
-          data=new TextEncoder().encode(code);
-        }
-      } else if(/\.css$/i.test(path))type='text/css; charset=utf-8';
-      else if(/\.json$/i.test(path))type='application/json';
-      else if(/\.png$/i.test(path))type='image/png';
-      else if(/\.svg$/i.test(path))type='image/svg+xml';
-      await c.put(dest.href,new Response(data,{headers:{'Content-Type':type}}));
-      progress('Installing '+relative+'  ('+(++i)+' / '+files.length+')',Math.round(8+90*i/files.length));
-    }
-    await c.put(new URL('app/.installed',root).href,new Response('ok', {headers:{'Content-Type':'text/plain'}}));
-    state(true);
-    progress('Engine installed. Open LAMA Slicer to start.',100);
-  }
+(function(){
+'use strict';
+const el=id=>document.getElementById(id),engine=new Worker('./browser-engine.js');
+let edges=[],model=null,sliceReady=false,current=null,lastLayer=0,yaw=.72,pitch=.43,scale=1,drag=null;
+const scene=el('scene'),plan=el('plan');
+function status(s,error=false){el('status').textContent=s;el('status').classList.toggle('error',error)}
+function opts(){return {
+ machine:el('machine').value,pattern:el('pattern').value,nozzle:+el('nozzle').value,
+ first:+el('first').value,layer:+el('height').value,shells:+el('shells').value|0,
+ infill:+el('infill').value,speed:+el('speed').value,travel:+el('travel').value,
+ extrusion:+el('extrusion').value,name:el('filename').textContent.replace(/\.[^.]*$/,'')
+}}
+function resize(canvas){const r=canvas.getBoundingClientRect(),d=window.devicePixelRatio||1;canvas.width=Math.max(1,r.width*d);canvas.height=Math.max(1,r.height*d);return {w:canvas.width,h:canvas.height}}
+function draw3d(){
+ const {w,h}=resize(scene),c=scene.getContext('2d');c.clearRect(0,0,w,h);
+ c.strokeStyle='#1a3341';c.lineWidth=1;
+ for(let j=0;j<12;j++){const y=h*.57+(j-6)*h*.06;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}
+ if(!model)return;
+ const f=Math.min(w/(model.width+model.depth+model.height*.5+1),h/(model.width+model.depth+model.height*1.4+1))*1.75*scale;
+ const project=(x,y,z)=>{
+   const a=x*Math.cos(yaw)-y*Math.sin(yaw),b=x*Math.sin(yaw)+y*Math.cos(yaw);
+   return [w/2+a*f,h*.76-(b*Math.sin(pitch)+z*Math.cos(pitch))*f];
+ };
+ const skip=Math.max(1,Math.ceil(edges.length/2000));c.strokeStyle='#72bada';c.lineWidth=.65*(window.devicePixelRatio||1);c.globalAlpha=.48;
+ for(let i=0;i<edges.length;i+=skip){
+   const t=edges[i];c.beginPath();
+   for(let j=0;j<4;j++){const k=j%3,pt=project(t[k*3],t[k*3+1],t[k*3+2]);if(j===0)c.moveTo(pt[0],pt[1]);else c.lineTo(pt[0],pt[1]);}
+   c.stroke();
+ }
+ c.globalAlpha=1;c.fillStyle='#81afc5';c.font=(11*(window.devicePixelRatio||1))+'px monospace';
+ c.fillText('Z +',w*.5+8,h*.76-model.height*f*.85);
+}
+function draw2d(){
+ const {w,h}=resize(plan),c=plan.getContext('2d');c.clearRect(0,0,w,h);
+ c.strokeStyle='#1d3645';c.lineWidth=1;
+ for(let j=0;j<15;j++){const y=h*j/14;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}
+ if(!model||!current)return;
+ const f=Math.min(w/(model.width+18),h/(model.depth+18))*.89;
+ const xy=p=>[w/2+p[0]*f,h/2-p[1]*f];c.lineWidth=Math.max(1,1.2*(window.devicePixelRatio||1));
+ for(const path of current.paths){
+   c.strokeStyle=path.kind==='infill'?'#dda66e':'#70cce8';c.beginPath();
+   for(let i=0;i<path.points.length;i++){const p=xy(path.points[i]);if(i===0)c.moveTo(...p);else c.lineTo(...p);}
+   c.stroke();
+ }
+}
+function invalidate(){sliceReady=false;current=null;el('export').disabled=true;el('layer').disabled=true;el('empty2d').style.display='flex';draw2d();}
+async function loadFile(file){
+ if(!file)return;
+ if(!/\.(stl|obj)$/i.test(file.name)){status('Please select STL or OBJ geometry.',true);return;}
+ invalidate();el('slice').disabled=true;el('filename').textContent=file.name;el('modelInfo').textContent='Reading '+file.name+' …';
+ status('Parsing mesh…');el('bar').style.width='0%';
+ const buffer=await file.arrayBuffer();engine.postMessage({type:'load',name:file.name,buffer},[buffer]);
+}
+el('file').addEventListener('change',e=>loadFile(e.target.files[0]));
+const drop=el('drop');for(const ev of ['dragenter','dragover'])drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');loadFile(e.dataTransfer.files[0])});
+for(const id of ['pattern','nozzle','first','height','shells','infill','speed','travel','extrusion','machine'])
+ el(id).addEventListener('change',()=>{if(id==='machine')el('extrusion').value=el('machine').value==='wasp'?'.43':'.60';if(model)invalidate()});
+el('slice').onclick=()=>{if(!model)return;invalidate();el('slice').disabled=true;status('Computing toolpaths…');engine.postMessage({type:'slice',options:opts()})};
+el('export').onclick=()=>{el('export').disabled=true;status('Preparing G-code…');engine.postMessage({type:'gcode',options:opts()})};
+el('layer').oninput=()=>{if(sliceReady)engine.postMessage({type:'layer',index:+el('layer').value})};
+engine.onmessage=ev=>{
+ const m=ev.data;
+ if(m.kind==='error'){status(m.message,true);el('slice').disabled=!model;el('export').disabled=!sliceReady;return;}
+ if(m.kind==='progress'){status(m.message);el('bar').style.width=m.percent+'%';return;}
+ if(m.kind==='loaded'){
+   edges=m.edges;model=m.bounds;scale=1;el('empty3d').style.display='none';
+   el('modelInfo').textContent=m.bounds.count.toLocaleString()+' triangles · centered on build plate';
+   for(const [id,value] of Object.entries({triangleCount:m.bounds.count.toLocaleString(),width:m.bounds.width.toFixed(1),depth:m.bounds.depth.toFixed(1),modelHeight:m.bounds.height.toFixed(1)}))el(id).textContent=value;
+   el('slice').disabled=false;el('layerCount').textContent='—';el('pathCount').textContent='—';
+   status('Mesh loaded. Choose slicing parameters.');draw3d();draw2d();
+ }
+ if(m.kind==='sliced'){
+   sliceReady=true;lastLayer=m.maxLayer;el('slice').disabled=false;el('export').disabled=false;el('bar').style.width='100%';
+   el('layer').disabled=false;el('layer').max=m.maxLayer;el('layer').value=0;
+   el('layerCount').textContent=m.total;el('pathCount').textContent=m.paths.toLocaleString();
+   el('empty2d').style.display='none';status(m.total+' layers computed. Inspect toolpaths before export.');
+   updateLayer(0,m.layer);
+ }
+ if(m.kind==='layer')updateLayer(m.index,m.layer);
+ if(m.kind==='gcode'){
+   const blob=new Blob([m.text],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+   a.href=url;a.download=m.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+   el('export').disabled=false;status(m.name+' ready · '+m.distance.toLocaleString()+' mm of extrusion path. Verify before fabrication.');
+ }
+};
+function updateLayer(i,L){current=L;el('layerText').textContent=(i+1)+' / '+(lastLayer+1);el('zLabel').textContent='Z '+L.z.toFixed(2)+' mm · '+L.paths.length+' toolpaths · '+L.rings+' contours';draw2d()}
+scene.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];scene.setPointerCapture(e.pointerId)});
+scene.addEventListener('pointermove',e=>{if(!drag)return;yaw+=(e.clientX-drag[0])*.008;pitch=Math.max(.03,Math.min(1.5,pitch+(e.clientY-drag[1])*.005));drag=[e.clientX,e.clientY];draw3d()});
+scene.addEventListener('pointerup',()=>drag=null);scene.addEventListener('pointercancel',()=>drag=null);
+scene.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.25,Math.min(5,scale*(e.deltaY>0?.88:1.12)));draw3d()},{passive:false});
+window.addEventListener('resize',()=>{draw3d();draw2d()});
+draw3d();draw2d();
 })();
 </script>
 </body></html>
