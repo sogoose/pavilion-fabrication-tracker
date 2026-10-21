@@ -229,3 +229,254 @@
 
 /* No changes to process-file dialogs, geometry, numbers, connector SVG
    sources, team files, Tracker controls or Slicer calculations. */
+
+
+/* TEAM COLOR INTERACTION / individual palette — 2026-10-21 */
+/* Explicit independent team colors: the previous phase grouping gave multiple
+   teams identical dark-brown --stage-fill values. Use the team's own swatch
+   for active SVG fill, not a shared darkening color. The five exhibition
+   reference colors remain, with complementary muted colors for extra teams. */
+
+/* Spatial Design — original exhibition light grey */
+#workflowView .wb-board .wb-block.wb-spatial,
+.wb-process-dialog[data-stage="spatial"] {
+  --stage-accent:#CCC7C1;
+  --stage-fill:color-mix(in srgb, #CCC7C1 68%, #242019);
+  --stage-number-ink:#22201D;
+  --stage-selected-ink:#22201D;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #CCC7C1 20%, white);
+  --stage-card-bg:color-mix(in srgb, #CCC7C1 44%, white);
+  --poster-ink:#22201D;
+}
+
+/* Structural Check — original exhibition dark stone */
+#workflowView .wb-board .wb-block.wb-structural,
+.wb-process-dialog[data-stage="structural"] {
+  --stage-accent:#7C7367;
+  --stage-fill:color-mix(in srgb, #7C7367 68%, #242019);
+  --stage-number-ink:#FFFFFF;
+  --stage-selected-ink:#FFFFFF;
+  --stage-selected-art:brightness(0) invert(1);
+  --stage-wash:color-mix(in srgb, #7C7367 20%, white);
+  --stage-card-bg:color-mix(in srgb, #7C7367 44%, white);
+  --poster-ink:#FFFFFF;
+}
+
+/* G-code — complementary slate blue */
+#workflowView .wb-board .wb-block.wb-gcode,
+.wb-process-dialog[data-stage="gcode"] {
+  --stage-accent:#8295AA;
+  --stage-fill:color-mix(in srgb, #8295AA 68%, #242019);
+  --stage-number-ink:#171D25;
+  --stage-selected-ink:#171D25;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #8295AA 20%, white);
+  --stage-card-bg:color-mix(in srgb, #8295AA 44%, white);
+  --poster-ink:#171D25;
+}
+
+/* Material Preparation — original exhibition warm grey */
+#workflowView .wb-board .wb-block.wb-material,
+.wb-process-dialog[data-stage="material"] {
+  --stage-accent:#B2ABA2;
+  --stage-fill:color-mix(in srgb, #B2ABA2 68%, #242019);
+  --stage-number-ink:#282522;
+  --stage-selected-ink:#282522;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #B2ABA2 20%, white);
+  --stage-card-bg:color-mix(in srgb, #B2ABA2 44%, white);
+  --poster-ink:#282522;
+}
+
+/* 3D Printing — original exhibition sand */
+#workflowView .wb-board .wb-block.wb-printing,
+.wb-process-dialog[data-stage="printing"] {
+  --stage-accent:#B19B7A;
+  --stage-fill:color-mix(in srgb, #B19B7A 68%, #242019);
+  --stage-number-ink:#29231D;
+  --stage-selected-ink:#29231D;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #B19B7A 20%, white);
+  --stage-card-bg:color-mix(in srgb, #B19B7A 44%, white);
+  --poster-ink:#29231D;
+}
+
+/* Rammed Earth — complementary muted sage */
+#workflowView .wb-board .wb-block.wb-rammed,
+.wb-process-dialog[data-stage="rammed"] {
+  --stage-accent:#8EA48D;
+  --stage-fill:color-mix(in srgb, #8EA48D 68%, #242019);
+  --stage-number-ink:#162019;
+  --stage-selected-ink:#162019;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #8EA48D 20%, white);
+  --stage-card-bg:color-mix(in srgb, #8EA48D 44%, white);
+  --poster-ink:#162019;
+}
+
+/* Firing — original exhibition beige */
+#workflowView .wb-board .wb-block.wb-firing,
+.wb-process-dialog[data-stage="firing"] {
+  --stage-accent:#BBA583;
+  --stage-fill:color-mix(in srgb, #BBA583 68%, #242019);
+  --stage-number-ink:#29231C;
+  --stage-selected-ink:#29231C;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #BBA583 20%, white);
+  --stage-card-bg:color-mix(in srgb, #BBA583 44%, white);
+  --poster-ink:#29231C;
+}
+
+/* Assembly — complementary dusty lavender */
+#workflowView .wb-board .wb-block.wb-assembly,
+.wb-process-dialog[data-stage="assembly"] {
+  --stage-accent:#B4A7B8;
+  --stage-fill:color-mix(in srgb, #B4A7B8 68%, #242019);
+  --stage-number-ink:#241E2A;
+  --stage-selected-ink:#241E2A;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #B4A7B8 20%, white);
+  --stage-card-bg:color-mix(in srgb, #B4A7B8 44%, white);
+  --poster-ink:#241E2A;
+}
+
+/* Computational Workflow — cool lilac-grey */
+#workflowView .wp-cluster .wp-island.wp-computational,
+.wb-process-dialog[data-stage="computational"] {
+  --stage-accent:#9A93B0;
+  --stage-fill:color-mix(in srgb, #9A93B0 68%, #242019);
+  --stage-number-ink:#201D2A;
+  --stage-selected-ink:#201D2A;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #9A93B0 20%, white);
+  --stage-card-bg:color-mix(in srgb, #9A93B0 44%, white);
+  --poster-ink:#201D2A;
+}
+
+/* Construction Management — clay */
+#workflowView .wp-cluster .wp-island.wp-construction,
+.wb-process-dialog[data-stage="construction"] {
+  --stage-accent:#C29B86;
+  --stage-fill:color-mix(in srgb, #C29B86 68%, #242019);
+  --stage-number-ink:#271E19;
+  --stage-selected-ink:#271E19;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #C29B86 20%, white);
+  --stage-card-bg:color-mix(in srgb, #C29B86 44%, white);
+  --poster-ink:#271E19;
+}
+
+/* Environmental Monitoring — softened teal */
+#workflowView .wp-cluster .wp-island.wp-environment,
+.wb-process-dialog[data-stage="environment"] {
+  --stage-accent:#7DA79F;
+  --stage-fill:color-mix(in srgb, #7DA79F 68%, #242019);
+  --stage-number-ink:#182321;
+  --stage-selected-ink:#182321;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #7DA79F 20%, white);
+  --stage-card-bg:color-mix(in srgb, #7DA79F 44%, white);
+  --poster-ink:#182321;
+}
+
+/* HRC for Assembly — dusty mauve */
+#workflowView .wp-cluster .wp-island.wp-hrc,
+.wb-process-dialog[data-stage="hrc"] {
+  --stage-accent:#BD9DB4;
+  --stage-fill:color-mix(in srgb, #BD9DB4 68%, #242019);
+  --stage-number-ink:#281E25;
+  --stage-selected-ink:#281E25;
+  --stage-selected-art:brightness(0);
+  --stage-wash:color-mix(in srgb, #BD9DB4 20%, white);
+  --stage-card-bg:color-mix(in srgb, #BD9DB4 44%, white);
+  --poster-ink:#281E25;
+}
+
+/* Normal state: original unusual puzzle paths, now a meaningful tint of the
+   unique team's color. No geometry, SVG path, or position changes. */
+#workflowView .wb-board .wb-block .wb-stage-frame path {
+  fill:var(--stage-card-bg);
+  stroke:var(--stage-accent);
+  stroke-width:1.7px;
+}
+
+/* Hover/click: do NOT use --stage-fill here; that darkened all teams to brown.
+   Original selection uses .wb-selected rather than the HTML [open] flag. */
+#workflowView .wb-board .wb-block:hover .wb-stage-frame path,
+#workflowView .wb-board .wb-block.wb-selected .wb-stage-frame path {
+  fill:var(--stage-accent);
+  stroke:var(--stage-accent);
+}
+
+/* Selected names, + icons, drawing captions and annotations inherit the
+   appropriate high-contrast ink for the SPECIFIC selected team's color. */
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-name,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-name,
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-plus,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-plus,
+#workflowView .wb-board .wb-block:hover .wb-preview .wb-drawing figcaption,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview .wb-drawing figcaption,
+#workflowView .wb-board .wb-block:hover .wb-preview::before,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview::before {
+  color:var(--stage-selected-ink)!important;
+}
+#workflowView .wb-board .wb-block:hover .wb-preview .wb-drawing img,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview .wb-drawing img {
+  filter:var(--stage-selected-art)!important;
+  opacity:1;
+}
+
+/* Always show the team's own color in its numbered marker. */
+#workflowView .wb-board .wb-block .wb-preview > .wb-index {
+  background:var(--stage-accent);
+  color:var(--stage-number-ink)!important;
+  box-shadow:none;
+}
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-index,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-index {
+  background:#fff;
+  color:var(--stage-fill)!important;
+  box-shadow:0 0 0 1px var(--stage-selected-ink);
+}
+
+/* The four independent teams remain unframed but visibly differentiated.
+   Their cards never turn into a new grid of rectangular chapter frames. */
+#workflowView .wp-cluster .wp-island .wp-title {
+  color:#262623;
+}
+#workflowView .wp-cluster .wp-island:hover .wp-title,
+#workflowView .wp-cluster .wp-island.wb-selected .wp-title {
+  color:var(--stage-fill)!important;
+}
+#workflowView .wp-cluster .wp-island .wp-island-summary::after {
+  content:"";
+  display:block;
+  width:42%;
+  height:3px;
+  margin:12px auto 0;
+  background:var(--stage-accent);
+  opacity:.58;
+  transition:width .18s ease,opacity .18s ease;
+}
+#workflowView .wp-cluster .wp-island:hover .wp-island-summary::after,
+#workflowView .wp-cluster .wp-island.wb-selected .wp-island-summary::after {
+  width:68%;
+  opacity:1;
+}
+
+/* The modal uses the identical swatch. Light stages get dark ink; Structural
+   Check gets white, since that swatch has a dark background. */
+.wb-process-dialog .wb-tarot { background:var(--stage-accent);color:var(--stage-selected-ink); }
+.wb-process-dialog .wb-card-number,
+.wb-process-dialog .wb-card-title,
+.wb-process-dialog .wb-card-tag span,
+.wb-process-dialog .wb-card-description,
+.wb-process-dialog .wb-card-credit-label,
+.wb-process-dialog .wb-card-credit-name,
+.wb-process-dialog .wb-card-no-credits {color:var(--stage-selected-ink)!important;}
+.wb-process-dialog .wb-card-credits {color:var(--stage-selected-ink);}
+.wb-process-dialog[data-stage] .wb-card-art img {filter:var(--stage-selected-art)!important;}
+
+/* End of colors-only patch: no changes to links, archives, file lists, JS,
+   original SVG geometry, 3D Tracker, or LAMA Slicer. */
