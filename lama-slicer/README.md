@@ -25,3 +25,9 @@ The **unchanged original user-provided** `LAMA_Slicer.zip` is committed at `lama
 
 ## Updating source
 To upgrade LAMA, replace `lama-slicer/LAMA_Slicer.zip` with the new original archive, bump the cache version in `index.html`, `sw.js`, `bridge.js` and run functionality tests. Do not substitute the original algorithms with a generic contour/zigzag slicer.
+
+## Project credits and copyright
+
+© 2026–27 **Maria Dumitrache · Rojin Aghaei · Niels Dobroschelski · TU Delft Creative Robotics 26–27 Students.** All rights reserved.
+
+The standalone entry page and the original application's loading splash follow the Pavilion Fabrication Tracker's light, neutral visual style. The original toolpath algorithms, 3D machine models, and exporters are unchanged by this design update.
