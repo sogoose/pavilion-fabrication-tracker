@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101d2b">
+<title>LAMA Slicer | TU Delft Fabrication</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#eaf1f6;background:#0d1722;
+background-image:radial-gradient(ellipse 60% 45% at 90% -5%,#1d3852 0,transparent 80%)}
+header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #263646;padding:22px clamp(22px,6vw,90px)}
+.wordmark{letter-spacing:.3em;font-size:15px;font-weight:800}.wordmark span{color:#68c7ee;font-weight:300}
+a{color:#9ddcf4;text-decoration:none}a:hover{text-decoration:underline}
+main{width:min(760px,calc(100% - 44px));margin:min(11vh,90px) auto}
+.eyebrow{font:600 11px ui-monospace,Consolas,monospace;letter-spacing:.24em;color:#84b9d0}
+h1{font-size:clamp(40px,8vw,82px);letter-spacing:-.066em;line-height:.99;margin:20px 0 26px}
+h1 em{font-style:normal;color:#60c5ef}p{color:#b0c4d0;line-height:1.7;font-size:15px}
+.panel{border:1px solid #34495a;background:#182938;padding:28px;border-radius:12px;margin:32px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.label{font-size:11px;letter-spacing:.16em;color:#87a1b2;text-transform:uppercase}
+strong{font-weight:650}.sub{font-size:13px;color:#87a2b4;line-height:1.6}
+button,.upload{border:1px solid #78cee9;background:#69c7e8;color:#0c1f30;border-radius:5px;
+font:750 13px inherit;padding:12px 21px;cursor:pointer;display:inline-block;font-size:13px;font-weight:700}
+button:hover,.upload:hover{background:#9ae3f7}button:disabled{opacity:.4;cursor:not-allowed}
+button.secondary{background:transparent;color:#cfe5f0;border-color:#587486}
+input[type=file]{display:none}
+#progress{margin-top:20px;font:12px/1.5 ui-monospace,monospace;color:#a9d5e7;white-space:pre-line}
+#track{height:2px;background:#334655;margin-top:15px;overflow:hidden;display:none}
+#bar{height:100%;background:#6ac9ef;width:0;transition:width .15s}
+#ready{display:none}
+.note{border-top:1px solid #273949;padding-top:21px;margin-top:35px;font-size:12px}
+footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spacing:.05em}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+</head>
+<body>
+<header><div class="wordmark">LAMA <span>SLICER</span></div><a href="../">← PAVILION FABRICATION TRACKER</a></header>
+<main>
+  <div class="eyebrow">TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN · 2026/27</div>
+  <h1>Fabricate<br><em>in the browser.</em></h1>
+  <p>Independent slicing workspace for the original LAMA N1/N2 generators, WASP, UR5 and Comau. Python and geometry processing run locally inside a browser worker: no processing server and no effect on the fabrication tracker's loading speed.</p>
+  <div class="panel">
+    <div class="row"><div><div class="label">Local slicer engine</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button></div></div>
+    <div id="installer">
+      <p class="sub">One-time setup: import your original <b>LAMA_Slicer.zip</b>. The full interface and Python toolpaths are stored in this browser for later visits. The ZIP is not uploaded to any server.</p>
+      <label class="upload" for="zip">Select LAMA_Slicer.zip</label>
+      <input id="zip" type="file" accept=".zip,application/zip">
+    </div>
+    <div id="track"><div id="bar"></div></div><div id="progress" aria-live="polite"></div>
+  </div>
+  <div class="note"><p><b>How it works:</b> Import the original ZIP once, then open this page normally. Heavy machine models load only when you enter the slicer. Python scientific packages are fetched on first use and cached by the browser when supported. Machine output must be checked before physical fabrication.</p></div>
+  <footer>© 2026/27 · TU DELFT · LAMA SLICER / PAVILION FABRICATION HUB</footer>
+</main>
+<script>
+(async function(){
+  'use strict';
+  const $=id=>document.getElementById(id), CACHE='lama-slicer-assets-v1';
+  const root=new URL('./',location.href), app=new URL('app/',root);
+  const essential=['web/index.html','web/js/app.js','lama_server.py','lama_engine.py',
+    'toolpaths/N1/weave_pattern.py','toolpaths/N1/weave_slice.py','toolpaths/N1/weave_gcode.py',
+    'toolpaths/N2/weave_pattern.py','toolpaths/N2/weave_slice.py','toolpaths/N2/weave_gcode.py',
+    'converters/gcode2pdl_arduino.py','converters/settings.json'];
+  let ready=false;
+  function progress(s,n){$('progress').textContent=s;if(n!=null){$('track').style.display='block';$('bar').style.width=n+'%';}}
+  function state(isReady){
+    ready=isReady;
+    $('ready').style.display=isReady?'block':'none';
+    $('installer').style.display=isReady?'none':'block';
+    $('title').textContent=isReady?'Engine installed':'Install LAMA Slicer';
+    $('detail').textContent=isReady?'Original N1/N2 engine ready in this browser':'Install the original source files once';
+  }
+  $('launch').onclick=()=>location.assign(app.href);
+  try{
+    if(!('serviceWorker' in navigator)||!('caches' in window))throw Error('This browser does not support Service Workers / Cache Storage. Use current Chrome, Edge or Firefox.');
+    await navigator.serviceWorker.register('./sw.js',{scope:'./'});
+    await navigator.serviceWorker.ready;
+    const c=await caches.open(CACHE);
+    if(await c.match(new URL('app/index.html',root).href)){
+      state(true);progress('Installed locally. Ready to launch.');
+      return;
+    }
+    state(false);
+    const hosted=await fetch('./LAMA_Slicer.zip',{method:'HEAD',cache:'no-store'}).catch(()=>null);
+    if(hosted?.ok){
+      progress('Found hosted engine bundle. Installing automatically…',3);
+      const resp=await fetch('./LAMA_Slicer.zip',{cache:'no-store'});
+      if(!resp.ok)throw Error('Could not download hosted engine bundle.');
+      await install(await resp.arrayBuffer());
+    } else progress('Select the original LAMA_Slicer.zip to install.');
+  }catch(e){state(false);progress('Setup error: '+e.message);}
+  $('zip').onchange=async event=>{
+    const file=event.target.files?.[0];if(!file)return;
+    try{await install(await file.arrayBuffer());}
+    catch(e){state(false);progress('Import failed: '+e.message);}
+  };
+  async function install(buf){
+    if(!window.JSZip)throw Error('ZIP library unavailable. Check network connection and retry.');
+    progress('Reading ZIP structure…',5);
+    const zip=await JSZip.loadAsync(buf);
+    const paths=Object.keys(zip.files);
+    const rootIndex=paths.find(p=>p.endsWith('/web/index.html')&&!zip.files[p].dir);
+    if(!rootIndex)throw Error('ZIP must contain LAMA_Slicer/web/index.html.');
+    const prefix=rootIndex.slice(0,-'web/index.html'.length);
+    for(const file of essential){
+      if(!zip.file(prefix+file))throw Error('Missing original LAMA file: '+file);
+    }
+    const source=await zip.file(prefix+'web/js/app.js').async('string');
+    if(!/async function api\(path, body\)/.test(source)||!/return r\.json\(\)/.test(source))
+      throw Error('Unexpected app.js version: API connector was not found.');
+    const c=await caches.open(CACHE);
+    let files=paths.filter(p=>p.startsWith(prefix)&&!zip.files[p].dir);
+    files=files.filter(p=>p.startsWith(prefix+'web/')||p.startsWith(prefix+'toolpaths/')||
+      p.startsWith(prefix+'converters/')||p===prefix+'lama_engine.py'||p===prefix+'lama_server.py');
+    // Scripts and geometry stay separated from the Tracker. Only required resources are installed.
+    files=files.filter(p=>!p.endsWith('.pyc')&&!p.endsWith('.keep'));
+    let i=0;
+    for(const path of files){
+      const relative=path.slice(prefix.length);
+      const isWeb=relative.startsWith('web/');
+      const dest=new URL('app/'+(isWeb?relative.slice(4):'py/'+relative),root);
+      let data=await zip.file(path).async('uint8array');
+      let type='application/octet-stream';
+      if(/\.html$/i.test(path)){
+        type='text/html; charset=utf-8';
+        let html=new TextDecoder().decode(data);
+        if(path===rootIndex){
+          const tag='<script type="module" src="js/app.js"></script>';
+          if(!html.includes(tag))throw Error('The original app entry script changed.');
+          html=html.replace(tag,'<script src="../bridge.js"></script>'+tag);
+          html=html.replace('</body>','<a href="../" style="position:fixed;bottom:8px;left:8px;z-index:9000;color:#59c8f0;font:11px monospace;background:#0a1827;padding:5px 9px">← Tracker / Installer</a></body>');
+        }
+        data=new TextEncoder().encode(html);
+      } else if(/\.js$/i.test(path)){
+        type='text/javascript; charset=utf-8';
+        if(relative==='web/js/app.js'){
+          let code=source.replace(/async function api\(path, body\)\s*\{[\s\S]*?return r\.json\(\);\s*\}/,
+            'async function api(path, body) { return window.lamaApi(path, body); }');
+          code=code.replaceAll('/api/file?path=','../download?path=');
+          code=code.replace('>Open folder</button>','>Downloads help</button>');
+          code=code.replace('Saved ${r.files.map(f => f.name).join(\', \')} in ${r.out_dir}', 'Ready to download ${r.files.map(f => f.name).join(\', \')}');
+          data=new TextEncoder().encode(code);
+        }
+      } else if(/\.css$/i.test(path))type='text/css; charset=utf-8';
+      else if(/\.json$/i.test(path))type='application/json';
+      else if(/\.png$/i.test(path))type='image/png';
+      else if(/\.svg$/i.test(path))type='image/svg+xml';
+      await c.put(dest.href,new Response(data,{headers:{'Content-Type':type}}));
+      progress('Installing '+relative+'  ('+(++i)+' / '+files.length+')',Math.round(8+90*i/files.length));
+    }
+    state(true);
+    progress('Engine installed. Open LAMA Slicer to start.',100);
+  }
+})();
+</script>
+</body></html>
