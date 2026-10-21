@@ -22,17 +22,20 @@ async function boot() {
   const base = '/work/lama';
   py.FS.mkdirTree(base);
   say('Installing the original N1/N2 and PDL toolpath files…');
+  const patchResp = await fetch(new URL('reference-patch.py', root).href, {cache:'no-store'});
+  if (!patchResp.ok) throw new Error('Unable to load reference-section compatibility update: HTTP ' + patchResp.status);
+  const referencePatch = await patchResp.text();
   for (const relative of sources) {
     const resp = await fetch(new URL('app/py/' + relative, root).href);
     if (!resp.ok) throw new Error('LAMA source missing: ' + relative + ' — re-import LAMA_Slicer.zip');
     const dest = base + '/' + relative;
     const dir = dest.slice(0, dest.lastIndexOf('/'));
     py.FS.mkdirTree(dir);
-    if (relative.endsWith('.json')) {
-      py.FS.writeFile(dest, await resp.text());
-    } else {
-      py.FS.writeFile(dest, await resp.text());
+    let source = await resp.text();
+    if (/^toolpaths\\/N[12]\\/weave_pattern\\.py$/.test(relative)) {
+      source += '\\n\\n' + referencePatch;
     }
+    py.FS.writeFile(dest, source);
   }
   py.FS.mkdirTree(base + '/output');
   py.FS.mkdirTree(base + '/.work');
@@ -106,7 +109,7 @@ with open(gc, 'w', encoding='utf-8') as f:
 pd = lama_engine.to_pdl(gc, {'placement':'keep'}, diag)
 assert os.path.isfile(pd) and os.path.getsize(pd) > 500, 'PDL conversion failed'
 `);
-  say('Original N1/N2 source and PDL converter verified; loading machine scene…');
+  say('Original N1/N2 source, adaptive reference selection and PDL converter verified; loading machine scene…');
 }
 self.addEventListener('message', async event => {
   const {id, path, body} = event.data || {};
