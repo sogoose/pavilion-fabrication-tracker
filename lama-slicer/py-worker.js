@@ -32,8 +32,9 @@ async function boot() {
     const dir = dest.slice(0, dest.lastIndexOf('/'));
     py.FS.mkdirTree(dir);
     let source = await resp.text();
-    if (/^toolpaths\\/N[12]\\/weave_pattern\\.py$/.test(relative)) {
-      source += '\\n\\n' + referencePatch;
+    if (relative.endsWith('/weave_pattern.py') &&
+        (relative.startsWith('toolpaths/N1/') || relative.startsWith('toolpaths/N2/'))) {
+      source += String.fromCharCode(10, 10) + referencePatch;
     }
     py.FS.writeFile(dest, source);
   }
