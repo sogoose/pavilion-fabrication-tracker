@@ -3,25 +3,15 @@
   'use strict';
   // Visual identity and credits only. The original 3D, slicing and export code is untouched.
   const attribution = "© 2026–27 Maria Dumitrache · Rojin Aghaei · Niels Dobroschelski · TU Delft Creative Robotics 26–27 Students. All rights reserved.";
-  const theme = document.createElement('style');
-  theme.id = 'lama-pavilion-loading-theme';
-  theme.textContent = [
-    '#splash{background:#f5f5f2;color:#151515;font-family:Inter,Arial,sans-serif;transition:opacity .35s ease}',
-    '#splash::before{content:"PAVILION / FABRICATION     ·     03 / LAMA SLICER";position:absolute;top:26px;left:clamp(20px,4vw,56px);right:clamp(20px,4vw,56px);padding-bottom:15px;border-bottom:1px solid #c7c7c1;color:#555;font:11px/1.5 Consolas,monospace;letter-spacing:.07em}',
-    '#splash svg{width:90px;height:90px;filter:grayscale(1);opacity:.8}',
-    '#splash .nm{color:#151515;margin-top:18px;font-size:19px;letter-spacing:.15em}',
-    '#splash .nm span{color:#777;font-weight:400}',
-    '#splash .ld{color:#151515;font:600 11px/1.5 Consolas,monospace;letter-spacing:.1em;animation:none}',
-    '#splash .st{color:#777;font:11px/1.5 Consolas,monospace}',
-    '#splash .track{background:#deded8;width:220px;height:2px}',
-    '#splash .track i{background:#222}',
-    '#splash.err .ld{color:#b42318}',
-    '.lama-splash-credit{position:absolute;bottom:26px;left:20px;right:20px;text-align:center;color:#777;font:10px/1.6 Consolas,monospace}',
-    '.lama-attribution{margin:10px 16px 0;border-top:1px solid #d9d9d4;padding:15px 0 8px;color:#777;font:10px/1.6 Consolas,monospace;overflow-wrap:anywhere}',
-    '.lama-attribution b{font-weight:600;color:#333;display:block;margin-bottom:5px}',
-    '@media(max-width:600px){#splash::before{font-size:9px;letter-spacing:0}.lama-splash-credit{font-size:9px}}'
-  ].join(String.fromCharCode(10));
-  document.head.appendChild(theme);
+  // Keep a fallback stylesheet link for old cached workspaces.
+  // New installations load the same stylesheet in <head> before the first paint.
+  if (!document.getElementById('lama-pavilion-loading-theme')) {
+    const theme = document.createElement('link');
+    theme.id = 'lama-pavilion-loading-theme';
+    theme.rel = 'stylesheet';
+    theme.href = new URL('../loading-theme.css', location.href).href;
+    document.head.appendChild(theme);
+  }
   const splash = document.getElementById('splash');
   if (splash && !splash.querySelector('.lama-splash-credit')) {
     const credit = document.createElement('div');
