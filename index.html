@@ -395,7 +395,7 @@ header{gap:6px;padding:10px 16px}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-editorial-archive-upload-v5">
-<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-earth-neutral-v4">
+<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-kraft-light-selected-v5">
 <link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
 <link rel="stylesheet" href="./assets/catalog/fabrication-timeline.css?v=20261020-3d-timeline-export-v3">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -472,6 +472,20 @@ header{gap:6px;padding:10px 16px}
 
   
 <section id="workflowView" class="workflowScreen" aria-label="Pavilion workflow board">
+<!-- A single SVG grain filter, shared by the original irregular process shapes.
+     Kept within SVG paths: no rectangular overlays across empty board space. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false"
+     style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+  <defs>
+    <filter id="workflowPaperGrain" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="17" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="matrix"
+        values="0 0 0 0 .25  0 0 0 0 .21  0 0 0 0 .17  .36 0 0 0 -.14" result="grain"/>
+      <feComposite in="grain" in2="SourceGraphic" operator="in" result="maskedGrain"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="maskedGrain"/></feMerge>
+    </filter>
+  </defs>
+</svg>
 <div class="wb-shell">
   <div class="wb-mast">
     <div class="wb-heading">
