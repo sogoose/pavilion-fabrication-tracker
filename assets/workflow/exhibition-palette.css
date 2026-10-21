@@ -28,38 +28,41 @@
 
 #workflowView .wb-board > .wb-block.wb-spatial,
 .wb-process-dialog[data-stage="spatial"] {
-  --stage-rest:#918B85;
-  --stage-active:#E4E0DB;
-  --stage-accent:#918B85;
-  --stage-fill:#918B85;
+  --stage-rest:#B8B1A9;
+  --stage-active:#EEEAE4;
+  --stage-accent:#B8B1A9;
+  --stage-fill:#B8B1A9;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#FAF9F5;
+  --stage-rest-ink:#28231F;
+  --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E4E0DB 32%, white);
+  --stage-wash:color-mix(in srgb, #EEEAE4 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-structural,
 .wb-process-dialog[data-stage="structural"] {
-  --stage-rest:#746D64;
-  --stage-active:#D2CCC5;
-  --stage-accent:#746D64;
-  --stage-fill:#746D64;
+  --stage-rest:#AAA297;
+  --stage-active:#E9E3DB;
+  --stage-accent:#AAA297;
+  --stage-fill:#AAA297;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#FAF9F5;
+  --stage-rest-ink:#28231F;
+  --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #D2CCC5 32%, white);
+  --stage-wash:color-mix(in srgb, #E9E3DB 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-gcode,
 .wb-process-dialog[data-stage="gcode"] {
-  --stage-rest:#7D7469;
-  --stage-active:#DAD3CA;
-  --stage-accent:#7D7469;
-  --stage-fill:#7D7469;
+  --stage-rest:#AEA398;
+  --stage-active:#EDE6DE;
+  --stage-accent:#AEA398;
+  --stage-fill:#AEA398;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#FAF9F5;
+  --stage-rest-ink:#28231F;
+  --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #DAD3CA 32%, white);
+  --stage-wash:color-mix(in srgb, #EDE6DE 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-material,
@@ -147,7 +150,7 @@
   color:var(--stage-rest-ink)!important;
 }
 #workflowView .wb-board > .wb-block .wb-preview .wb-drawing img {
-  filter:brightness(0) invert(1)!important;
+  filter:var(--stage-rest-art,brightness(0) invert(1))!important;
   opacity:.93;
 }
 #workflowView .wb-board > .wb-block:hover .wb-preview > .wb-name,
@@ -298,3 +301,21 @@
 
 /* CSS fallbacks: solid colors if SVG turbulence filters aren't supported.
    No blanket opacity, no textures in the Tracker or LAMA Slicer. */
+
+/* Three early-stage cards should read noticeably lighter at rest. */
+#workflowView .wb-board > .wb-block.wb-spatial .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-structural .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-gcode .wb-preview > .wb-index {
+  background:#5F574F;
+  color:#fff!important;
+}
+#workflowView .wb-board > .wb-block.wb-spatial:hover .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-spatial.wb-selected .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-structural:hover .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-structural.wb-selected .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-gcode:hover .wb-preview > .wb-index,
+#workflowView .wb-board > .wb-block.wb-gcode.wb-selected .wb-preview > .wb-index {
+  background:#776E63;
+  color:#fff!important;
+}
+/* Every original process shape retains its unique border and SVG geometry. */
