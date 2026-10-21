@@ -1,8 +1,10 @@
 /* WORKFLOW / PAPER AND EARTH — 2026-10-21
    Exhibition-matched chapter colors: 01 Spatial, 02 Material,
-   03 Structural / G-code / 3D Printing, 05 Firing.
+   03 Structural / G-code / 3D Printing / Rammed Earth / Assembly,
+   05 Firing.
    Chapter 03 uses neighboring low-chroma tones to distinguish teams.
-   Unspecified Rammed Earth and Assembly remain unchanged pending team input.
+   Rammed Earth and Assembly are confirmed as 03 Fabrication.
+   Construction Management and HRC for Assembly stay monochrome.
    The original puzzle path shapes, position, arrows, stage counts and files
    are unchanged. Supplementary work packages inherit board.css monochrome.
    Main nodes: darker printed paper at rest -> pale paper on hover/click.
@@ -11,11 +13,12 @@
 /* Exhibition-question mapping (2026-10-21):
    01 What is it?             Spatial Design
    02 What is it made of?     Material Preparation
-   03 How is it made?         Structural Check, G-code Generation, 3D Printing
+   03 How is it made?         Structural Check, G-code Generation,
+                              3D Printing, Rammed Earth, Assembly
    04 Why do they differ?     Environmental Monitoring (neutral auxiliary until confirmed)
    05 What is the future?     Firing / Glazing
-   Needs confirmation: Rammed Earth, Assembly, Construction Management,
-   HRC for Assembly; supplementary teams remain monochrome as requested.
+   Confirmed monochrome: Construction Management, HRC for Assembly.
+   Other supplementary teams remain monochrome as previously requested.
 */
 
 #workflowView.workflowScreen {
@@ -85,14 +88,14 @@
 
 #workflowView .wb-board > .wb-block.wb-rammed,
 .wb-process-dialog[data-stage="rammed"] {
-  --stage-rest:#776351;
-  --stage-active:#DDCDBE;
-  --stage-accent:#776351;
-  --stage-fill:#776351;
+  --stage-rest:#807367;
+  --stage-active:#DCD5CC;
+  --stage-accent:#807367;
+  --stage-fill:#807367;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #DDCDBE 32%, white);
+  --stage-wash:color-mix(in srgb, #DCD5CC 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-firing,
@@ -109,14 +112,14 @@
 
 #workflowView .wb-board > .wb-block.wb-assembly,
 .wb-process-dialog[data-stage="assembly"] {
-  --stage-rest:#968979;
-  --stage-active:#E9E2D8;
-  --stage-accent:#968979;
-  --stage-fill:#968979;
+  --stage-rest:#898074;
+  --stage-active:#E4DED6;
+  --stage-accent:#898074;
+  --stage-fill:#898074;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E9E2D8 32%, white);
+  --stage-wash:color-mix(in srgb, #E4DED6 32%, white);
 }
 
 /* Default: rich but low-chroma neutral paper.
