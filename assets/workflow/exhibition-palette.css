@@ -189,7 +189,7 @@
 
 /* Archive posters take the lighter paper version, showing the original artwork
    and all author credits legibly. No behavior changes to gallery or controls. */
-.wb-process-dialog[data-stage] .wb-tarot { background-image:url("./paper-texture.svg"); }
+.wb-process-dialog[data-stage] .wb-tarot { background-image:url("./recycled-pulp-texture.svg"); }
 .wb-process-dialog[data-stage="spatial"] .wb-tarot,
 .wb-process-dialog[data-stage="structural"] .wb-tarot,
 .wb-process-dialog[data-stage="gcode"] .wb-tarot,
@@ -201,7 +201,7 @@
   background-color:var(--stage-active);
   color:#29241F;
   background-repeat:repeat;
-  background-size:160px 160px;
+  background-size:120px 120px;
 }
 .wb-process-dialog[data-stage="spatial"] .wb-card-art img,
 .wb-process-dialog[data-stage="structural"] .wb-card-art img,
@@ -276,7 +276,7 @@
 .wb-process-dialog[data-stage="firing"] .wb-card-credits,
 .wb-process-dialog[data-stage="assembly"] .wb-card-credits {color:#29241F;}
 
-/* Kraft paper embossing, only on workflow controls with a visible background;
+/* Denser recycled-pulp fibres / matte uncoated kraft surface, only on workflow controls with a visible background;
    existing folder-shaped megaphone button is not covered by a rectangle. */
 #workflowView .wb-links a,
 #workflowView .wb-management-body,
@@ -285,9 +285,9 @@
 .wb-process-dialog .wb-gallery-thumb,
 .wf-edit-dialog .wf-upload-files,
 .wf-edit-dialog .wf-upload-photos {
-  background-image:url("./paper-texture.svg");
+  background-image:url("./recycled-pulp-texture.svg");
   background-repeat:repeat;
-  background-size:160px 160px;
+  background-size:120px 120px;
 }
 /* Keep SVG frames for parallel teams invisible, with neutral typography. */
 #workflowView .wp-cluster .wp-island {
@@ -298,6 +298,18 @@
 #workflowView .wp-cluster .wp-island:hover .wp-title,
 #workflowView .wp-cluster .wp-island.wb-selected .wp-title {color:#111!important;}
 #workflowView .wp-cluster .wp-island .wp-island-summary::after {content:none!important;}
+
+/* Denser pulp texture on active fabric archive controls; avoid interfering
+   with clickable surfaces, contrast, card geometry or team metadata. */
+#workflowView .wb-links a,
+#workflowView .wb-management-body,
+.wb-process-dialog .wb-process-close,
+.wb-process-dialog .wb-gallery-stage,
+.wb-process-dialog .wb-gallery-thumb,
+.wf-edit-dialog .wf-upload-files,
+.wf-edit-dialog .wf-upload-photos {
+  background-size:120px 120px;
+}
 
 /* CSS fallbacks: solid colors if SVG turbulence filters aren't supported.
    No blanket opacity, no textures in the Tracker or LAMA Slicer. */
