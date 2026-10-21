@@ -32,7 +32,7 @@ input[type=file]{display:none}
 .note{border-top:1px solid #273949;padding-top:21px;margin-top:35px;font-size:12px}
 footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spacing:.05em}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+<script src="./jszip.min.js" defer></script>
 </head>
 <body>
 <header><div class="wordmark">LAMA <span>SLICER</span></div><a href="../">← PAVILION FABRICATION TRACKER</a></header>
@@ -49,7 +49,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
     </div>
     <div id="track"><div id="bar"></div></div><div id="progress" aria-live="polite"></div>
   </div>
-  <div class="note"><p><b>How it works:</b> Import the original ZIP once, then open this page normally. Heavy machine models load only when you enter the slicer. Python scientific packages are fetched on first use and cached by the browser when supported. Machine output must be checked before physical fabrication.</p></div>
+  <div class="note"><p><b>How it works:</b> The original Slicer is downloaded automatically when this page opens; no installation or ZIP selection is needed. Heavy robot models load only inside the workspace. Python scientific packages are fetched on first use and cached by the browser when supported. Machine output must be checked before physical fabrication.</p></div>
   <footer>© 2026/27 · TU DELFT · LAMA SLICER / PAVILION FABRICATION HUB</footer>
 </main>
 <script>
@@ -73,20 +73,23 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
   $('launch').onclick=()=>location.assign(app.href);
   try{
     if(!('serviceWorker' in navigator)||!('caches' in window))throw Error('This browser does not support Service Workers / Cache Storage. Use current Chrome, Edge or Firefox.');
+    progress('Activating separate LAMA workspace…',1);
     await navigator.serviceWorker.register('./sw.js',{scope:'./'});
-    await navigator.serviceWorker.ready;
+    await Promise.race([navigator.serviceWorker.ready, new Promise((_,reject)=>setTimeout(()=>reject(new Error('Service Worker activation timed out (20s). Try a normal Chrome/Edge tab.')),20000))]);
     const c=await caches.open(CACHE);
     if(await c.match(new URL('app/index.html',root).href)){
       state(true);progress('Opening original LAMA Slicer…');location.replace(app.href);
       return;
     }
     state(false);
+    progress('Downloading original LAMA source and robot models…',2);
     const hosted=await fetch('./LAMA_Slicer.zip',{cache:'no-store'}).catch(()=>null);
     if(hosted?.ok){
       progress('Found hosted engine bundle. Installing automatically…',3);
       await install(await hosted.arrayBuffer());
-    } else progress('Unable to load original source files. Refresh to retry.');
+    } else throw Error('Could not download LAMA_Slicer.zip from this website. HTTP '+(hosted?.status ?? 'network error'));
   }catch(e){state(false);progress('Setup error: '+e.message);}
+  window.addEventListener('unhandledrejection', event=>progress('Unexpected initialization error: '+(event.reason?.message||event.reason)));
   $('zip').onchange=async event=>{
     const file=event.target.files?.[0];if(!file)return;
     try{await install(await file.arrayBuffer());}
