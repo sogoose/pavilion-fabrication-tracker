@@ -1,11 +1,11 @@
 /* Only handles /lama-slicer/app/ and /lama-slicer/download.
    The existing Fabrication Tracker remains outside this service-worker scope. */
-const CACHE = 'lama-slicer-assets-v1';
+const CACHE = 'lama-slicer-assets-v3';
 const root = new URL('./', self.location.href);
 const app = new URL('app/', root).pathname;
 const download = new URL('download', root).pathname;
 self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+self.addEventListener('activate', event => event.waitUntil((async()=>{ for(const k of await caches.keys()) if(k.startsWith('lama-slicer-assets-')&&k!==CACHE) await caches.delete(k); await self.clients.claim(); })()));
 self.addEventListener('fetch', event => {
   const u = new URL(event.request.url);
   if (u.origin !== self.location.origin) return;
