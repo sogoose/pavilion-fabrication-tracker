@@ -160,3 +160,72 @@
 
 /* Intentionally no changes to the Workflow's positioning, SVG files,
    project links, team assignments, or any Tracker / Slicer styles. */
+
+/* Workflow card faces / higher-contrast exhibition palette, 2026-10-21 */
+/* Previous board shapes used just 5% of the swatch over white, which made
+   them nearly invisible. The original five exhibition tones remain the
+   accents; brighter derived washes give those tones a substantial surface. */
+#workflowView .wb-spatial,
+#workflowView .wb-assembly { --stage-card-bg:#E7E3DE; }
+#workflowView .wb-material { --stage-card-bg:#DDD6CE; }
+#workflowView .wb-structural,
+#workflowView .wb-gcode,
+#workflowView .wb-printing,
+#workflowView .wb-rammed { --stage-card-bg:#D8D2CA; }
+#workflowView .wb-firing { --stage-card-bg:#E9D9C2; }
+
+/* Keep all the original irregular SVG outlines and their hit targets.
+   These are fills inside the outlines, NOT rectangular HTML cards. */
+#workflowView .wb-board .wb-block .wb-stage-frame path {
+  fill:var(--stage-card-bg);
+  stroke:var(--stage-fill);
+  stroke-width:1.8px;
+  transition:fill .2s ease,stroke .2s ease;
+}
+#workflowView .wb-board .wb-block:hover .wb-stage-frame path,
+#workflowView .wb-board .wb-block.wb-selected .wb-stage-frame path {
+  fill:var(--stage-fill);
+  stroke:var(--stage-fill);
+}
+
+/* Original swatches become legible circular chapter indexes. */
+#workflowView .wb-board .wb-block .wb-preview > .wb-index {
+  background:var(--stage-accent);
+  color:var(--stage-number-ink,#282521)!important;
+  box-shadow:0 0 0 1.3px var(--stage-fill);
+}
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-index,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-index {
+  background:#fff;
+  color:var(--stage-fill)!important;
+  box-shadow:0 0 0 1.3px #fff;
+}
+
+/* Text and micro-labels remain neutral rather than fading into the wash.
+   Existing inverted white labels on selected dark nodes are unchanged. */
+#workflowView .wb-board .wb-block:not(:hover):not(.wb-selected) .wb-preview > .wb-name {
+  color:#29241F;
+}
+#workflowView .wb-board .wb-block:not(:hover):not(.wb-selected) .wb-preview > .wb-plus,
+#workflowView .wb-board .wb-block:not(:hover):not(.wb-selected) .wb-preview .wb-drawing figcaption {
+  color:var(--stage-fill);
+}
+
+/* Unframed support teams retain their separate layout; give their palette
+   a clear, compact color signature without creating new outer frames. */
+#workflowView .wp-cluster .wp-island {
+  border-top:3px solid var(--stage-accent);
+}
+#workflowView .wp-cluster .wp-island.wp-computational {
+  --stage-card-bg:#D8D2CA;
+}
+#workflowView .wp-cluster .wp-island.wp-construction,
+#workflowView .wp-cluster .wp-island.wp-environment {
+  --stage-card-bg:#E9D9C2;
+}
+#workflowView .wp-cluster .wp-island.wp-hrc {
+  --stage-card-bg:#ECDCC1;
+}
+
+/* No changes to process-file dialogs, geometry, numbers, connector SVG
+   sources, team files, Tracker controls or Slicer calculations. */
