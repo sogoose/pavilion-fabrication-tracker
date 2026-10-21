@@ -452,15 +452,20 @@
 #workflowView .wp-cluster .wp-island .wp-island-summary::after {
   content:"";
   display:block;
+  position:absolute;
+  left:29%;
+  bottom:3px;
   width:42%;
   height:3px;
-  margin:12px auto 0;
+  margin:0;
   background:var(--stage-accent);
   opacity:.58;
-  transition:width .18s ease,opacity .18s ease;
+  pointer-events:none;
+  transition:left .18s ease,width .18s ease,opacity .18s ease;
 }
 #workflowView .wp-cluster .wp-island:hover .wp-island-summary::after,
 #workflowView .wp-cluster .wp-island.wb-selected .wp-island-summary::after {
+  left:16%;
   width:68%;
   opacity:1;
 }
