@@ -1,6 +1,6 @@
 /* Only handles /lama-slicer/app/ and /lama-slicer/download.
    The existing Fabrication Tracker remains outside this service-worker scope. */
-const CACHE = 'lama-slicer-assets-v3';
+const CACHE = 'lama-slicer-assets-v4';
 const root = new URL('./', self.location.href);
 const app = new URL('app/', root).pathname;
 const download = new URL('download', root).pathname;
