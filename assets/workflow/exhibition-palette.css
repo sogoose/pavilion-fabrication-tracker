@@ -48,7 +48,7 @@
 #workflowView .wb-gcode,
 #workflowView .wb-printing,
 #workflowView .wb-rammed,
-#workflowView .wp-computational,
+#workflowView .wp-cluster .wp-island.wp-computational,
 .wb-process-dialog[data-stage="structural"],
 .wb-process-dialog[data-stage="gcode"],
 .wb-process-dialog[data-stage="printing"],
@@ -63,8 +63,8 @@
 
 /* 04 — Failures, drying, firing and environmental effects */
 #workflowView .wb-firing,
-#workflowView .wp-environment,
-#workflowView .wp-construction,
+#workflowView .wp-cluster .wp-island.wp-environment,
+#workflowView .wp-cluster .wp-island.wp-construction,
 .wb-process-dialog[data-stage="firing"],
 .wb-process-dialog[data-stage="environment"],
 .wb-process-dialog[data-stage="construction"] {
@@ -76,7 +76,7 @@
 }
 
 /* 05 — Human–robot collaboration and possible future fabrication */
-#workflowView .wp-hrc,
+#workflowView .wp-cluster .wp-island.wp-hrc,
 .wb-process-dialog[data-stage="hrc"] {
   --stage-accent:#BBA583;
   --stage-fill:#867153;
