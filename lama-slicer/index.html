@@ -41,7 +41,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
   <h1>Fabricate<br><em>in the browser.</em></h1>
   <p>Independent slicing workspace for the original LAMA N1/N2 generators, WASP, UR5 and Comau. Python and geometry processing run locally inside a browser worker: no processing server and no effect on the fabrication tracker's loading speed.</p>
   <div class="panel">
-    <div class="row"><div><div class="label">Local slicer engine</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button></div></div>
+    <div class="row"><div><div class="label">Local slicer engine</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button> <button id="reinstall" class="secondary">Replace ZIP</button></div></div>
     <div id="installer">
       <p class="sub">One-time setup: import your original <b>LAMA_Slicer.zip</b>. The full interface and Python toolpaths are stored in this browser for later visits. The ZIP is not uploaded to any server.</p>
       <label class="upload" for="zip">Select LAMA_Slicer.zip</label>
@@ -71,12 +71,13 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
     $('detail').textContent=isReady?'Original N1/N2 engine ready in this browser':'Install the original source files once';
   }
   $('launch').onclick=()=>location.assign(app.href);
+  $('reinstall').onclick=()=>{state(false);progress('Choose a new original LAMA_Slicer.zip to replace this browser installation.');};
   try{
     if(!('serviceWorker' in navigator)||!('caches' in window))throw Error('This browser does not support Service Workers / Cache Storage. Use current Chrome, Edge or Firefox.');
     await navigator.serviceWorker.register('./sw.js',{scope:'./'});
     await navigator.serviceWorker.ready;
     const c=await caches.open(CACHE);
-    if(await c.match(new URL('app/index.html',root).href)){
+    if(await c.match(new URL('app/.installed',root).href)){
       state(true);progress('Installed locally. Ready to launch.');
       return;
     }
@@ -148,6 +149,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
       await c.put(dest.href,new Response(data,{headers:{'Content-Type':type}}));
       progress('Installing '+relative+'  ('+(++i)+' / '+files.length+')',Math.round(8+90*i/files.length));
     }
+    await c.put(new URL('app/.installed',root).href,new Response('ok', {headers:{'Content-Type':'text/plain'}}));
     state(true);
     progress('Engine installed. Open LAMA Slicer to start.',100);
   }
