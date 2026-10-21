@@ -172,6 +172,41 @@ footer strong{color:#464641;font-weight:600}
         if(relative==='web/js/app.js'){
           let code=source.replace(/async function api\(path, body\)\s*\{[\s\S]*?return r\.json\(\);\s*\}/,
             'async function api(path, body) { return window.lamaApi(path, body); }');
+          // Rhino-style navigation, without replacing the original 3D or slicing code.
+          const orbitAnchor='orbit.screenSpacePanning = true;';
+          const clickAnchor="renderer.domElement.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });";
+          const viewAnchor='function fitView(kind) {';
+          if(!code.includes(orbitAnchor)||!code.includes(clickAnchor)||!code.includes(viewAnchor))
+            throw Error('Original navigation code changed; refusing an unsafe camera patch.');
+          code=code.replace(orbitAnchor, orbitAnchor + `
+  // Rhino-style navigation: left select, RMB orbit, Shift+RMB pan,
+  // Ctrl+RMB dolly, wheel zoom; MMB also pans.
+  let rhinoViewMode = 'perspective';
+  orbit.mouseButtons.LEFT = -1;
+  orbit.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
+  orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+  orbit.zoomToCursor = true;
+  orbit.zoomSpeed = 1.15;
+  renderer.domElement.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch' || e.button !== 2) return;
+    orbit.mouseButtons.RIGHT = (e.ctrlKey || e.metaKey)
+      ? THREE.MOUSE.DOLLY
+      : e.shiftKey ? THREE.MOUSE.ROTATE
+      : rhinoViewMode === 'parallel' ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
+  }, { capture: true });
+  const clearRhinoPointer = e => {
+    if (!e || e.button === 2) orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+  };
+  renderer.domElement.addEventListener('pointerup', clearRhinoPointer, { capture: true });
+  renderer.domElement.addEventListener('pointercancel', () => clearRhinoPointer(), { capture: true });
+  window.addEventListener('blur', () => clearRhinoPointer());
+`);
+          code=code.replace(clickAnchor,
+            "renderer.domElement.addEventListener('pointerdown', e => { down = e.button === 0 ? [e.clientX, e.clientY] : null; });");
+          code=code.replace(viewAnchor, viewAnchor + `
+  // In Rhino, right-drag pans in Top/Front (parallel) views.
+  rhinoViewMode = (kind === 'top' || kind === 'front') ? 'parallel' : 'perspective';
+`);
           code=code.replaceAll('/api/file?path=','../download?path=');
           if (code === source || !code.includes('window.lamaApi(path, body)')) throw Error('Could not connect original UI to Python.');
           code=code.replace('>Open folder</button>','>Downloads help</button>');
