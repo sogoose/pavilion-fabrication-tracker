@@ -90,7 +90,23 @@ def _lama_dispatch(path, raw):
         return r
     return {'ok':False, 'error':'Unknown API method: ' + path}
 `);
-  say('Python toolpath engine ready.');
+  say('Checking original toolpaths and PDL converter…');
+  py.runPython(`
+import os
+diag = '/work/lama/.work/lama_selftest'
+os.makedirs(diag, exist_ok=True)
+for kind in ('N1', 'N2'):
+    for fname in ('weave_pattern.py','weave_slice.py','weave_gcode.py'):
+        source = os.path.join('/work/lama/toolpaths', kind, fname)
+        with open(source, encoding='utf-8') as f:
+            compile(f.read(), source, 'exec')
+gc = os.path.join(diag, 'LamaDiagnostics.gcode')
+with open(gc, 'w', encoding='utf-8') as f:
+    f.write("G21\\nG90\\nM82\\nG92 E0\\nG0 X0 Y0 Z2 F2000\\nG1 X10 Y0 Z2 E1 F1200\\nG1 X10 Y10 E2\\nG1 X0 Y10 E3\\n")
+pd = lama_engine.to_pdl(gc, {'placement':'keep'}, diag)
+assert os.path.isfile(pd) and os.path.getsize(pd) > 500, 'PDL conversion failed'
+`);
+  say('Original N1/N2 source and PDL converter verified; loading machine scene…');
 }
 self.addEventListener('message', async event => {
   const {id, path, body} = event.data || {};
