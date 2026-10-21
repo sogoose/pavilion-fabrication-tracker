@@ -77,7 +77,10 @@
       sub.textContent = method + ' · ' + machine;
       identity.appendChild(sub);
       header.appendChild(identity);
-      const pdf = move('#downloadModulePDF', panel, header);
+      const actions = document.createElement('div');
+      actions.className = 'tracker-panel-actions';
+      header.appendChild(actions);
+      const pdf = move('#downloadModulePDF', panel, actions);
       if (pdf) {pdf.classList.add('tracker-panel-pdf');pdf.textContent='Module PDF ↗';}
       root.appendChild(header);
       root.appendChild(label('01 / PRODUCTION RECORD'));
@@ -152,7 +155,7 @@
         const focus = footActions.querySelector('#focusSelected');
         if (focus) {
           focus.textContent='Focus object';
-          header.appendChild(focus);
+          actions.appendChild(focus);
         }
       }
       const liveNote = move('.liveNote',panel,metadata.inner);
