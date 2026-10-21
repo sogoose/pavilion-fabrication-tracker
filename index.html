@@ -395,7 +395,7 @@ header{gap:6px;padding:10px 16px}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-editorial-archive-upload-v5">
-<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-soft-pulp-v9">
+<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-white-letters-softer-paper-v10">
 <link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
 <link rel="stylesheet" href="./assets/catalog/fabrication-timeline.css?v=20261020-3d-timeline-export-v3">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -481,11 +481,11 @@ header{gap:6px;padding:10px 16px}
       <!-- Dense, matte recycled-pulp grain. Both layers are clipped to each original stage path. -->
       <feTurbulence type="fractalNoise" baseFrequency="1.10" numOctaves="3" seed="27" stitchTiles="stitch" result="microfibres"/>
       <feColorMatrix in="microfibres" type="matrix"
-        values="0 0 0 0 .17  0 0 0 0 .13  0 0 0 0 .09  .51 0 0 0 -.16" result="pulpPigment"/>
+        values="0 0 0 0 .17  0 0 0 0 .13  0 0 0 0 .09  .43 0 0 0 -.14" result="pulpPigment"/>
       <feComposite in="pulpPigment" in2="SourceGraphic" operator="in" result="pulpClipped"/>
       <feTurbulence type="fractalNoise" baseFrequency=".12 .85" numOctaves="2" seed="11" stitchTiles="stitch" result="shortFibres"/>
       <feColorMatrix in="shortFibres" type="matrix"
-        values="0 0 0 0 .24  0 0 0 0 .17  0 0 0 0 .11  .20 0 0 0 -.05" result="fibrePigment"/>
+        values="0 0 0 0 .24  0 0 0 0 .17  0 0 0 0 .11  .17 0 0 0 -.043" result="fibrePigment"/>
       <feComposite in="fibrePigment" in2="SourceGraphic" operator="in" result="fibreClipped"/>
       <feMerge>
         <feMergeNode in="SourceGraphic"/>
