@@ -1,9 +1,22 @@
 /* WORKFLOW / PAPER AND EARTH — 2026-10-21
-   Original exhibition palette developed as eight adjacent neutral-earth tones.
+   Exhibition-matched chapter colors: 01 Spatial, 02 Material,
+   03 Structural / G-code / 3D Printing, 05 Firing.
+   Chapter 03 uses neighboring low-chroma tones to distinguish teams.
+   Unspecified Rammed Earth and Assembly remain unchanged pending team input.
    The original puzzle path shapes, position, arrows, stage counts and files
    are unchanged. Supplementary work packages inherit board.css monochrome.
    Main nodes: darker printed paper at rest -> pale paper on hover/click.
    Small, transparent grain is contained INSIDE SVG paths (not rectangles). */
+
+/* Exhibition-question mapping (2026-10-21):
+   01 What is it?             Spatial Design
+   02 What is it made of?     Material Preparation
+   03 How is it made?         Structural Check, G-code Generation, 3D Printing
+   04 Why do they differ?     Environmental Monitoring (neutral auxiliary until confirmed)
+   05 What is the future?     Firing / Glazing
+   Needs confirmation: Rammed Earth, Assembly, Construction Management,
+   HRC for Assembly; supplementary teams remain monochrome as requested.
+*/
 
 #workflowView.workflowScreen {
   --ex-01:#CCC7C1; --ex-02:#B2ABA2; --ex-03:#7C7367;
@@ -12,62 +25,62 @@
 
 #workflowView .wb-board > .wb-block.wb-spatial,
 .wb-process-dialog[data-stage="spatial"] {
-  --stage-rest:#817970;
-  --stage-active:#E1DAD2;
-  --stage-accent:#817970;
-  --stage-fill:#817970;
+  --stage-rest:#918B85;
+  --stage-active:#E4E0DB;
+  --stage-accent:#918B85;
+  --stage-fill:#918B85;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E1DAD2 32%, white);
+  --stage-wash:color-mix(in srgb, #E4E0DB 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-structural,
 .wb-process-dialog[data-stage="structural"] {
-  --stage-rest:#6F685F;
-  --stage-active:#D6D0C8;
-  --stage-accent:#6F685F;
-  --stage-fill:#6F685F;
+  --stage-rest:#746D64;
+  --stage-active:#D2CCC5;
+  --stage-accent:#746D64;
+  --stage-fill:#746D64;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #D6D0C8 32%, white);
+  --stage-wash:color-mix(in srgb, #D2CCC5 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-gcode,
 .wb-process-dialog[data-stage="gcode"] {
-  --stage-rest:#877B6E;
-  --stage-active:#E3DCD3;
-  --stage-accent:#877B6E;
-  --stage-fill:#877B6E;
+  --stage-rest:#7D7469;
+  --stage-active:#DAD3CA;
+  --stage-accent:#7D7469;
+  --stage-fill:#7D7469;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E3DCD3 32%, white);
+  --stage-wash:color-mix(in srgb, #DAD3CA 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-material,
 .wb-process-dialog[data-stage="material"] {
-  --stage-rest:#8D8479;
-  --stage-active:#E7E0D8;
-  --stage-accent:#8D8479;
-  --stage-fill:#8D8479;
+  --stage-rest:#827B73;
+  --stage-active:#DCD5CD;
+  --stage-accent:#827B73;
+  --stage-fill:#827B73;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E7E0D8 32%, white);
+  --stage-wash:color-mix(in srgb, #DCD5CD 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-printing,
 .wb-process-dialog[data-stage="printing"] {
-  --stage-rest:#927B63;
-  --stage-active:#E7D8C6;
-  --stage-accent:#927B63;
-  --stage-fill:#927B63;
+  --stage-rest:#85786A;
+  --stage-active:#DFD7CD;
+  --stage-accent:#85786A;
+  --stage-fill:#85786A;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E7D8C6 32%, white);
+  --stage-wash:color-mix(in srgb, #DFD7CD 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-rammed,
@@ -84,14 +97,14 @@
 
 #workflowView .wb-board > .wb-block.wb-firing,
 .wb-process-dialog[data-stage="firing"] {
-  --stage-rest:#A08B70;
-  --stage-active:#E9DDCD;
-  --stage-accent:#A08B70;
-  --stage-fill:#A08B70;
+  --stage-rest:#99846A;
+  --stage-active:#E3D4C1;
+  --stage-accent:#99846A;
+  --stage-fill:#99846A;
   --stage-number-ink:#FFFFFF;
   --stage-rest-ink:#FAF9F5;
   --stage-active-ink:#29241F;
-  --stage-wash:color-mix(in srgb, #E9DDCD 32%, white);
+  --stage-wash:color-mix(in srgb, #E3D4C1 32%, white);
 }
 
 #workflowView .wb-board > .wb-block.wb-assembly,
