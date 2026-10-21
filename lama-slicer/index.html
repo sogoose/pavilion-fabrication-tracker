@@ -3,55 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101d2b">
+<meta name="theme-color" content="#f5f5f2">
 <title>LAMA Slicer — Original N1/N2 & Robot Models</title>
 <style>
-:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#eaf1f6;background:#0d1722;
-background-image:radial-gradient(ellipse 60% 45% at 90% -5%,#1d3852 0,transparent 80%)}
-header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #263646;padding:22px clamp(22px,6vw,90px)}
-.wordmark{letter-spacing:.3em;font-size:15px;font-weight:800}.wordmark span{color:#68c7ee;font-weight:300}
-a{color:#9ddcf4;text-decoration:none}a:hover{text-decoration:underline}
-main{width:min(760px,calc(100% - 44px));margin:min(11vh,90px) auto}
-.eyebrow{font:600 11px ui-monospace,Consolas,monospace;letter-spacing:.24em;color:#84b9d0}
-h1{font-size:clamp(40px,8vw,82px);letter-spacing:-.066em;line-height:.99;margin:20px 0 26px}
-h1 em{font-style:normal;color:#60c5ef}p{color:#b0c4d0;line-height:1.7;font-size:15px}
-.panel{border:1px solid #34495a;background:#182938;padding:28px;border-radius:12px;margin:32px 0}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.label{font-size:11px;letter-spacing:.16em;color:#87a1b2;text-transform:uppercase}
-strong{font-weight:650}.sub{font-size:13px;color:#87a2b4;line-height:1.6}
-button,.upload{border:1px solid #78cee9;background:#69c7e8;color:#0c1f30;border-radius:5px;
-font:750 13px inherit;padding:12px 21px;cursor:pointer;display:inline-block;font-size:13px;font-weight:700}
-button:hover,.upload:hover{background:#9ae3f7}button:disabled{opacity:.4;cursor:not-allowed}
-button.secondary{background:transparent;color:#cfe5f0;border-color:#587486}
-input[type=file]{display:none}
-#progress{margin-top:20px;font:12px/1.5 ui-monospace,monospace;color:#a9d5e7;white-space:pre-line}
-#track{height:2px;background:#334655;margin-top:15px;overflow:hidden;display:none}
-#bar{height:100%;background:#6ac9ef;width:0;transition:width .15s}
+:root{
+  --bg:#f5f5f2; --paper:#fff; --ink:#151515; --muted:#777;
+  --line:#d9d9d4; --soft:#efefeb;
+  color-scheme:light;
+  font-family:Inter,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0;background:var(--bg);color:var(--ink)}
+body{display:flex;flex-direction:column}
+button,input{font:inherit}
+a{color:inherit;text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:14px clamp(20px,4vw,56px);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{font-size:13px;font-weight:700;letter-spacing:.01em}
+.brand span{display:inline-block;margin-left:12px;padding-left:12px;border-left:1px solid var(--line);font-size:10px;font-weight:500;letter-spacing:.07em;color:var(--muted)}
+.back{font-size:12px;color:#5b5b57}
+main{width:min(1020px,calc(100% - 40px));margin:0 auto;flex:1;padding:clamp(40px,6vw,75px) 0 30px}
+.kicker{font:10px/1.5 "IBM Plex Mono",Consolas,monospace;letter-spacing:.07em;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:9px;padding-bottom:13px;border-bottom:1px solid #bcbcb7}
+.heading{padding:25px 0 22px;display:flex;align-items:end;justify-content:space-between;gap:18px;border-bottom:1px solid #242424}
+h1{font-size:clamp(40px,5.4vw,68px);line-height:1;letter-spacing:-.05em;font-weight:400;margin:0}
+.heading-note{font:10px/1.5 Consolas,monospace;color:var(--muted);white-space:nowrap}
+.intro{max-width:730px;margin:19px 0 34px;font-size:13px;line-height:1.8;color:#5e5e59}
+.status{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper);padding:23px 25px 24px}
+.status-top{display:flex;justify-content:space-between;align-items:center;gap:25px;flex-wrap:wrap}
+.label{font:10px Consolas,monospace;letter-spacing:.095em;color:var(--muted)}
+h2{font-size:22px;letter-spacing:-.035em;font-weight:500;margin:10px 0 8px}
+#detail{font-size:12px;color:var(--muted);line-height:1.5}
+button{border:1px solid #111;background:#111;color:#fff;padding:10px 15px;border-radius:3px;cursor:pointer;font-size:12px}
+button:hover{background:#333}
+#installer{display:none}
+#track{height:2px;background:var(--soft);margin-top:22px;display:none;overflow:hidden}
+#bar{height:100%;width:0;background:#111;transition:width .2s}
+#progress{margin-top:12px;min-height:16px;color:#777;font:11px/1.5 Consolas,monospace;white-space:pre-line;overflow-wrap:anywhere}
 #ready{display:none}
-.note{border-top:1px solid #273949;padding-top:21px;margin-top:35px;font-size:12px}
-footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spacing:.05em}
+.modules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:25px;border-bottom:1px solid var(--line)}
+.module{padding:0 16px 21px;border-right:1px solid var(--line)}
+.module:first-child{padding-left:0}.module:last-child{border-right:0}
+.module b{display:block;font-size:12px;font-weight:600;margin:9px 0 5px}
+.module p{font-size:11px;color:var(--muted);line-height:1.5;margin:0}
+.note{font-size:11px;line-height:1.7;color:#777;margin:24px 0 0}
+footer{background:var(--bg);border-top:1px solid var(--line);width:min(1020px,calc(100% - 40px));margin:0 auto;padding:17px 0 23px;color:#777;font:10px/1.7 Consolas,monospace;letter-spacing:.01em}
+footer strong{color:#464641;font-weight:600}
+@media(max-width:680px){.brand span{display:block;border:0;margin:5px 0 0;padding:0}.heading{display:block}.heading-note{margin-top:15px}.modules{grid-template-columns:1fr}.module{border-right:0;border-bottom:1px solid var(--line);padding:14px 0}.module:first-child{padding-top:0}.module:last-child{border-bottom:0}.status{padding:20px 17px}.intro{margin-bottom:24px}}
 </style>
 <script src="./jszip.min.js" defer></script>
 </head>
 <body>
-<header><div class="wordmark">LAMA <span>SLICER</span></div><a href="../">← PAVILION FABRICATION TRACKER</a></header>
+<header>
+  <div class="brand">PAVILION / FABRICATION <span>03 / LAMA SLICER</span></div>
+  <a class="back" href="../">← Back to Tracker</a>
+</header>
 <main>
-  <div class="eyebrow">TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN · 2026/27</div>
-  <h1>LAMA<br><em>Slicer.</em></h1>
-  <p>Original 3D robot workspace: WASP 40100, UR5 station and Comau NJ60-2.2, unchanged N1/N2 toolpath algorithms, G-code generation and Comau PDL converter. All loaded separately from the fabrication tracker.</p>
-  <div class="panel">
-    <div class="row"><div><div class="label">Original 3D robot workspace</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button></div></div>
-    <div id="installer" style="display:none">
-      <p class="sub">The original source bundle is loaded automatically, without uploading or choosing a ZIP file.</p>
-      <label class="upload" for="zip" hidden>Original engine import</label>
-      <input id="zip" type="file" accept=".zip,application/zip">
-    </div>
-    <div id="track"><div id="bar"></div></div><div id="progress" aria-live="polite"></div>
+  <div class="kicker"><span>26/27 TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN</span><span>DIGITAL FABRICATION TOOL / 03</span></div>
+  <div class="heading">
+    <h1>LAMA Slicer</h1>
+    <span class="heading-note">N1 / N2 &nbsp;·&nbsp; MACHINE SIMULATION</span>
   </div>
-  <div class="note"><p><b>How it works:</b> The original Slicer is downloaded automatically when this page opens; no installation or ZIP selection is needed. Heavy robot models load only inside the workspace. Python scientific packages are fetched on first use and cached by the browser when supported. Machine output must be checked before physical fabrication.</p></div>
-  <footer>© 2026/27 · TU DELFT · LAMA SLICER / PAVILION FABRICATION HUB</footer>
+  <p class="intro">An independent 3D fabrication workspace for WASP 40100, UR5 and Comau NJ60-2.2, including the original N1/N2 toolpaths, G-code generation and Comau PDL conversion.</p>
+  <section class="status" aria-label="Slicer loading status">
+    <div class="status-top">
+      <div>
+        <div class="label">01 / INITIALIZING WORKSPACE</div>
+        <h2 id="title">Preparing workspace…</h2>
+        <div id="detail">Loading the original machine and toolpath resources</div>
+      </div>
+      <div id="ready"><button id="launch">Open workspace ↗</button></div>
+    </div>
+    <div id="installer" style="display:none"><input id="zip" type="file" accept=".zip,application/zip"></div>
+    <div id="track"><div id="bar"></div></div>
+    <div id="progress" role="status" aria-live="polite"></div>
+  </section>
+  <div class="modules">
+    <div class="module"><span class="label">01 / GEOMETRY</span><b>WASP · UR5 · COMAU</b><p>3D machine and printing-space preview</p></div>
+    <div class="module"><span class="label">02 / TOOLPATH</span><b>N1 · N2</b><p>Original weave-based slicing methods</p></div>
+    <div class="module"><span class="label">03 / OUTPUT</span><b>G-CODE · PDL</b><p>Machine-specific toolpath export</p></div>
+  </div>
+  <p class="note">The original Slicer loads automatically in a separate workspace. No file installation is required. Validate machine outputs before fabrication.</p>
 </main>
+<footer>
+  <strong>© 2026–27 Maria Dumitrache · Rojin Aghaei · Niels Dobroschelski · TU Delft Creative Robotics 26–27 Students.</strong> All rights reserved.
+</footer>
 <script>
 (async function(){
   'use strict';
