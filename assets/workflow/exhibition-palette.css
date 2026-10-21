@@ -33,7 +33,7 @@
   --stage-accent:#B8B1A9;
   --stage-fill:#B8B1A9;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#28231F;
+  --stage-rest-ink:#FCFBF8;
   --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
   --stage-wash:color-mix(in srgb, #EEEAE4 32%, white);
@@ -46,7 +46,7 @@
   --stage-accent:#AAA297;
   --stage-fill:#AAA297;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#28231F;
+  --stage-rest-ink:#FCFBF8;
   --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
   --stage-wash:color-mix(in srgb, #E9E3DB 32%, white);
@@ -59,7 +59,7 @@
   --stage-accent:#AEA398;
   --stage-fill:#AEA398;
   --stage-number-ink:#FFFFFF;
-  --stage-rest-ink:#28231F;
+  --stage-rest-ink:#FCFBF8;
   --stage-rest-art:brightness(0);
   --stage-active-ink:#29241F;
   --stage-wash:color-mix(in srgb, #EDE6DE 32%, white);
@@ -331,3 +331,12 @@
   color:#fff!important;
 }
 /* Every original process shape retains its unique border and SVG geometry. */
+
+/* White resting labels on the three lighter early-stage cards.
+   Tiny shadow preserves letter edges against uncoated kraft paper.
+   Selected/hovered state remains dark ink against the light active shade. */
+#workflowView .wb-board > .wb-block:is(.wb-spatial,.wb-structural,.wb-gcode):not(:hover):not(.wb-selected) .wb-preview > .wb-name,
+#workflowView .wb-board > .wb-block:is(.wb-spatial,.wb-structural,.wb-gcode):not(:hover):not(.wb-selected) .wb-preview > .wb-plus,
+#workflowView .wb-board > .wb-block:is(.wb-spatial,.wb-structural,.wb-gcode):not(:hover):not(.wb-selected) .wb-preview .wb-drawing figcaption {
+  text-shadow:0 1px 2px rgba(33,27,22,.37);
+}
