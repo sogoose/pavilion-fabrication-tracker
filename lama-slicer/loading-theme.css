@@ -1,0 +1,90 @@
+/* LAMA startup screen — matches the Pavilion Fabrication Tracker visual identity.
+   Deliberately scoped to the loading splash and existing attribution;
+   do not alter the robot workspace, Three.js scene, or slicing controls. */
+#splash {
+  background: #f5f5f2;
+  color: #151515;
+  font-family: Inter, Arial, sans-serif;
+  transition: opacity .35s ease;
+}
+#splash::before {
+  content: "PAVILION / FABRICATION   ·   03 / LAMA SLICER";
+  position: absolute;
+  top: 25px;
+  left: clamp(20px, 4vw, 56px);
+  right: clamp(20px, 4vw, 56px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid #c7c7c1;
+  color: #444;
+  font: 600 11px/1.5 Consolas, monospace;
+  letter-spacing: .045em;
+  text-align: left;
+}
+#splash svg { display: none; }
+#splash .nm {
+  margin: 0;
+  font-size: clamp(44px, 6vw, 70px);
+  line-height: 1.05;
+  letter-spacing: -.06em;
+  color: #151515;
+}
+#splash .nm::before {
+  display: block;
+  content: "DIGITAL FABRICATION / WORKSPACE";
+  padding-bottom: 16px;
+  font: 500 10px/1.4 Consolas, monospace;
+  letter-spacing: .11em;
+  color: #777;
+}
+#splash .nm b { font-weight: 600; }
+#splash .nm span { font-weight: 350; color: #6b6b67; letter-spacing: -.055em; }
+#splash .ld {
+  margin-top: 27px;
+  font: 600 10px/1.5 Consolas, monospace;
+  letter-spacing: .10em;
+  color: #333;
+  animation: none;
+}
+#splash .ld::before { content: "01 / "; color: #888; }
+#splash .ld::after { content: ""; animation: none; }
+#splash .st {
+  max-width: min(470px, 84vw);
+  min-height: 1.5em;
+  margin-top: 7px;
+  font: 11px/1.65 Consolas, monospace;
+  text-align: center;
+  color: #777;
+}
+#splash .track {
+  margin-top: 26px;
+  width: min(270px, 78vw);
+  height: 2px;
+  background: #dededa;
+}
+#splash .track i { background: #333; }
+#splash.err .ld { color: #b42318; }
+#splash.err .track { display: none; }
+#splash .lama-splash-credit {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 25px;
+  text-align: center;
+  color: #888;
+  font: 10px/1.6 Consolas, monospace;
+  letter-spacing: 0;
+}
+.lama-attribution {
+  margin: 10px 16px 0;
+  border-top: 1px solid #d9d9d4;
+  padding: 15px 0 8px;
+  color: #777;
+  font: 10px/1.6 Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.lama-attribution b { display: block; margin-bottom: 5px; color: #333; font-weight: 600; }
+@media (max-width: 600px) {
+  #splash::before { font-size: 9px; letter-spacing: 0; }
+  #splash .nm { font-size: 43px; }
+  #splash .lama-splash-credit { font-size: 9px; }
+}
