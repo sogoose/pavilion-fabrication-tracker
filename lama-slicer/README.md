@@ -31,3 +31,15 @@ To upgrade LAMA, replace `lama-slicer/LAMA_Slicer.zip` with the new original arc
 © 2026–27 **Maria Dumitrache · Rojin Aghaei · Niels Dobroschelski · TU Delft Creative Robotics 26–27 Students.** All rights reserved.
 
 The standalone entry page and the original application's loading splash follow the Pavilion Fabrication Tracker's light, neutral visual style. The original toolpath algorithms, 3D machine models, and exporters are unchanged by this design update.
+
+## Rhino-style 3D viewport navigation
+
+- **Left click:** select the part or use its move/rotate gizmo. Left-drag no longer orbits the scene.
+- **Right-button drag:** orbit in isometric / machine / plate views.
+- **Right-button drag in Top or Front:** pan the view.
+- **Shift + right-button drag:** pan in all views.
+- **Ctrl + right-button drag:** zoom / dolly.
+- **Middle-button drag:** pan.
+- **Mouse wheel:** zoom toward the cursor.
+
+This is a browser-side patch applied to the original web/js/app.js when installing into Cache Storage. The original ZIP, robot models, slicing algorithms, G-code and PDL exporter are not changed. Cache version v5 ensures the updated controls are installed for existing visitors.
