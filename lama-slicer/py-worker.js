@@ -16,8 +16,8 @@ async function boot() {
   importScripts(PYODIDE + 'pyodide.js');
   py = await loadPyodide({indexURL:PYODIDE});
   say('Loading numpy + shapely + scipy…');
-  await py.loadPackage(['numpy', 'shapely', 'scipy', 'micropip']);
-  say('Loading the original trimesh geometry library…');
+  await py.loadPackage(['numpy', 'shapely', 'scipy', 'networkx', 'micropip']);
+  say('Loading original mesh-processing dependencies…');
   await py.runPythonAsync("import micropip; await micropip.install('trimesh==4.6.2', deps=False)");
   const base = '/work/lama';
   py.FS.mkdirTree(base);
