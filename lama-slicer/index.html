@@ -44,7 +44,7 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
     <div class="row"><div><div class="label">Original 3D robot workspace</div><h2 style="margin:9px 0" id="title">Checking engine…</h2><div class="sub" id="detail">Preparing the separate LAMA workspace</div></div><div id="ready"><button id="launch">Open LAMA Slicer ↗</button></div></div>
     <div id="installer" style="display:none">
       <p class="sub">The original source bundle is loaded automatically, without uploading or choosing a ZIP file.</p>
-      <label class="upload" for="zip">Select LAMA_Slicer.zip</label>
+      <label class="upload" for="zip" hidden>Original engine import</label>
       <input id="zip" type="file" accept=".zip,application/zip">
     </div>
     <div id="track"><div id="bar"></div></div><div id="progress" aria-live="polite"></div>
@@ -66,9 +66,9 @@ footer{padding:40px 0;color:#5e8297;font:11px ui-monospace,monospace;letter-spac
   function state(isReady){
     ready=isReady;
     $('ready').style.display=isReady?'block':'none';
-    $('installer').style.display=isReady?'none':'block';
-    $('title').textContent=isReady?'Engine installed':'Install LAMA Slicer';
-    $('detail').textContent=isReady?'Original N1/N2 engine ready in this browser':'Install the original source files once';
+    $('installer').style.display='none';
+    $('title').textContent=isReady?'Opening LAMA Slicer':'Loading the original LAMA';
+    $('detail').textContent=isReady?'Original N1/N2 engine and robot models are ready':'Preparing original N1/N2 toolpaths and robot models';
   }
   $('launch').onclick=()=>location.assign(app.href);
   try{
