@@ -1,0 +1,162 @@
+/* Exhibition palette / phase 01: COLOR ONLY.
+   Reference: the five colors in exhibition.pdf, page 3.
+   No position, geometry, typography, action, upload, or data changes.
+   Each stage inherits a muted color from its exhibition question.
+   01 What is it?                     #CCC7C1
+   02 What is it made of?             #B2ABA2
+   03 How is it made?                 #7C7367
+   04 Why do they look different?     #B19B7A
+   05 What is the future of this?     #BBA583
+*/
+
+/* Neutral background preserved. The same five colors are used for both
+   main process nodes and their opened archive panels. */
+#workflowView.workflowScreen {
+  --ex-01:#CCC7C1;
+  --ex-02:#B2ABA2;
+  --ex-03:#7C7367;
+  --ex-04:#B19B7A;
+  --ex-05:#BBA583;
+  --stage-accent:#7C7367;
+  --stage-wash:rgba(124,115,103,.07);
+}
+
+/* 01 — Pavilion concept and resulting assembly */
+#workflowView .wb-spatial,
+#workflowView .wb-assembly,
+.wb-process-dialog[data-stage="spatial"],
+.wb-process-dialog[data-stage="assembly"] {
+  --stage-accent:#CCC7C1;
+  --stage-fill:#736B62;
+  --stage-number-ink:#282521;
+  --stage-wash:rgba(204,199,193,.13);
+  --poster-ink:#25211D;
+}
+
+/* 02 — Materials and their recipes */
+#workflowView .wb-material,
+.wb-process-dialog[data-stage="material"] {
+  --stage-accent:#B2ABA2;
+  --stage-fill:#706961;
+  --stage-number-ink:#2D2925;
+  --stage-wash:rgba(178,171,162,.13);
+  --poster-ink:#28241F;
+}
+
+/* 03 — Fabrication methods, structural, digital and robotic production */
+#workflowView .wb-structural,
+#workflowView .wb-gcode,
+#workflowView .wb-printing,
+#workflowView .wb-rammed,
+#workflowView .wp-computational,
+.wb-process-dialog[data-stage="structural"],
+.wb-process-dialog[data-stage="gcode"],
+.wb-process-dialog[data-stage="printing"],
+.wb-process-dialog[data-stage="rammed"],
+.wb-process-dialog[data-stage="computational"] {
+  --stage-accent:#7C7367;
+  --stage-fill:#63594D;
+  --stage-number-ink:#FFFFFF;
+  --stage-wash:rgba(124,115,103,.13);
+  --poster-ink:#FFFFFF;
+}
+
+/* 04 — Failures, drying, firing and environmental effects */
+#workflowView .wb-firing,
+#workflowView .wp-environment,
+#workflowView .wp-construction,
+.wb-process-dialog[data-stage="firing"],
+.wb-process-dialog[data-stage="environment"],
+.wb-process-dialog[data-stage="construction"] {
+  --stage-accent:#B19B7A;
+  --stage-fill:#7B684D;
+  --stage-number-ink:#28231D;
+  --stage-wash:rgba(177,155,122,.13);
+  --poster-ink:#26221D;
+}
+
+/* 05 — Human–robot collaboration and possible future fabrication */
+#workflowView .wp-hrc,
+.wb-process-dialog[data-stage="hrc"] {
+  --stage-accent:#BBA583;
+  --stage-fill:#867153;
+  --stage-number-ink:#28241E;
+  --stage-wash:rgba(187,165,131,.13);
+  --poster-ink:#29231C;
+}
+
+/* Existing decoration gets the same muted ink, without changing dimensions. */
+#workflowView .wb-mast::before { background:#7C7367; }
+#workflowView .wb-management a { color:#706151; }
+#workflowView .wb-phase::before { background:rgba(187,165,131,.23); }
+#workflowView .wb-phase span { color:#746B60; }
+#workflowView .wb-board .wb-drying { color:#746450; }
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-name,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-name {
+  color:var(--stage-fill);
+}
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-plus,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-plus,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview .wb-drawing figcaption {
+  color:var(--stage-fill);
+}
+#workflowView .wb-board .wb-block.wb-selected .wb-credits-names {
+  color:var(--stage-fill);
+}
+#workflowView .wb-board .wb-block .wb-preview > .wb-index {
+  background:var(--stage-accent);
+  color:var(--stage-number-ink,#fff)!important;
+}
+#workflowView .wb-board .wb-block:hover .wb-preview > .wb-index,
+#workflowView .wb-board .wb-block.wb-selected .wb-preview > .wb-index {
+  background:#fff;
+  color:var(--stage-fill)!important;
+}
+#workflowView .wb-board .wb-block .wb-stage-frame path {
+  stroke:var(--stage-accent);
+  fill:color-mix(in srgb,var(--stage-accent) 5%,white);
+}
+#workflowView .wb-board .wb-block:hover .wb-stage-frame path,
+#workflowView .wb-board .wb-block.wb-selected .wb-stage-frame path {
+  fill:var(--stage-fill);
+  stroke:var(--stage-fill);
+}
+
+/* Keep subsidiary work packages unframed, retaining their original layout. */
+#workflowView .wp-cluster .wp-island {
+  border-top-color:var(--stage-accent);
+}
+#workflowView .wp-island .wp-title { color:#35312D; }
+#workflowView .wp-island:hover .wp-title,
+#workflowView .wp-island.wb-selected .wp-title { color:var(--stage-fill)!important; }
+#workflowView .wp-island .wp-plus { color:var(--stage-fill); }
+
+/* Modal poster surfaces now follow the same five exhibition colors.
+   The modal archive, existing team names, links, and files remain intact. */
+.wb-process-dialog .wb-tarot {
+  background:var(--stage-accent);
+  color:var(--poster-ink);
+}
+.wb-process-dialog .wb-card-number,
+.wb-process-dialog .wb-card-title,
+.wb-process-dialog .wb-card-tag span,
+.wb-process-dialog .wb-card-description,
+.wb-process-dialog .wb-card-credit-label,
+.wb-process-dialog .wb-card-credit-name,
+.wb-process-dialog .wb-card-no-credits {
+  color:var(--poster-ink)!important;
+}
+.wb-process-dialog .wb-card-credits { color:var(--poster-ink); }
+.wb-process-dialog .wb-card-art img { filter:brightness(0); }
+.wb-process-dialog[data-stage="structural"] .wb-card-art img,
+.wb-process-dialog[data-stage="gcode"] .wb-card-art img,
+.wb-process-dialog[data-stage="printing"] .wb-card-art img,
+.wb-process-dialog[data-stage="rammed"] .wb-card-art img,
+.wb-process-dialog[data-stage="computational"] .wb-card-art img {
+  filter:brightness(0) invert(1);
+}
+.wb-process-dialog .wb-gallery-stage { border-top-color:var(--stage-accent); }
+.wb-process-dialog .wb-gallery-thumb.is-active { border-color:var(--stage-fill); }
+
+/* Intentionally no changes to the Workflow's positioning, SVG files,
+   project links, team assignments, or any Tracker / Slicer styles. */
