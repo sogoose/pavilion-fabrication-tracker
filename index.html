@@ -395,7 +395,7 @@ header{gap:6px;padding:10px 16px}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/workflow/board.css?v=20261020-editorial-archive-upload-v5">
-<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-fabrication-mapping-v7">
+<link rel="stylesheet" href="./assets/workflow/exhibition-palette.css?v=20261021-bright-pulp-v8">
 <link rel="stylesheet" href="./assets/catalog/catalog.css?v=20261019-v1">
 <link rel="stylesheet" href="./assets/catalog/fabrication-timeline.css?v=20261020-3d-timeline-export-v3">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -478,11 +478,20 @@ header{gap:6px;padding:10px 16px}
      style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
   <defs>
     <filter id="workflowPaperGrain" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="17" stitchTiles="stitch" result="noise"/>
-      <feColorMatrix in="noise" type="matrix"
-        values="0 0 0 0 .25  0 0 0 0 .21  0 0 0 0 .17  .36 0 0 0 -.14" result="grain"/>
-      <feComposite in="grain" in2="SourceGraphic" operator="in" result="maskedGrain"/>
-      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="maskedGrain"/></feMerge>
+      <!-- Dense, matte recycled-pulp grain. Both layers are clipped to each original stage path. -->
+      <feTurbulence type="fractalNoise" baseFrequency="1.10" numOctaves="3" seed="27" stitchTiles="stitch" result="microfibres"/>
+      <feColorMatrix in="microfibres" type="matrix"
+        values="0 0 0 0 .17  0 0 0 0 .13  0 0 0 0 .09  .69 0 0 0 -.22" result="pulpPigment"/>
+      <feComposite in="pulpPigment" in2="SourceGraphic" operator="in" result="pulpClipped"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".12 .85" numOctaves="2" seed="11" stitchTiles="stitch" result="shortFibres"/>
+      <feColorMatrix in="shortFibres" type="matrix"
+        values="0 0 0 0 .24  0 0 0 0 .17  0 0 0 0 .11  .26 0 0 0 -.065" result="fibrePigment"/>
+      <feComposite in="fibrePigment" in2="SourceGraphic" operator="in" result="fibreClipped"/>
+      <feMerge>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="pulpClipped"/>
+        <feMergeNode in="fibreClipped"/>
+      </feMerge>
     </filter>
   </defs>
 </svg>
