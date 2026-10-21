@@ -36,7 +36,7 @@
   const pending = new Map();
   let nextId = 1;
   const KEY = 'lama-slicer-settings-v1';
-  const CACHE = 'lama-slicer-assets-v5';
+  const CACHE = 'lama-slicer-assets-v6';
   const progress = text => {
     const el = document.querySelector('#splash .st');
     if (el) el.textContent = text;
