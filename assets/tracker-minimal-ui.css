@@ -45,6 +45,9 @@
 .tracker-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
 .tracker-panel-head h2{font:600 24px/1.05 Inter,Arial,sans-serif;letter-spacing:-.055em;margin:0 0 6px}
 .tracker-panel-meta{font-size:11px;line-height:1.5;color:#787872}
+.tracker-panel-actions{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex-shrink:0}
+.tracker-panel-actions #focusSelected{font-size:10px;padding:4px 7px;border-radius:3px;background:#fff;border:1px solid #d9d9d4}
+.tracker-panel-actions #focusSelected:hover{background:#f5f5f2}
 #detailPanel .tracker-panel-pdf{padding:5px 0;border:0;border-radius:0;border-bottom:1px solid #777;background:none;color:#333;font-size:11px;white-space:nowrap}
 #detailPanel .tracker-panel-pdf:hover{background:none;color:#777}
 .tracker-panel-eyebrow{font:600 10px/1.4 Consolas,monospace;letter-spacing:.07em;color:#777;margin:12px 0}
