@@ -189,7 +189,7 @@
 
 /* Archive posters take the lighter paper version, showing the original artwork
    and all author credits legibly. No behavior changes to gallery or controls. */
-.wb-process-dialog[data-stage] .wb-tarot { background-image:url("./recycled-pulp-texture.svg?v=soft-v2"); }
+.wb-process-dialog[data-stage] .wb-tarot { background-image:url("./recycled-pulp-texture.svg?v=soft-v3"); }
 .wb-process-dialog[data-stage="spatial"] .wb-tarot,
 .wb-process-dialog[data-stage="structural"] .wb-tarot,
 .wb-process-dialog[data-stage="gcode"] .wb-tarot,
@@ -285,7 +285,7 @@
 .wb-process-dialog .wb-gallery-thumb,
 .wf-edit-dialog .wf-upload-files,
 .wf-edit-dialog .wf-upload-photos {
-  background-image:url("./recycled-pulp-texture.svg?v=soft-v2");
+  background-image:url("./recycled-pulp-texture.svg?v=soft-v3");
   background-repeat:repeat;
   background-size:120px 120px;
 }
