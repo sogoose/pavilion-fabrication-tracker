@@ -459,7 +459,7 @@ header{gap:6px;padding:10px 16px}
         <summary>View</summary><div class="tracker-menu-content">
           <span class="menu-caption">3D VIEW TOOLS</span>
           <button id="fitView">Fit view</button>
-          <button id="toggleObjectLabels">Module labels</button>
+          <button id="toggleObjectLabels">Hide module labels</button>
           <button id="toggleModuleOutlines">Module outlines</button>
           <div class="menu-separator"></div>
           <label class="menu-range" for="explode">Explode view <input id="explode" type="range" min="0" max="1.6" step="0.05" value="0" /></label>
@@ -688,7 +688,7 @@ header{gap:6px;padding:10px 16px}
       <div id="viewer"></div>
       <div id="message"></div>
        <div id="objectLabel"></div>
-       <div id="allObjectLabels" class="allObjectLabels"></div>
+       <div id="allObjectLabels" class="allObjectLabels active"></div>
       <div class="viewerOverlay">
         <button id="homeView">Axonometric</button>
       </div>
@@ -817,7 +817,7 @@ let selectedKey = null;
 let currentModelName = 'model.3dm';
 let selectedOutlineObjects = [];
 let allModuleOutlineObjects = [];
-let showAllObjectLabels = false;
+let showAllObjectLabels = true;
 let showAllModuleOutlines = false;
 
 const viewer = document.getElementById('viewer');
