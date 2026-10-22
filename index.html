@@ -802,6 +802,9 @@ const dbMap = {
   GCode_File:'gcode_file', Last_Updated:'updated_at', Updated_By:'updated_by', Notes:'notes'
 };
 let supabaseClient=null, liveMode=false, cloudReady=false, realtimeChannel=null;
+// Parallel read-only bootstrap: show database connectivity independently of
+// downloading/decoding the 3DM, and reuse fresh results after the model loads.
+let initialCloudPrefetch=null, cloudPrefetchConnected=false;
 const cloudSaveTimers = {};
 let colorOverrides={};
 try{colorOverrides=JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY)||'{}')||{};}catch(e){colorOverrides={};}
@@ -856,6 +859,8 @@ let bundledModelRequested=false;
 function ensureBundledModel(){
   if(bundledModelRequested || modelRoot) return;
   bundledModelRequested=true;
+  if(liveMode && !cloudReady && cloudPrefetchConnected)
+    setSyncBadge('CONNECTED · LOADING 3D','syncing');
   void loadBundledModel();
 }
 window.ensurePavilionModel=ensureBundledModel;
@@ -921,6 +926,27 @@ function initCollaboration(){
   try{
     supabaseClient=window.supabase.createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
     liveMode=true; setSyncBadge('CONNECTING…','syncing');
+    // Start the 88-row data read while the Rhino model downloads and parses.
+    // No module data is written here; merging happens only in syncCloudInitial.
+    initialCloudPrefetch=(async()=>{
+      try{
+        const [settings,partResult]=await Promise.all([
+          loadColorSettings(),
+          supabaseClient.from('pavilion_parts').select('*').eq('project_id',PROJECT_ID)
+        ]);
+        if(partResult.error) throw partResult.error;
+        cloudPrefetchConnected=true;
+        if(!cloudReady && !parts.length){
+          const workflowOpen=document.querySelector('.app')?.classList.contains('workflow-active');
+          setSyncBadge(workflowOpen?'CONNECTED · OPEN TRACKER':'CONNECTED · LOADING 3D','syncing');
+        }
+        return {rows:partResult.data||[],fetchedAt:Date.now()};
+      }catch(err){
+        console.warn('Initial Tracker database check',err);
+        if(!cloudReady && !parts.length) setSyncBadge('CONNECTION ERROR','error');
+        return null; // syncCloudInitial can retry when the model is available.
+      }
+    })();
   }catch(err){
     console.error(err); liveMode=false; setSyncBadge('CONNECTION ERROR','error');
   }
@@ -987,10 +1013,19 @@ async function syncCloudInitial(force=false){
   if(!liveMode || !supabaseClient || !parts.length) return;
   setSyncBadge('SYNCING…','syncing');
   try{
-    await loadColorSettings();
-    const {data,error}=await supabaseClient.from('pavilion_parts').select('*').eq('project_id',PROJECT_ID);
-    if(error) throw error;
-    const cloudRows=data||[];
+    // If the data was fetched moments ago in parallel with 3D loading, reuse
+    // it. For slow model loads, forced refreshes, or failed prefetched reads,
+    // query again to avoid applying stale records.
+    const prefetched=!force && initialCloudPrefetch ? await initialCloudPrefetch : null;
+    let cloudRows;
+    if(prefetched && Date.now()-prefetched.fetchedAt < 10000){
+      cloudRows=prefetched.rows;
+    }else{
+      await loadColorSettings();
+      const {data,error}=await supabaseClient.from('pavilion_parts').select('*').eq('project_id',PROJECT_ID);
+      if(error) throw error;
+      cloudRows=data||[];
+    }
     const cloudKeys=new Set();
     cloudRows.forEach(row=>{
       const k=String(row.rhino_guid||''); if(!k) return;
@@ -1105,6 +1140,8 @@ async function loadBundledModel(){
     await setModel(obj,modelName);
   }catch(err){
     showMessage('Could not load the current model. '+(err?.message||err), true);
+    if(liveMode && !cloudReady && cloudPrefetchConnected)
+      setSyncBadge('CONNECTED · MODEL ERROR','error');
     console.warn(err);
   }
 }
