@@ -120,7 +120,7 @@
         '<div class="mm-setup"><label class="mm-label" for="mm-preset">START FROM A RECIPE</label><select id="mm-preset"></select>'+
         '<p class="mm-hint">Presets are based on recipes already saved in the module tracker. They are not an import of the linked Excel workbook.</p>'+
         '<label class="mm-label" for="mm-material-name">MATERIAL NAME</label><input id="mm-material-name" type="text" maxlength="120" />'+
-        '<p class="mm-note">Red clay is the updated name for the material previously labeled Red Clay.</p>'+
+        '<p class="mm-note">Clay ingredient names follow the updated Red Clay terminology.</p>'+
         '<div class="mm-small-source">Select a recipe, then adjust individual percentages as needed. Nothing changes until Apply.</div></div>'+
         '<div class="mm-editor"><div class="mm-batches"></div><div class="mm-readout"></div>'+
         '<details class="mm-source"><summary>Raw recipe preview</summary><pre></pre></details></div>'+
