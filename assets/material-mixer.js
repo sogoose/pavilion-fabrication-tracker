@@ -350,7 +350,18 @@
       openBtn.title='Open the material recipe picker and percentage sliders';
       const hint=el('p','mm-short',summary(record));
       hint.title=String(record.Material_Details||'');
-      field.append(openBtn,hint);
+      // Keep the Material and Module Weight inputs on one evenly aligned row.
+      // Place the mixer controls just BELOW that row, not inside its Material
+      // grid cell (which previously stretched the Weight input vertically).
+      const materialRow=field.closest('.tracker-fields-row');
+      if(materialRow){
+        const tools=el('div','mm-inline-tools');
+        tools.append(openBtn,hint);
+        materialRow.insertAdjacentElement('afterend',tools);
+      }else{
+        // Legacy panel fallback still exposes the picker.
+        field.append(openBtn,hint);
+      }
       openBtn.addEventListener('click',()=>open(record,key,onApply));
     },
     close:close,
