@@ -1,0 +1,112 @@
+/* Material Quick Mix — scoped to Tracker's production-record editor.
+   Compact, restrained industrial/materials palette, no changes to Workflow. */
+.app:not(.workflow-active) .mm-open {
+  display:inline-flex;align-items:center;gap:5px;
+  width:auto;min-height:28px;margin:6px 0 1px;
+  border:1px solid #b1a69b;background:#eee9e1;color:#38312b;
+  border-radius:3px;padding:5px 9px;
+  font:700 10px/1.25 "Inter",Arial,sans-serif;
+  letter-spacing:.05em;cursor:pointer;
+}
+.app:not(.workflow-active) .mm-open:hover {background:#ddd5c9;border-color:#918577;}
+.app:not(.workflow-active) .mm-open:focus-visible {outline:2px solid #51483e;outline-offset:2px;}
+.app:not(.workflow-active) .mm-short {
+  max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  margin:4px 0 2px;font:400 10px/1.45 "Inter",Arial,sans-serif;color:#858078;
+}
+.mm-overlay {display:none;position:fixed;inset:0;z-index:100400;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(34,30,26,.59);backdrop-filter:blur(2px);}
+.mm-overlay.mm-visible {display:flex;}
+.mm-dialog {width:min(930px,100%);max-height:min(91dvh,820px);display:flex;flex-direction:column;
+  overflow:hidden;border:1px solid #8e857b;border-radius:5px;
+  background:#f5f3ee;color:#2c2925;box-shadow:0 24px 62px rgba(16,13,10,.19);
+  font-family:"Inter",Arial,sans-serif;}
+.mm-dialog * {box-sizing:border-box;}
+.mm-head {display:flex;align-items:flex-start;justify-content:space-between;
+  gap:15px;border-bottom:1px solid #d4cdc4;padding:22px 26px 18px;}
+.mm-head .mm-eyebrow {margin:0 0 7px;font:700 10px/1.2 "IBM Plex Mono",monospace;letter-spacing:.09em;color:#81766a;}
+.mm-head h2 {margin:0;font:650 clamp(20px,3vw,28px)/1.1 "Inter",Arial,sans-serif;letter-spacing:-.05em;}
+.mm-head .mm-context {margin:7px 0 0;font:500 10px/1.35 "IBM Plex Mono",monospace;letter-spacing:.04em;color:#887e73;}
+.mm-dialog .mm-close {width:30px;height:30px;border:1px solid #cbc3ba;background:transparent;border-radius:3px;
+  color:#46403a;font:500 24px/1 Arial,sans-serif;cursor:pointer;}
+.mm-dialog .mm-close:hover {background:#ebe5dd;}
+.mm-grid {display:grid;grid-template-columns:minmax(220px,.77fr) minmax(0,1.65fr);overflow:auto;min-height:0;flex:1;}
+.mm-setup {padding:23px 22px 25px 26px;border-right:1px solid #ded9d2;background:#ede9e2;}
+.mm-setup .mm-label,.mm-batches .mm-label {
+  display:block;margin:0 0 9px;font:700 10px/1.3 "IBM Plex Mono",monospace;
+  letter-spacing:.055em;color:#62574d;}
+.mm-setup select,.mm-setup input[type=text] {
+  width:100%;padding:10px 9px;border:1px solid #bfb6a9;border-radius:3px;
+  background:#fffefd;color:#2c2925;font:500 12px/1.4 "Inter",Arial,sans-serif;}
+.mm-setup select:focus-visible,.mm-setup input:focus-visible,.mm-dialog input:focus-visible,.mm-dialog textarea:focus-visible{
+  outline:2px solid #847466;outline-offset:1px;}
+.mm-setup .mm-hint {margin:10px 0 26px;font-size:11px;line-height:1.55;color:#777168;}
+.mm-setup .mm-note {margin:9px 0 0;font-size:10px;line-height:1.5;color:#797267;}
+.mm-setup .mm-small-source {margin:27px 0 0;padding-top:12px;border-top:1px solid #d3cbbf;
+  font:400 11px/1.55 "Inter",Arial,sans-serif;color:#6d645b;}
+.mm-editor {padding:21px 25px 25px;min-width:0;}
+.mm-batch {margin-bottom:23px;}
+.mm-batch + .mm-batch {border-top:1px solid #d4cbc0;padding-top:20px;}
+.mm-batch-head {display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:16px;}
+.mm-batch h3 {font:650 16px/1.2 "Inter",Arial,sans-serif;letter-spacing:-.035em;margin:0;}
+.mm-total {font:500 11px/1.3 "IBM Plex Mono",monospace;color:#75695d;}
+.mm-total.mm-warning {color:#9a5a40;}
+.mm-ingredient {display:grid;grid-template-columns:minmax(86px,114px) minmax(50px,1fr) 66px 12px;
+  align-items:center;gap:11px;margin-bottom:9px;}
+.mm-ingredient-name {font:500 11px/1.2 "Inter",Arial,sans-serif;color:#45403a;}
+.mm-range {appearance:none;-webkit-appearance:none;height:4px;min-width:0;
+  cursor:pointer;background:#d6d0c6;border:0;border-radius:20px;accent-color:#918575;}
+.mm-range::-webkit-slider-thumb {appearance:none;width:13px;height:13px;border:2px solid #f7f5f1;
+  border-radius:50%;background:var(--mm-track,#938577);box-shadow:0 0 0 1px #9a9084;}
+.mm-range::-moz-range-thumb {width:10px;height:10px;border:2px solid #f7f5f1;border-radius:50%;
+  background:var(--mm-track,#938577);}
+.mm-dialog .mm-number {width:66px;min-height:28px;padding:4px 5px;
+  border:1px solid #d3ccc2;border-radius:3px;background:#fffdfa;color:#2c2925;
+  font:500 12px/1.3 "IBM Plex Mono",monospace;text-align:right;appearance:textfield;}
+.mm-number::-webkit-inner-spin-button {margin-left:0;}
+.mm-percent {font:600 10px/1 "IBM Plex Mono",monospace;color:#867b6d;}
+.mm-bar {height:13px;display:flex;overflow:hidden;margin-top:14px;background:#e6e0d7;border:1px solid #d0c6b8;}
+.mm-bar-segment {height:100%;min-width:0;transition:width .12s ease;}
+.mm-sum-note,.mm-mix-hint {margin:8px 0 0;font-size:11px;color:#82776c;line-height:1.55;}
+.mm-empty {font-size:12px;line-height:1.7;padding:15px;margin:5px 0 10px;
+  color:#675f55;background:#eeeae3;border:1px dashed #c9c0b6;}
+.mm-ready {font:650 19px/1.3 "Inter",Arial,sans-serif;margin:4px 0 8px;}
+.mm-ready-sub {font:400 12px/1.65 "Inter",Arial,sans-serif;color:#726a62;}
+.mm-dialog .mm-raw {width:100%;min-height:230px;padding:12px;resize:vertical;
+  background:#fffdf8;border:1px solid #d0c6ba;border-radius:3px;
+  color:#332e29;font:12px/1.55 "IBM Plex Mono",monospace;}
+.mm-source {margin:20px 0 0;border-top:1px solid #ddd5cc;}
+.mm-source summary {cursor:pointer;padding:12px 0;font:600 11px/1.3 "Inter",Arial,sans-serif;color:#675c50;}
+.mm-source pre {white-space:pre-wrap;margin:0 0 8px;padding:10px;background:#eee9e1;
+  border:1px solid #e0d8cf;font:11px/1.45 "IBM Plex Mono",monospace;color:#5e5449;}
+.mm-footer {display:flex;align-items:center;justify-content:space-between;gap:15px;
+  padding:14px 25px;border-top:1px solid #d6cdc1;background:#f5f3ee;}
+.mm-footer>div {display:flex;gap:8px;}
+.mm-dialog .mm-footer button {min-height:36px;padding:9px 16px;border:1px solid #928576;
+  border-radius:3px;font:600 11px "Inter",Arial,sans-serif;cursor:pointer;}
+.mm-cancel {background:transparent;color:#443d35;}
+.mm-dialog .mm-apply {background:#3d3731;color:#fff;border-color:#3d3731;}
+.mm-dialog .mm-apply:hover {background:#54483e;}
+.mm-dialog .mm-cancel:hover {background:#ebe5dd;}
+.mm-message {font:500 11px/1.45 "Inter",Arial,sans-serif;color:#70665b;}
+.mm-message.mm-error {color:#a84c31;}
+@media(max-width:680px) {
+ .mm-overlay {padding:7px;}
+ .mm-dialog {max-height:96dvh;}
+ .mm-head {padding:17px 15px;}
+ .mm-grid {grid-template-columns:1fr;}
+ .mm-setup {padding:14px 15px;border-right:0;border-bottom:1px solid #d8d0c6;}
+ .mm-setup .mm-hint {margin:6px 0 12px;}
+ .mm-setup .mm-small-source {display:none;}
+ .mm-editor {padding:17px 15px;}
+ .mm-ingredient {grid-template-columns:minmax(74px,99px) minmax(0,1fr) 55px 10px;gap:7px;}
+ .mm-ingredient-name {font-size:10px;}
+ .mm-dialog .mm-number {width:55px;font-size:11px;}
+ .mm-footer {padding:12px 15px;}
+ .mm-footer button {padding:8px 10px;}
+ .mm-message {font-size:10px;}
+}
+@media(prefers-reduced-motion:reduce) {
+ .mm-bar-segment {transition:none;}
+}
