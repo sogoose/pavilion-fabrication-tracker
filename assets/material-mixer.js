@@ -4,33 +4,33 @@
 (function () {
   'use strict';
 
-  const PRINT_KEYS=['Red clay','Yellow clay','Grey clay','Zilverzand','Chamotte','Sawdust','Water'];
-  const RAMMED_KEYS=['Grey clay','Yellow clay','Zilverzand','Metselzand','Betonmix','Stones','Water'];
+  const PRINT_KEYS=['Red clay','Grey clay','Zilverzand','Chamotte','Sawdust','Water'];
+  const RAMMED_KEYS=['Grey clay','Red clay','Zilverzand','Metselzand','Betonmix','Stones','Water'];
   const COLORS={
-    'Red clay':'#a17860','Yellow clay':'#c2a182','Grey clay':'#88867d',
+    'Red clay':'#c2a182','Grey clay':'#88867d',
     'Zilverzand':'#d0c4b1','Chamotte':'#ae9477','Sawdust':'#c6ad83',
     'Water':'#a5b3b3','Metselzand':'#c1aa8d','Betonmix':'#8e857b',
     'Stones':'#696762'
   };
   const mix=(label,values)=>({label:label,values:Object.assign({},values)});
   const P=[
-    {id:'yellow-375',group:'print',name:'Yellow clay · 37.5 / 41 / 20',material:'Yellow Clay',batches:[mix('Mix',{'Yellow clay':37.5,'Zilverzand':41,'Chamotte':20,'Sawdust':1.5,'Water':16.7})]},
-    {id:'yellow-380',group:'print',name:'Yellow clay · 38 / 41.6 / 18.8',material:'Yellow Clay',batches:[mix('Mix',{'Yellow clay':38,'Zilverzand':41.6,'Chamotte':18.8,'Sawdust':1.5,'Water':18.3})]},
+    {id:'red-375',group:'print',name:'Red clay · 37.5 / 41 / 20',material:'Red Clay',batches:[mix('Mix',{'Red clay':37.5,'Zilverzand':41,'Chamotte':20,'Sawdust':1.5,'Water':16.7})]},
+    {id:'red-380',group:'print',name:'Red clay · 38 / 41.6 / 18.8',material:'Red Clay',batches:[mix('Mix',{'Red clay':38,'Zilverzand':41.6,'Chamotte':18.8,'Sawdust':1.5,'Water':18.3})]},
     {id:'grey-375',group:'print',name:'Grey clay · 37.5 / 41 / 20',material:'Grey Clay',batches:[mix('Mix',{'Grey clay':37.5,'Zilverzand':41,'Chamotte':20,'Sawdust':1.5,'Water':16.7})]},
-    {id:'mixed-50',group:'print',name:'Mixed clay · equal yellow / grey',material:'Mixed Clay',batches:[mix('Mix',{'Yellow clay':18.8,'Grey clay':18.8,'Zilverzand':41,'Chamotte':20,'Sawdust':1.5,'Water':16.7})]},
-    {id:'mixed-75',group:'print',name:'Mixed clay · 28 grey / 9.3 yellow',material:'Mixed Clay',batches:[mix('Mix',{'Grey clay':28,'Yellow clay':9.3,'Zilverzand':41.1,'Chamotte':20.1,'Sawdust':1.5,'Water':16.7})]},
+    {id:'mixed-50',group:'print',name:'Mixed clay · equal red / grey',material:'Mixed Clay',batches:[mix('Mix',{'Red clay':18.8,'Grey clay':18.8,'Zilverzand':41,'Chamotte':20,'Sawdust':1.5,'Water':16.7})]},
+    {id:'mixed-75',group:'print',name:'Mixed clay · 28 grey / 9.3 red',material:'Mixed Clay',batches:[mix('Mix',{'Grey clay':28,'Red clay':9.3,'Zilverzand':41.1,'Chamotte':20.1,'Sawdust':1.5,'Water':16.7})]},
     {id:'normal',group:'print',name:'NORMAL CLAY · ready-made printing clay',material:'Normal Clay',kind:'ready'},
     {id:'custom-print',group:'print',name:'Custom 3D printing mix · from zero',material:'Custom Clay Mix',batches:[mix('Mix',{})]},
     {id:'rammed-a',group:'rammed',name:'Rammed Earth · Mix 1 + Mix 2 (recorded A)',material:'Rammed Earth Mix',batches:[
-      mix('*Mix 1',{'Grey clay':19.4,'Yellow clay':4.8,'Zilverzand':9.7,'Metselzand':14.5,'Betonmix':19.4,'Stones':29,'Water':3.2}),
-      mix('*Mix 2',{'Yellow clay':24.3,'Zilverzand':9.7,'Metselzand':14.6,'Betonmix':19.4,'Stones':29.2,'Water':2.8})]},
+      mix('*Mix 1',{'Grey clay':19.4,'Red clay':4.8,'Zilverzand':9.7,'Metselzand':14.5,'Betonmix':19.4,'Stones':29,'Water':3.2}),
+      mix('*Mix 2',{'Red clay':24.3,'Zilverzand':9.7,'Metselzand':14.6,'Betonmix':19.4,'Stones':29.2,'Water':2.8})]},
     {id:'rammed-b',group:'rammed',name:'Rammed Earth · Mix 1 + Mix 2 (recorded B)',material:'Rammed Earth Mix',batches:[
-      mix('*Mix 1',{'Grey clay':21,'Yellow clay':5.3,'Zilverzand':9.3,'Metselzand':14,'Betonmix':18.7,'Stones':28,'Water':3.7}),
-      mix('*Mix 2',{'Yellow clay':24,'Zilverzand':9.6,'Metselzand':14.4,'Betonmix':19.2,'Stones':28.8,'Water':4})]},
+      mix('*Mix 1',{'Grey clay':21,'Red clay':5.3,'Zilverzand':9.3,'Metselzand':14,'Betonmix':18.7,'Stones':28,'Water':3.7}),
+      mix('*Mix 2',{'Red clay':24,'Zilverzand':9.6,'Metselzand':14.4,'Betonmix':19.2,'Stones':28.8,'Water':4})]},
     {id:'rammed-one',group:'rammed',name:'Rammed Earth · Mix 1 only',material:'Rammed Earth Mix',batches:[
-      mix('Mix',{'Grey clay':19.4,'Yellow clay':4.8,'Zilverzand':9.7,'Metselzand':14.5,'Betonmix':19.4,'Stones':29,'Water':3.2})]},
+      mix('Mix',{'Grey clay':19.4,'Red clay':4.8,'Zilverzand':9.7,'Metselzand':14.5,'Betonmix':19.4,'Stones':29,'Water':3.2})]},
     {id:'rammed-two',group:'rammed',name:'Rammed Earth · Mix 2 only',material:'Rammed Earth Mix',batches:[
-      mix('Mix',{'Yellow clay':24.3,'Zilverzand':9.7,'Metselzand':14.6,'Betonmix':19.4,'Stones':29.2,'Water':2.8})]},
+      mix('Mix',{'Red clay':24.3,'Zilverzand':9.7,'Metselzand':14.6,'Betonmix':19.4,'Stones':29.2,'Water':2.8})]},
     {id:'custom-rammed',group:'rammed',name:'Custom rammed mix · from zero',material:'Rammed Earth Mix',batches:[mix('Mix',{})]}
   ];
   let active=null,overlay=null,previousFocus=null;
@@ -51,7 +51,7 @@
     const v=String(s||'').trim().toLowerCase().replace(/\s+/g,' ');
     const aliases={
       'gray clay':'Grey clay','grey clay':'Grey clay',
-      'red clay':'Red clay','yellow clay':'Yellow clay',
+      'red clay':'Red clay','yellow clay':'Red clay',
       'silverzand':'Zilverzand','zilverzand':'Zilverzand',
       'chamotte':'Chamotte','sawdust':'Sawdust','water':'Water',
       'metselzand':'Metselzand','betonmix':'Betonmix','stones':'Stones'
@@ -120,7 +120,7 @@
         '<div class="mm-setup"><label class="mm-label" for="mm-preset">START FROM A RECIPE</label><select id="mm-preset"></select>'+
         '<p class="mm-hint">Presets are based on recipes already saved in the module tracker. They are not an import of the linked Excel workbook.</p>'+
         '<label class="mm-label" for="mm-material-name">MATERIAL NAME</label><input id="mm-material-name" type="text" maxlength="120" />'+
-        '<p class="mm-note">Red and yellow clay are kept separate until the workbook terminology is confirmed.</p>'+
+        '<p class="mm-note">Red clay is the updated name for the material previously labeled Red Clay.</p>'+
         '<div class="mm-small-source">Select a recipe, then adjust individual percentages as needed. Nothing changes until Apply.</div></div>'+
         '<div class="mm-editor"><div class="mm-batches"></div><div class="mm-readout"></div>'+
         '<details class="mm-source"><summary>Raw recipe preview</summary><pre></pre></details></div>'+
