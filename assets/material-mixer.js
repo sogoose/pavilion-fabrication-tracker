@@ -131,7 +131,6 @@
     overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
     overlay.querySelector('.mm-close').addEventListener('click',close);
     overlay.querySelector('.mm-cancel').addEventListener('click',close);
-    overlay.querySelector('.mm-preset-placeholder');
     overlay.querySelector('#mm-preset').addEventListener('change',e=>selectPreset(e.target.value));
     overlay.querySelector('#mm-material-name').addEventListener('input',()=>{if(active)active.dirty=true;});
     overlay.querySelector('.mm-apply').addEventListener('click',apply);
@@ -164,9 +163,11 @@
       active.draft=clone(active.saved);
       nameInput.value=active.originalMaterial;
       active.dirty=false;
+      active.recipeDirty=false;
     }else if(id==='raw'){
-      active.draft={kind:'raw',raw:recipeText(active.draft)};
+      active.draft={kind:'raw',raw:active.recipeDirty?recipeText(active.draft):active.originalDetails};
       active.dirty=true;
+      active.recipeDirty=true;
     }else{
       const p=P.find(x=>x.id===id && x.group===active.group);
       if(!p)return;
@@ -175,6 +176,7 @@
       nameInput.value=(/glaz/i.test(active.originalMaterial)&&p.material==='Grey Clay')
         ?active.originalMaterial:p.material;
       active.dirty=true;
+      active.recipeDirty=true;
     }
     paint();
   }
@@ -196,11 +198,12 @@
       num.value=n;
       batch.values[key]=n;
       active.dirty=true;
+      active.recipeDirty=true;
       updateReadout();
     }
     range.addEventListener('input',()=>update(range.value,true));
     num.addEventListener('change',()=>update(num.value,false));
-    num.addEventListener('input',()=>{const n=Number(num.value);if(Number.isFinite(n)&&num.value!==''){range.value=cleanNumber(n);batch.values[key]=cleanNumber(n);active.dirty=true;updateReadout();}});
+    num.addEventListener('input',()=>{const n=Number(num.value);if(Number.isFinite(n)&&num.value!==''){range.value=cleanNumber(n);batch.values[key]=cleanNumber(n);active.dirty=true;active.recipeDirty=true;updateReadout();}});
     row.append(label,range,num,suffix);
     target.appendChild(row);
   }
@@ -222,7 +225,7 @@
       const textarea=el('textarea','mm-raw');
       textarea.value=draft.raw||'';
       textarea.rows=12;
-      textarea.addEventListener('input',()=>{draft.raw=textarea.value;active.dirty=true;updateReadout();});
+      textarea.addEventListener('input',()=>{draft.raw=textarea.value;active.dirty=true;active.recipeDirty=true;updateReadout();});
       drafts.append(label,textarea);
     }else{
       draft.batches.forEach((b,i)=>{
@@ -299,10 +302,13 @@
     const material=overlay.querySelector('#mm-material-name').value.trim();
     const message=overlay.querySelector('.mm-message');
     if(!material){message.textContent='Material name is required.';message.className='mm-message mm-error';return;}
-    const details=recipeText(active.draft);
-    if(active.draft.kind==='empty'){message.textContent='Choose a recipe or keep editing the existing material field.';message.className='mm-message mm-error';return;}
-    if(active.draft.kind==='recipe' && !details){message.textContent='Add at least one ingredient before applying.';message.className='mm-message mm-error';return;}
-    if(!active.dirty && material===active.originalMaterial && details===active.originalDetails){close();return;}
+    // Changing just the name must NOT reformat existing multi-batch or ready-mix notes.
+    const details=active.recipeDirty?recipeText(active.draft):active.originalDetails;
+    if(active.recipeDirty && active.draft.kind==='recipe' && !details){
+      message.textContent='Add at least one ingredient before applying.';
+      message.className='mm-message mm-error';return;
+    }
+    if(!active.dirty && material===active.originalMaterial){close();return;}
     const payload={key:active.key,material:material,details:details};
     const onApply=active.onApply;
     try{
@@ -321,7 +327,7 @@
     const originalMaterial=String(record.Material||'');
     const originalDetails=String(record.Material_Details||'');
     active={key:key,group:m,originalMaterial:originalMaterial,originalDetails:originalDetails,
-      saved:parseSaved(originalDetails,originalMaterial),draft:null,dirty:false,onApply:onApply};
+      saved:parseSaved(originalDetails,originalMaterial),draft:null,dirty:false,recipeDirty:false,onApply:onApply};
     active.draft=clone(active.saved);
     pop.querySelector('#mm-title').textContent='Material recipe / '+String(record.Object_ID||'Module');
     pop.querySelector('.mm-context').textContent=(m==='rammed'?'RAMMED EARTH':'3D PRINTING')+
