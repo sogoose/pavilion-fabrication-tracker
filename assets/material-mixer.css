@@ -110,3 +110,50 @@
 @media(prefers-reduced-motion:reduce) {
  .mm-bar-segment {transition:none;}
 }
+/* Production record / Material–Weight alignment (2026-10-22) */
+/* The mixer must not increase the height of the adjacent Weight input. */
+#detailPanel .tracker-basics .tracker-fields-row {
+  align-items:start;
+}
+#detailPanel .tracker-basics .tracker-fields-row > .field {
+  align-self:start;
+  min-width:0;
+}
+#detailPanel .tracker-basics .tracker-fields-row > .field > input,
+#detailPanel .tracker-basics .tracker-fields-row > .field > select {
+  box-sizing:border-box;
+  height:36px;
+  min-height:36px;
+  max-height:36px;
+}
+/* The mixer and the one-line mix summary sit in their own compact row,
+   immediately BELOW the two equally sized Material / Weight fields. */
+#detailPanel .tracker-basics .mm-inline-tools {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:center;
+  column-gap:10px;
+  margin:-3px 0 12px;
+  min-width:0;
+}
+#detailPanel .tracker-basics .mm-inline-tools .mm-open {
+  width:100%;
+  min-height:30px;
+  margin:0;
+  justify-content:flex-start;
+}
+#detailPanel .tracker-basics .mm-inline-tools .mm-short {
+  min-width:0;
+  margin:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  line-height:1.5;
+}
+@media(max-width:420px){
+  #detailPanel .tracker-basics .mm-inline-tools {
+    grid-template-columns:minmax(0,1fr);
+    row-gap:5px;
+  }
+}
+/* No changes to saved materials, database state or the mix-dialog fields. */
