@@ -391,6 +391,7 @@ header{gap:6px;padding:10px 16px}
 }
 </style>
 <link rel="stylesheet" href="./assets/tracker-minimal-ui.css?v=20261021-v1">
+<link rel="stylesheet" href="./assets/material-mixer.css?v=20261022-v1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
@@ -740,6 +741,7 @@ header{gap:6px;padding:10px 16px}
 </datalist>
 
 <script src="./assets/tracker-minimal-ui.js?v=20261021-v1"></script>
+<script src="./assets/material-mixer.js?v=20261022-v1"></script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -2029,6 +2031,24 @@ function renderPanel(){
     <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.'}</div>`;
 
   window.pavilionTrackerMinimal?.enhance(panel, r, selectedKey);
+  // The mixer edits the original Material / Material_Details fields with ONE
+  // deliberate save, keeping realtime sync, PDF/Excel export and history intact.
+  window.pavilionMaterialMixer?.enhance(panel, r, selectedKey, ({key,material,details})=>{
+    if(key!==selectedKey || !records[key]) return false;
+    const current=records[key];
+    if(current.Material===material && current.Material_Details===details) return true;
+    current.Material=material;
+    current.Material_Details=details;
+    current.Last_Updated=new Date().toISOString().slice(0,19).replace('T',' ');
+    current.Updated_By=currentEditor();
+    persist(key);
+    updateAllUI();
+    applyColors();
+    updateObjectLabel();
+    renderPanel();
+    showMessage('Material recipe updated for '+(current.Object_ID||'module')+'.');
+    return true;
+  });
   document.getElementById('downloadModulePDF')?.addEventListener('click',()=>catalogue.open('selected'));
   panel.querySelectorAll('[data-field]').forEach(el=>{
     const sync=()=>{
@@ -2116,7 +2136,7 @@ function focusPart(key){
 }
 
 function refreshDynamicDatalists(){
-  const materialDefaults=['Soil Mix A','Soil Mix B','Soil Mix C','Custom / TBD'];
+  const materialDefaults=['Yellow Clay','Grey Clay','Mixed Clay','Grey + Glazed','Normal Clay','Regular clay','Rammed Earth Mix','Custom / TBD'];
   const peopleDefaults=['Unassigned','Sohyun','Niels','Jin','Serdar'];
   const unique=(defaults,values)=>{
     const seen=new Set(), out=[];
