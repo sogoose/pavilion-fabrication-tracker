@@ -133,6 +133,27 @@
 @media(max-width:680px){.rev-page #poster-03 .translation-robot-white{left:-16%;right:auto;top:-4%;width:72%;height:53%}}
 @media(prefers-reduced-motion:reduce){.rev-page #poster-03 .translation-robot-white{transition:none!important;transform:rotate(-7deg)!important}}
 </style>
+<style>
+/* THE REALITY: monochrome equipment, fired earth as the sole colour accent. */
+.rev-page #poster-04 {background:#3c3832;--poster-bg:#3c3832;color:#fffdf8;border-color:#514b43}
+.rev-page #poster-04::before {background:none;opacity:0}
+.rev-page #poster-04::after {z-index:3;opacity:1;background:linear-gradient(0deg,#211f1b55,transparent 23%);pointer-events:none}
+.reality-stage {position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+.rev-page #poster-04 .reality-stage img {position:absolute;display:block;max-width:none;max-height:none;object-fit:contain;mix-blend-mode:normal;transition:transform 1.15s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.rev-page #poster-04 .reality-sensors {width:95%;height:66%;left:-34%;top:-15%;object-position:center;filter:grayscale(1) contrast(1.03);transform:rotate(-17deg);opacity:.88;z-index:1}
+.rev-page #poster-04 .reality-kiln {width:78%;height:79%;left:-30%;bottom:-18%;filter:grayscale(1) contrast(1.03);transform:rotate(-12deg);z-index:2}
+.rev-page #poster-04 .reality-earth {width:84%;height:86%;right:-35%;top:36%;filter:none;transform:rotate(-13deg);z-index:3}
+.rev-page #poster-04 .rev-poster-top {position:relative;z-index:6}
+.rev-page #poster-04 .rev-poster-bottom {position:relative;z-index:6;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.rev-page #poster-04 .rev-poster-title {color:#fffdf8;font-size:clamp(33px,4vw,69px);letter-spacing:-.068em;text-shadow:0 1px 12px #211f1b55}
+.rev-page #poster-04 .rev-poster-action {color:#fffdf8;border-color:#fffdf8;background:transparent;transition:transform .5s,background .35s,color .35s}
+.rev-page #poster-04:hover .reality-sensors,.rev-page #poster-04:focus-visible .reality-sensors {transform:translate(2px,4px) rotate(-15.5deg)}
+.rev-page #poster-04:hover .reality-kiln,.rev-page #poster-04:focus-visible .reality-kiln {transform:translate(4px,-3px) rotate(-11deg)}
+.rev-page #poster-04:hover .reality-earth,.rev-page #poster-04:focus-visible .reality-earth {transform:translate(-5px,-4px) rotate(-14deg)}
+.rev-page #poster-04:hover .rev-poster-action,.rev-page #poster-04:focus-visible .rev-poster-action {background:#fffdf8;color:#3c3832;transform:rotate(45deg)}
+@media(max-width:680px){.rev-page #poster-04 .rev-poster-title{font-size:clamp(30px,7.4vw,53px)}.rev-page #poster-04 .reality-sensors{left:-38%;top:-13%;width:103%;height:65%}.rev-page #poster-04 .reality-kiln{left:-33%;bottom:-16%;width:84%;height:78%}.rev-page #poster-04 .reality-earth{right:-39%;top:37%;width:91%;height:86%}}
+@media(prefers-reduced-motion:reduce){.rev-page #poster-04 .reality-stage img{transition:none!important}.rev-page #poster-04:hover .reality-sensors{transform:rotate(-17deg)}.rev-page #poster-04:hover .reality-kiln{transform:rotate(-12deg)}.rev-page #poster-04:hover .reality-earth{transform:rotate(-13deg)}}
+</style>
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -221,9 +242,10 @@
       </button>
       <button class="rev-poster" type="button" data-chapter="3" id="poster-04" aria-label="Open chapter 04: THE REALITY">
         <span class="rev-poster-top"><span>04 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
-        <span class="rev-poster-art" aria-hidden="true">
-          <img class="rev-poster-primary" src="../assets/workflow/firing.svg" alt="" loading="lazy">
-
+        <span class="reality-stage" aria-hidden="true">
+          <img class="reality-sensors" src="../assets/exhibition/reality-sensors.webp" alt="" loading="lazy">
+          <img class="reality-kiln" src="../assets/exhibition/reality-kiln.webp" alt="" loading="lazy">
+          <img class="reality-earth" src="../assets/exhibition/reality-fired-earth.webp" alt="" loading="lazy">
         </span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE REALITY</span>
@@ -443,6 +465,7 @@
 </script>
 </body>
 </html>
+
 
 
 
