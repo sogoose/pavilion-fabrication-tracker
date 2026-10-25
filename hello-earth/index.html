@@ -83,6 +83,25 @@
 .material-chapter-link:focus-visible {outline:2px solid currentColor;outline-offset:6px}
 @media(max-width:680px){.material-cloud {inset:12% 0 25%}.material-float {width:34%;height:79%}}
 </style>
+<style>
+/* Chapter 03 — two fabrication methods, one foreground title. */
+.rev-page #poster-03 {background:#99938a;--poster-bg:#99938a;--tx:0px;--ty:0px;color:#fffdf8;border-color:#8d867c}
+.rev-page #poster-03::before {background:none;opacity:0}
+.rev-page #poster-03::after {z-index:2;opacity:1;background:linear-gradient(0deg,#27231f85 0%,#27231f20 22%,transparent 42%);pointer-events:none}
+.rev-page #poster-03 .rev-translation-stage {inset:0;z-index:1;overflow:hidden}
+.rev-page #poster-03 .rev-translation-stage img {max-width:none;max-height:none;mix-blend-mode:normal;transition:transform 1s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.rev-page #poster-03 .translation-infill {left:-28%;bottom:-28%;top:auto;right:auto;width:105%;height:110%;object-fit:contain;object-position:center;z-index:2;filter:grayscale(1) contrast(1.03)!important;transform:translate(calc(var(--tx) * -1),calc(var(--ty) * -1)) rotate(-9deg) scale(1)}
+.rev-page #poster-03 .translation-mould {left:auto;right:-33%;top:-12%;bottom:auto;width:91%;height:77%;object-fit:contain;object-position:center;z-index:1;filter:saturate(.16) brightness(.96) contrast(.96)!important;transform:translate(var(--tx),var(--ty)) rotate(90deg) scale(1)}
+.rev-page #poster-03 .rev-poster-top {position:relative;z-index:5}
+.rev-page #poster-03 .rev-poster-top span:last-child {color:#fffdf8;text-shadow:0 1px 6px #302b2560}
+.rev-page #poster-03 .rev-poster-bottom {position:relative;z-index:5;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+.rev-page #poster-03 .rev-poster-title {position:relative;color:#fffdf8;font-size:clamp(34px,4.1vw,69px);text-shadow:0 2px 18px #24211c65;white-space:normal;max-width:87%;line-height:1.03}
+.rev-page #poster-03 .rev-poster-action {color:#fffdf8;border-color:#fffdf8;background:#302b2520;backdrop-filter:blur(4px)}
+.rev-page #poster-03:hover .translation-infill,.rev-page #poster-03:focus-visible .translation-infill {transform:translate(calc(var(--tx) * -1),calc(var(--ty) * -1)) rotate(-7deg) scale(1.035)}
+.rev-page #poster-03:hover .translation-mould,.rev-page #poster-03:focus-visible .translation-mould {transform:translate(var(--tx),var(--ty)) rotate(88deg) scale(1.025)}
+@media(max-width:680px){.rev-page #poster-03 .rev-poster-title{font-size:clamp(29px,7vw,50px)}.rev-page #poster-03 .translation-infill{left:-31%;bottom:-25%;width:112%;height:108%}.rev-page #poster-03 .translation-mould{right:-35%;top:-11%;width:95%;height:76%}}
+@media(prefers-reduced-motion:reduce){.rev-page #poster-03 .rev-translation-stage img{transition:none!important;transform:none!important}.rev-page #poster-03 .translation-mould{transform:rotate(90deg)!important}.rev-page #poster-03 .translation-infill{transform:rotate(-9deg)!important}}
+</style>
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -160,8 +179,8 @@
       <button class="rev-poster" type="button" data-chapter="2" id="poster-03" aria-label="Open chapter 03: THE TRANSLATION">
         <span class="rev-poster-top"><span>03 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
         <span class="rev-translation-stage" aria-hidden="true">
-          <img class="rev-translation-model" src="../assets/exhibition/translation-blue-model.svg" alt="" loading="lazy">
-          <img class="rev-translation-robot" src="../assets/exhibition/translation-robot-line.svg" alt="" loading="lazy">
+          <img class="translation-infill" src="../assets/exhibition/translation-infill.webp" alt="" loading="lazy">
+          <img class="translation-mould" src="../assets/exhibition/translation-mould.webp" alt="" loading="lazy">
         </span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE TRANSLATION</span>
@@ -377,5 +396,20 @@
  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0}else sync()});
 })();
 </script>
+<script>
+(function(){
+ const card=document.getElementById('poster-03');
+ const motion=matchMedia('(prefers-reduced-motion: reduce)');
+ if(!card)return;
+ card.addEventListener('pointermove',event=>{
+   if(motion.matches||event.pointerType!=='mouse')return;
+   const rect=card.getBoundingClientRect();
+   card.style.setProperty('--tx',((event.clientX-rect.left)/rect.width-.5)*16+'px');
+   card.style.setProperty('--ty',((event.clientY-rect.top)/rect.height-.5)*12+'px');
+ });
+ card.addEventListener('pointerleave',()=>{card.style.setProperty('--tx','0px');card.style.setProperty('--ty','0px')});
+})();
+</script>
 </body>
 </html>
+
