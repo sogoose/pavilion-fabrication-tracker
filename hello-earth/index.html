@@ -106,7 +106,7 @@
 /* Restrained editorial composition, with a passing translucent light plane. */
 .rev-page #poster-03::after {background:linear-gradient(0deg,#27231f45,transparent 28%)}
 .rev-page #poster-03 .translation-infill {left:-25%;bottom:-31%;width:96%;height:101%;transform:rotate(-9deg)}
-.rev-page #poster-03 .translation-mould {right:-24%;top:-9%;width:86%;height:74%;transform:rotate(90deg)}
+.rev-page #poster-03 .translation-mould {right:-24%;top:0%;width:86%;height:74%;transform:rotate(90deg)}
 .rev-page #poster-03:hover .translation-infill,.rev-page #poster-03:focus-visible .translation-infill {transform:rotate(-7.5deg)}
 .rev-page #poster-03:hover .translation-mould,.rev-page #poster-03:focus-visible .translation-mould {transform:translate(-5px,3px) rotate(90deg)}
 .rev-page #poster-03 .rev-poster-title {font-size:clamp(31px,3.7vw,62px);max-width:87%;text-shadow:0 1px 12px #27231f45}
@@ -122,15 +122,15 @@
 @keyframes translation-infill-enter {from{translate:-24px 28px;opacity:0}to{translate:0 0;opacity:1}}
 @keyframes translation-mould-enter {from{translate:24px -20px;opacity:0}to{translate:0 0;opacity:1}}
 @keyframes translation-type-enter {from{translate:0 8px;opacity:0}to{translate:0 0;opacity:1}}
-@media(max-width:680px){.rev-page #poster-03 .translation-infill{left:-29%;bottom:-29%;width:103%;height:100%}.rev-page #poster-03 .translation-mould{right:-28%;top:-8%;width:89%;height:73%}.rev-page #poster-03 .rev-poster-title{font-size:clamp(27px,6.7vw,46px)}.translation-caption-infill{top:31%}.translation-caption-mould{top:52%;right:5%;font-size:7px}}
+@media(max-width:680px){.rev-page #poster-03 .translation-infill{left:-29%;bottom:-29%;width:103%;height:100%}.rev-page #poster-03 .translation-mould{right:-28%;top:1%;width:89%;height:73%}.rev-page #poster-03 .rev-poster-title{font-size:clamp(27px,6.7vw,46px)}.translation-caption-infill{top:31%}.translation-caption-mould{top:52%;right:5%;font-size:7px}}
 @media(prefers-reduced-motion:reduce){.rev-page #poster-03 .translation-infill,.rev-page #poster-03 .translation-mould,.rev-page #poster-03 .rev-poster-bottom,.rev-page #poster-03 .translation-caption{animation:none!important;translate:none!important}}
 </style>
 
 <style>
 /* White robot linework bridges the two fabrication images. */
-.rev-page #poster-03 .translation-robot-white {left:5%;right:auto;top:9%;bottom:auto;width:46%;height:36%;object-fit:contain;object-position:center;z-index:3;opacity:.40;filter:brightness(0) invert(1)!important;transform:rotate(-7deg);transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s;pointer-events:none}
+.rev-page #poster-03 .translation-robot-white {left:-14%;right:auto;top:-5%;bottom:auto;width:69%;height:54%;object-fit:contain;object-position:center;z-index:3;opacity:.40;filter:brightness(0) invert(1)!important;transform:rotate(-7deg);transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s;pointer-events:none}
 .rev-page #poster-03:hover .translation-robot-white,.rev-page #poster-03:focus-visible .translation-robot-white {transform:translateY(-4px) rotate(-5deg);opacity:.52}
-@media(max-width:680px){.rev-page #poster-03 .translation-robot-white{left:4%;right:auto;top:10%;width:48%;height:35%}}
+@media(max-width:680px){.rev-page #poster-03 .translation-robot-white{left:-16%;right:auto;top:-4%;width:72%;height:53%}}
 @media(prefers-reduced-motion:reduce){.rev-page #poster-03 .translation-robot-white{transition:none!important;transform:rotate(-7deg)!important}}
 </style>
 </head>
