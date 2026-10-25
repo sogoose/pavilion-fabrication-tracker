@@ -8,12 +8,9 @@
   <title>PROJECT / PRINT("HELLO, EARTH")³</title>
   <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
-  <style>
-    .pr-row-arrow{grid-column:4;justify-self:end}
-    @media(max-width:760px){.pr-row-arrow{grid-column:3}}
-  </style>
+  <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-poster-v3">
 </head>
-<body class="pr-page ed-stage">
+<body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
     <a class="ed-logotype" href="./" aria-label="Project home">PRINT("HELLO, EARTH")³</a>
     <nav class="ed-global-nav" aria-label="Sections">
@@ -22,80 +19,113 @@
       <a href="../lama-slicer/">LAMA SLICER ↗</a>
     </nav>
   </header>
-  <main>
-    <section class="pr-hero" id="top" aria-labelledby="project-title">
-      <svg class="pr-hero-visual" viewBox="0 0 1150 740" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true" focusable="false">
-        <defs>
-          <linearGradient id="pr-glass" x1="0" y1="0" x2="1" y2=".85">
-            <stop offset="0" stop-color="#b5c5ca" stop-opacity=".1"/>
-            <stop offset=".5" stop-color="#c8d9e0" stop-opacity=".37"/>
-            <stop offset="1" stop-color="#ece7ed" stop-opacity=".07"/>
-          </linearGradient>
-          <linearGradient id="pr-contour" x1="0" y1=".2" x2="1" y2="1">
-            <stop offset="0" stop-color="#b0b4c0" stop-opacity=".11"/>
-            <stop offset=".48" stop-color="#a9cbd7" stop-opacity=".56"/>
-            <stop offset="1" stop-color="#aaa5bf" stop-opacity=".21"/>
-          </linearGradient>
-          <filter id="pr-soft"><feGaussianBlur stdDeviation="15"/></filter>
-        </defs>
-        <ellipse cx="627" cy="364" rx="300" ry="205" fill="url(#pr-glass)" filter="url(#pr-soft)" opacity=".66"/>
-        <g transform="translate(210,15) rotate(-16 400 320)" stroke="url(#pr-contour)">
-          <path d="M119 350 C107 113 374 40 570 141 C742 232 686 493 490 536 C264 585 139 491 119 350Z" stroke-width="2.3" fill="url(#pr-glass)" opacity=".72"/>
-          <path d="M162 343 C161 155 371 93 533 178 C681 254 627 454 473 488 C292 528 174 465 162 343Z" stroke-width="1.6" opacity=".57"/>
-          <path d="M206 342 C208 204 375 149 499 217 C606 274 574 414 454 442 C319 473 215 435 206 342Z" stroke-width="1.2" opacity=".53"/>
-          <path d="M246 342 C256 238 377 196 470 249 C548 291 527 383 444 403 C344 427 253 408 246 342Z" stroke-width="1.2" opacity=".48"/>
-          <path d="M286 338 C300 272 382 251 443 284 C495 311 483 357 429 373 C362 390 292 372 286 338Z" stroke-width="1.2" opacity=".45"/>
-          <path d="M79 376 C175 493 351 557 524 521 S742 380 816 263" stroke-width="2.1" opacity=".37"/>
-          <path d="M85 418 C202 534 367 595 548 551 S761 403 853 294" stroke-width="1.1" opacity=".4"/>
-          <path d="M94 457 C222 579 401 623 577 578 S788 426 870 329" stroke-width=".8" opacity=".34"/>
-        </g>
-        <g stroke="url(#pr-contour)" stroke-width="1.2" opacity=".38">
-          <path d="M21 605 C166 518 288 601 410 554 S635 473 762 524 S971 620 1161 503"/>
-          <path d="M20 624 C159 533 292 623 426 571 S628 491 765 541 S976 642 1161 527"/>
-          <path d="M25 641 C169 555 301 646 438 590 S641 514 766 561 S962 668 1149 552"/>
-        </g>
-      </svg>
-      <span class="pr-sup">TU DELFT / CREATIVE ROBOTICS IN SPATIAL DESIGN / 26—27</span>
-      <h1 class="pr-hero-title" id="project-title"><span>PRINT("HELLO,</span><span>EARTH")<sup>3</sup></span></h1>
-      <div class="pr-hero-foot">
-        <p>SOIL-BASED PAVILION<br>FABRICATION</p>
-        <p class="pr-index-indicator">DESIGN / MATERIAL / FABRICATION</p>
+  <main class="rev-body" id="main">
+    <aside class="rev-aside" aria-label="Five project chapters">
+      <div class="rev-aside-inner">
+        <div class="rev-minihead">THE PROJECT<br>26—27</div>
+        <nav class="rev-index-list" aria-label="Choose one of five chapters">
+          <button class="rev-index-item is-current" type="button" data-chapter="0" aria-label="Open THE AMBITION chapter">
+            <span class="rev-index-num">01</span>
+            <img src="../assets/workflow/spatial.svg" alt="" aria-hidden="true" loading="lazy">
+            <span class="rev-index-name">AMBITION</span>
+          </button>
+          <button class="rev-index-item" type="button" data-chapter="1" aria-label="Open THE MATERIALS chapter">
+            <span class="rev-index-num">02</span>
+            <img src="../assets/workflow/material.svg" alt="" aria-hidden="true" loading="lazy">
+            <span class="rev-index-name">MATERIALS</span>
+          </button>
+          <button class="rev-index-item" type="button" data-chapter="2" aria-label="Open THE TRANSLATION chapter">
+            <span class="rev-index-num">03</span>
+            <img src="../assets/workflow/gcode.svg" alt="" aria-hidden="true" loading="lazy">
+            <span class="rev-index-name">TRANSLATION</span>
+          </button>
+          <button class="rev-index-item" type="button" data-chapter="3" aria-label="Open THE REALITY chapter">
+            <span class="rev-index-num">04</span>
+            <img src="../assets/workflow/environment.svg" alt="" aria-hidden="true" loading="lazy">
+            <span class="rev-index-name">REALITY</span>
+          </button>
+          <button class="rev-index-item" type="button" data-chapter="4" aria-label="Open THE FUTURE chapter">
+            <span class="rev-index-num">05</span>
+            <img src="../assets/workflow/hrc.svg" alt="" aria-hidden="true" loading="lazy">
+            <span class="rev-index-name">FUTURE</span>
+          </button>
+        </nav>
+        <div class="rev-index-end">TU DELFT / CREATIVE ROBOTICS</div>
       </div>
-    </section>
-    <section class="pr-index" id="chapters" aria-label="Project chapters">
-      <button class="pr-row" type="button" data-chapter="0" aria-label="Open chapter 01: AMBITION">
-        <span class="pr-row-number">01</span>
-        <span class="pr-row-title">THE AMBITION</span>
-        <img class="pr-row-preview" src="../assets/workflow/spatial.svg" alt="" loading="lazy" aria-hidden="true">
-        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+    </aside>
+    <div class="rev-main">
+      <section class="rev-hero" aria-labelledby="project-title">
+        <div class="rev-hero-top">
+          <span>SOIL-BASED PAVILION FABRICATION</span>
+          <span>26—27</span>
+        </div>
+        <img class="rev-assembly" src="../assets/exhibition/assembly-original.svg" alt="" aria-hidden="true" fetchpriority="high">
+        <h1 class="rev-hero-title" id="project-title"><span>PRINT("HELLO,</span><span>EARTH")<sup>3</sup></span></h1>
+        <div class="rev-hero-bottom">
+          <p>TU DELFT<br>CREATIVE ROBOTICS IN SPATIAL DESIGN</p>
+          <span>01 — 05</span>
+        </div>
+      </section>
+      <section class="rev-posters" aria-label="Five large portrait exhibition posters">
+      <button class="rev-poster" type="button" data-chapter="0" id="poster-01" aria-label="Open chapter 01: THE AMBITION">
+        <span class="rev-poster-top"><span>01 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
+        <span class="rev-poster-art" aria-hidden="true">
+          <img class="rev-poster-primary" src="../assets/exhibition/assembly-original.svg" alt="" loading="eager">
+          <img class="rev-poster-detail" src="../assets/workflow/spatial.svg" alt="" loading="lazy">
+        </span>
+        <span class="rev-poster-bottom">
+          <span class="rev-poster-title">THE AMBITION</span>
+          <span class="rev-poster-action" aria-hidden="true">↗</span>
+        </span>
       </button>
-      <button class="pr-row" type="button" data-chapter="1" aria-label="Open chapter 02: MATERIALS">
-        <span class="pr-row-number">02</span>
-        <span class="pr-row-title">THE MATERIALS</span>
-        <img class="pr-row-preview" src="../assets/workflow/decor/rammed-blocks.webp" alt="" loading="lazy" aria-hidden="true">
-        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      <button class="rev-poster" type="button" data-chapter="1" id="poster-02" aria-label="Open chapter 02: THE MATERIALS">
+        <span class="rev-poster-top"><span>02 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
+        <span class="rev-poster-art" aria-hidden="true">
+          <img class="rev-poster-primary" src="../assets/workflow/material.svg" alt="" loading="lazy">
+          <img class="rev-poster-detail" src="../assets/workflow/decor/rammed-blocks.webp" alt="" loading="lazy">
+        </span>
+        <span class="rev-poster-bottom">
+          <span class="rev-poster-title">THE MATERIALS</span>
+          <span class="rev-poster-action" aria-hidden="true">↗</span>
+        </span>
       </button>
-      <button class="pr-row" type="button" data-chapter="2" aria-label="Open chapter 03: TRANSLATION">
-        <span class="pr-row-number">03</span>
-        <span class="pr-row-title">THE TRANSLATION</span>
-        <img class="pr-row-preview" src="../assets/workflow/gcode.svg" alt="" loading="lazy" aria-hidden="true">
-        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      <button class="rev-poster" type="button" data-chapter="2" id="poster-03" aria-label="Open chapter 03: THE TRANSLATION">
+        <span class="rev-poster-top"><span>03 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
+        <span class="rev-poster-art" aria-hidden="true">
+          <img class="rev-poster-primary" src="../assets/workflow/gcode.svg" alt="" loading="lazy">
+          <img class="rev-poster-detail" src="../assets/workflow/printing.svg" alt="" loading="lazy">
+        </span>
+        <span class="rev-poster-bottom">
+          <span class="rev-poster-title">THE TRANSLATION</span>
+          <span class="rev-poster-action" aria-hidden="true">↗</span>
+        </span>
       </button>
-      <button class="pr-row" type="button" data-chapter="3" aria-label="Open chapter 04: REALITY">
-        <span class="pr-row-number">04</span>
-        <span class="pr-row-title">THE REALITY</span>
-        <img class="pr-row-preview" src="../assets/workflow/environment.svg" alt="" loading="lazy" aria-hidden="true">
-        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      <button class="rev-poster" type="button" data-chapter="3" id="poster-04" aria-label="Open chapter 04: THE REALITY">
+        <span class="rev-poster-top"><span>04 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
+        <span class="rev-poster-art" aria-hidden="true">
+          <img class="rev-poster-primary" src="../assets/workflow/firing.svg" alt="" loading="lazy">
+          <img class="rev-poster-detail" src="../assets/workflow/environment.svg" alt="" loading="lazy">
+        </span>
+        <span class="rev-poster-bottom">
+          <span class="rev-poster-title">THE REALITY</span>
+          <span class="rev-poster-action" aria-hidden="true">↗</span>
+        </span>
       </button>
-      <button class="pr-row" type="button" data-chapter="4" aria-label="Open chapter 05: FUTURE">
-        <span class="pr-row-number">05</span>
-        <span class="pr-row-title">THE FUTURE</span>
-        <img class="pr-row-preview" src="../assets/workflow/hrc.svg" alt="" loading="lazy" aria-hidden="true">
-        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      <button class="rev-poster" type="button" data-chapter="4" id="poster-05" aria-label="Open chapter 05: THE FUTURE">
+        <span class="rev-poster-top"><span>05 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
+        <span class="rev-poster-art" aria-hidden="true">
+          <img class="rev-poster-primary" src="../assets/workflow/hrc.svg" alt="" loading="lazy">
+          <img class="rev-poster-detail" src="../assets/exhibition/assembly-original.svg" alt="" loading="lazy">
+        </span>
+        <span class="rev-poster-bottom">
+          <span class="rev-poster-title">THE FUTURE</span>
+          <span class="rev-poster-action" aria-hidden="true">↗</span>
+        </span>
       </button>
-    </section>
+      </section>
+    </div>
   </main>
-  <footer class="pr-end"><span>PRINT("HELLO, EARTH")³</span><span>© 2026—27 · ALL RIGHTS RESERVED</span></footer>
+  <footer class="rev-footer"><span>PRINT("HELLO, EARTH")³</span><span>© 2026—27 ALL RIGHTS RESERVED</span></footer>
   <dialog id="chapterDialog" aria-label="Exhibition chapter details">
     <div class="dialog-header"><span class="section-counter" id="dialogCounter">01 / 05</span><span class="chapter-direction">EXHIBITION ARCHIVE</span><button class="dialog-close" id="closeDialog" aria-label="Close chapter" type="button">×</button></div>
     <div class="dialog-main">
@@ -232,5 +262,20 @@
     if(match)openChapter(Number(match[1])-1);
   })();
   </script>
+
+<script>
+(function(){
+  const posters=[...document.querySelectorAll(".rev-poster")];
+  const items=[...document.querySelectorAll(".rev-index-item")];
+  if(!("IntersectionObserver" in window))return;
+  const observer=new IntersectionObserver(function(entries){
+    const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio);
+    if(!visible.length)return;
+    const selected=Number(visible[0].target.dataset.chapter);
+    items.forEach(function(item){item.classList.toggle("is-current",Number(item.dataset.chapter)===selected)});
+  },{threshold:[0,.05,.12,.25,.45],rootMargin:"-12% 0px -35% 0px"});
+  posters.forEach(p=>observer.observe(p));
+})();
+</script>
 </body>
 </html>
