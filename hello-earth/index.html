@@ -125,15 +125,13 @@
 @media(max-width:680px){.rev-page #poster-03 .translation-infill{left:-29%;bottom:-29%;width:103%;height:100%}.rev-page #poster-03 .translation-mould{right:-28%;top:-8%;width:89%;height:73%}.rev-page #poster-03 .rev-poster-title{font-size:clamp(27px,6.7vw,46px)}.translation-caption-infill{top:31%}.translation-caption-mould{top:52%;right:5%;font-size:7px}}
 @media(prefers-reduced-motion:reduce){.rev-page #poster-03 .translation-infill,.rev-page #poster-03 .translation-mould,.rev-page #poster-03 .rev-poster-bottom,.rev-page #poster-03 .translation-caption{animation:none!important;translate:none!important}}
 </style>
+
 <style>
-/* A low-contrast chapter index sits between the images and the primary title. */
-.translation-chapter-index {position:absolute;z-index:4;left:6%;right:6%;top:18%;display:flex;flex-direction:column;gap:.38em;color:#fffdf8;opacity:.38;text-align:left;font:400 clamp(13px,1.45vw,21px)/1.25 Arial,sans-serif;letter-spacing:.015em;pointer-events:none;text-shadow:none}
-.translation-chapter-index > span {display:grid;grid-template-columns:2em minmax(0,1fr);gap:.45em}
-.translation-chapter-index i {font-style:normal;font-size:.68em;line-height:1.85;letter-spacing:.04em}
-.translation-enter .translation-chapter-index {animation:translation-index-enter 1s .65s ease both}
-@keyframes translation-index-enter {from{translate:0 6px;opacity:0}to{translate:0 0;opacity:.38}}
-@media(max-width:680px){.translation-chapter-index{top:17%;font-size:clamp(10px,2.65vw,16px);gap:.4em;opacity:.38}}
-@media(prefers-reduced-motion:reduce){.translation-enter .translation-chapter-index{animation:none!important}}
+/* White robot linework bridges the two fabrication images. */
+.rev-page #poster-03 .translation-robot-white {left:auto;right:10%;top:40%;bottom:auto;width:46%;height:36%;object-fit:contain;object-position:center;z-index:3;opacity:.40;filter:brightness(0) invert(1)!important;transform:rotate(-7deg);transition:transform 1s cubic-bezier(.2,.7,.2,1),opacity .8s;pointer-events:none}
+.rev-page #poster-03:hover .translation-robot-white,.rev-page #poster-03:focus-visible .translation-robot-white {transform:translateY(-4px) rotate(-5deg);opacity:.52}
+@media(max-width:680px){.rev-page #poster-03 .translation-robot-white{right:7%;top:40%;width:48%;height:35%}}
+@media(prefers-reduced-motion:reduce){.rev-page #poster-03 .translation-robot-white{transition:none!important;transform:rotate(-7deg)!important}}
 </style>
 </head>
 <body class="rev-page ed-stage">
@@ -214,7 +212,7 @@
         <span class="rev-translation-stage" aria-hidden="true">
           <img class="translation-infill" src="../assets/exhibition/translation-infill.webp" alt="" loading="lazy">
           <img class="translation-mould" src="../assets/exhibition/translation-mould.webp" alt="" loading="lazy">
-          <span class="translation-chapter-index" aria-hidden="true"><span><i>01</i>COMPONENT DESIGN</span><span><i>02</i>STRUCTURAL ANALYSIS</span><span><i>03</i>INFILL LOGIC</span><span><i>04</i>GRASSHOPPER AND PYTHON SCRIPTS</span><span><i>05</i>PRINTING CODES</span><span><i>06</i>FABRICATION WEBSITE</span><span><i>07</i>RAMMED EARTH BRICKS</span><span><i>08</i>MOULD DESIGN</span></span>
+          <img class="translation-robot-white" src="../assets/exhibition/translation-robot-white-source.png" alt="" loading="lazy">
         </span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE TRANSLATION</span>
@@ -445,6 +443,7 @@
 </script>
 </body>
 </html>
+
 
 
 
