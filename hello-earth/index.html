@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-sidebar-logo-v6">
-  <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-module-glitch-v3">
+  <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
 
   <style>
@@ -220,6 +220,9 @@
     </aside>
     <div class="rev-main">
       <section class="rev-hero" aria-labelledby="project-title">
+        <video class="rev-hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" poster="../assets/exhibition/hero-chain.png">
+          <source src="../assets/video/hero-loop.mp4" type="video/mp4">
+        </video>
         <img class="rev-assembly" src="../assets/exhibition/hero-chain.png" alt="" aria-hidden="true" fetchpriority="high">
         <img class="rev-assembly-secondary" src="../assets/exhibition/hero-chain-secondary-outline.svg" alt="" aria-hidden="true">
         <img class="rev-glitch-layer rev-glitch-cyan" src="../assets/exhibition/hero-chain.png" alt="" aria-hidden="true">
@@ -492,6 +495,33 @@
  const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting)visible.add(entry.target);else visible.delete(entry.target)});sync()},{rootMargin:'80px'});
  cards.forEach(card=>observer.observe(card));
  document.addEventListener('visibilitychange',sync);
+})();
+</script>
+<script>
+(function(){
+  const video=document.querySelector(".rev-hero-video");
+  const hero=document.querySelector(".rev-hero");
+  if(!video||!hero)return;
+  const motion=window.matchMedia("(prefers-reduced-motion: reduce)");
+  function enableVideo(){
+    if(motion.matches){video.pause();video.removeAttribute("autoplay");return;}
+    video.muted=true;
+    video.loop=true;
+    video.playsInline=true;
+    video.play().catch(()=>{/* static artwork remains visible */});
+  }
+  video.addEventListener("canplay",function(){hero.classList.add("rev-video-ready");enableVideo()},{once:true});
+  video.addEventListener("error",function(){hero.classList.remove("rev-video-ready")});
+  if(typeof IntersectionObserver!=="undefined"){
+    const obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(!entry.isIntersecting)video.pause();
+        else if(video.readyState>=2)enableVideo();
+      });
+    },{threshold:0.02});
+    obs.observe(hero);
+  }
+  if(video.readyState>=2){hero.classList.add("rev-video-ready");enableVideo();}
 })();
 </script>
 </body>
