@@ -11,6 +11,66 @@
   <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-original-assets-v5">
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-module-glitch-v3">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
+
+  <style>
+  /* Exhibition palette sampled from the supplied chapter decks.
+     Scoped to this page: the fabrication archive keeps its own styling. */
+  body.rev-page {--rev-ink:#302b25;--rev-edge:#ccc7c1;--rev-meta:#72695e;--ed-ink:#302b25;--ed-paper:#faf9f6;background:#faf9f6;color:#302b25}
+  .rev-page .rev-hero {background:#faf9f6;color:#302b25}
+  .rev-page .rev-hero::before {background:radial-gradient(ellipse at 62% 48%,#ccc7c140,transparent 66%)}
+  .rev-page .rev-hero::after {background:repeating-linear-gradient(0deg,transparent 0,transparent 8px,#7c736712 9px,transparent 10px);animation:none;opacity:.12}
+  .rev-page .rev-assembly {animation:none;filter:grayscale(1) sepia(.16) brightness(1.08) contrast(1.02)}
+  .rev-page .rev-glitch-layer {display:none}
+  .rev-page .rev-unit-icon {animation:none}
+  .rev-page .rev-aside,.rev-page .rev-hero,.rev-page .rev-index-item,.rev-page .rev-footer {border-color:#ccc7c1}
+  .rev-page .rev-index-item {color:#584f43}
+  .rev-page .rev-index-num,.rev-page .rev-footer {color:#72695e}
+  .rev-page .rev-index-item.is-current {color:#302b25}
+  .rev-page .rev-poster {border-color:#a69f95;color:#302b25}
+  .rev-page #poster-01 {--poster-bg:#ccc7c1;background:#ccc7c1}
+  .rev-page #poster-02 {--poster-bg:#b2aba2;background:#b2aba2}
+  .rev-page #poster-03 {--poster-bg:#7c7367;background:#7c7367;color:#fffdf8;border-color:#72695e}
+  .rev-page #poster-04 {--poster-bg:#3c3832;background:#3c3832;color:#fffdf8}
+  .rev-page #poster-05 {--poster-bg:#d7d5d3;background:#d7d5d3}
+  .rev-page .rev-poster::before,.rev-page .rev-poster::after {background:none;opacity:0}
+  .rev-page .rev-poster-top span:last-child {color:#584f43}
+  .rev-page .rev-poster-action {color:inherit;border-color:currentColor;background:transparent}
+  .rev-page #poster-03 .rev-poster-title,.rev-page #poster-03 .rev-poster-action {color:#fffdf8;border-color:#ccc7c1}
+  .rev-page #poster-03 .rev-poster-top span:last-child,.rev-page #poster-04 .rev-poster-top span:last-child {color:#eeeae3}
+  .rev-page #poster-03 .rev-translation-robot {filter:grayscale(1) invert(1) contrast(1.1)!important}
+  .rev-page #poster-04 .rev-poster-primary {filter:grayscale(1) invert(1)}
+  .rev-page #chapterDialog {background:#faf9f6;color:#302b25;border-color:#b2aba2}
+  .rev-page #chapterDialog .dialog-header {background:#faf9f6;border-color:#ccc7c1}
+  .rev-page #chapterDialog .tarot {background:var(--accent,#ccc7c1)!important;color:var(--card-ink,#302b25);border-color:#b2aba2}
+  .rev-page #chapterDialog .tarot::after {border-color:currentColor;opacity:.22}
+  .rev-page #chapterDialog .tarot-art img {filter:grayscale(1) var(--card-filter,brightness(1));opacity:.9}
+  .rev-page #chapterDialog .gallery-item {background:#eeebe6;border-color:#d7d5d3}
+  .rev-page #chapterDialog .copy {color:#584f43}
+  .rev-page #chapterDialog .gallery-item span,.rev-page #chapterDialog .dialog-text .label,.rev-page #chapterDialog .chapter-direction {color:#72695e}
+  /* The real heading remains selectable and readable to assistive technology.
+     Dots grow on a six-pixel printing grid, then settle into solid letterforms. */
+  @property --earth-dot {syntax:'<length>';inherits:false;initial-value:5px}
+  @supports ((background-clip:text) or (-webkit-background-clip:text)) {
+    .rev-page .rev-hero-title > span {
+      background-image:radial-gradient(circle,var(--rev-ink) var(--earth-dot),transparent calc(var(--earth-dot) + .25px));
+      background-size:6px 6px;background-position:0 0;
+      background-clip:text;-webkit-background-clip:text;color:transparent;
+      animation:earth-halftone 2.2s ease-out both;
+    }
+    .rev-page .rev-hero-title > span:nth-child(2) {animation-delay:.13s}
+    .rev-page .rev-hero-title > span:nth-child(3) {animation-delay:.26s}
+    .rev-page .rev-hero-title sup {color:var(--rev-ink)}
+  }
+  @keyframes earth-halftone {
+    0% {--earth-dot:.35px;opacity:.25;background-position:12px 6px}
+    34% {--earth-dot:1.5px;opacity:1}
+    64% {--earth-dot:2.35px;background-position:0 0}
+    100% {--earth-dot:5px;opacity:1;background-position:0 0}
+  }
+  @media(prefers-reduced-motion:reduce) {
+    .rev-page .rev-hero-title > span {animation:none;background:none;color:var(--rev-ink)}
+  }
+  </style>
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -160,7 +220,7 @@
     var pictures="../assets/workflow/";
     var data=[
       {
-        title:"THE AMBITION",lead:"How can one brick become a pavilion that adapts to different spaces?",color:"#e6dfd1",image:"spatial.svg",
+        title:"THE AMBITION",lead:"How can one brick become a pavilion that adapts to different spaces?",color:"#ccc7c1",image:"spatial.svg",
         gallery:[["decor/printed-module.webp","The component"],["assembly.svg","Assembly logic"]],
         paragraphs:[
           "Instead of designing one fixed pavilion for one predetermined exhibition site, we developed a reconfigurable building system. Its form can change according to the available space and the number of components.",
@@ -170,7 +230,7 @@
         ],quote:"ONE COMPONENT → MANY CONFIGURATIONS"
       },
       {
-        title:"THE MATERIALS",lead:"Earth is familiar. Making it printable is another story.",color:"#e5d4c3",image:"material.svg",
+        title:"THE MATERIALS",lead:"Earth is familiar. Making it printable is another story.",color:"#b2aba2",image:"material.svg",
         gallery:[["decor/rammed-block.webp","Compacted earth"],["decor/printed-module.webp","Printed earth"]],
         paragraphs:[
           "A printable earth mixture must be fluid enough to pass through a nozzle, but stable enough to carry the next layer. Too much clay can increase water demand and shrinkage; too little may not bind the sand adequately.",
@@ -180,7 +240,7 @@
         ],quote:"THE MATERIAL HAS TO WORK WITH THE MACHINE — AND VICE VERSA."
       },
       {
-        title:"THE TRANSLATION",lead:"A robot cannot read an architectural drawing. It needs a language of motion.",color:"#dce2da",image:"gcode.svg",
+        title:"THE TRANSLATION",lead:"A robot cannot read an architectural drawing. It needs a language of motion.",color:"#7c7367",image:"gcode.svg",
         gallery:[["../exhibition/translation-blue-model.svg","Printed layers"],["../exhibition/translation-robot-line.svg","Robot motion"]],
         paragraphs:[
           "The digital component had to be translated into precise movements: where the robot travels, where it deposits material and how it transitions between paths. Conventional slicers were a starting point, but many strategies developed for rapidly solidifying plastics do not work well for wet clay.",
@@ -190,7 +250,7 @@
         ],quote:"THE DESIGN IS NOT THE CODE. THE TOOLPATH IS THE TRANSLATION."
       },
       {
-        title:"THE REALITY",lead:"The robot stops. The material keeps changing.",color:"#e3e1d7",image:"environment.svg",
+        title:"THE REALITY",lead:"The robot stops. The material keeps changing.",color:"#3c3832",image:"environment.svg",
         gallery:[["decor/printed-module.webp","Printed sample"],["decor/rammed-blocks.webp","Fabricated components"]],
         paragraphs:[
           "Two bricks can follow the same digital geometry and still look different once they dry. As water evaporates, earthen materials shrink; depending on their shapes, mixtures and surroundings, they can warp or crack.",
@@ -200,7 +260,7 @@
         ],quote:"FABRICATION DOES NOT END WHEN PRINTING ENDS."
       },
       {
-        title:"THE FUTURE",lead:"What if each experiment could inform the next one?",color:"#e7d7cf",image:"hrc.svg",
+        title:"THE FUTURE",lead:"What if each experiment could inform the next one?",color:"#d7d5d3",image:"hrc.svg",
         gallery:[["computational.svg","Data and feedback"],["assembly.svg","Adaptive assembly"]],
         paragraphs:[
           "Making dozens of components produces more than a wall. It produces records: material compositions, printing settings, production time, test observations and failures. These data can become a shared resource rather than isolated trials.",
@@ -227,6 +287,8 @@
       document.getElementById("tarotNumber").textContent=id;
       document.getElementById("tarotFooter").textContent=chapter.title;
       document.getElementById("tarot").style.setProperty("--accent",chapter.color);
+      document.getElementById("tarot").style.setProperty("--card-ink",current===2||current===3?"#fffdf8":"#302b25");
+      document.getElementById("tarot").style.setProperty("--card-filter",current===2||current===3?"invert(1)":"brightness(1)");
       var art=document.getElementById("tarotImage");art.src=pictures+chapter.image;art.alt=chapter.title+" visual";
       var gal=document.getElementById("dialogGallery");gal.replaceChildren();
       chapter.gallery.forEach(function(entry){gal.appendChild(galleryItem(entry[0],entry[1]))});
