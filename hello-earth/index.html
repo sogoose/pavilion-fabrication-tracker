@@ -4,68 +4,232 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="PRINT(&quot;HELLO, EARTH&quot;)³ — Explore the pavilion's exhibition, fabrication tracker and process archive.">
-  <title>PRINT("HELLO, EARTH")³ / Project</title>
-  <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-separate-v1">
+  <meta name="description" content="PRINT(HELLO, EARTH)³ — An earth pavilion: design, materials, translation, experimentation and the future of fabrication.">
+  <title>PROJECT / PRINT("HELLO, EARTH")³</title>
+  <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-project-v2">
+  <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
   <style>
-    body.ed-landing-standalone{margin:0;min-height:100svh;overflow-x:hidden;overflow-y:auto;background:#fff}
-    .ed-landing-standalone .ed-home-screen{display:block;overflow:visible;min-height:100svh}
-    .ed-landing-standalone #homeLanding{height:auto}
+    .pr-row-arrow{grid-column:4;justify-self:end}
+    @media(max-width:760px){.pr-row-arrow{grid-column:3}}
   </style>
 </head>
-<body class="ed-stage ed-landing-standalone">
-  <div class="ed-topbar" role="navigation" aria-label="Main site navigation">
-    <a class="ed-logotype" href="./">PRINT("HELLO, EARTH")³</a>
+<body class="pr-page ed-stage">
+  <header class="ed-topbar" aria-label="Site navigation">
+    <a class="ed-logotype" href="./" aria-label="Project home">PRINT("HELLO, EARTH")³</a>
     <nav class="ed-global-nav" aria-label="Sections">
       <a href="./" aria-current="page">PROJECT</a>
-      <a href="../exhibition/">EXHIBITION</a>
-      <a href="../#workflow">PROCESS</a>
       <a href="../#tracker">TRACKER</a>
-      <a href="../lama-slicer/">LAMA SLICER ↗</a>
     </nav>
-  </div>
-<main id="homeLanding" class="ed-home-screen ed-stage">
-    <section class="ed-intro" aria-labelledby="landingTitle">
-      <span class="ed-eyebrow">TU DELFT / CREATIVE ROBOTICS IN SPATIAL DESIGN / 26—27</span>
-      <h1 class="ed-big-title" id="landingTitle"><span>PRINT("HELLO,</span><span>EARTH")<sup>3</sup></span></h1>
-      <img class="ed-intro-art" src="../assets/workflow/decor/printed-module.webp" alt="" aria-hidden="true">
-      <div class="ed-intro-bottom">
-        <p class="ed-smallcopy">SOIL-BASED PAVILION<br>FABRICATION</p>
-        <a class="ed-scroll-cue" href="#entry" id="entryCue">EXPLORE <span class="ed-cue-arrow" aria-hidden="true">↓</span></a>
+  </header>
+  <main>
+    <section class="pr-hero" id="top" aria-labelledby="project-title">
+      <svg class="pr-hero-visual" viewBox="0 0 1150 740" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="pr-glass" x1="0" y1="0" x2="1" y2=".85">
+            <stop offset="0" stop-color="#b5c5ca" stop-opacity=".1"/>
+            <stop offset=".5" stop-color="#c8d9e0" stop-opacity=".37"/>
+            <stop offset="1" stop-color="#ece7ed" stop-opacity=".07"/>
+          </linearGradient>
+          <linearGradient id="pr-contour" x1="0" y1=".2" x2="1" y2="1">
+            <stop offset="0" stop-color="#b0b4c0" stop-opacity=".11"/>
+            <stop offset=".48" stop-color="#a9cbd7" stop-opacity=".56"/>
+            <stop offset="1" stop-color="#aaa5bf" stop-opacity=".21"/>
+          </linearGradient>
+          <filter id="pr-soft"><feGaussianBlur stdDeviation="15"/></filter>
+        </defs>
+        <ellipse cx="627" cy="364" rx="300" ry="205" fill="url(#pr-glass)" filter="url(#pr-soft)" opacity=".66"/>
+        <g transform="translate(210,15) rotate(-16 400 320)" stroke="url(#pr-contour)">
+          <path d="M119 350 C107 113 374 40 570 141 C742 232 686 493 490 536 C264 585 139 491 119 350Z" stroke-width="2.3" fill="url(#pr-glass)" opacity=".72"/>
+          <path d="M162 343 C161 155 371 93 533 178 C681 254 627 454 473 488 C292 528 174 465 162 343Z" stroke-width="1.6" opacity=".57"/>
+          <path d="M206 342 C208 204 375 149 499 217 C606 274 574 414 454 442 C319 473 215 435 206 342Z" stroke-width="1.2" opacity=".53"/>
+          <path d="M246 342 C256 238 377 196 470 249 C548 291 527 383 444 403 C344 427 253 408 246 342Z" stroke-width="1.2" opacity=".48"/>
+          <path d="M286 338 C300 272 382 251 443 284 C495 311 483 357 429 373 C362 390 292 372 286 338Z" stroke-width="1.2" opacity=".45"/>
+          <path d="M79 376 C175 493 351 557 524 521 S742 380 816 263" stroke-width="2.1" opacity=".37"/>
+          <path d="M85 418 C202 534 367 595 548 551 S761 403 853 294" stroke-width="1.1" opacity=".4"/>
+          <path d="M94 457 C222 579 401 623 577 578 S788 426 870 329" stroke-width=".8" opacity=".34"/>
+        </g>
+        <g stroke="url(#pr-contour)" stroke-width="1.2" opacity=".38">
+          <path d="M21 605 C166 518 288 601 410 554 S635 473 762 524 S971 620 1161 503"/>
+          <path d="M20 624 C159 533 292 623 426 571 S628 491 765 541 S976 642 1161 527"/>
+          <path d="M25 641 C169 555 301 646 438 590 S641 514 766 561 S962 668 1149 552"/>
+        </g>
+      </svg>
+      <span class="pr-sup">TU DELFT / CREATIVE ROBOTICS IN SPATIAL DESIGN / 26—27</span>
+      <h1 class="pr-hero-title" id="project-title"><span>PRINT("HELLO,</span><span>EARTH")<sup>3</sup></span></h1>
+      <div class="pr-hero-foot">
+        <p>SOIL-BASED PAVILION<br>FABRICATION</p>
+        <p class="pr-index-indicator">DESIGN / MATERIAL / FABRICATION</p>
       </div>
     </section>
-    <section class="ed-collection" id="entry" aria-label="Explore the project">
-      <div class="ed-collection-heading">
-        <p class="ed-eyebrow">(Selected spaces) &nbsp; 01—03</p>
-        <div class="ed-rail-controls" aria-label="Scroll between cards">
-          <button class="ed-rail-arrow" type="button" data-rail-target="entryRail" data-rail-dir="prev" aria-label="Previous cards">←</button>
-          <button class="ed-rail-arrow" type="button" data-rail-target="entryRail" data-rail-dir="next" aria-label="Next cards">→</button>
-        </div>
-      </div>
-      <div class="ed-rail" id="entryRail" tabindex="0" aria-label="Horizontal project gallery; swipe or use arrows">
-        <a class="ed-card" href="../exhibition/" aria-label="Enter exhibition">
-          <span class="ed-card-top"><span class="ed-card-number">01 / EXHIBITION</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="../assets/workflow/assembly.svg" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="../assets/workflow/assembly.svg"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">EXHIBITION</span><span class="ed-card-category">FIVE CHAPTERS</span></span>
-        </a>
-        <a class="ed-card" href="../#tracker" aria-label="Open production tracker">
-          <span class="ed-card-top"><span class="ed-card-number">02 / PRODUCTION</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="../assets/workflow/decor/printed-module.webp" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="../assets/workflow/decor/printed-module.webp"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">TRACKER</span><span class="ed-card-category">LIVE FABRICATION DATA</span></span>
-        </a>
-        <a class="ed-card" href="../#workflow" aria-label="Open process archive">
-          <span class="ed-card-top"><span class="ed-card-number">03 / ARCHIVE</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="../assets/workflow/printing.svg" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="../assets/workflow/printing.svg"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">PROCESS ARCHIVE</span><span class="ed-card-category">WORKFLOW</span></span>
-        </a>
-      </div>
-      <div class="ed-strip-foot"><span>DRAG / SWIPE TO EXPLORE</span><span>2026—27 &nbsp; © ALL RIGHTS RESERVED</span></div>
+    <section class="pr-index" id="chapters" aria-label="Project chapters">
+      <button class="pr-row" type="button" data-chapter="0" aria-label="Open chapter 01: AMBITION">
+        <span class="pr-row-number">01</span>
+        <span class="pr-row-title">THE AMBITION</span>
+        <img class="pr-row-preview" src="../assets/workflow/spatial.svg" alt="" loading="lazy" aria-hidden="true">
+        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="pr-row" type="button" data-chapter="1" aria-label="Open chapter 02: MATERIALS">
+        <span class="pr-row-number">02</span>
+        <span class="pr-row-title">THE MATERIALS</span>
+        <img class="pr-row-preview" src="../assets/workflow/decor/rammed-blocks.webp" alt="" loading="lazy" aria-hidden="true">
+        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="pr-row" type="button" data-chapter="2" aria-label="Open chapter 03: TRANSLATION">
+        <span class="pr-row-number">03</span>
+        <span class="pr-row-title">THE TRANSLATION</span>
+        <img class="pr-row-preview" src="../assets/workflow/gcode.svg" alt="" loading="lazy" aria-hidden="true">
+        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="pr-row" type="button" data-chapter="3" aria-label="Open chapter 04: REALITY">
+        <span class="pr-row-number">04</span>
+        <span class="pr-row-title">THE REALITY</span>
+        <img class="pr-row-preview" src="../assets/workflow/environment.svg" alt="" loading="lazy" aria-hidden="true">
+        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="pr-row" type="button" data-chapter="4" aria-label="Open chapter 05: FUTURE">
+        <span class="pr-row-number">05</span>
+        <span class="pr-row-title">THE FUTURE</span>
+        <img class="pr-row-preview" src="../assets/workflow/hrc.svg" alt="" loading="lazy" aria-hidden="true">
+        <span class="pr-row-arrow" aria-hidden="true">↗</span>
+      </button>
     </section>
-    <footer class="ed-site-footer"><span>PRINT("HELLO, EARTH")³</span><a href="../exhibition/">EXPLORE EXHIBITION ↗</a></footer>
   </main>
-  <script src="../assets/editorial-landing.js?v=20261025-separate-v1" defer></script>
+  <footer class="pr-end"><span>PRINT("HELLO, EARTH")³</span><span>© 2026—27 · ALL RIGHTS RESERVED</span></footer>
+  <dialog id="chapterDialog" aria-label="Exhibition chapter details">
+    <div class="dialog-header"><span class="section-counter" id="dialogCounter">01 / 05</span><span class="chapter-direction">EXHIBITION ARCHIVE</span><button class="dialog-close" id="closeDialog" aria-label="Close chapter" type="button">×</button></div>
+    <div class="dialog-main">
+      <div class="tarot" id="tarot">
+        <span class="tarot-tag">PRINT("HELLO, EARTH")³</span>
+        <div class="tarot-art"><img id="tarotImage" src="" alt=""></div>
+        <div class="tarot-number" id="tarotNumber">01</div>
+        <div class="tarot-footer" id="tarotFooter">THE AMBITION</div>
+      </div>
+      <div class="dialog-text">
+        <div class="label" id="dialogLabel">CHAPTER 01</div>
+        <h3 id="dialogTitle">THE AMBITION</h3>
+        <p class="lead" id="dialogLead"></p>
+        <div class="gallery" id="dialogGallery"></div>
+        <div class="copy" id="dialogCopy"></div>
+        <div class="callout" id="dialogQuote"></div>
+        <nav class="dialog-nav" aria-label="Navigate chapters">
+          <button class="nav-button" id="prevChapter" type="button">← PREVIOUS</button>
+          <span class="current" id="chapterCount">01 / 05</span>
+          <button class="nav-button" id="nextChapter" type="button">NEXT →</button>
+        </nav>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+
+  (function(){
+    "use strict";
+    var pictures="../assets/workflow/";
+    var data=[
+      {
+        title:"THE AMBITION",lead:"How can one brick become a pavilion that adapts to different spaces?",color:"#e6dfd1",image:"spatial.svg",
+        gallery:[["decor/printed-module.webp","The component"],["assembly.svg","Assembly logic"]],
+        paragraphs:[
+          "Instead of designing one fixed pavilion for one predetermined exhibition site, we developed a reconfigurable building system. Its form can change according to the available space and the number of components.",
+          "Our starting point was not a complete wall, but a single earthen brick. A cube first gave way to rounded cylinders because sharp turns were difficult for the printing nozzle. Connecting these cylinders formed a wall; adding a third support created a triangular arrangement that improved lateral stability.",
+          "The three cylinders are the principal load-bearing parts. Connecting walls create continuity while leaving room for material-efficient openings. These openings become larger towards the top of the wall, reducing weight where less mass is needed.",
+          "The geometry is not the result of one isolated formal idea. It emerged by negotiating structural logic, compression, material use and the realities of robotic printing."
+        ],quote:"ONE COMPONENT → MANY CONFIGURATIONS"
+      },
+      {
+        title:"THE MATERIALS",lead:"Earth is familiar. Making it printable is another story.",color:"#e5d4c3",image:"material.svg",
+        gallery:[["decor/rammed-block.webp","Compacted earth"],["decor/printed-module.webp","Printed earth"]],
+        paragraphs:[
+          "A printable earth mixture must be fluid enough to pass through a nozzle, but stable enough to carry the next layer. Too much clay can increase water demand and shrinkage; too little may not bind the sand adequately.",
+          "The material team began with small pancake tests, then larger cake samples, comparing clay and sand ratios and exploring fibres such as sawdust, cellulose and bamboo. Testing in the actual machine revealed problems that bench tests alone could not show, including blocked nozzles and poor extrusion.",
+          "Chamotte was introduced to improve extrusion, contributing to a workable mixture of clay, sand, chamotte and sawdust. Material development and machine behaviour proved inseparable.",
+          "Rammed-earth components required almost the opposite approach: a relatively dry mixture compacted into a mould. These heavier blocks form the base, while lighter printed components are placed above."
+        ],quote:"THE MATERIAL HAS TO WORK WITH THE MACHINE — AND VICE VERSA."
+      },
+      {
+        title:"THE TRANSLATION",lead:"A robot cannot read an architectural drawing. It needs a language of motion.",color:"#dce2da",image:"gcode.svg",
+        gallery:[["printing.svg","Robotic printing"],["decor/rammed-mould.webp","Reusable mould"]],
+        paragraphs:[
+          "The digital component had to be translated into precise movements: where the robot travels, where it deposits material and how it transitions between paths. Conventional slicers were a starting point, but many strategies developed for rapidly solidifying plastics do not work well for wet clay.",
+          "To avoid unsupported strands and intersections where material accumulates, the team experimented with customised infill. Sharp zigzags gradually developed into smoother sinusoidal paths that printed more reliably.",
+          "Material distribution was also adjusted according to the geometry. Cylinders needed denser internal support, while connecting walls could be lighter; arches required local reinforcement. Tests suggested that carefully patterned infill could outperform a solid reference under the tested conditions.",
+          "Our workflow spans WASP, Comau and UR5 systems, alongside a fabrication website that records each module and its parameters. Meanwhile, rammed-earth moulds combined 3D-printed PLA corners with conventional timber panels, cutting the production effort."
+        ],quote:"THE DESIGN IS NOT THE CODE. THE TOOLPATH IS THE TRANSLATION."
+      },
+      {
+        title:"THE REALITY",lead:"The robot stops. The material keeps changing.",color:"#e3e1d7",image:"environment.svg",
+        gallery:[["decor/printed-module.webp","Printed sample"],["decor/rammed-blocks.webp","Fabricated components"]],
+        paragraphs:[
+          "Two bricks can follow the same digital geometry and still look different once they dry. As water evaporates, earthen materials shrink; depending on their shapes, mixtures and surroundings, they can warp or crack.",
+          "The team studied humidity and temperature using sensors and a custom drying enclosure with mist makers. The aim was to make drying conditions more consistent and to understand how material behaviour might be better anticipated.",
+          "In the reported ongoing tests, circular samples showed no cracking, whereas rectangular samples exhibited some edge warping. These observations do not establish universal rules, but they invite us to reconsider geometry from the perspective of drying.",
+          "A rounded corner can aid both robotic motion and material performance. Infill, mixture, geometry and climate no longer appear as separate questions; each has consequences for the others."
+        ],quote:"FABRICATION DOES NOT END WHEN PRINTING ENDS."
+      },
+      {
+        title:"THE FUTURE",lead:"What if each experiment could inform the next one?",color:"#e7d7cf",image:"hrc.svg",
+        gallery:[["computational.svg","Data and feedback"],["assembly.svg","Adaptive assembly"]],
+        paragraphs:[
+          "Making dozens of components produces more than a wall. It produces records: material compositions, printing settings, production time, test observations and failures. These data can become a shared resource rather than isolated trials.",
+          "We are exploring machine-learning workflows for prediction, optimisation and iterative suggestions. A model might estimate strength from existing test data, suggest parameters for a target performance, and point researchers towards experiments that would close important knowledge gaps.",
+          "Reconfigurability also creates questions about assembly. We are investigating how human-robot interaction, augmented reality and computer vision could help preview alternate wall configurations before physically lifting heavy earthen blocks.",
+          "The longer-term ambition is a connected cycle: design, experiment, fabricate, observe and use the results to improve the next iteration."
+        ],quote:"A PAVILION AS A SYSTEM THAT CAN LEARN."
+      }
+    ];
+    var dialog=document.getElementById("chapterDialog"), current=0, lastTrigger=null;
+    function make(tag,cls,text){var el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el}
+    function galleryItem(source,caption){
+      var fig=make("figure","gallery-item"),im=document.createElement("img");
+      im.src=pictures+source;im.alt=caption;im.loading="lazy";
+      fig.append(im,make("span",null,caption));return fig
+    }
+    function render(i){
+      current=Math.max(0,Math.min(data.length-1,i));var chapter=data[current],id=String(current+1).padStart(2,"0");
+      document.getElementById("dialogCounter").textContent=id+" / 05";
+      document.getElementById("chapterCount").textContent=id+" / 05";
+      document.getElementById("dialogLabel").textContent="CHAPTER "+id+" / FIVE";
+      document.getElementById("dialogTitle").textContent=chapter.title;
+      document.getElementById("dialogLead").textContent=chapter.lead;
+      document.getElementById("tarotNumber").textContent=id;
+      document.getElementById("tarotFooter").textContent=chapter.title;
+      document.getElementById("tarot").style.setProperty("--accent",chapter.color);
+      var art=document.getElementById("tarotImage");art.src=pictures+chapter.image;art.alt=chapter.title+" visual";
+      var gal=document.getElementById("dialogGallery");gal.replaceChildren();
+      chapter.gallery.forEach(function(entry){gal.appendChild(galleryItem(entry[0],entry[1]))});
+      var body=document.getElementById("dialogCopy");body.replaceChildren();
+      chapter.paragraphs.forEach(function(p){body.appendChild(make("p",null,p))});
+      document.getElementById("dialogQuote").textContent=chapter.quote;
+      document.getElementById("prevChapter").disabled=current===0;
+      document.getElementById("nextChapter").disabled=current===data.length-1;
+      dialog.scrollTop=0;
+      window.history.replaceState(null,"","#chapter-"+id);
+    }
+    function openChapter(i){
+      lastTrigger=document.activeElement;
+      render(i);
+      if(!dialog.open)dialog.showModal();
+      document.getElementById("closeDialog").focus();
+    }
+    document.querySelectorAll("[data-chapter]").forEach(function(el){
+      el.addEventListener("click",function(){openChapter(Number(el.dataset.chapter))});
+    });
+    document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
+    document.getElementById("prevChapter").addEventListener("click",function(){if(current>0)render(current-1)});
+    document.getElementById("nextChapter").addEventListener("click",function(){if(current<data.length-1)render(current+1)});
+    dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
+    dialog.addEventListener("close",function(){
+      if(window.location.hash.startsWith("#chapter-"))window.history.replaceState(null,"",window.location.pathname+window.location.search);
+      if(lastTrigger&&lastTrigger.focus)lastTrigger.focus()
+    });
+    document.addEventListener("keydown",function(e){
+      if(!dialog.open)return;
+      if(e.key==="ArrowRight"&&current<4){render(current+1)}
+      if(e.key==="ArrowLeft"&&current>0){render(current-1)}
+    });
+    var match=location.hash.match(/^#chapter-0?([1-5])$/);
+    if(match)openChapter(Number(match[1])-1);
+  })();
+  </script>
 </body>
 </html>
