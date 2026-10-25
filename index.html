@@ -415,10 +415,11 @@ header{gap:6px;padding:10px 16px}
   <link rel="stylesheet" href="./assets/editorial-landing.css?v=20261025-launch-v1" />
 </head>
 <body>
-<div class="app ed-home">
+<div class="app">
   <div class="ed-topbar" role="navigation" aria-label="Main site navigation">
     <a class="ed-logotype" href="./" aria-label="Go to exhibition home">PRINT("HELLO, EARTH")³</a>
     <nav class="ed-global-nav" aria-label="Sections">
+      <a href="./hello-earth/">PROJECT</a>
       <a href="./exhibition/">EXHIBITION</a>
       <a href="./#workflow" data-site-mode="workflow">PROCESS</a>
       <a href="./#tracker" data-site-mode="tracker">TRACKER</a>
@@ -483,49 +484,6 @@ header{gap:6px;padding:10px 16px}
   </header>
 
   
-  <main id="homeLanding" class="ed-home-screen ed-stage">
-    <section class="ed-intro" aria-labelledby="landingTitle">
-      <span class="ed-eyebrow">TU DELFT / CREATIVE ROBOTICS IN SPATIAL DESIGN / 26—27</span>
-      <h1 class="ed-big-title" id="landingTitle"><span>PRINT("HELLO,</span><span>EARTH")<sup>3</sup></span></h1>
-      <img class="ed-intro-art" src="./assets/workflow/decor/printed-module.webp" alt="" aria-hidden="true">
-      <div class="ed-intro-bottom">
-        <p class="ed-smallcopy">SOIL-BASED PAVILION<br>FABRICATION</p>
-        <a class="ed-scroll-cue" href="#entry" id="entryCue">EXPLORE <span class="ed-cue-arrow" aria-hidden="true">↓</span></a>
-      </div>
-    </section>
-    <section class="ed-collection" id="entry" aria-label="Explore the project">
-      <div class="ed-collection-heading">
-        <p class="ed-eyebrow">(Selected spaces) &nbsp; 01—03</p>
-        <div class="ed-rail-controls" aria-label="Scroll between cards">
-          <button class="ed-rail-arrow" type="button" data-rail-target="entryRail" data-rail-dir="prev" aria-label="Previous cards">←</button>
-          <button class="ed-rail-arrow" type="button" data-rail-target="entryRail" data-rail-dir="next" aria-label="Next cards">→</button>
-        </div>
-      </div>
-      <div class="ed-rail" id="entryRail" tabindex="0" aria-label="Horizontal project gallery; swipe or use arrows">
-        <a class="ed-card" href="./exhibition/" aria-label="Enter exhibition">
-          <span class="ed-card-top"><span class="ed-card-number">01 / EXHIBITION</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="./assets/workflow/assembly.svg" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="./assets/workflow/assembly.svg"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">EXHIBITION</span><span class="ed-card-category">FIVE CHAPTERS</span></span>
-        </a>
-        <a class="ed-card" href="./#tracker" aria-label="Open production tracker">
-          <span class="ed-card-top"><span class="ed-card-number">02 / PRODUCTION</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="./assets/workflow/decor/printed-module.webp" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="./assets/workflow/decor/printed-module.webp"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">TRACKER</span><span class="ed-card-category">LIVE FABRICATION DATA</span></span>
-        </a>
-        <a class="ed-card" href="./#workflow" aria-label="Open process archive">
-          <span class="ed-card-top"><span class="ed-card-number">03 / ARCHIVE</span><span class="ed-card-arrow">↗</span></span>
-          <span class="ed-media"><img src="./assets/workflow/printing.svg" loading="lazy" alt=""></span>
-          <span class="ed-ascii" data-ascii-src="./assets/workflow/printing.svg"></span>
-          <span class="ed-card-foot"><span class="ed-card-name">PROCESS ARCHIVE</span><span class="ed-card-category">WORKFLOW</span></span>
-        </a>
-      </div>
-      <div class="ed-strip-foot"><span>DRAG / SWIPE TO EXPLORE</span><span>2026—27 &nbsp; © ALL RIGHTS RESERVED</span></div>
-    </section>
-    <footer class="ed-site-footer"><span>PRINT("HELLO, EARTH")³</span><a href="./exhibition/">EXPLORE EXHIBITION ↗</a></footer>
-  </main>
-
 <section id="workflowView" class="workflowScreen" aria-label="Pavilion workflow board">
 <!-- A single SVG grain filter, shared by the original irregular process shapes.
      Kept within SVG paths: no rectangular overlays across empty board space. -->
@@ -918,7 +876,7 @@ initThree();
 restoreLocal();
 initCollaboration();
 wireUI();
-if(location.hash==='#tracker') ensureBundledModel();
+if(location.hash!=='#workflow') ensureBundledModel();
 
 
 function currentEditor(){ return (editorName?.value || '').trim() || 'Unidentified'; }
@@ -2515,34 +2473,30 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
   const app=document.querySelector(".app");
   const workflow=document.getElementById("navWorkflow");
   const tracker=document.getElementById("navTracker");
-  function switchChapter(mode){
-    const home=mode==="home",show=mode==="workflow";
-    app.classList.toggle("ed-home",home);
+  function switchChapter(which){
+    const show=which==="workflow";
+    app.classList.remove("ed-home");
     app.classList.toggle("workflow-active",show);
     workflow.classList.toggle("active",show);
-    tracker.classList.toggle("active",!show&&!home);
+    tracker.classList.toggle("active",!show);
     workflow.setAttribute("aria-current",show?"page":"false");
-    tracker.setAttribute("aria-current",(!home&&!show)?"page":"false");
+    tracker.setAttribute("aria-current",show?"false":"page");
     document.querySelectorAll("[data-site-mode]").forEach(function(nav){
-      if(nav.dataset.siteMode===mode)nav.setAttribute("aria-current","page");
+      if(nav.dataset.siteMode===(show?"workflow":"tracker"))nav.setAttribute("aria-current","page");
       else nav.removeAttribute("aria-current");
     });
-    document.title=home?'PRINT("HELLO, EARTH")³ / Pavilion':show?'PROCESS / PRINT("HELLO, EARTH")³':'TRACKER / PRINT("HELLO, EARTH")³';
-    if(!home&&!show){
+    document.title=show?'PROCESS / PRINT("HELLO, EARTH")³':'Pavilion Fabrication Tracker';
+    if(!show){
       window.ensurePavilionModel?.();
       requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
+    }else{
+      document.getElementById("workflowView").scrollTop=0;
     }
-    else if(show){document.getElementById("workflowView").scrollTop=0;}
   }
-  function route(){
-    switchChapter(location.hash==="#workflow"?"workflow":location.hash==="#tracker"?"tracker":"home");
-  }
+  function route(){switchChapter(location.hash==="#workflow"?"workflow":"tracker");}
   workflow.addEventListener("click",()=>{if(location.hash==="#workflow")route();else location.hash="workflow"});
   tracker.addEventListener("click",()=>{if(location.hash==="#tracker")route();else location.hash="tracker"});
-  document.querySelectorAll(".wf-tracker-link").forEach(a=>a.addEventListener("click",function(e){e.preventDefault();location.hash="tracker";route()}));
-  document.getElementById("entryCue")?.addEventListener("click",function(e){
-    e.preventDefault();document.getElementById("entry")?.scrollIntoView({behavior:"smooth"});
-  });
+  document.querySelectorAll(".wf-tracker-link").forEach(a=>a.addEventListener("click",function(e){e.preventDefault();location.hash="tracker";route();}));
   window.addEventListener("hashchange",route);
   route();
 })();
