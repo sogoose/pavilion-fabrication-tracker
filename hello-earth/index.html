@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-sidebar-logo-v6">
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
-  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261025-bitmap-v2">
+  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261025-fullbleed-v3">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
 
   <style>
@@ -220,19 +220,16 @@
       </div>
     </aside>
     <div class="rev-main">
-      <section class="rev-hero rev-hero-bitmap" aria-labelledby="project-title">
+      <section class="rev-hero rev-hero-fullvideo" aria-labelledby="project-title">
+        <video class="rev-hero-video" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1">
+          <source src="../assets/video/hero-loop.mp4" type="video/mp4">
+        </video>
         <div class="rev-hero-title-wrap">
           <h1 class="rev-hero-title" id="project-title">
             <span class="rev-title-print">PRINT</span>
             <span class="rev-title-code">("HELLO,</span>
             <span class="rev-title-code">EARTH")<sup>3</sup></span>
           </h1>
-        </div>
-        <div class="rev-bitmap-panel" aria-hidden="true">
-          <video class="rev-hero-video" autoplay muted loop playsinline preload="auto" tabindex="-1">
-            <source src="../assets/video/hero-loop.mp4" type="video/mp4">
-          </video>
-          <canvas class="rev-bitmap-canvas"></canvas>
         </div>
       </section>
       <section class="rev-posters" aria-label="Five large portrait exhibition posters">
@@ -499,7 +496,29 @@
 })();
 </script>
 
-  <script src="../assets/hero-bitmap.js?v=20261025-bitmap-v2" defer></script>
+  <script>
+(function(){
+  "use strict";
+  const video=document.querySelector(".rev-hero-fullvideo .rev-hero-video");
+  const hero=document.querySelector(".rev-hero-fullvideo");
+  if(!video||!hero)return;
+  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
+  let visible=true;
+  function syncPlayback(){
+    if(reduced.matches || document.hidden || !visible){video.pause();return;}
+    video.muted=true;video.loop=true;video.playsInline=true;
+    const attempt=video.play();
+    if(attempt&&typeof attempt.catch==="function")attempt.catch(function(){});
+  }
+  video.addEventListener("loadeddata",syncPlayback);
+  document.addEventListener("visibilitychange",syncPlayback);
+  if(reduced.addEventListener)reduced.addEventListener("change",syncPlayback);
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(entries){visible=entries[0].isIntersecting;syncPlayback();},{threshold:.02}).observe(hero);
+  }
+  syncPlayback();
+})();
+</script>
 </body>
 </html>
 
