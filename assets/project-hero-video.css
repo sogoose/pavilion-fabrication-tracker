@@ -1,0 +1,37 @@
+/* Hero video / non-interactive cinematic loop. Existing artworks remain the fallback. */
+.rev-page .rev-hero .rev-hero-video {
+  position:absolute;
+  z-index:1;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:67% center;
+  pointer-events:none;
+  opacity:0;
+  filter:grayscale(1) brightness(1.28) contrast(.84);
+  mix-blend-mode:multiply;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 22%,rgba(0,0,0,.65) 50%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 22%,rgba(0,0,0,.65) 50%,#000 100%);
+  transition:opacity .85s ease;
+}
+.rev-page .rev-hero.rev-video-ready .rev-hero-video{opacity:.48;}
+.rev-page .rev-hero.rev-video-ready .rev-assembly{opacity:.16;}
+.rev-page .rev-hero.rev-video-ready .rev-assembly-secondary{opacity:.13;}
+.rev-page .rev-hero.rev-video-ready .rev-unit-icon{opacity:.15;}
+.rev-page .rev-hero .rev-hero-title{z-index:4;}
+.rev-page .rev-hero::after{z-index:3;}
+@media(max-width:680px){
+ .rev-page .rev-hero .rev-hero-video{
+   object-position:70% center;
+   -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.1) 35%,#000 100%);
+   mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.1) 35%,#000 100%);
+ }
+ .rev-page .rev-hero.rev-video-ready .rev-hero-video{opacity:.37;}
+}
+@media(prefers-reduced-motion:reduce){
+ .rev-page .rev-hero .rev-hero-video{display:none!important;}
+ .rev-page .rev-hero.rev-video-ready .rev-assembly{opacity:.51;}
+ .rev-page .rev-hero.rev-video-ready .rev-assembly-secondary{opacity:.25;}
+}
