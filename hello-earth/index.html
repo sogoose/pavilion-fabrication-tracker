@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-sidebar-logo-v6">
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
-  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261025-video-loop-v1">
+  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261025-bitmap-v2">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
 
   <style>
@@ -220,20 +220,20 @@
       </div>
     </aside>
     <div class="rev-main">
-      <section class="rev-hero" aria-labelledby="project-title">
-        <video class="rev-hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" poster="../assets/exhibition/hero-chain.png">
-          <source src="../assets/video/hero-loop.mp4" type="video/mp4">
-        </video>
-        <img class="rev-assembly" src="../assets/exhibition/hero-chain.png" alt="" aria-hidden="true" fetchpriority="high">
-        <img class="rev-assembly-secondary" src="../assets/exhibition/hero-chain-secondary-outline.svg" alt="" aria-hidden="true">
-        <img class="rev-glitch-layer rev-glitch-cyan" src="../assets/exhibition/hero-chain.png" alt="" aria-hidden="true">
-        <img class="rev-glitch-layer rev-glitch-magenta" src="../assets/exhibition/hero-chain.png" alt="" aria-hidden="true">
-        <img class="rev-unit-icon" src="../assets/exhibition/module-symbol-original.png" alt="" aria-hidden="true">
-        <h1 class="rev-hero-title" id="project-title">
-          <span class="rev-title-print">PRINT</span>
-          <span class="rev-title-code">("HELLO,</span>
-          <span class="rev-title-code">EARTH")<sup>3</sup></span>
-        </h1>
+      <section class="rev-hero rev-hero-bitmap" aria-labelledby="project-title">
+        <div class="rev-hero-title-wrap">
+          <h1 class="rev-hero-title" id="project-title">
+            <span class="rev-title-print">PRINT</span>
+            <span class="rev-title-code">("HELLO,</span>
+            <span class="rev-title-code">EARTH")<sup>3</sup></span>
+          </h1>
+        </div>
+        <div class="rev-bitmap-panel" aria-hidden="true">
+          <video class="rev-hero-video" autoplay muted loop playsinline preload="auto" tabindex="-1">
+            <source src="../assets/video/hero-loop.mp4" type="video/mp4">
+          </video>
+          <canvas class="rev-bitmap-canvas"></canvas>
+        </div>
       </section>
       <section class="rev-posters" aria-label="Five large portrait exhibition posters">
       <button class="rev-poster" type="button" data-chapter="0" id="poster-01" aria-label="Open chapter 01: THE AMBITION">
@@ -498,33 +498,8 @@
  document.addEventListener('visibilitychange',sync);
 })();
 </script>
-<script>
-(function(){
-  const video=document.querySelector(".rev-hero-video");
-  const hero=document.querySelector(".rev-hero");
-  if(!video||!hero)return;
-  const motion=window.matchMedia("(prefers-reduced-motion: reduce)");
-  function enableVideo(){
-    if(motion.matches){video.pause();video.removeAttribute("autoplay");return;}
-    video.muted=true;
-    video.loop=true;
-    video.playsInline=true;
-    video.play().catch(()=>{/* static artwork remains visible */});
-  }
-  video.addEventListener("canplay",function(){hero.classList.add("rev-video-ready");enableVideo()},{once:true});
-  video.addEventListener("error",function(){hero.classList.remove("rev-video-ready")});
-  if(typeof IntersectionObserver!=="undefined"){
-    const obs=new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        if(!entry.isIntersecting)video.pause();
-        else if(video.readyState>=2)enableVideo();
-      });
-    },{threshold:0.02});
-    obs.observe(hero);
-  }
-  if(video.readyState>=2){hero.classList.add("rev-video-ready");enableVideo();}
-})();
-</script>
+
+  <script src="../assets/hero-bitmap.js?v=20261025-bitmap-v2" defer></script>
 </body>
 </html>
 
