@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="../assets/project-index.css?v=20261025-project-v2">
   <link rel="stylesheet" href="../assets/project-revival.css?v=20261025-sidebar-logo-v6">
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
-  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-halftone-v4">
+  <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
 
   <style>
@@ -519,6 +519,28 @@
     new IntersectionObserver(function(entries){visible=entries[0].isIntersecting;syncPlayback();},{threshold:.02}).observe(hero);
   }
   syncPlayback();
+})();
+</script>
+<script>
+/* Preserve the initial type-print animation, then allow a reversible
+   interactive halftone when the pointer enters the headline. */
+(function(){
+  "use strict";
+  const title=document.querySelector(".rev-hero-fullvideo .rev-hero-title");
+  if(!title)return;
+  const lastLine=title.querySelector(".rev-title-code:last-child");
+  if(!lastLine)return;
+  function settle(){title.classList.add("rev-halftone-settled");}
+  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
+  if(reduced.matches){settle();return;}
+  lastLine.addEventListener("animationend",function(event){
+    if(event.animationName==="earth-halftone")settle();
+  });
+  /* Handles engines that do not interpolate a registered CSS property.
+     It does not change the initial print animation in supported browsers. */
+  if(!window.CSS || !CSS.supports || !CSS.supports("background-clip","text")){
+    settle();
+  }
 })();
 </script>
 </body>
