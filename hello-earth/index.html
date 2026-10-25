@@ -177,7 +177,7 @@
 </style>
   <!-- Comfortable 75%-zoom editorial density at the browser's standard 100% setting. -->
   <link rel="stylesheet" href="../assets/project-desktop-scale.css?v=20261025-desktop-75-v1">
-  <link rel="stylesheet" href="../assets/future-poster.css?v=20261026-v1">
+  <link rel="stylesheet" href="../assets/future-poster.css?v=20261026-v1">\n  <link rel="stylesheet" href="../assets/ambition-interactive.css?v=20261026-v1">
 <style>
 /* One moving image, treated as an analogue signal; chapter type stays clean. */
 .rev-page #poster-05::before {background:none;opacity:0}
@@ -303,17 +303,27 @@
         </div>
       </section>
       <section class="rev-posters" aria-label="Five large portrait exhibition posters">
-      <button class="rev-poster" type="button" data-chapter="0" id="poster-01" aria-label="Open chapter 01: THE AMBITION">
+      <article class="rev-poster" data-chapter="0" id="poster-01" role="button" tabindex="0" aria-label="Open chapter 01: THE AMBITION">
         <span class="rev-poster-top"><span>01 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
         <span class="rev-poster-art" aria-hidden="true">
-          <span class="chapter-ambient ambient-centered" style="--ambient-time:9s;--ambient-delay:-0s;--ambient-direction:normal;--ambient-depth:1"><img class="rev-poster-primary" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager"></span>
-
+          <span class="ambition-stage">
+            <span class="ambition-sheet">
+              <img class="ambition-slice ambition-body" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager" draggable="false">
+              <img class="ambition-slice ambition-unit ambition-unit-1" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager" draggable="false">
+              <img class="ambition-slice ambition-unit ambition-unit-2" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager" draggable="false">
+              <img class="ambition-slice ambition-unit ambition-unit-3" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager" draggable="false">
+              <img class="ambition-slice ambition-unit ambition-unit-4" src="../assets/exhibition/ambition-stacked.png" alt="" loading="eager" draggable="false">
+            </span>
+          </span>
         </span>
+        <span class="ambition-hint" aria-hidden="true">ONE COMPONENT / MANY CONFIGURATIONS</span>
+        <span class="ambition-progress" aria-hidden="true"><span class="ambition-status">EXPLODED MODULES</span><span class="ambition-progress-track"><span class="ambition-progress-fill"></span></span></span>
+        <span class="ambition-controls"><button class="ambition-mode-button" type="button" aria-pressed="false" aria-label="Show assembled pavilion">AUTO ↔</button></span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE AMBITION</span>
           <span class="rev-poster-action" aria-hidden="true">↗</span>
         </span>
-      </button>
+      </article>
       <article class="rev-poster material-poster" id="poster-02" aria-label="Chapter 02: THE MATERIALS">
         <span class="rev-poster-top"><span>02 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
         <div class="material-cloud" aria-hidden="true"><span class="material-float"><img src="../assets/exhibition/material-cards/01.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/02.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/03.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/04.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/05.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/06.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/07.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/08.png" alt="" loading="lazy" draggable="false"></span></div>
@@ -680,7 +690,7 @@
  document.addEventListener('visibilitychange',sync);sync();
 })();
 </script>
-</body>
+  <script src="../assets/ambition-interactive.js?v=20261026-v1" defer></script>\n</body>
 </html>
 
 
