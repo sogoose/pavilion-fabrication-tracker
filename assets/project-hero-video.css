@@ -1,153 +1,150 @@
-/* PRINT("HELLO, EARTH")³ — moving bitmap hero / option B
-   The video is sampled into a real, 1-bit Bayer-dithered canvas by hero-bitmap.js.
-   No chain images, fake glitch overlays, or text-heavy interface decoration. */
-
-.rev-page .rev-hero.rev-hero-bitmap{
+/* PROJECT HERO — full-bleed documentary video, restrained print texture.
+ * Keep the three-line PRINT title and the original MP4. The moving video covers
+ * the entire hero; no extra chain illustrations, split panels, or heavy dither.
+ */
+.rev-page .rev-hero.rev-hero-fullvideo{
   position:relative;
   isolation:isolate;
-  display:grid;
-  grid-template-columns:minmax(0,47%) minmax(0,53%);
-  gap:clamp(10px,1.7vw,30px);
-  align-items:center;
-  justify-content:stretch;
-  min-height:clamp(590px,calc(100svh - 60px),940px);
-  padding:clamp(27px,3.1vw,54px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  min-height:clamp(590px,calc(100svh - 60px),1000px);
+  padding:clamp(28px,3.6vw,62px);
   overflow:hidden;
   background:#faf9f6;
   color:#302b25;
   font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
-.rev-page .rev-hero.rev-hero-bitmap::before,
-.rev-page .rev-hero.rev-hero-bitmap::after{
-  content:none;
-  animation:none;
-  background:none;
-  opacity:0;
-}
-.rev-page .rev-hero-bitmap .rev-hero-title-wrap{
-  position:relative;
-  z-index:3;
-  width:100%;
-  min-width:0;
-  align-self:center;
-}
-.rev-page .rev-hero-bitmap .rev-hero-title{
-  position:relative;
-  z-index:3;
-  margin:0;
-  padding:0;
-  font-size:clamp(55px,7.15vw,137px);
-  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
-  font-weight:500;
-  line-height:.925;
-  letter-spacing:-.078em;
-  color:#302b25;
-  text-align:left;
-  white-space:nowrap;
-}
-.rev-page .rev-hero-bitmap .rev-hero-title span{
-  display:block;
-  white-space:nowrap;
-}
-.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-print{margin-bottom:.11em}
-.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-code{padding-left:.045em}
-.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-code+.rev-title-code{margin-top:.035em}
-.rev-page .rev-hero-bitmap .rev-hero-title sup{
-  display:inline-block;
-  font-size:.24em;
-  vertical-align:top;
-  top:.15em;
-  position:relative;
-  margin-left:.05em;
-  letter-spacing:-.01em;
-}
-.rev-page .rev-bitmap-panel{
-  position:relative;
-  z-index:2;
-  justify-self:stretch;
-  align-self:center;
-  width:100%;
-  height:min(72svh,670px);
-  min-height:450px;
-  background:#141615;
-  border:1px solid #343935;
-  overflow:hidden;
-}
-.rev-page .rev-bitmap-panel .rev-hero-video,
-.rev-page .rev-bitmap-panel .rev-bitmap-canvas{
-  display:block;
+/* Background is real video, not a framed image. Crop toward the machines on
+ * the right rather than centering the source footage's G-code column. */
+.rev-page .rev-hero-fullvideo .rev-hero-video{
   position:absolute;
+  display:block;
   inset:0;
   width:100%;
   height:100%;
-  pointer-events:none;
-}
-.rev-page .rev-bitmap-panel .rev-hero-video{
-  z-index:1;
+  z-index:0;
   object-fit:cover;
-  object-position:55% center;
-  opacity:1;
-  visibility:visible;
-  filter:grayscale(1) contrast(1.7) brightness(.82);
+  object-position:74% 50%;
+  pointer-events:none;
+  opacity:.77;
+  filter:grayscale(1) contrast(1.12) brightness(1.09);
   mix-blend-mode:normal;
   -webkit-mask-image:none;
   mask-image:none;
-  transition:none;
+  transform:none;
 }
-.rev-page .rev-bitmap-panel .rev-bitmap-canvas{
-  z-index:2;
-  opacity:0;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
-  image-rendering:pixelated;
-  transition:opacity .18s ease-out;
-}
-.rev-page .rev-hero-bitmap.rev-bitmap-ready .rev-bitmap-canvas{opacity:1}
-.rev-page .rev-hero-bitmap.rev-bitmap-ready .rev-hero-video{opacity:0}
-/* Editorial restraint: no labels over the footage, just a single hairline. */
-.rev-page .rev-bitmap-panel::after{
-  position:absolute;
-  z-index:3;
+/* Give title a quiet ivory reading surface, but preserve footage to the right. */
+.rev-page .rev-hero.rev-hero-fullvideo::before{
   content:"";
+  position:absolute;
+  display:block;
   inset:0;
-  border:1px solid rgba(250,249,246,.09);
+  z-index:1;
   pointer-events:none;
+  background:linear-gradient(90deg,
+    rgba(250,249,246,.96) 0%,
+    rgba(250,249,246,.92) 15%,
+    rgba(250,249,246,.77) 33%,
+    rgba(250,249,246,.43) 49%,
+    rgba(250,249,246,.10) 69%,
+    rgba(250,249,246,.04) 100%);
+  opacity:1;
+  animation:none;
 }
-@media(max-width:1250px){
-  .rev-page .rev-hero.rev-hero-bitmap{grid-template-columns:minmax(0,48%) minmax(0,52%)}
-  .rev-page .rev-hero-bitmap .rev-hero-title{font-size:clamp(54px,7.15vw,100px)}
-  .rev-page .rev-bitmap-panel{height:min(67svh,610px)}
+/* Deliberately delicate print grain — no 1-bit conversion, RGB glitch or noise
+ * animation. The image stays legible while retaining an editorial finish. */
+.rev-page .rev-hero.rev-hero-fullvideo::after{
+  content:"";
+  position:absolute;
+  display:block;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background-image:radial-gradient(rgba(28,32,31,.20) .45px,transparent .65px);
+  background-size:8px 8px;
+  background-position:0 0;
+  opacity:.12;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 44%,black 74%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 44%,black 74%);
+  animation:none;
 }
-@media(max-width:990px){
-  .rev-page .rev-hero.rev-hero-bitmap{
-    grid-template-columns:minmax(0,1fr);
-    min-height:auto;
-    gap:clamp(22px,4vw,45px);
-    padding:clamp(26px,3vw,42px);
+.rev-page .rev-hero-fullvideo .rev-hero-title-wrap{
+  position:relative;
+  z-index:3;
+  width:100%;
+  align-self:stretch;
+}
+.rev-page .rev-hero-fullvideo .rev-hero-title{
+  position:relative;
+  z-index:3;
+  margin:0;
+  max-width:100%;
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  font-size:clamp(62px,8.8vw,160px);
+  font-weight:500;
+  line-height:.92;
+  letter-spacing:-.078em;
+  text-align:left;
+  white-space:nowrap;
+}
+.rev-page .rev-hero-fullvideo .rev-hero-title span{display:block;white-space:nowrap}
+.rev-page .rev-hero-fullvideo .rev-hero-title .rev-title-print{margin-bottom:.11em}
+.rev-page .rev-hero-fullvideo .rev-hero-title .rev-title-code{padding-left:.065em}
+.rev-page .rev-hero-fullvideo .rev-hero-title .rev-title-code+.rev-title-code{margin-top:.04em}
+.rev-page .rev-hero-fullvideo .rev-hero-title sup{
+  position:relative;
+  display:inline-block;
+  font-size:.24em;
+  top:.15em;
+  margin-left:.06em;
+  letter-spacing:-.015em;
+  vertical-align:top;
+}
+@media(max-width:1050px){
+  .rev-page .rev-hero-fullvideo .rev-hero-title{
+    font-size:clamp(55px,8.25vw,118px);
   }
-  .rev-page .rev-hero-bitmap .rev-hero-title{font-size:clamp(52px,8.1vw,92px)}
-  .rev-page .rev-bitmap-panel{
-    width:100%;
-    min-height:340px;
-    height:clamp(340px,52svh,550px);
+  .rev-page .rev-hero-fullvideo .rev-hero-video{
+    object-position:79% center;
+  }
+  .rev-page .rev-hero.rev-hero-fullvideo::before{
+    background:linear-gradient(90deg,
+      rgba(250,249,246,.96) 0%,
+      rgba(250,249,246,.81) 37%,
+      rgba(250,249,246,.18) 78%,
+      rgba(250,249,246,.10) 100%);
   }
 }
 @media(max-width:680px){
-  .rev-page .rev-hero.rev-hero-bitmap{
-    min-height:0;
-    padding:28px 16px 30px;
-    gap:24px;
+  .rev-page .rev-hero.rev-hero-fullvideo{
+    min-height:clamp(480px,73svh,790px);
+    padding:28px 16px;
   }
-  .rev-page .rev-hero-bitmap .rev-hero-title{
-    font-size:clamp(40px,9.4vw,72px);
+  .rev-page .rev-hero-fullvideo .rev-hero-video{
+    object-position:82% center;
+    opacity:.68;
+  }
+  .rev-page .rev-hero-fullvideo .rev-hero-title{
+    font-size:clamp(39px,9.6vw,73px);
+    letter-spacing:-.077em;
     line-height:.96;
   }
-  .rev-page .rev-bitmap-panel{
-    min-height:245px;
-    height:clamp(245px,43svh,400px);
+  .rev-page .rev-hero-fullvideo .rev-hero-title .rev-title-print{margin-bottom:.14em}
+  .rev-page .rev-hero-fullvideo .rev-hero-title .rev-title-code{padding-left:.04em}
+  .rev-page .rev-hero.rev-hero-fullvideo::before{
+    background:linear-gradient(90deg,
+      rgba(250,249,246,.95) 0%,
+      rgba(250,249,246,.79) 54%,
+      rgba(250,249,246,.28) 100%);
+  }
+  .rev-page .rev-hero.rev-hero-fullvideo::after{
+    opacity:.065;
   }
 }
+/* Reduce motion at OS level: the video gets paused at its first usable frame
+ * in the accompanying lightweight playback code (no graphic animation). */
 @media(prefers-reduced-motion:reduce){
-  .rev-page .rev-hero-bitmap .rev-bitmap-canvas{transition:none}
-  .rev-page .rev-bitmap-panel .rev-hero-video{display:none}
+  .rev-page .rev-hero.rev-hero-fullvideo::after{animation:none}
 }
