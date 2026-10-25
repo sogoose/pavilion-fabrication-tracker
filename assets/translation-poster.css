@@ -1,0 +1,79 @@
+/* Exhibition / Chapter 03 — from layered material to machine instruction.
+   Scoped to THE TRANSLATION only; the existing five-poster system is unchanged. */
+.rev-page .rev-poster[data-chapter="2"]{
+  --poster-bg:#eaf0f1;
+  background:linear-gradient(154deg,#f2f5f5 0%,#e5edef 54%,#dbe6e9 100%);
+  border-color:#bfcdd1;
+  color:#172329;
+}
+.rev-page .rev-poster[data-chapter="2"]::before{
+  content:"";
+  position:absolute;inset:0;
+  background:radial-gradient(circle at 23% 28%,rgba(255,255,255,.8),transparent 36%),
+    linear-gradient(118deg,rgba(255,255,255,.18),transparent 52%);
+  z-index:0;opacity:1;pointer-events:none;
+}
+.rev-page .rev-poster[data-chapter="2"]::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  opacity:.18;background:repeating-linear-gradient(0deg,rgba(56,87,97,.065) 0px,rgba(56,87,97,.065) 1px,transparent 1px,transparent 7px);
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-poster-top,
+.rev-page .rev-poster[data-chapter="2"] .rev-poster-bottom{z-index:4}
+.rev-page .rev-poster[data-chapter="2"] .rev-poster-top span:last-child{color:#6e8189}
+.rev-page .rev-poster[data-chapter="2"] .rev-poster-title{
+  color:#17232a;
+  font-size:clamp(34px,4.1vw,69px);
+  letter-spacing:-.077em;
+  white-space:nowrap;
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-poster-action{
+  border-color:rgba(61,89,99,.54);
+  color:#29414b;
+  background:rgba(255,255,255,.36);
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-translation-stage{
+  position:absolute;z-index:2;
+  inset:9% 4.5% 21%;
+  display:block;pointer-events:none;
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-translation-stage img{
+  position:absolute;object-fit:contain;
+  filter:none;
+  transition:transform .7s cubic-bezier(.16,1,.3,1),opacity .5s;
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-translation-model{
+  left:-4%;top:9%;width:89%;height:89%;
+  opacity:1;
+  filter:saturate(.84) brightness(1.07) contrast(1.01) drop-shadow(0 15px 25px rgba(47,84,101,.1)) !important;
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-translation-robot{
+  right:0;top:-1%;width:32%;height:31%;
+  padding:14px;
+  background:rgba(249,252,252,.56);
+  border:1px solid rgba(92,123,130,.2);
+  box-shadow:0 3px 15px rgba(40,67,73,.025);
+  opacity:.76;
+}
+.rev-page .rev-poster[data-chapter="2"] .rev-translation-contour{
+  right:0;bottom:2%;width:34%;height:27%;
+  padding:11px;
+  background:rgba(253,254,254,.52);
+  border:1px solid rgba(92,123,130,.15);
+  opacity:.59;
+  filter:grayscale(1) brightness(1.23) contrast(.82) !important;
+}
+.rev-page .rev-poster[data-chapter="2"]:hover .rev-translation-model{
+  transform:translateY(-9px) scale(1.035);
+}
+.rev-page .rev-poster[data-chapter="2"]:hover .rev-translation-robot,
+.rev-page .rev-poster[data-chapter="2"]:hover .rev-translation-contour{opacity:.94}
+@media(max-width:680px){
+ .rev-page .rev-poster[data-chapter="2"] .rev-poster-title{font-size:clamp(30px,7.1vw,55px)}
+ .rev-page .rev-poster[data-chapter="2"] .rev-translation-stage{inset:11% 3% 22%}
+ .rev-page .rev-poster[data-chapter="2"] .rev-translation-model{width:92%;left:-4%;top:11%;height:83%}
+ .rev-page .rev-poster[data-chapter="2"] .rev-translation-robot{width:35%;height:30%;padding:8px}
+ .rev-page .rev-poster[data-chapter="2"] .rev-translation-contour{width:33%;height:25%;padding:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .rev-page .rev-poster[data-chapter="2"] .rev-translation-stage img{transition:none}
+}
