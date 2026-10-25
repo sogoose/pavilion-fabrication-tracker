@@ -413,22 +413,20 @@ header{gap:6px;padding:10px 16px}
   }
   </script>
   <link rel="stylesheet" href="./assets/editorial-landing.css?v=20261025-launch-v1" />
+  <style>#workflowView{display:none!important} .chapterNav[hidden]{display:none!important}</style>
 </head>
 <body>
 <div class="app">
   <div class="ed-topbar" role="navigation" aria-label="Main site navigation">
-    <a class="ed-logotype" href="./" aria-label="Go to exhibition home">PRINT("HELLO, EARTH")³</a>
+    <a class="ed-logotype" href="./" aria-label="Tracker home">PRINT("HELLO, EARTH")³</a>
     <nav class="ed-global-nav" aria-label="Sections">
       <a href="./hello-earth/">PROJECT</a>
-      <a href="./exhibition/">EXHIBITION</a>
-      <a href="./#workflow" data-site-mode="workflow">PROCESS</a>
-      <a href="./#tracker" data-site-mode="tracker">TRACKER</a>
-      <a href="./lama-slicer/">LAMA SLICER ↗</a>
+      <a href="./" data-site-mode="tracker" aria-current="page">TRACKER</a>
     </nav>
   </div>
 
   <header>
-    <nav class="chapterNav" aria-label="Site chapters"><button type="button" id="navWorkflow" aria-current="false">01 / Workflow</button><button type="button" id="navTracker" class="active" aria-current="page">02 / Tracker</button><a class="chapterNavLink" href="./lama-slicer/" target="_blank" rel="noopener">03 / LAMA Slicer ↗</a></nav>
+    <nav class="chapterNav" aria-label="Legacy route controls" hidden inert><button type="button" id="navWorkflow" disabled aria-hidden="true">Workflow archive</button><button type="button" id="navTracker" disabled aria-hidden="true">Tracker</button></nav>
     <div class="toprow">
       <div class="brand">PAVILION / FABRICATION</div>
       <span id="objectBadge" class="badge">0 objects</span>
@@ -443,6 +441,7 @@ header{gap:6px;padding:10px 16px}
       </details>
       <details class="tracker-menu" aria-label="Administrative tools">
         <summary>More</summary><div class="tracker-menu-content"><span class="menu-caption">DATA MANAGEMENT</span>
+          <a href="./lama-slicer/" class="button" style="font-size:11px;text-decoration:none;display:block;margin-bottom:8px;white-space:nowrap">LAMA SLICER ↗</a>
           <button id="syncNow">Sync now</button>
           <label class="button fileBtn">Import Excel<input id="excelInput" type="file" accept=".xlsx,.xls,.csv" /></label>
           <label class="button fileBtn">Load Rhino 3DM<input id="modelInput" type="file" accept=".3dm" /></label>
@@ -484,7 +483,7 @@ header{gap:6px;padding:10px 16px}
   </header>
 
   
-<section id="workflowView" class="workflowScreen" aria-label="Pavilion workflow board">
+<section id="workflowView" class="workflowScreen" aria-label="Archived pavilion workflow board" hidden inert aria-hidden="true">
 <!-- A single SVG grain filter, shared by the original irregular process shapes.
      Kept within SVG paths: no rectangular overlays across empty board space. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false"
@@ -876,7 +875,7 @@ initThree();
 restoreLocal();
 initCollaboration();
 wireUI();
-if(location.hash!=='#workflow') ensureBundledModel();
+ensureBundledModel();
 
 
 function currentEditor(){ return (editorName?.value || '').trim() || 'Unidentified'; }
@@ -1089,7 +1088,7 @@ function initThree(){
 function animate(){
   requestAnimationFrame(animate);
   // Don't burn GPU time rendering a hidden canvas while viewing Workflow.
-  if(document.hidden || document.querySelector('.app')?.classList.contains('workflow-active') || document.querySelector('.app')?.classList.contains('ed-home')) return;
+  if(document.hidden) return;
   controls.update(); updateObjectLabel(); updateAllObjectLabels(); renderer.render(scene,camera);
 }
 function resize(){
@@ -2471,34 +2470,15 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
 (function(){
   "use strict";
   const app=document.querySelector(".app");
-  const workflow=document.getElementById("navWorkflow");
-  const tracker=document.getElementById("navTracker");
-  function switchChapter(which){
-    const show=which==="workflow";
-    app.classList.remove("ed-home");
-    app.classList.toggle("workflow-active",show);
-    workflow.classList.toggle("active",show);
-    tracker.classList.toggle("active",!show);
-    workflow.setAttribute("aria-current",show?"page":"false");
-    tracker.setAttribute("aria-current",show?"false":"page");
-    document.querySelectorAll("[data-site-mode]").forEach(function(nav){
-      if(nav.dataset.siteMode===(show?"workflow":"tracker"))nav.setAttribute("aria-current","page");
-      else nav.removeAttribute("aria-current");
-    });
-    document.title=show?'PROCESS / PRINT("HELLO, EARTH")³':'Pavilion Fabrication Tracker';
-    if(!show){
-      window.ensurePavilionModel?.();
-      requestAnimationFrame(()=>window.dispatchEvent(new Event("resize")));
-    }else{
-      document.getElementById("workflowView").scrollTop=0;
-    }
+  // Workflow files and records are retained in the repository, but the
+  // deprecated public workflow view has no navigation or route.
+  app.classList.remove("workflow-active","ed-home");
+  document.querySelectorAll(".ed-global-nav [data-site-mode]").forEach(function(link){
+    link.setAttribute("aria-current","page");
+  });
+  if(window.location.hash==="#workflow"){
+    window.history.replaceState(null,"",window.location.pathname+window.location.search);
   }
-  function route(){switchChapter(location.hash==="#workflow"?"workflow":"tracker");}
-  workflow.addEventListener("click",()=>{if(location.hash==="#workflow")route();else location.hash="workflow"});
-  tracker.addEventListener("click",()=>{if(location.hash==="#tracker")route();else location.hash="tracker"});
-  document.querySelectorAll(".wf-tracker-link").forEach(a=>a.addEventListener("click",function(e){e.preventDefault();location.hash="tracker";route();}));
-  window.addEventListener("hashchange",route);
-  route();
 })();
 </script>
 
