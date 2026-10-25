@@ -62,12 +62,12 @@
   inset:0;
   z-index:2;
   pointer-events:none;
-  background-image:radial-gradient(rgba(28,32,31,.20) .45px,transparent .65px);
-  background-size:8px 8px;
+  background-image:radial-gradient(rgba(28,32,31,.24) .5px,transparent .78px);
+  background-size:7px 7px;
   background-position:0 0;
-  opacity:.12;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 44%,black 74%);
-  mask-image:linear-gradient(90deg,transparent 0%,transparent 44%,black 74%);
+  opacity:.18;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,black 68%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,black 68%);
   animation:none;
 }
 .rev-page .rev-hero-fullvideo .rev-hero-title-wrap{
@@ -140,7 +140,7 @@
       rgba(250,249,246,.28) 100%);
   }
   .rev-page .rev-hero.rev-hero-fullvideo::after{
-    opacity:.065;
+    opacity:.10;
   }
 }
 /* Reduce motion at OS level: the video gets paused at its first usable frame
