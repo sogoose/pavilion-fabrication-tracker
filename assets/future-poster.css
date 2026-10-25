@@ -1,0 +1,86 @@
+/* CHAPTER 05 / THE FUTURE — virtual window.
+   Deliberately only two images: the original VR linework and the moving,
+   cropped 10-second VR capture. No frame, labels or extra invented symbols.
+   Chapter typography, border and neutral palette are shared with 01–04. */
+
+.rev-page #poster-05 {
+  --poster-bg:#d7d5d3;
+  background:#d7d5d3;
+  border-color:#bdbab6;
+  color:#302b25;
+}
+.rev-page #poster-05::before {
+  content:"";
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 81% 65% at 63% 45%,rgba(255,255,255,.36),transparent 82%);
+  opacity:.65;pointer-events:none;
+}
+.rev-page #poster-05::after {content:none;opacity:0}
+.rev-page #poster-05 .rev-poster-top,
+.rev-page #poster-05 .rev-poster-bottom {z-index:4}
+.rev-page #poster-05 .rev-poster-title {color:#302b25}
+.rev-page #poster-05 .rev-poster-top span:last-child {color:#797672}
+.rev-page #poster-05 .rev-poster-action {background:transparent;border-color:#96928d;color:inherit}
+
+.rev-page #poster-05 .future-art {
+  position:absolute;inset:8% 1.5% 20.5%;
+  z-index:1;
+  pointer-events:none;display:block;
+  overflow:visible;
+}
+.rev-page #poster-05 .future-headset {
+  display:block;position:absolute;
+  left:1%;top:9%;
+  width:49%;height:36%;
+  max-width:none;max-height:none;
+  object-fit:contain;
+  opacity:.55;
+  filter:grayscale(1) contrast(.85);
+  transform:rotate(-5deg);
+  transition:opacity .8s ease,transform .8s ease;
+}
+/* The source recording was originally ultra-wide with black columns.
+   Its centered VR area is cropped into the file itself, not via CSS frame. */
+.rev-page #poster-05 .future-moving-window {
+  display:block;position:absolute;overflow:visible;
+  width:82%;height:78%;
+  left:17%;top:20%;
+  z-index:1;
+  opacity:.82;
+  transform:translateY(0) scale(1);
+  transform-origin:50% 50%;
+  transition:transform .85s cubic-bezier(.2,.7,.25,1),opacity .6s ease;
+}
+.rev-page #poster-05 .future-video {
+  display:block;
+  width:100%;height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:transparent;
+  filter:grayscale(1) saturate(0) contrast(.95) brightness(1.34);
+  opacity:1;
+  mix-blend-mode:normal;
+  /* Edges dissolve into the warm gallery paper, unlike an inset monitor. */
+  -webkit-mask-image:radial-gradient(ellipse 71% 72% at 50% 50%,#000 34%,rgba(0,0,0,.95) 51%,rgba(0,0,0,.32) 75%,transparent 100%);
+  mask-image:radial-gradient(ellipse 71% 72% at 50% 50%,#000 34%,rgba(0,0,0,.95) 51%,rgba(0,0,0,.32) 75%,transparent 100%);
+}
+.rev-page #poster-05:hover .future-moving-window,
+.rev-page #poster-05:focus-visible .future-moving-window {
+  opacity:.94;
+  transform:translate(-1%, -1%) scale(1.018);
+}
+.rev-page #poster-05:hover .future-headset,
+.rev-page #poster-05:focus-visible .future-headset{
+  opacity:.66;transform:rotate(-3deg) translateY(-4px);
+}
+@media(max-width:680px){
+  .rev-page #poster-05 .future-art {inset:9% 0 21%}
+  .rev-page #poster-05 .future-headset {left:1%;top:10%;width:48%;height:34%}
+  .rev-page #poster-05 .future-moving-window{
+    left:13%;top:23%;width:88%;height:74%;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .rev-page #poster-05 .future-headset,
+  .rev-page #poster-05 .future-moving-window{transition:none!important;transform:none!important}
+}
