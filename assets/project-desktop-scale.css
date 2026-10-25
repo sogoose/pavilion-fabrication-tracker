@@ -1,0 +1,55 @@
+/*
+ * PROJECT — desktop density
+ *
+ * Visitors at 100% browser zoom get the editorial scale of the former
+ * 75%-zoom view without changing their browser settings. Scope this only
+ * to the PROJECT /hello-earth/ page; TRACKER and LAMA SLICER remain 100%.
+ *
+ * CSS zoom participates in layout (unlike transform:scale), so the card
+ * gallery, sticky chapter list, navigation and modal scale together without
+ * an overflowing 100%-size layout box.
+ */
+@media screen and (min-width:1280px) {
+  body.rev-page {
+    zoom:.75;
+  }
+  /*
+   * viewport units still use the physical viewport under element zoom.
+   * Restore full-height sidebar and a compact editorial hero, while keeping
+   * poster sizes, copy and controls at the requested three-quarter scale.
+   */
+  .rev-page .rev-aside-inner {
+    height:calc(133.3333svh - 60px);
+  }
+  .rev-page .rev-hero.rev-hero-fullvideo {
+    min-height:clamp(850px,110svh,1100px);
+  }
+  /* Keep the chapter modal usable near the top/bottom of the real viewport. */
+  .rev-page #chapterDialog {
+    max-height:calc(133.3333svh - 44px);
+  }
+}
+
+/* Transitional laptop layout: a slightly gentler reduction avoids
+ * unreadably small icon labels just before the tablet breakpoint. */
+@media screen and (min-width:1024px) and (max-width:1279px) {
+  body.rev-page {
+    zoom:.85;
+  }
+  .rev-page .rev-aside-inner {
+    height:calc(117.6471svh - 60px);
+  }
+  .rev-page .rev-hero.rev-hero-fullvideo {
+    min-height:clamp(710px,100svh,1050px);
+  }
+  .rev-page #chapterDialog {
+    max-height:calc(117.6471svh - 44px);
+  }
+}
+
+/* Tablet / mobile keep their existing responsive dimensions and controls. */
+@media screen and (max-width:1023px) {
+  body.rev-page {
+    zoom:1;
+  }
+}
