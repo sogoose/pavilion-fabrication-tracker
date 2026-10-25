@@ -177,6 +177,7 @@
 </style>
   <!-- Comfortable 75%-zoom editorial density at the browser's standard 100% setting. -->
   <link rel="stylesheet" href="../assets/project-desktop-scale.css?v=20261025-desktop-75-v1">
+  <link rel="stylesheet" href="../assets/future-poster.css?v=20261026-v1">
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -277,9 +278,13 @@
       </button>
       <button class="rev-poster" type="button" data-chapter="4" id="poster-05" aria-label="Open chapter 05: THE FUTURE">
         <span class="rev-poster-top"><span>05 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
-        <span class="rev-poster-art" aria-hidden="true">
-          <span class="chapter-ambient ambient-centered" style="--ambient-time:11s;--ambient-delay:-18.900000000000002s;--ambient-direction:reverse;--ambient-depth:1"><img class="rev-poster-primary" src="../assets/workflow/hrc.svg" alt="" loading="lazy"></span>
-
+        <span class="rev-poster-art future-art" aria-hidden="true">
+          <img class="future-headset" src="../assets/workflow/hrc.svg" alt="" loading="lazy">
+          <span class="future-moving-window">
+            <video class="future-video" muted loop playsinline preload="none" poster="../assets/exhibition/future-vr-poster.jpg" tabindex="-1">
+              <source src="../assets/video/future-vr-loop.mp4" type="video/mp4">
+            </video>
+          </span>
         </span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE FUTURE</span>
@@ -541,6 +546,32 @@
   if(!window.CSS || !CSS.supports || !CSS.supports("background-clip","text")){
     settle();
   }
+})();
+</script>
+<script>
+/* Only animate the VR sample when its poster is actually visible. */
+(function(){
+  "use strict";
+  const card=document.getElementById("poster-05");
+  const video=card&&card.querySelector(".future-video");
+  if(!card||!video)return;
+  const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
+  let visible=false;
+  function sync(){
+    if(!visible||document.hidden||reduced.matches){video.pause();return;}
+    video.muted=true;video.loop=true;video.playsInline=true;
+    const playing=video.play();
+    if(playing&&typeof playing.catch==="function")playing.catch(function(){});
+  }
+  if("IntersectionObserver" in window){
+    const ob=new IntersectionObserver(function(entries){
+      visible=entries[0].isIntersecting;
+      sync();
+    },{rootMargin:"100px 0px",threshold:.02});
+    ob.observe(card);
+  }else{visible=true;sync();}
+  document.addEventListener("visibilitychange",sync);
+  if(typeof reduced.addEventListener==="function")reduced.addEventListener("change",sync);
 })();
 </script>
 </body>
