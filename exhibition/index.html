@@ -132,60 +132,69 @@
     @media(max-width:370px){.chapter-grid{grid-template-columns:1fr}.chapter-tile{min-height:355px}.chapter-image{height:220px}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
   </style>
+  <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-launch-v1">
 </head>
-<body>
-  <header class="site-header">
-    <a class="identity" href="../" aria-label="Pavilion Fabrication Hub home">PAVILION / 26—27</a>
-    <div class="header-right"><span class="edition">TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN</span><a href="../">FABRICATION HUB ↗</a></div>
-  </header>
+<body class="ed-chapter-screen ed-stage">
+  <div class="ed-topbar" role="navigation" aria-label="Main site navigation">
+    <a class="ed-logotype" href="../" aria-label="Back to pavilion home">PRINT("HELLO, EARTH")³</a>
+    <nav class="ed-global-nav" aria-label="Sections">
+      <a href="../">HOME</a>
+      <a href="./" aria-current="page">EXHIBITION</a>
+      <a href="../#workflow">PROCESS</a>
+      <a href="../#tracker">TRACKER</a>
+    </nav>
+  </div>
   <main>
-    <section class="hero" id="top" aria-labelledby="main-title">
-      <div>
-        <div class="eyebrow">An exhibition in five chapters <span aria-hidden="true">·</span> 2026/27</div>
-        <h1 class="hero-title" id="main-title">
-          <span class="code-intro">PRINT(</span>
-          <span class="typed-wrapper"><span class="halftone-ghost" aria-hidden="true">"HELLO, EARTH")³</span><span id="typeText" aria-label="Hello, Earth">"HELLO, EARTH")³</span><span class="caret" aria-hidden="true"></span></span>
-        </h1>
-      </div>
-      <div class="hero-foot">
-        <div class="hero-description"><strong>One brick. Many possibilities.</strong> A pavilion made of earth, shaped through architectural design, material experiments, robotic fabrication and collective learning.</div>
-        <a class="scroll-link" href="#chapters">Explore the exhibition <span class="round-arrow" aria-hidden="true">↓</span></a>
-      </div>
+    <section class="ed-intro ed-chapter-intro" id="top" aria-labelledby="main-title">
+      <span class="ed-eyebrow">EXHIBITION / 2026—27</span>
+      <h1 class="ed-big-title" id="main-title"><span>PRINT("HELLO,</span><span><span id="typeText">EARTH")³</span></span></h1>
+      <img class="ed-intro-art" src="../assets/workflow/decor/printed-module.webp" alt="" aria-hidden="true">
+      <div class="ed-intro-bottom"><p class="ed-smallcopy">SOIL-BASED PAVILION<br>FABRICATION</p><a class="ed-scroll-cue" href="#chapters">05 CHAPTERS <span class="ed-cue-arrow" aria-hidden="true">↓</span></a></div>
     </section>
-    <section class="chapters" id="chapters" aria-labelledby="chapter-heading">
-      <div class="section-top">
-        <div><div class="eyebrow">The exhibition / 01—05</div><h2 id="chapter-heading">Five chapters.<br>One continuous experiment.</h2></div>
-        <p class="section-note">Follow the arrows, choose a chapter, and open the full exhibition story.</p>
+    <section class="ed-collection ed-chapter-rail" id="chapters" aria-label="Exhibition chapters">
+      <div class="ed-collection-heading">
+        <p class="ed-eyebrow">(Featured work) &nbsp; 01—05</p>
+        <div class="ed-rail-controls" aria-label="Scroll between exhibition chapters">
+          <button class="ed-rail-arrow" type="button" data-rail-target="chapterRail" data-rail-dir="prev" aria-label="Previous chapters">←</button>
+          <button class="ed-rail-arrow" type="button" data-rail-target="chapterRail" data-rail-dir="next" aria-label="Next chapters">→</button>
+        </div>
       </div>
-      <div class="chapter-grid" id="chapterGrid">
-        <button class="chapter-tile" type="button" data-chapter="0" style="--tile:#e6dfd1" aria-label="Open chapter 1: The Ambition">
-          <span class="chapter-image"><img src="../assets/workflow/spatial.svg" alt="Diagram of the pavilion building component"></span>
-          <span class="chapter-body"><span class="chapter-num">01 / 05</span><span class="chapter-title">THE AMBITION</span><span class="chapter-subtitle">One system, different spaces</span><span class="chapter-open"><span>Open chapter</span><span>↗</span></span></span>
+      <div class="ed-rail" id="chapterRail" tabindex="0" aria-label="Horizontal gallery, drag or swipe to view all five chapters">
+        <button class="ed-card" type="button" data-chapter="0" aria-label="Open chapter 1, The Ambition">
+          <span class="ed-card-top"><span class="ed-card-number">01 / 05</span><span class="ed-card-arrow">↗</span></span>
+          <span class="ed-media"><img src="../assets/workflow/spatial.svg" alt="" loading="lazy"></span>
+          <span class="ed-ascii" data-ascii-src="../assets/workflow/spatial.svg"></span>
+          <span class="ed-card-foot"><span class="ed-card-name">THE AMBITION</span><span class="ed-card-category">CHAPTER 01</span></span>
         </button>
-        <button class="chapter-tile" type="button" data-chapter="1" style="--tile:#e5d4c3" aria-label="Open chapter 2: The Materials">
-          <span class="chapter-image"><img src="../assets/workflow/material.svg" alt="Illustration of earth and material mixtures"></span>
-          <span class="chapter-body"><span class="chapter-num">02 / 05</span><span class="chapter-title">THE MATERIALS</span><span class="chapter-subtitle">Earth is not just earth</span><span class="chapter-open"><span>Open chapter</span><span>↗</span></span></span>
+        <button class="ed-card" type="button" data-chapter="1" aria-label="Open chapter 2, The Materials">
+          <span class="ed-card-top"><span class="ed-card-number">02 / 05</span><span class="ed-card-arrow">↗</span></span>
+          <span class="ed-media"><img src="../assets/workflow/decor/rammed-blocks.webp" alt="" loading="lazy"></span>
+          <span class="ed-ascii" data-ascii-src="../assets/workflow/decor/rammed-blocks.webp"></span>
+          <span class="ed-card-foot"><span class="ed-card-name">THE MATERIALS</span><span class="ed-card-category">CHAPTER 02</span></span>
         </button>
-        <button class="chapter-tile" type="button" data-chapter="2" style="--tile:#dce2da" aria-label="Open chapter 3: The Translation">
-          <span class="chapter-image"><img src="../assets/workflow/gcode.svg" alt="Robotic fabrication toolpath illustration"></span>
-          <span class="chapter-body"><span class="chapter-num">03 / 05</span><span class="chapter-title">THE TRANSLATION</span><span class="chapter-subtitle">From geometry to instructions</span><span class="chapter-open"><span>Open chapter</span><span>↗</span></span></span>
+        <button class="ed-card" type="button" data-chapter="2" aria-label="Open chapter 3, The Translation">
+          <span class="ed-card-top"><span class="ed-card-number">03 / 05</span><span class="ed-card-arrow">↗</span></span>
+          <span class="ed-media"><img src="../assets/workflow/gcode.svg" alt="" loading="lazy"></span>
+          <span class="ed-ascii" data-ascii-src="../assets/workflow/gcode.svg"></span>
+          <span class="ed-card-foot"><span class="ed-card-name">THE TRANSLATION</span><span class="ed-card-category">CHAPTER 03</span></span>
         </button>
-        <button class="chapter-tile" type="button" data-chapter="3" style="--tile:#e3e1d7" aria-label="Open chapter 4: The Reality">
-          <span class="chapter-image"><img src="../assets/workflow/environment.svg" alt="Environmental monitoring illustration"></span>
-          <span class="chapter-body"><span class="chapter-num">04 / 05</span><span class="chapter-title">THE REALITY</span><span class="chapter-subtitle">When materials surprise us</span><span class="chapter-open"><span>Open chapter</span><span>↗</span></span></span>
+        <button class="ed-card" type="button" data-chapter="3" aria-label="Open chapter 4, The Reality">
+          <span class="ed-card-top"><span class="ed-card-number">04 / 05</span><span class="ed-card-arrow">↗</span></span>
+          <span class="ed-media"><img src="../assets/workflow/environment.svg" alt="" loading="lazy"></span>
+          <span class="ed-ascii" data-ascii-src="../assets/workflow/environment.svg"></span>
+          <span class="ed-card-foot"><span class="ed-card-name">THE REALITY</span><span class="ed-card-category">CHAPTER 04</span></span>
         </button>
-        <button class="chapter-tile" type="button" data-chapter="4" style="--tile:#e7d7cf" aria-label="Open chapter 5: The Future">
-          <span class="chapter-image"><img src="../assets/workflow/hrc.svg" alt="Human-robot collaboration illustration"></span>
-          <span class="chapter-body"><span class="chapter-num">05 / 05</span><span class="chapter-title">THE FUTURE</span><span class="chapter-subtitle">Learning through fabrication</span><span class="chapter-open"><span>Open chapter</span><span>↗</span></span></span>
+        <button class="ed-card" type="button" data-chapter="4" aria-label="Open chapter 5, The Future">
+          <span class="ed-card-top"><span class="ed-card-number">05 / 05</span><span class="ed-card-arrow">↗</span></span>
+          <span class="ed-media"><img src="../assets/workflow/hrc.svg" alt="" loading="lazy"></span>
+          <span class="ed-ascii" data-ascii-src="../assets/workflow/hrc.svg"></span>
+          <span class="ed-card-foot"><span class="ed-card-name">THE FUTURE</span><span class="ed-card-category">CHAPTER 05</span></span>
         </button>
       </div>
-      <div class="path-note"><span>DESIGN</span><span class="path-line"></span><span>MATERIAL</span><span class="path-line"></span><span>FABRICATION</span><span class="path-line"></span><span>OBSERVATION</span><span class="path-line"></span><span>LEARNING →</span></div>
+      <div class="ed-strip-foot"><span>DRAG / SWIPE TO EXPLORE</span><span>SELECT A CHAPTER ↗</span></div>
     </section>
+    <footer class="ed-site-footer"><span>PRINT("HELLO, EARTH")³ / 2026—27</span><a href="../">PAVILION HOME ↗</a></footer>
   </main>
-  <footer class="bottom-band">
-    <div><strong>PRINT("HELLO, EARTH")³</strong><p>ARIT1507 · Creative Robotics in Spatial Design, TU Delft. An evolving record of design, fabrication, experimentation and exchange.</p></div>
-    <div class="bottom-links"><a href="../">Pavilion Fabrication Hub ↗</a><a href="#top">Back to top ↑</a></div>
-  </footer>
   <dialog id="chapterDialog" aria-label="Exhibition chapter details">
     <div class="dialog-header"><span class="section-counter" id="dialogCounter">01 / 05</span><span class="chapter-direction">EXHIBITION ARCHIVE</span><button class="dialog-close" id="closeDialog" aria-label="Close chapter" type="button">×</button></div>
     <div class="dialog-main">
@@ -319,16 +328,17 @@
     var match=location.hash.match(/^#chapter-0?([1-5])$/);
     if(match)openChapter(Number(match[1])-1);
     var title=document.getElementById("typeText");
-    var message='"HELLO, EARTH")³';
+    var message='EARTH")³';
     if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){
-      title.textContent=message;document.querySelector(".hero").classList.add("is-typed");
+      title.textContent=message;document.querySelector(".ed-chapter-intro").classList.add("is-typed");
     }else{
       title.textContent="";
       var count=0;
-      function type(){title.textContent=message.slice(0,++count);if(count<message.length){setTimeout(type,count<2?380:85)}else{document.querySelector(".hero").classList.add("is-typed")}}
+      function type(){title.textContent=message.slice(0,++count);if(count<message.length){setTimeout(type,count<2?380:85)}else{document.querySelector(".ed-chapter-intro").classList.add("is-typed")}}
       setTimeout(type,390);
     }
   })();
   </script>
+<script src="../assets/editorial-landing.js?v=20261025-launch-v1" defer></script>
 </body>
 </html>
