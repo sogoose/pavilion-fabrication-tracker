@@ -62,12 +62,17 @@
   inset:0;
   z-index:2;
   pointer-events:none;
-  background-image:radial-gradient(rgba(28,32,31,.24) .5px,transparent .78px);
-  background-size:7px 7px;
-  background-position:0 0;
-  opacity:.18;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,black 68%);
-  mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,black 68%);
+  /* Two differently spaced stipple grids make a fine irregular grain,
+     avoiding the aggressive 1-bit treatment rejected earlier. */
+  background-image:
+    radial-gradient(rgba(27,31,30,.45) .72px,transparent 1.08px),
+    radial-gradient(rgba(27,31,30,.30) .5px,transparent .86px);
+  background-size:5px 5px,11px 11px;
+  background-position:0 0,3px 4px;
+  opacity:.32;
+  mix-blend-mode:multiply;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 24%,rgba(0,0,0,.63) 47%,black 68%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.10) 24%,rgba(0,0,0,.63) 47%,black 68%);
   animation:none;
 }
 .rev-page .rev-hero-fullvideo .rev-hero-title-wrap{
@@ -140,11 +145,42 @@
       rgba(250,249,246,.28) 100%);
   }
   .rev-page .rev-hero.rev-hero-fullvideo::after{
-    opacity:.10;
+    opacity:.18;
   }
 }
 /* Reduce motion at OS level: the video gets paused at its first usable frame
  * in the accompanying lightweight playback code (no graphic animation). */
 @media(prefers-reduced-motion:reduce){
   .rev-page .rev-hero.rev-hero-fullvideo::after{animation:none}
+}
+
+
+/* The first-print animation plays once as before. After it completes,
+   mouse hover brings back the point-screen letterforms. Moving away
+   gently fills the letters again, without restarting the page animation. */
+@supports ((background-clip:text) or (-webkit-background-clip:text)) {
+  .rev-page .rev-hero-title.rev-halftone-settled > span {
+    animation:none;
+    --earth-dot:5px;
+    transition:--earth-dot .42s cubic-bezier(.22,.7,.21,1);
+  }
+  @media(hover:hover) and (pointer:fine) {
+    .rev-page .rev-hero-title.rev-halftone-settled:hover > span {
+      --earth-dot:1.25px;
+    }
+    .rev-page .rev-hero-title.rev-halftone-settled:hover > span:nth-child(2) {
+      --earth-dot:1.45px;
+    }
+    .rev-page .rev-hero-title.rev-halftone-settled:hover > span:nth-child(3) {
+      --earth-dot:1.15px;
+    }
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .rev-page .rev-hero-title.rev-halftone-settled > span {
+    animation:none!important;
+    background:none!important;
+    color:var(--rev-ink,#302b25)!important;
+    transition:none!important;
+  }
 }
