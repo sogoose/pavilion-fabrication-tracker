@@ -1,69 +1,104 @@
-/* Focused PRINT("HELLO, EARTH")³ hero styling */
+/* PROJECT hero v2 — three-line code title and softly layered pavilion graphics */
 .rev-page .rev-hero{
-  min-height:clamp(580px,calc(100svh - 60px),1050px);
-  padding:clamp(28px,3.6vw,60px);
-  display:flex;align-items:flex-start;justify-content:center;
-  position:relative;overflow:hidden;isolation:isolate;
-  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;background:#fff;
+  position:relative;isolation:isolate;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  min-height:clamp(590px,calc(100svh - 60px),1080px);
+  padding:clamp(27px,3.6vw,62px);
+  background:#fff;color:#101311;
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
 }
 .rev-page .rev-hero::before{
   content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
-  background:radial-gradient(ellipse at 57% 48%,rgba(212,229,234,.25) 0%,rgba(240,228,238,.12) 32%,transparent 68%);
+  background:radial-gradient(ellipse at 62% 48%,rgba(224,232,235,.24),transparent 66%);
 }
 .rev-page .rev-hero::after{
   content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent 0,transparent 7px,rgba(80,145,160,.095) 8px,transparent 9px);
-  opacity:.24;
-  -webkit-mask-image:radial-gradient(ellipse at 56% 47%,#000,transparent 70%);
-  mask-image:radial-gradient(ellipse at 56% 47%,#000,transparent 70%);
-  animation:revSignal 10s steps(1,end) infinite;
+  background:repeating-linear-gradient(0deg,transparent 0,transparent 8px,rgba(96,160,177,.07) 9px,transparent 10px);
+  opacity:.19;
+  -webkit-mask-image:radial-gradient(ellipse at 62% 50%,#000,transparent 72%);
+  mask-image:radial-gradient(ellipse at 62% 50%,#000,transparent 72%);
+  animation:revSignal 12s steps(1,end) infinite;
 }
+/* First image remains the original uploaded hero-chain PNG, brightened only through CSS. */
 .rev-page .rev-assembly{
-  position:absolute;z-index:-1;
-  left:-9%;top:-2%;right:auto;bottom:auto;
+  position:absolute;z-index:-1;left:-9%;top:-2%;right:auto;bottom:auto;
   width:139%;height:114%;max-width:none;
   object-fit:contain;object-position:center;
-  opacity:.93;mix-blend-mode:multiply;
-  filter:brightness(.78) contrast(1.18) drop-shadow(-2px 0 rgba(35,155,190,.12)) drop-shadow(2px 0 rgba(170,77,151,.11));
-  transform:scale(1.16) rotate(-7deg);transform-origin:center center;
+  opacity:.40;mix-blend-mode:multiply;
+  filter:grayscale(1) brightness(1.22) contrast(.9)
+    drop-shadow(-2px 0 rgba(56,171,193,.08))
+    drop-shadow(2px 0 rgba(167,91,174,.08));
+  transform:scale(1.16) rotate(-7deg);transform-origin:center;
   animation:revGlitch 12s ease-in-out infinite;pointer-events:none;
 }
+/* A light vector silhouette following the newly supplied curved modular image. */
+.rev-page .rev-assembly-secondary{
+  position:absolute;z-index:-1;
+  left:51%;top:-12%;width:78%;height:78%;max-width:none;
+  object-fit:contain;object-position:center;
+  opacity:.22;mix-blend-mode:multiply;
+  transform:rotate(29deg) scale(.96);transform-origin:center;
+  pointer-events:none;
+}
 .rev-page .rev-hero-title{
-  position:relative;z-index:3;align-self:stretch;margin:0;
+  position:relative;z-index:3;align-self:stretch;
+  margin:0;max-width:100%;text-align:left;
   font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
-  font-size:clamp(59px,8.3vw,155px);font-weight:500;
-  line-height:.915;letter-spacing:-.078em;
-  white-space:nowrap;text-align:left;text-rendering:optimizeLegibility;
+  font-size:clamp(62px,8.8vw,160px);
+  font-weight:500;line-height:.92;letter-spacing:-.078em;
+  white-space:nowrap;text-rendering:optimizeLegibility;
 }
 .rev-page .rev-hero-title span{display:block;white-space:nowrap}
-.rev-page .rev-hero-title span+span{margin-top:.12em}
+.rev-page .rev-hero-title .rev-title-print{margin-bottom:.11em}
+.rev-page .rev-hero-title .rev-title-code{padding-left:.065em}
+.rev-page .rev-hero-title .rev-title-code + .rev-title-code{margin-top:.04em}
 .rev-page .rev-hero-title sup{
-  display:inline-block;font-size:.245em;letter-spacing:-.015em;
-  vertical-align:top;position:relative;top:.16em;margin-left:.055em;
+  display:inline-block;font-size:.24em;letter-spacing:-.015em;
+  vertical-align:top;position:relative;top:.15em;margin-left:.06em;
 }
-.rev-page .rev-hero-bottom{
-  position:absolute;z-index:4;
-  left:clamp(28px,3.6vw,60px);bottom:clamp(30px,3.6vw,56px);
-  display:block;
+/* Logo is part of the LEFT navigation rail, not the hero artwork. */
+.rev-page .rev-aside-inner .rev-index-end{
+  display:flex;align-items:flex-end;
+  color:inherit;line-height:1;
 }
-.rev-page .rev-tu-logo{display:block;width:91px;max-width:24vw;height:auto;opacity:.9}
+.rev-page .rev-aside-logo{
+  display:block;width:108px;max-width:100%;height:auto;
+  opacity:.94;object-fit:contain;
+}
 @keyframes revGlitch{
-  0%,88%,91%,94%,100%{transform:scale(1.16) rotate(-7deg);filter:brightness(.78) contrast(1.18) drop-shadow(-2px 0 rgba(35,155,190,.12)) drop-shadow(2px 0 rgba(170,77,151,.11))}
-  89%{transform:translate(3px,-1px) scale(1.16) rotate(-7deg);filter:brightness(.85) contrast(1.22) drop-shadow(-5px 0 rgba(35,155,190,.23)) drop-shadow(4px 0 rgba(170,77,151,.18))}
-  90%{transform:translate(-3px,1px) scale(1.16) rotate(-7deg)}
-  92%{transform:translate(1px,-1px) scale(1.16) rotate(-7deg)}
+  0%,89%,92%,95%,100%{transform:scale(1.16) rotate(-7deg)}
+  90%{transform:translate(2px,-1px) scale(1.16) rotate(-7deg)}
+  91%{transform:translate(-2px,1px) scale(1.16) rotate(-7deg)}
+  93%{transform:translate(1px,-1px) scale(1.16) rotate(-7deg)}
 }
-@keyframes revSignal{0%,90%,95%,100%{opacity:.24}91%,93%{opacity:.48}92%,94%{opacity:.12}}
+@keyframes revSignal{0%,89%,94%,100%{opacity:.19}90%,92%{opacity:.34}91%,93%{opacity:.1}}
 @media(max-width:1050px){
- .rev-page .rev-hero-title{font-size:clamp(52px,8.15vw,100px)}
- .rev-page .rev-assembly{left:-18%;width:150%;height:114%;top:0}
+  .rev-page .rev-hero-title{font-size:clamp(55px,8.25vw,118px)}
+  .rev-page .rev-assembly{left:-16%;top:0;width:151%;height:112%}
+  .rev-page .rev-assembly-secondary{left:45%;top:-9%;width:88%;height:76%}
 }
 @media(max-width:680px){
- .rev-page .rev-hero{min-height:clamp(440px,67svh,720px);padding:24px 16px 32px}
- .rev-page .rev-hero-title{font-size:clamp(38px,10.1vw,76px);line-height:.94;letter-spacing:-.076em}
- .rev-page .rev-hero-title span+span{margin-top:.095em}
- .rev-page .rev-assembly{left:-38%;top:5%;width:180%;height:112%;opacity:.85;transform:scale(1.16) rotate(-7deg)}
- .rev-page .rev-hero-bottom{left:16px;bottom:27px}
- .rev-page .rev-tu-logo{width:72px}
+  .rev-page .rev-hero{
+    min-height:clamp(480px,73svh,790px);
+    padding:28px 16px;
+  }
+  .rev-page .rev-hero-title{
+    font-size:clamp(39px,9.6vw,73px);
+    letter-spacing:-.077em;line-height:.96;
+  }
+  .rev-page .rev-hero-title .rev-title-print{margin-bottom:.14em}
+  .rev-page .rev-hero-title .rev-title-code{padding-left:.04em}
+  .rev-page .rev-assembly{
+    left:-35%;top:5%;width:180%;height:115%;opacity:.32;
+  }
+  .rev-page .rev-assembly-secondary{
+    left:22%;top:-8%;width:128%;height:69%;opacity:.16;transform:rotate(26deg);
+  }
+  .rev-page .rev-aside-inner .rev-index-end{
+    display:flex;justify-content:flex-start;min-height:27px;margin-top:2px;
+  }
+  .rev-page .rev-aside-logo{width:73px}
 }
-@media(prefers-reduced-motion:reduce){.rev-page .rev-assembly,.rev-page .rev-hero::after{animation:none!important}}
+@media(prefers-reduced-motion:reduce){
+  .rev-page .rev-assembly,.rev-page .rev-hero::after{animation:none!important}
+}
