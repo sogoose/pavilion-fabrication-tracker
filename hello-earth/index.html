@@ -102,6 +102,32 @@
 @media(max-width:680px){.rev-page #poster-03 .rev-poster-title{font-size:clamp(29px,7vw,50px)}.rev-page #poster-03 .translation-infill{left:-31%;bottom:-25%;width:112%;height:108%}.rev-page #poster-03 .translation-mould{right:-35%;top:-11%;width:95%;height:76%}}
 @media(prefers-reduced-motion:reduce){.rev-page #poster-03 .rev-translation-stage img{transition:none!important;transform:none!important}.rev-page #poster-03 .translation-mould{transform:rotate(90deg)!important}.rev-page #poster-03 .translation-infill{transform:rotate(-9deg)!important}}
 </style>
+<style>
+/* Restrained editorial composition, with a passing translucent light plane. */
+.rev-page #poster-03::after {background:linear-gradient(0deg,#27231f45,transparent 28%)}
+.rev-page #poster-03 .translation-infill {left:-25%;bottom:-31%;width:96%;height:101%;transform:rotate(-9deg)}
+.rev-page #poster-03 .translation-mould {right:-24%;top:-9%;width:86%;height:74%;transform:rotate(90deg)}
+.rev-page #poster-03:hover .translation-infill,.rev-page #poster-03:focus-visible .translation-infill {transform:rotate(-7.5deg)}
+.rev-page #poster-03:hover .translation-mould,.rev-page #poster-03:focus-visible .translation-mould {transform:translate(-5px,3px) rotate(90deg)}
+.rev-page #poster-03 .rev-poster-title {font-size:clamp(31px,3.7vw,62px);max-width:87%;text-shadow:0 1px 12px #27231f45}
+.rev-page #poster-03 .rev-poster-action {transition:background .35s,color .35s,transform .5s;border-color:#fffdf8;background:transparent;backdrop-filter:none}
+.rev-page #poster-03:hover .rev-poster-action,.rev-page #poster-03:focus-visible .rev-poster-action {background:#fffdf8;color:#584f43;transform:rotate(45deg)}
+.translation-caption {position:absolute;z-index:4;font:400 clamp(8px,.7vw,10px)/1.4 Arial,sans-serif;letter-spacing:.09em;color:#fffdf8;pointer-events:none;text-shadow:0 1px 8px #302b2540}
+.translation-caption-infill {left:6%;top:32%}
+.translation-caption-mould {right:6%;top:53%}
+.translation-veil {position:absolute;z-index:3;top:-35%;left:-100%;width:42%;height:175%;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent 0%,#fffdf810 22%,#fffdf828 72%,#fffdf83d 97%,transparent 100%);border-right:1px solid #fffdf83b;transform:translateX(0) rotate(19deg);animation:translation-light-pass 14s cubic-bezier(.4,0,.2,1) infinite;animation-play-state:paused}
+.translation-visible .translation-veil {animation-play-state:running}
+@keyframes translation-light-pass {0%,9%{opacity:0;transform:translateX(0) rotate(19deg)}15%{opacity:.7}48%{opacity:.7}58%,100%{opacity:0;transform:translateX(570%) rotate(19deg)}}
+.translation-enter .translation-infill {animation:translation-infill-enter 1.45s cubic-bezier(.16,1,.3,1) both}
+.translation-enter .translation-mould {animation:translation-mould-enter 1.6s .12s cubic-bezier(.16,1,.3,1) both}
+.translation-enter .rev-poster-bottom {animation:translation-type-enter 1s .5s ease both}
+.translation-enter .translation-caption {animation:translation-type-enter 1s .75s ease both}
+@keyframes translation-infill-enter {from{translate:-24px 28px;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes translation-mould-enter {from{translate:24px -20px;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes translation-type-enter {from{translate:0 8px;opacity:0}to{translate:0 0;opacity:1}}
+@media(max-width:680px){.rev-page #poster-03 .translation-infill{left:-29%;bottom:-29%;width:103%;height:100%}.rev-page #poster-03 .translation-mould{right:-28%;top:-8%;width:89%;height:73%}.rev-page #poster-03 .rev-poster-title{font-size:clamp(27px,6.7vw,46px)}.translation-caption-infill{top:31%}.translation-caption-mould{top:52%;right:5%;font-size:7px}}
+@media(prefers-reduced-motion:reduce){.translation-veil{display:none}.rev-page #poster-03 .translation-infill,.rev-page #poster-03 .translation-mould,.rev-page #poster-03 .rev-poster-bottom,.rev-page #poster-03 .translation-caption{animation:none!important;translate:none!important}}
+</style>
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -181,6 +207,9 @@
         <span class="rev-translation-stage" aria-hidden="true">
           <img class="translation-infill" src="../assets/exhibition/translation-infill.webp" alt="" loading="lazy">
           <img class="translation-mould" src="../assets/exhibition/translation-mould.webp" alt="" loading="lazy">
+          <span class="translation-caption translation-caption-infill">01 / PRINTED INFILL</span>
+          <span class="translation-caption translation-caption-mould">02 / RAMMED EARTH MOULD</span>
+          <span class="translation-veil"></span>
         </span>
         <span class="rev-poster-bottom">
           <span class="rev-poster-title">THE TRANSLATION</span>
@@ -399,17 +428,17 @@
 <script>
 (function(){
  const card=document.getElementById('poster-03');
- const motion=matchMedia('(prefers-reduced-motion: reduce)');
- if(!card)return;
- card.addEventListener('pointermove',event=>{
-   if(motion.matches||event.pointerType!=='mouse')return;
-   const rect=card.getBoundingClientRect();
-   card.style.setProperty('--tx',((event.clientX-rect.left)/rect.width-.5)*16+'px');
-   card.style.setProperty('--ty',((event.clientY-rect.top)/rect.height-.5)*12+'px');
- });
- card.addEventListener('pointerleave',()=>{card.style.setProperty('--tx','0px');card.style.setProperty('--ty','0px')});
+ if(!card||!('IntersectionObserver' in window))return;
+ let entered=false;
+ const observer=new IntersectionObserver(entries=>{
+   const visible=entries[0].isIntersecting;
+   card.classList.toggle('translation-visible',visible);
+   if(visible&&!entered){entered=true;card.classList.add('translation-enter')}
+ },{threshold:.12});
+ observer.observe(card);
 })();
 </script>
 </body>
 </html>
+
 
