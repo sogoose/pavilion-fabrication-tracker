@@ -46,21 +46,25 @@
   mix-blend-mode:normal;
   transition:transform .65s cubic-bezier(.2,.7,.2,1),opacity .45s;
 }
-.rev-page #poster-03 .rev-translation-model{
-  left:-5%;top:11%;width:88%;height:82%;
-  opacity:.89;
-  filter:grayscale(1) saturate(0) contrast(1.04) brightness(1.045)!important;
-}
+/* PRIMARY — the machine occupies the large left-hand composition. */
 .rev-page #poster-03 .rev-translation-robot{
-  right:1%;top:2%;width:34%;height:42%;
-  opacity:.48;
-  filter:grayscale(1) saturate(0) contrast(1.2) brightness(.92)!important;
+  left:-3%;right:auto;top:3%;bottom:auto;
+  width:84%;height:79%;z-index:1;
+  opacity:.87;
+  filter:grayscale(1) saturate(0) contrast(1.45) brightness(.78)!important;
 }
-.rev-page #poster-03:hover .rev-translation-model{
-  transform:translateY(-5px) scale(1.018);
+/* SECONDARY — printed triangular module reads at a smaller scale, bottom-right. */
+.rev-page #poster-03 .rev-translation-model{
+  left:auto;right:-1%;top:auto;bottom:2%;
+  width:45%;height:39%;z-index:2;
+  opacity:.89;
+  filter:grayscale(1) saturate(0) contrast(1.08) brightness(1.04)!important;
 }
 .rev-page #poster-03:hover .rev-translation-robot{
-  opacity:.67;transform:translate(-3px,-3px);
+  transform:translate(-4px,-4px) scale(1.012);opacity:.95;
+}
+.rev-page #poster-03:hover .rev-translation-model{
+  transform:translateY(-4px) scale(1.025);
 }
 @media(max-width:680px){
   .rev-page #poster-03 .rev-poster-title{
@@ -69,11 +73,13 @@
   .rev-page #poster-03 .rev-translation-stage{
     inset:10% 5% 22%;
   }
-  .rev-page #poster-03 .rev-translation-model{
-    left:-6%;top:16%;width:94%;height:77%;
-  }
   .rev-page #poster-03 .rev-translation-robot{
-    right:-1%;top:2%;width:35%;height:39%;opacity:.43;
+    left:-5%;right:auto;top:6%;bottom:auto;
+    width:87%;height:72%;opacity:.85;
+  }
+  .rev-page #poster-03 .rev-translation-model{
+    left:auto;right:-2%;top:auto;bottom:5%;
+    width:47%;height:36%;opacity:.87;
   }
 }
 @media(prefers-reduced-motion:reduce){
