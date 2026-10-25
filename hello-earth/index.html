@@ -178,6 +178,19 @@
   <!-- Comfortable 75%-zoom editorial density at the browser's standard 100% setting. -->
   <link rel="stylesheet" href="../assets/project-desktop-scale.css?v=20261025-desktop-75-v1">
   <link rel="stylesheet" href="../assets/future-poster.css?v=20261026-v1">
+<style>
+/* One moving image, treated as an analogue signal; chapter type stays clean. */
+.rev-page #poster-05::before {background:none;opacity:0}
+.rev-page #poster-05 .future-art {inset:13% 7% 23%;overflow:hidden}
+.rev-page #poster-05 .future-moving-window {left:0;top:0;width:100%;height:100%;overflow:hidden;opacity:1;transform:none;transition:none;background:#9b9996}
+.rev-page #poster-05:hover .future-moving-window,.rev-page #poster-05:focus-visible .future-moving-window {opacity:1;transform:none}
+.rev-page #poster-05 .future-video {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.16) brightness(1.06);mask-image:none;-webkit-mask-image:none;opacity:1}
+.future-static {position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;opacity:.48;mix-blend-mode:soft-light}
+.future-scanlines {position:absolute;inset:0;z-index:3;pointer-events:none;background:repeating-linear-gradient(0deg,#14141438 0px,#14141438 1px,transparent 1px,transparent 4px);opacity:.4}
+.rev-page #poster-05 .rev-poster-bottom {position:relative;z-index:5;display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
+@media(max-width:680px){.rev-page #poster-05 .future-art{inset:14% 6% 24%}}
+@media(prefers-reduced-motion:reduce){.future-static,.future-scanlines{display:none}}
+</style>
 </head>
 <body class="rev-page ed-stage">
   <header class="ed-topbar" aria-label="Site navigation">
@@ -279,9 +292,8 @@
       <button class="rev-poster" type="button" data-chapter="4" id="poster-05" aria-label="Open chapter 05: THE FUTURE">
         <span class="rev-poster-top"><span>05 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
         <span class="rev-poster-art future-art" aria-hidden="true">
-          <img class="future-headset" src="../assets/workflow/hrc.svg" alt="" loading="lazy">
           <span class="future-moving-window">
-            <video class="future-video" muted loop playsinline preload="none" poster="../assets/exhibition/future-vr-poster.jpg" tabindex="-1">
+            <canvas class="future-static" aria-hidden="true"></canvas><span class="future-scanlines"></span><video class="future-video" muted loop playsinline preload="none" poster="../assets/exhibition/future-vr-poster.jpg" tabindex="-1">
               <source src="../assets/video/future-vr-loop.mp4" type="video/mp4">
             </video>
           </span>
@@ -572,6 +584,37 @@
   }else{visible=true;sync();}
   document.addEventListener("visibilitychange",sync);
   if(typeof reduced.addEventListener==="function")reduced.addEventListener("change",sync);
+})();
+</script>
+<script>
+/* Same video source; no extra video downloads. Noise is generated locally. */
+(function(){
+ const card=document.getElementById('poster-05'),video=card&&card.querySelector('.future-video'),canvas=card&&card.querySelector('.future-static');
+ if(!video||!canvas)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ let visible=false,frame=0,last=0,tearUntil=0,nextTear=0;
+ canvas.width=320;canvas.height=320;
+ const grain=ctx.createImageData(320,320);
+ function tick(time){
+  frame=0;if(!visible||document.hidden||reduced.matches)return;
+  if(time-last>83){
+   last=time;
+   for(let i=0;i<grain.data.length;i+=4){const v=Math.random()*255;grain.data[i]=grain.data[i+1]=grain.data[i+2]=v;grain.data[i+3]=100+Math.random()*90}
+   ctx.putImageData(grain,0,0);
+   if(time>nextTear){tearUntil=time+180;nextTear=time+1300+Math.random()*1900}
+   if(time<tearUntil&&video.readyState>=2){
+    const vw=video.videoWidth,vh=video.videoHeight,side=Math.min(vw,vh),sx=(vw-side)/2,sy=(vh-side)/2;
+    ctx.save();ctx.globalAlpha=.85;ctx.filter='grayscale(1) contrast(1.3)';
+    for(let n=0;n<3;n++){const y=Math.random()*290,h=3+Math.random()*15,shift=(Math.random()-.5)*30;ctx.drawImage(video,sx,sy+y/320*side,side,h/320*side,shift,y,320,h)}
+    ctx.restore();
+   }
+  }
+  frame=requestAnimationFrame(tick);
+ }
+ function sync(){cancelAnimationFrame(frame);frame=0;if(visible&&!document.hidden&&!reduced.matches)frame=requestAnimationFrame(tick);else ctx.clearRect(0,0,320,320)}
+ if('IntersectionObserver' in window)new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync()},{threshold:.02}).observe(card);else{visible=true;sync()}
+ document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);
 })();
 </script>
 </body>
