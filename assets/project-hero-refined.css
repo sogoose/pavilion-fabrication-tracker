@@ -102,3 +102,114 @@
 @media(prefers-reduced-motion:reduce){
   .rev-page .rev-assembly,.rev-page .rev-hero::after{animation:none!important}
 }
+
+
+/* v3 — user-supplied triangular module symbol + more pronounced, brief signal distortion.
+   All transformations affect presentation only; underlying project images are unchanged. */
+.rev-page .rev-assembly{
+  opacity:.51;
+  filter:grayscale(1) brightness(1.055) contrast(1.045)
+    drop-shadow(-2px 0 rgba(30,151,182,.14))
+    drop-shadow(2px 0 rgba(170,59,151,.12));
+  animation:revGlitch 7.4s steps(1,end) infinite;
+}
+.rev-page .rev-assembly-secondary{
+  opacity:.25;
+}
+.rev-page .rev-unit-icon{
+  position:absolute;
+  right:5%;top:5%;
+  width:31%;height:41%;
+  object-fit:contain;
+  transform:rotate(-15deg);
+  opacity:.44;
+  filter:brightness(.66) contrast(1.05);
+  pointer-events:none;
+  z-index:0;
+  animation:revIconPulse 7.4s steps(1,end) infinite;
+}
+.rev-page .rev-glitch-layer{
+  position:absolute;
+  z-index:0;
+  left:-9%;top:-2%;right:auto;bottom:auto;
+  width:139%;height:114%;max-width:none;
+  object-fit:contain;object-position:center;
+  mix-blend-mode:multiply;
+  pointer-events:none;
+  opacity:0;
+  transform-origin:center;
+}
+.rev-page .rev-glitch-cyan{
+  filter:grayscale(1) sepia(1) saturate(450%) hue-rotate(142deg) brightness(1.08);
+  clip-path:polygon(0 22%,100% 22%,100% 31%,0 31%,0 55%,100% 55%,100% 60%,0 60%);
+  animation:revGlitchCyan 7.4s steps(1,end) infinite;
+}
+.rev-page .rev-glitch-magenta{
+  filter:grayscale(1) sepia(1) saturate(350%) hue-rotate(262deg) brightness(1.08);
+  clip-path:polygon(0 37%,100% 37%,100% 44%,0 44%,0 70%,100% 70%,100% 75%,0 75%);
+  animation:revGlitchMagenta 7.4s steps(1,end) infinite;
+}
+.rev-page .rev-hero::after{
+  animation:revSignal 7.4s steps(1,end) infinite;
+}
+@keyframes revGlitch{
+  0%,73%,82%,100%{transform:scale(1.16) rotate(-7deg)}
+  74%{transform:translate(8px,-3px) scale(1.16) rotate(-7deg)}
+  75%{transform:translate(-7px,3px) scale(1.16) rotate(-7deg)}
+  76%{transform:translate(4px,-2px) scale(1.16) rotate(-7deg)}
+  77%,79%{transform:scale(1.16) rotate(-7deg)}
+  78%{transform:translate(-5px,2px) scale(1.16) rotate(-7deg)}
+  80%{transform:translate(6px,-2px) scale(1.16) rotate(-7deg)}
+  81%{transform:translate(-2px,1px) scale(1.16) rotate(-7deg)}
+}
+@keyframes revGlitchCyan{
+  0%,73%,77%,79%,82%,100%{opacity:0;transform:scale(1.16) rotate(-7deg)}
+  74%{opacity:.46;transform:translate(17px,-5px) scale(1.16) rotate(-7deg)}
+  75%,76%{opacity:.35;transform:translate(-13px,3px) scale(1.16) rotate(-7deg)}
+  78%{opacity:.41;transform:translate(13px,0) scale(1.16) rotate(-7deg)}
+  80%,81%{opacity:.32;transform:translate(-9px,3px) scale(1.16) rotate(-7deg)}
+}
+@keyframes revGlitchMagenta{
+  0%,73%,76%,78%,80%,82%,100%{opacity:0;transform:scale(1.16) rotate(-7deg)}
+  74%,75%{opacity:.42;transform:translate(-13px,4px) scale(1.16) rotate(-7deg)}
+  77%{opacity:.48;transform:translate(19px,-3px) scale(1.16) rotate(-7deg)}
+  79%{opacity:.34;transform:translate(-11px,2px) scale(1.16) rotate(-7deg)}
+  81%{opacity:.3;transform:translate(9px,0) scale(1.16) rotate(-7deg)}
+}
+@keyframes revSignal{
+  0%,73%,82%,100%{opacity:.19}
+  74%,76%,78%,80%{opacity:.78}
+  75%,77%,79%,81%{opacity:.07}
+}
+@keyframes revIconPulse{
+  0%,73%,82%,100%{opacity:.44;transform:rotate(-15deg)}
+  74%{opacity:.55;transform:translateX(3px) rotate(-15deg)}
+  75%{opacity:.31;transform:translateX(-2px) rotate(-15deg)}
+  76%,80%{opacity:.53;transform:translateX(2px) rotate(-15deg)}
+}
+@media(max-width:1050px){
+  .rev-page .rev-glitch-layer{
+    left:-16%;top:0;width:151%;height:112%;
+  }
+  .rev-page .rev-unit-icon{
+    top:9%;right:4%;width:35%;height:37%;opacity:.37;
+  }
+}
+@media(max-width:680px){
+  .rev-page .rev-assembly{
+    opacity:.44;
+  }
+  .rev-page .rev-glitch-layer{
+    left:-35%;top:5%;width:180%;height:115%;
+  }
+  .rev-page .rev-unit-icon{
+    top:12%;right:-2%;width:41%;height:33%;opacity:.31;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .rev-page .rev-assembly,
+  .rev-page .rev-glitch-layer,
+  .rev-page .rev-unit-icon,
+  .rev-page .rev-hero::after{animation:none!important}
+  .rev-page .rev-glitch-layer{opacity:0!important}
+}
