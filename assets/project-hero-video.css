@@ -1,37 +1,153 @@
-/* Hero video / non-interactive cinematic loop. Existing artworks remain the fallback. */
-.rev-page .rev-hero .rev-hero-video {
-  position:absolute;
-  z-index:1;
-  inset:0;
+/* PRINT("HELLO, EARTH")³ — moving bitmap hero / option B
+   The video is sampled into a real, 1-bit Bayer-dithered canvas by hero-bitmap.js.
+   No chain images, fake glitch overlays, or text-heavy interface decoration. */
+
+.rev-page .rev-hero.rev-hero-bitmap{
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  grid-template-columns:minmax(0,47%) minmax(0,53%);
+  gap:clamp(10px,1.7vw,30px);
+  align-items:center;
+  justify-content:stretch;
+  min-height:clamp(590px,calc(100svh - 60px),940px);
+  padding:clamp(27px,3.1vw,54px);
+  overflow:hidden;
+  background:#faf9f6;
+  color:#302b25;
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+.rev-page .rev-hero.rev-hero-bitmap::before,
+.rev-page .rev-hero.rev-hero-bitmap::after{
+  content:none;
+  animation:none;
+  background:none;
+  opacity:0;
+}
+.rev-page .rev-hero-bitmap .rev-hero-title-wrap{
+  position:relative;
+  z-index:3;
+  width:100%;
+  min-width:0;
+  align-self:center;
+}
+.rev-page .rev-hero-bitmap .rev-hero-title{
+  position:relative;
+  z-index:3;
+  margin:0;
+  padding:0;
+  font-size:clamp(55px,7.15vw,137px);
+  font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;
+  font-weight:500;
+  line-height:.925;
+  letter-spacing:-.078em;
+  color:#302b25;
+  text-align:left;
+  white-space:nowrap;
+}
+.rev-page .rev-hero-bitmap .rev-hero-title span{
   display:block;
+  white-space:nowrap;
+}
+.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-print{margin-bottom:.11em}
+.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-code{padding-left:.045em}
+.rev-page .rev-hero-bitmap .rev-hero-title .rev-title-code+.rev-title-code{margin-top:.035em}
+.rev-page .rev-hero-bitmap .rev-hero-title sup{
+  display:inline-block;
+  font-size:.24em;
+  vertical-align:top;
+  top:.15em;
+  position:relative;
+  margin-left:.05em;
+  letter-spacing:-.01em;
+}
+.rev-page .rev-bitmap-panel{
+  position:relative;
+  z-index:2;
+  justify-self:stretch;
+  align-self:center;
+  width:100%;
+  height:min(72svh,670px);
+  min-height:450px;
+  background:#141615;
+  border:1px solid #343935;
+  overflow:hidden;
+}
+.rev-page .rev-bitmap-panel .rev-hero-video,
+.rev-page .rev-bitmap-panel .rev-bitmap-canvas{
+  display:block;
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
-  object-fit:cover;
-  object-position:67% center;
   pointer-events:none;
-  opacity:0;
-  filter:grayscale(1) brightness(1.28) contrast(.84);
-  mix-blend-mode:multiply;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 22%,rgba(0,0,0,.65) 50%,#000 100%);
-  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.08) 22%,rgba(0,0,0,.65) 50%,#000 100%);
-  transition:opacity .85s ease;
 }
-.rev-page .rev-hero.rev-video-ready .rev-hero-video{opacity:.48;}
-.rev-page .rev-hero.rev-video-ready .rev-assembly{opacity:.16;}
-.rev-page .rev-hero.rev-video-ready .rev-assembly-secondary{opacity:.13;}
-.rev-page .rev-hero.rev-video-ready .rev-unit-icon{opacity:.15;}
-.rev-page .rev-hero .rev-hero-title{z-index:4;}
-.rev-page .rev-hero::after{z-index:3;}
+.rev-page .rev-bitmap-panel .rev-hero-video{
+  z-index:1;
+  object-fit:cover;
+  object-position:55% center;
+  opacity:1;
+  visibility:visible;
+  filter:grayscale(1) contrast(1.7) brightness(.82);
+  mix-blend-mode:normal;
+  -webkit-mask-image:none;
+  mask-image:none;
+  transition:none;
+}
+.rev-page .rev-bitmap-panel .rev-bitmap-canvas{
+  z-index:2;
+  opacity:0;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  image-rendering:pixelated;
+  transition:opacity .18s ease-out;
+}
+.rev-page .rev-hero-bitmap.rev-bitmap-ready .rev-bitmap-canvas{opacity:1}
+.rev-page .rev-hero-bitmap.rev-bitmap-ready .rev-hero-video{opacity:0}
+/* Editorial restraint: no labels over the footage, just a single hairline. */
+.rev-page .rev-bitmap-panel::after{
+  position:absolute;
+  z-index:3;
+  content:"";
+  inset:0;
+  border:1px solid rgba(250,249,246,.09);
+  pointer-events:none;
+}
+@media(max-width:1250px){
+  .rev-page .rev-hero.rev-hero-bitmap{grid-template-columns:minmax(0,48%) minmax(0,52%)}
+  .rev-page .rev-hero-bitmap .rev-hero-title{font-size:clamp(54px,7.15vw,100px)}
+  .rev-page .rev-bitmap-panel{height:min(67svh,610px)}
+}
+@media(max-width:990px){
+  .rev-page .rev-hero.rev-hero-bitmap{
+    grid-template-columns:minmax(0,1fr);
+    min-height:auto;
+    gap:clamp(22px,4vw,45px);
+    padding:clamp(26px,3vw,42px);
+  }
+  .rev-page .rev-hero-bitmap .rev-hero-title{font-size:clamp(52px,8.1vw,92px)}
+  .rev-page .rev-bitmap-panel{
+    width:100%;
+    min-height:340px;
+    height:clamp(340px,52svh,550px);
+  }
+}
 @media(max-width:680px){
- .rev-page .rev-hero .rev-hero-video{
-   object-position:70% center;
-   -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.1) 35%,#000 100%);
-   mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.1) 35%,#000 100%);
- }
- .rev-page .rev-hero.rev-video-ready .rev-hero-video{opacity:.37;}
+  .rev-page .rev-hero.rev-hero-bitmap{
+    min-height:0;
+    padding:28px 16px 30px;
+    gap:24px;
+  }
+  .rev-page .rev-hero-bitmap .rev-hero-title{
+    font-size:clamp(40px,9.4vw,72px);
+    line-height:.96;
+  }
+  .rev-page .rev-bitmap-panel{
+    min-height:245px;
+    height:clamp(245px,43svh,400px);
+  }
 }
 @media(prefers-reduced-motion:reduce){
- .rev-page .rev-hero .rev-hero-video{display:none!important;}
- .rev-page .rev-hero.rev-video-ready .rev-assembly{opacity:.51;}
- .rev-page .rev-hero.rev-video-ready .rev-assembly-secondary{opacity:.25;}
+  .rev-page .rev-hero-bitmap .rev-bitmap-canvas{transition:none}
+  .rev-page .rev-bitmap-panel .rev-hero-video{display:none}
 }
