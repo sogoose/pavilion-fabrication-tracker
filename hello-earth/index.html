@@ -579,7 +579,7 @@
       },
       {
         title:"THE REALITY",lead:"The robot stops. The material keeps changing.",color:"#3c3832",image:"environment.svg",
-        gallery:[["decor/printed-module.webp","Printed sample"],["decor/rammed-blocks.webp","Fabricated components"]],
+        gallery:[["../exhibition/reality-sensors.webp","Environmental sensors"],["../exhibition/reality-kiln.webp","Kiln and firing"],["../exhibition/reality-fired-earth.webp","Fired earth"]],
         paragraphs:[
           "Two bricks can follow the same digital geometry and still look different once they dry. As water evaporates, earthen materials shrink; depending on their shapes, mixtures and surroundings, they can warp or crack.",
           "The team studied humidity and temperature using sensors and a custom drying enclosure with mist makers. The aim was to make drying conditions more consistent and to understand how material behaviour might be better anticipated.",
@@ -589,7 +589,7 @@
       },
       {
         title:"THE FUTURE",lead:"What if each experiment could inform the next one?",color:"#d7d5d3",image:"hrc.svg",
-        gallery:[["computational.svg","Data and feedback"],["assembly.svg","Adaptive assembly"]],
+        gallery:[["../exhibition/future-vr-poster.jpg","The Future — concept"],["computational.svg","Data and feedback"],["assembly.svg","Adaptive assembly"]],
         paragraphs:[
           "Making dozens of components produces more than a wall. It produces records: material compositions, printing settings, production time, test observations and failures. These data can become a shared resource rather than isolated trials.",
           "We are exploring machine-learning workflows for prediction, optimisation and iterative suggestions. A model might estimate strength from existing test data, suggest parameters for a target performance, and point researchers towards experiments that would close important knowledge gaps.",
@@ -837,7 +837,7 @@
           link.setAttribute("aria-label","Open "+title+" chapter");
         }
       });
-      if(current+1===n)render(current);
+      if(current+1===n && dialog.open)render(current);
     };
     function openChapter(i){
       lastTrigger=document.activeElement;
