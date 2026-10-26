@@ -484,11 +484,6 @@
 }
 
 /* Revised detached desktop: subtle macOS-inspired sheets, not browser replicas. */
-.rev-page #chapterDialog .ambition-window-controls{display:flex;gap:7px;align-items:center}
-.rev-page #chapterDialog .ambition-window-controls i{width:10px;height:10px;display:block;border-radius:50%;border:1px solid #0000000e;box-shadow:inset 0 1px #ffffff60}
-.rev-page #chapterDialog .ambition-window-controls i:nth-child(1){background:#e4a9a3}
-.rev-page #chapterDialog .ambition-window-controls i:nth-child(2){background:#dfc18b}
-.rev-page #chapterDialog .ambition-window-controls i:nth-child(3){background:#a5c0ae}
 .rev-page #chapterDialog .ambition-windowtitle{position:absolute;left:56px;right:56px;text-align:center;font:500 11px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;letter-spacing:.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media screen and (min-width:1240px){
  .rev-page #chapterDialog.is-ambition[open]{
@@ -538,4 +533,13 @@
  .rev-page #chapterDialog.is-ambition[open] .dialog-header .dialog-close{border:0;border-radius:50%;background:#ffffff50;color:#403932;box-shadow:none;font-size:16px;width:24px;height:24px}
  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-upload{border-radius:10px;background:#ffffff28}
  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-next{border-radius:10px;background:#ffffff18}
+}
+
+/* Quiet title-bar alignment without decorative Mac traffic lights. */
+@media screen and (min-width:1240px){
+  .rev-page #chapterDialog.is-ambition[open] .ambition-windowbar{justify-content:center;}
+  .rev-page #chapterDialog.is-ambition[open] .ambition-windowtitle{
+    position:static;left:auto;right:auto;display:block;
+    font-size:11px;line-height:1.2;text-align:center;
+  }
 }
