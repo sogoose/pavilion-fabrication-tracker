@@ -58,4 +58,8 @@ window.loadChapterDownloads=async function(chapter){
   if(serial===requested)message("File list is temporarily unavailable. Use UPLOAD FILES to manage chapter resources on GitHub.");
  }
 };
+// Direct #chapter-01...05 links can open before this deferred script executes.
+const deepLink=location.hash.match(/^#chapter-0?([1-5])$/);
+const activeDialog=document.getElementById("chapterDialog");
+if(activeDialog&&activeDialog.open&&deepLink)window.loadChapterDownloads(Number(deepLink[1]));
 })();
