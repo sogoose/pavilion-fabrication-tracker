@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-slide-large-v22">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-edge-slide-v23">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-v1">
   <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v2">
 
@@ -473,17 +473,14 @@
         </div>
         <div class="translation-slide-viewer" id="translationSlideViewer" hidden role="region" aria-label="The Translation slides">
           <div class="translation-slide-stage">
-            <a class="translation-slide-image-link" id="translationFullSize" href="#" target="_blank" rel="noopener noreferrer" title="Open full-resolution image">
+            <a class="translation-slide-image-link" id="translationFullSize" href="#" target="_blank" rel="noopener noreferrer" title="Click to view image fullscreen" aria-label="View this slide fullscreen">
               <img id="translationSlideImage" src="" alt="" decoding="async">
             </a>
-            <button id="translationArrowPrev" type="button" class="translation-slide-arrow is-prev" aria-label="Previous slide">‹</button>
-            <button id="translationArrowNext" type="button" class="translation-slide-arrow is-next" aria-label="Next slide">›</button>
           </div>
-          <div class="translation-slide-thumbnails" id="translationSlideThumbnails" role="group" aria-label="Choose a slide"></div>
           <nav class="translation-slide-nav" aria-label="Slide navigation">
-            <button id="translationPrev" type="button">← PREV</button>
+            <button id="translationPrev" type="button" aria-label="Previous slide">‹</button>
             <span id="translationSlideCount" aria-live="polite">01 / 09</span>
-            <button id="translationNext" type="button">NEXT →</button>
+            <button id="translationNext" type="button" aria-label="Next slide">›</button>
           </nav>
         </div>
         <div class="ambition-ppt-actions">
@@ -658,7 +655,6 @@
     let slideIndex=0;
     const slideViewer=document.getElementById("translationSlideViewer");
     const slideImage=document.getElementById("translationSlideImage");
-    const slideThumbs=document.getElementById("translationSlideThumbnails");
     function showSlide(index){
       slideIndex=Math.max(0,Math.min(translationSlides.length-1,index));
       const slide=translationSlides[slideIndex];
@@ -666,27 +662,26 @@
       slideImage.alt="THE TRANSLATION — "+slide.title;
       document.getElementById("translationFullSize").href=slide.src;
       document.getElementById("translationSlideCount").textContent=String(slideIndex+1).padStart(2,"0")+" / "+String(translationSlides.length).padStart(2,"0");
-      slideThumbs.querySelectorAll("button").forEach((b,i)=>{
-        b.classList.toggle("is-active",i===slideIndex);
-        b.setAttribute("aria-current",i===slideIndex?"true":"false");
-      });
-      ["translationPrev","translationArrowPrev"].forEach(id=>document.getElementById(id).disabled=slideIndex===0);
-      ["translationNext","translationArrowNext"].forEach(id=>document.getElementById(id).disabled=slideIndex===translationSlides.length-1);
-      slideThumbs.querySelectorAll("button")[slideIndex]?.scrollIntoView({block:"nearest",inline:"nearest"});
+      document.getElementById("translationPrev").disabled=slideIndex===0;
+      document.getElementById("translationNext").disabled=slideIndex===translationSlides.length-1;
     }
-    function rebuildTranslationSlides(){
-      slideThumbs.replaceChildren();
-      translationSlides.forEach((slide,i)=>{
-        const b=document.createElement("button");b.type="button";b.className="translation-slide-thumb";
-        b.setAttribute("aria-label","Slide "+(i+1)+": "+slide.title);
-        const img=document.createElement("img");img.src=slide.src;img.alt="";img.loading=i<2?"eager":"lazy";
-        const label=document.createElement("span");label.textContent=String(i+1).padStart(2,"0");
-        b.append(img,label);b.addEventListener("click",()=>showSlide(i));slideThumbs.append(b);
-      });
-    }
-    rebuildTranslationSlides();
-    for(const [id,step] of [["translationPrev",-1],["translationArrowPrev",-1],["translationNext",1],["translationArrowNext",1]])
+    for(const [id,step] of [["translationPrev",-1],["translationNext",1]])
       document.getElementById(id).addEventListener("click",()=>showSlide(slideIndex+step));
+    // A click on the slide itself expands it; bottom controls remain intentionally minimal.
+    document.getElementById("translationFullSize").addEventListener("click",async e=>{
+      if(!slideImage.getAttribute("src"))return;
+      const target=document.getElementById("translationSlideViewer");
+      if(document.fullscreenElement===target){
+        e.preventDefault();
+        await document.exitFullscreen?.();
+      }else if(typeof target.requestFullscreen==="function"){
+        e.preventDefault();
+        try{await target.requestFullscreen();}catch(err){
+          // Browser may reject fullscreen inside a modal. Preserve the raw image fallback.
+          window.open(slideImage.currentSrc||slideImage.src,"_blank","noopener,noreferrer");
+        }
+      }
+    });
     let touchX=null;
     slideViewer.addEventListener("touchstart",e=>{touchX=e.touches[0]?.clientX??null},{passive:true});
     slideViewer.addEventListener("touchend",e=>{
@@ -743,7 +738,6 @@
         translationSlides.splice(0,translationSlides.length,...slides.filter(x=>x&&safeUrl(x.src)).map(x=>({
           src:safeUrl(x.src),title:String(x.title||"Slide")
         })));
-        rebuildTranslationSlides();
         if(translationSlides.length)showSlide(0);
         else{
           slideImage.removeAttribute("src");
