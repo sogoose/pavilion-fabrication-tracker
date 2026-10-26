@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-reading-type-v24">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-unified-viewer-v25">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-v1">
   <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v2">
 
@@ -659,7 +659,7 @@
       slideIndex=Math.max(0,Math.min(translationSlides.length-1,index));
       const slide=translationSlides[slideIndex];
       slideImage.src=slide.src;
-      slideImage.alt="THE TRANSLATION — "+slide.title;
+      slideImage.alt=(noteTitle.textContent||"EXHIBITION")+" — "+slide.title;
       document.getElementById("translationFullSize").href=slide.src;
       document.getElementById("translationSlideCount").textContent=String(slideIndex+1).padStart(2,"0")+" / "+String(translationSlides.length).padStart(2,"0");
       document.getElementById("translationPrev").disabled=slideIndex===0;
@@ -723,28 +723,27 @@
       storyLabel.textContent=d.storyLabel||"";
       storyArea.querySelectorAll("p").forEach(x=>x.remove());
       (Array.isArray(d.paragraphs)?d.paragraphs:[]).forEach(x=>storyArea.appendChild(make("p",null,x)));
-      sourcePanel.querySelector(".ambition-image-slot").hidden=multi;
-      slideViewer.hidden=!multi;
-      if(!multi&&d.src){
-        if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;
-        posterImage.alt=d.alt||d.heading;
-      }
+      // Chapters 01–05 now share the same presentation viewer.
+      // Portrait chapters display an unscaled, full-width image with vertical scrolling.
+      sourcePanel.querySelector(".ambition-image-slot").hidden=true;
+      slideViewer.hidden=false;
       posterTitle.textContent=(d.heading||data[i].title)+" · PRESENTATION";
       posterFooter.textContent=(d.heading||data[i].title)+" · "+String(n).padStart(2,"0")+" / 05";
       posterNext.textContent=n<5?"NEXT / "+data[i+1].title+" →":"CLOSE ×";
       syncArchiveLinks(n,Array.isArray(d.links)?d.links:(n===1?staticManualLinks:[]));
-      if(multi){
-        const slides=Array.isArray(d.slides)?d.slides:base.slides||defaultTranslationSlides;
-        translationSlides.splice(0,translationSlides.length,...slides.filter(x=>x&&safeUrl(x.src)).map(x=>({
-          src:safeUrl(x.src),title:String(x.title||"Slide")
-        })));
-        if(translationSlides.length)showSlide(0);
-        else{
-          slideImage.removeAttribute("src");
-          slideImage.alt="No slides uploaded";
-          document.getElementById("translationSlideCount").textContent="00 / 00";
-          document.getElementById("translationFullSize").removeAttribute("href");
-        }
+      const sources=Array.isArray(d.slides)&&d.slides.length
+        ? d.slides
+        : multi ? base.slides||defaultTranslationSlides : [{src:d.src,title:d.heading}];
+      translationSlides.splice(0,translationSlides.length,...sources.filter(x=>x&&safeUrl(x.src)).map(x=>({
+        src:safeUrl(x.src),title:String(x.title||"Slide")
+      })));
+      dialog.classList.toggle("is-single-slide",translationSlides.length<2);
+      if(translationSlides.length)showSlide(0);
+      else{
+        slideImage.removeAttribute("src");
+        slideImage.alt="No slides uploaded";
+        document.getElementById("translationSlideCount").textContent="00 / 00";
+        document.getElementById("translationFullSize").removeAttribute("href");
       }
       [sourcePanel.querySelector(".ambition-ppt-copy"),sourcePanel.querySelector(".ambition-ppt-visual"),document.getElementById("chapterDownloads")].forEach(el=>el.scrollTop=0);
     }
@@ -763,7 +762,8 @@
       dialog.classList.toggle("is-ambition",true);
       dialog.classList.toggle("is-materials",current===1);
       dialog.classList.toggle("is-translation",current===2);
-       dialog.classList.toggle("is-slide-gallery",current>=2);
+      dialog.classList.toggle("is-slide-gallery",true);
+      dialog.classList.toggle("is-portrait-slide",current<2);
       document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(editorial));
       document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(!editorial));
       if(editorial)renderEditorial(current);
