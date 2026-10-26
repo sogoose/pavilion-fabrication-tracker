@@ -710,7 +710,10 @@
     function renderEditorial(i){
       const m=i===1,t=i===2;
       const defaults=t?translationCopy:m?materialsCopy:ambitionCopy;
-      const d={...defaults,...(exhibitionOverrides[i+1]||{})};
+      const override=exhibitionOverrides[i+1]||{};
+      const d={...defaults,...override};
+      if(!t&&Array.isArray(override.slides)&&override.slides.length&&safeUrl(override.slides[0].src))
+        d.src=safeUrl(override.slides[0].src);
       noteTitle.textContent=d.heading;
       questionLabel.textContent=d.questionLabel;
       questionText.textContent=d.question;
@@ -793,7 +796,11 @@
     window.helloEarthApplyChapter=function(num,content){
       const n=Number(num);
       if(!(n>=1&&n<=5)||!content||typeof content!=="object")return;
-      exhibitionOverrides[n]=content;
+      exhibitionOverrides[n]=n<=3?content:{
+        ...content,title:content.heading||data[n-1].title,
+        lead:content.question??data[n-1].lead,
+        gallery:Array.isArray(content.slides)?content.slides.map(x=>[x.src,x.title||"Image"]):data[n-1].gallery
+      };
       if(current+1===n)render(current);
     };
     function openChapter(i){
