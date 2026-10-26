@@ -913,3 +913,19 @@
 .rev-page #chapterDialog.is-materials .chapter-downloads{background:rgba(206,200,193,.97)}
 .rev-page #chapterDialog.is-materials .ambition-ppt-brief h3{font-size:clamp(20px,1.55vw,25px);line-height:1.19;overflow-wrap:break-word}
 @media(max-width:680px){.rev-page #chapterDialog.is-materials .ambition-ppt-brief h3{font-size:21px}}
+
+/* Chapter 02: use the exact supplied copy, without numbered category labels. */
+.rev-page #chapterDialog.is-materials .ambition-ppt-brief > .ambition-ppt-small-label,
+.rev-page #chapterDialog.is-materials .ambition-ppt-story > .ambition-ppt-small-label {
+  display:none;
+}
+.rev-page #chapterDialog.is-materials .ambition-ppt-brief {
+  margin-bottom:18px;
+}
+.rev-page #chapterDialog.is-materials .ambition-ppt-brief h3 {
+  margin-bottom:0;
+}
+.rev-page #chapterDialog.is-materials .ambition-ppt-story {
+  padding-top:0;
+  border-top:0;
+}
