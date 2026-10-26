@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-folding-archive-v27">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-larger-v3">
   <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v2">
+  <link rel="stylesheet" href="../assets/landing-gallery.css?v=20261026-gallery-v1">
 
   <style>
   /* Exhibition palette sampled from the supplied chapter decks.
@@ -307,6 +308,17 @@
           </h1>
         </div>
       </section>
+      <section class="landing-gallery" id="landingGallery" aria-label="Photographic fabrication archive" hidden>
+        <header class="landing-gallery-tools">
+          <span class="landing-gallery-index">PHOTO ARCHIVE / <span id="landingGalleryCount">00</span></span>
+          <button class="landing-gallery-edit" type="button" id="landingGalleryEdit" hidden>EDIT ↗</button>
+        </header>
+        <div class="landing-gallery-grid" id="landingGalleryGrid" aria-live="polite"></div>
+        <div class="landing-gallery-empty" id="landingGalleryEmpty" hidden>
+          <span class="landing-gallery-empty-label">DOCUMENTING THE MAKING</span>
+          <button class="landing-gallery-add" id="landingGalleryEmptyAdd" type="button">+ ADD PHOTOS</button>
+        </div>
+      </section>
       <section class="rev-posters" aria-label="Five large portrait exhibition posters">
       <article class="rev-poster" data-chapter="0" id="poster-01" role="button" tabindex="0" aria-label="Open chapter 01: THE AMBITION">
         <span class="rev-poster-top"><span>01 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
@@ -367,6 +379,33 @@
       </section>
     </div>
   </main>
+  <dialog id="landingGalleryEditor" class="landing-gallery-editor" aria-label="Edit photographic archive">
+    <div class="landing-gallery-editor-header">
+      <strong>PHOTO ARCHIVE / EDIT</strong>
+      <button type="button" id="landingGalleryEditorClose" class="landing-gallery-editor-close" aria-label="Close editor">×</button>
+    </div>
+    <div class="landing-gallery-editor-body">
+      <label class="landing-gallery-upload" for="landingGalleryUpload">
+        <span>ADD PHOTOGRAPHS</span>
+        <input type="file" id="landingGalleryUpload" accept="image/jpeg,image/png,image/webp,image/avif" multiple>
+      </label>
+      <p class="landing-gallery-editor-note">JPG / PNG / WebP / AVIF · Multiple photos at once. New photos publish immediately; order, captions and removals publish when saved.</p>
+      <div class="landing-gallery-edit-items" id="landingGalleryEditItems"></div>
+      <div class="landing-gallery-editor-footer">
+        <span class="landing-gallery-editor-status" id="landingGalleryStatus" role="status"></span>
+        <button class="landing-gallery-save" type="button" id="landingGallerySave">SAVE CHANGES</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="landingGalleryLightbox" class="landing-gallery-lightbox" aria-label="Photograph full view">
+    <button class="landing-gallery-lightbox-close" id="landingGalleryLightClose" type="button" aria-label="Close photo">×</button>
+    <div class="landing-gallery-lightbox-frame"><img id="landingGalleryLargeImage" alt=""></div>
+    <div class="landing-gallery-lightbox-bottom">
+      <button type="button" id="landingGalleryLightPrev" aria-label="Previous image">‹</button>
+      <span id="landingGalleryLightCount" aria-live="polite">01 / 01</span>
+      <button type="button" id="landingGalleryLightNext" aria-label="Next image">›</button>
+    </div>
+  </dialog>
   <footer class="rev-footer rev-footer-credits">
     <section class="rev-credits" aria-labelledby="revCreditsTitle">
       <div class="rev-credits-heading">
@@ -1096,6 +1135,7 @@
   <script src="../config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="../assets/exhibition-editor.js?v=20261026-open-v6" defer></script>
+  <script src="../assets/landing-gallery.js?v=20261026-gallery-v1" defer></script>
 </body>
 </html>
 
