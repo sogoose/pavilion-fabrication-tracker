@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-fit-posters-v26">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-folding-archive-v27">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-v1">
   <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v2">
 
@@ -490,7 +490,11 @@
       </div>
     </section>
     <section class="chapter-downloads" id="chapterDownloads" aria-labelledby="chapterDownloadsTitle" tabindex="0">
-      <div class="ambition-windowbar" aria-hidden="true"><span class="ambition-windowtitle">FILE ARCHIVE</span></div>
+      <button id="chapterArchiveToggle" class="ambition-windowbar archive-toggle" type="button" aria-expanded="false" aria-controls="chapterArchiveBody">
+        <span class="ambition-windowtitle">FILE ARCHIVE</span>
+        <span class="archive-toggle-symbol" aria-hidden="true">+</span>
+      </button>
+      <div id="chapterArchiveBody" class="chapter-archive-body" hidden>
       <div class="chapter-downloads-heading">
         <h3 id="chapterDownloadsTitle">Downloadable resources</h3>
         <button id="chapterFileUpload" class="chapter-downloads-upload" type="button" aria-label="Edit chapter text, slides, links and files using Supabase">EDIT ↗</button>
@@ -502,6 +506,7 @@
         </div>
       </div>
       <div id="chapterDownloadList" class="chapter-downloads-list" aria-live="polite"></div>
+      </div>
     </section>
   </dialog>
   <dialog id="exhibitionEditorDialog" class="exhibition-editor-dialog" aria-label="Exhibition chapter editor">
@@ -628,6 +633,18 @@
     const posterFooter=sourcePanel.querySelector(".ambition-ppt-actions > span");
     const posterNext=document.getElementById("ambitionNextChapter");
     const manualLink=document.getElementById("ambitionManualLinks");
+    const archiveToggle=document.getElementById("chapterArchiveToggle");
+    const archiveBody=document.getElementById("chapterArchiveBody");
+    function setArchiveExpanded(expanded){
+      dialog.classList.toggle("archive-collapsed",!expanded);
+      archiveToggle.setAttribute("aria-expanded",String(expanded));
+      archiveBody.hidden=!expanded;
+      archiveToggle.querySelector(".archive-toggle-symbol").textContent=expanded?"−":"+";
+    }
+    archiveToggle.addEventListener("click",()=>{
+      setArchiveExpanded(archiveToggle.getAttribute("aria-expanded")!=="true");
+    });
+    setArchiveExpanded(false);
     const ambitionCopy={
       heading:noteTitle.textContent,questionLabel:questionLabel.textContent,
       question:questionText.textContent,storyLabel:storyLabel.textContent,
@@ -755,7 +772,9 @@
       fig.append(im,make("span",null,caption));return fig
     }
     function render(i){
+      const priorChapter=current;
       current=Math.max(0,Math.min(data.length-1,i));
+      if(current!==priorChapter)setArchiveExpanded(false);
       var chapter={...data[current],...(exhibitionOverrides[current+1]||{})},
           id=String(current+1).padStart(2,"0");
       const editorial=true;
@@ -835,6 +854,7 @@
     };
     function openChapter(i){
       lastTrigger=document.activeElement;
+      setArchiveExpanded(false);
       render(i);
       if(!dialog.open)dialog.showModal();
       document.getElementById("closeDialog").focus();
