@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-materials-text-v17">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-translation-viewer-v18">
 
   <style>
   /* Exhibition palette sampled from the supplied chapter decks.
@@ -419,6 +419,21 @@
         <div class="ambition-image-slot">
           <img id="ambitionPresentationImage" src="../assets/exhibition/ambition-presentation-board-hq.avif?v=20261026-hq-q80" alt="The Ambition full presentation board with modular pavilion renderings and diagrams" loading="eager" decoding="async">
         </div>
+        <div class="translation-slide-viewer" id="translationSlideViewer" hidden role="region" aria-label="The Translation slides">
+          <div class="translation-slide-stage">
+            <a class="translation-slide-image-link" id="translationFullSize" href="#" target="_blank" rel="noopener noreferrer" title="Open full-resolution image">
+              <img id="translationSlideImage" src="" alt="" decoding="async">
+            </a>
+            <button id="translationArrowPrev" type="button" class="translation-slide-arrow is-prev" aria-label="Previous slide">‹</button>
+            <button id="translationArrowNext" type="button" class="translation-slide-arrow is-next" aria-label="Next slide">›</button>
+          </div>
+          <div class="translation-slide-thumbnails" id="translationSlideThumbnails" role="group" aria-label="Choose a slide"></div>
+          <nav class="translation-slide-nav" aria-label="Slide navigation">
+            <button id="translationPrev" type="button">← PREV</button>
+            <span id="translationSlideCount" aria-live="polite">01 / 09</span>
+            <button id="translationNext" type="button">NEXT →</button>
+          </nav>
+        </div>
         <div class="ambition-ppt-actions">
           <span>THE AMBITION · 01 / 05</span>
           <button id="ambitionNextChapter" class="ambition-ppt-next" type="button">NEXT / THE MATERIALS →</button>
@@ -517,6 +532,59 @@
       paragraphs:Array.from(storyArea.querySelectorAll("p")).map(p=>p.textContent),
       src:posterImage.getAttribute("src"),alt:posterImage.alt
     };
+    const translationCopy={
+      heading:"THE TRANSLATION",
+      questionLabel:"",
+      question:"How can one brick create an adaptable architectural system?",
+      storyLabel:"",
+      paragraphs:[
+        "Rather than designing a fixed pavilion, we developed a modular building system based on a single triangular component.",
+        "Three cylindrical supports form the structural basis of each brick, connected by walls that minimise material use while maintaining continuity between the supports. The geometry was further adapted to accommodate robotic clay printing.",
+        "By repeating, rotating and staggering these components, individual bricks become part of a larger interconnected assembly. This approach allows the pavilion to take different forms while retaining a consistent geometric and fabrication logic."
+      ],src:"",alt:"The Translation slideshow"
+    };
+    const translationSlides=[
+      "01 COMPONENT DESIGN","02 STRUCTURAL ANALYSIS","03 INFILL LOGIC",
+      "04 GRASSHOPPER AND PYTHON","05 PRINTING CODES",
+      "05 PRINTING CODES · CONTINUED","06 FABRICATION WEBSITE",
+      "07 RAMMED EARTH BRICKS","08 MOULD DESIGN"
+    ].map((title,i)=>({title,src:"../assets/exhibition/translation-slides/slide-"+String(i+1).padStart(2,"0")+".avif"}));
+    let slideIndex=0;
+    const slideViewer=document.getElementById("translationSlideViewer");
+    const slideImage=document.getElementById("translationSlideImage");
+    const slideThumbs=document.getElementById("translationSlideThumbnails");
+    function showSlide(index){
+      slideIndex=Math.max(0,Math.min(translationSlides.length-1,index));
+      const slide=translationSlides[slideIndex];
+      slideImage.src=slide.src;
+      slideImage.alt="THE TRANSLATION — "+slide.title;
+      document.getElementById("translationFullSize").href=slide.src;
+      document.getElementById("translationSlideCount").textContent=String(slideIndex+1).padStart(2,"0")+" / 09";
+      slideThumbs.querySelectorAll("button").forEach((b,i)=>{
+        b.classList.toggle("is-active",i===slideIndex);
+        b.setAttribute("aria-current",i===slideIndex?"true":"false");
+      });
+      ["translationPrev","translationArrowPrev"].forEach(id=>document.getElementById(id).disabled=slideIndex===0);
+      ["translationNext","translationArrowNext"].forEach(id=>document.getElementById(id).disabled=slideIndex===translationSlides.length-1);
+      slideThumbs.querySelectorAll("button")[slideIndex]?.scrollIntoView({block:"nearest",inline:"nearest"});
+    }
+    translationSlides.forEach((slide,i)=>{
+      const b=document.createElement("button");b.type="button";b.className="translation-slide-thumb";
+      b.setAttribute("aria-label","Slide "+(i+1)+": "+slide.title);
+      const img=document.createElement("img");img.src=slide.src;img.alt="";img.loading=i<2?"eager":"lazy";
+      const label=document.createElement("span");label.textContent=String(i+1).padStart(2,"0");
+      b.append(img,label);b.addEventListener("click",()=>showSlide(i));slideThumbs.append(b);
+    });
+    for(const [id,step] of [["translationPrev",-1],["translationArrowPrev",-1],["translationNext",1],["translationArrowNext",1]])
+      document.getElementById(id).addEventListener("click",()=>showSlide(slideIndex+step));
+    let touchX=null;
+    slideViewer.addEventListener("touchstart",e=>{touchX=e.touches[0]?.clientX??null},{passive:true});
+    slideViewer.addEventListener("touchend",e=>{
+      if(touchX===null)return;
+      const delta=(e.changedTouches[0]?.clientX??touchX)-touchX;
+      if(Math.abs(delta)>55)showSlide(slideIndex+(delta<0?1:-1));
+      touchX=null;
+    },{passive:true});
     const materialsCopy={
       heading:"THE MATERIALS",
       questionLabel:"",
@@ -531,19 +599,21 @@
       alt:"The Materials presentation board: raw material sources, testing, 3D printed and rammed earth fabrication, and mixture charts"
     };
     function renderEditorial(i){
-      const m=i===1,d=m?materialsCopy:ambitionCopy;
+      const m=i===1,t=i===2,d=t?translationCopy:m?materialsCopy:ambitionCopy;
       noteTitle.textContent=d.heading;
       questionLabel.textContent=d.questionLabel;
       questionText.textContent=d.question;
       storyLabel.textContent=d.storyLabel;
       storyArea.querySelectorAll("p").forEach(x=>x.remove());
       d.paragraphs.forEach(x=>storyArea.appendChild(make("p",null,x)));
-      if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;
-      posterImage.alt=d.alt;
-      posterTitle.textContent=m?"THE MATERIALS · PRESENTATION":"THE AMBITION · PRESENTATION";
-      posterFooter.textContent=m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
-      posterNext.textContent=m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
-      manualLink.hidden=m;
+      sourcePanel.querySelector(".ambition-image-slot").hidden=t;
+      slideViewer.hidden=!t;
+      if(!t){if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;posterImage.alt=d.alt}
+      posterTitle.textContent=t?"THE TRANSLATION · PRESENTATION":m?"THE MATERIALS · PRESENTATION":"THE AMBITION · PRESENTATION";
+      posterFooter.textContent=t?"THE TRANSLATION · 03 / 05":m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
+      posterNext.textContent=t?"NEXT / THE REALITY →":m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
+      manualLink.hidden=i!==0;
+      if(t)showSlide(0);
       [sourcePanel.querySelector(".ambition-ppt-copy"),sourcePanel.querySelector(".ambition-ppt-visual"),document.getElementById("chapterDownloads")].forEach(el=>el.scrollTop=0);
     }
 
@@ -555,9 +625,10 @@
     }
     function render(i){
       current=Math.max(0,Math.min(data.length-1,i));var chapter=data[current],id=String(current+1).padStart(2,"0");
-      const editorial=current===0||current===1;
+      const editorial=current<=2;
       dialog.classList.toggle("is-ambition",editorial);
       dialog.classList.toggle("is-materials",current===1);
+      dialog.classList.toggle("is-translation",current===2);
       document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(editorial));
       document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(!editorial));
       if(editorial)renderEditorial(current);
@@ -599,7 +670,7 @@
     document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
     document.getElementById("prevChapter").addEventListener("click",function(){if(current>0)render(current-1)});
     document.getElementById("nextChapter").addEventListener("click",function(){if(current<data.length-1)render(current+1)});
-    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(current===0?1:2)});
+    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(Math.min(current+1,4))});
     dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
     dialog.addEventListener("close",function(){
       if(window.location.hash.startsWith("#chapter-"))window.history.replaceState(null,"",window.location.pathname+window.location.search);
@@ -607,8 +678,8 @@
     });
     document.addEventListener("keydown",function(e){
       if(!dialog.open)return;
-      if(e.key==="ArrowRight"&&current<4){render(current+1)}
-      if(e.key==="ArrowLeft"&&current>0){render(current-1)}
+      if(e.key==="ArrowRight"){if(current===2){e.preventDefault();showSlide(slideIndex+1)}else if(current<4)render(current+1)}
+      if(e.key==="ArrowLeft"){if(current===2){e.preventDefault();showSlide(slideIndex-1)}else if(current>0)render(current-1)}
     });
     var match=location.hash.match(/^#chapter-0?([1-5])$/);
     if(match)openChapter(Number(match[1])-1);
