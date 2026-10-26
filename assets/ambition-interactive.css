@@ -21,12 +21,6 @@
   will-change:opacity;
   filter:grayscale(1) sepia(.12) contrast(1.04) brightness(1.025);
 }
-/* The original module symbol has uneven transparent padding:
-   optically centre its visible white geometry (about 6% to the right).
-   Keep vertical centring and all other stills unchanged. */
-.rev-page #poster-01 .ambition-slide[src$="module-symbol-original.png"] {
-  left:calc(-16% + 6%);
-}
 /* The tall complete-pavilion render needs a gentler crop so its upper
    floating module remains visible. The other shots can occupy more space. */
 .rev-page #poster-01 .ambition-slide[src$="ambition-stacked.png"] {
