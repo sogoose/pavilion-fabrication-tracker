@@ -824,3 +824,10 @@
     padding-bottom:0;
   }
 }
+
+/* OneDrive model linked only in Chapter 01; other chapters retain their own archive listings. */
+.rev-page #chapterDialog:not(.is-ambition) #ambitionManualLinks {display:none;}
+.rev-page #chapterDialog #ambitionManualLinks {padding-top:6px;}
+.rev-page #chapterDialog #ambitionManualLinks .chapter-downloads-row {gap:10px;}
+.rev-page #chapterDialog #ambitionManualLinks a {font-weight:600;text-decoration:none;}
+.rev-page #chapterDialog #ambitionManualLinks a:hover {text-decoration:underline;}
