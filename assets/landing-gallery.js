@@ -148,7 +148,7 @@
         const record={
           storage_path:path,
           caption:"",
-          display_order:Math.min(9999,(items.length+successes)*10)
+          display_order:Math.min(9999,Math.max(0,...items.map(item=>Number(item.display_order)||0))+10)
         };
         const {data,error}=await client.from(TABLE).insert(record)
           .select("id,storage_path,caption,display_order,created_at").single();
