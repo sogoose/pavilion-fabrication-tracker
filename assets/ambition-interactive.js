@@ -51,7 +51,7 @@
   function schedule(){
     clearTimeout(clock);clock=0;
     if(!visible||document.hidden||reduced.matches)return;
-    clock=setTimeout(next,1900+Math.random()*1800);
+    clock=setTimeout(next,900+Math.random()*900);
   }
   if("IntersectionObserver" in window){
     new IntersectionObserver(entries=>{
