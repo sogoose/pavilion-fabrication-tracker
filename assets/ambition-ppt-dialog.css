@@ -1,0 +1,202 @@
+/* CLICK-THROUGH / A1 editorial chapter.
+   Faithful to the uploaded THE AMBITION A1 poster: warm paper on the left,
+   woven architectural graph on the right, oversized modular assembly, three
+   material/structural principles, and the continuous triangular plan below. */
+.rev-page #chapterDialog.is-ambition{
+  width:min(1320px,calc(100% - 30px));max-height:calc(100svh - 24px);
+  overflow-y:auto;overscroll-behavior:contain;
+  border:1px solid #aaa39a;background:#cbc5be;color:#302b25;
+}
+.rev-page #chapterDialog.is-ambition .dialog-main{display:none}
+.rev-page #chapterDialog:not(.is-ambition) .ambition-ppt{display:none}
+.rev-page #chapterDialog .ambition-ppt{
+  display:grid;grid-template-columns:minmax(0,36.5%) minmax(0,63.5%);
+  width:100%;min-height:1100px;
+}
+.rev-page #chapterDialog.is-ambition .dialog-header{
+  height:52px;background:#d0cbc5;border-bottom:1px solid #aea79e;
+}
+.rev-page #chapterDialog .ambition-ppt-copy{
+  background:#cbc6bf;display:flex;flex-direction:column;min-width:0;
+  padding:clamp(26px,3vw,51px) clamp(24px,3vw,46px) 28px;
+  border-right:1px solid #9d978d;
+}
+.rev-page #chapterDialog .ambition-ppt-brand,
+.rev-page #chapterDialog .ambition-ppt-copy-footer{
+  font:700 12px/1.4 "IBM Plex Mono",Consolas,monospace;letter-spacing:.015em;
+}
+.rev-page #chapterDialog .ambition-ppt-brand sup{font-size:.6em}
+.rev-page #chapterDialog .ambition-ppt-copy h2{
+  margin:16px 0 55px;max-width:100%;
+  font:500 clamp(37px,4.1vw,61px)/.99 Arial,Helvetica,sans-serif;letter-spacing:-.074em;
+}
+.rev-page #chapterDialog .ambition-ppt-small-label{
+  display:block;margin:0 0 13px;font:600 11px/1.4 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:.09em;
+}
+.rev-page #chapterDialog .ambition-ppt-brief{
+  border-top:1px solid #aaa49b;padding-top:19px;margin-bottom:31px;
+}
+.rev-page #chapterDialog .ambition-ppt-brief h3{
+  font:600 clamp(22px,2.5vw,33px)/1.1 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:-.075em;margin:0 0 14px;
+}
+.rev-page #chapterDialog .ambition-ppt-brief p{
+  font:400 14px/1.62 Arial,Helvetica,sans-serif;max-width:34ch;margin:0;
+}
+.rev-page #chapterDialog .ambition-ppt-story{
+  border-top:1px solid #aaa49b;padding-top:18px;
+}
+.rev-page #chapterDialog .ambition-ppt-story p{
+  font:400 13px/1.72 Arial,Helvetica,sans-serif;letter-spacing:.002em;
+  margin:0 0 17px;color:#47413a;
+}
+.rev-page #chapterDialog .ambition-ppt-copy-footer{
+  border-top:1px solid #aaa49b;margin-top:auto;padding-top:21px;
+  font-size:10px;color:#5b544d;
+}
+.rev-page #chapterDialog .ambition-ppt-visual{
+  position:relative;min-width:0;overflow:hidden;padding:34px 34px 28px;
+  color:#fffdfa;background-color:#716b63;
+  background-image:
+    linear-gradient(#ffffff13 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff13 1px,transparent 1px);
+  background-size:12px 12px;
+}
+.rev-page #chapterDialog .ambition-ppt-topline{
+  display:flex;justify-content:space-between;gap:16px;
+  padding:0 0 14px;border-bottom:1px solid #ffffff60;
+  font:500 10px/1.35 "IBM Plex Mono",Consolas,monospace;letter-spacing:.08em;
+}
+.rev-page #chapterDialog .ambition-ppt-hero{height:590px;position:relative;isolation:isolate;}
+.rev-page #chapterDialog .ambition-ppt-hero>img{
+  position:absolute;left:-15%;top:1%;width:107%;height:96%;object-fit:contain;
+  filter:brightness(1.08) grayscale(1);z-index:1;pointer-events:none;
+}
+.rev-page #chapterDialog .ambition-ppt-statement{
+  position:absolute;right:0;top:13%;width:44%;z-index:2;
+  padding-left:8px;text-shadow:0 1px 8px #514c4690;
+}
+.rev-page #chapterDialog .ambition-ppt-statement h3{
+  font:600 clamp(21px,2.5vw,34px)/1.07 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:-.06em;margin:0 0 15px;
+}
+.rev-page #chapterDialog .ambition-ppt-statement p{
+  max-width:30ch;font:400 13px/1.48 "IBM Plex Mono",Consolas,monospace;
+  margin:0;color:#f7f3ed;
+}
+.rev-page #chapterDialog .ambition-ppt-principles{
+  border-top:1px solid #ffffff70;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;padding:23px 0 27px;
+}
+.rev-page #chapterDialog .ambition-ppt-principles figure{min-width:0;margin:0;display:flex;flex-direction:column;}
+.rev-page #chapterDialog .ambition-ppt-principles figcaption{
+  min-height:78px;display:flex;flex-direction:column;gap:6px;
+  font:400 11px/1.25 "IBM Plex Mono",Consolas,monospace;color:#f9f5ef;
+}
+.rev-page #chapterDialog .ambition-ppt-principles figcaption b{font-size:12px;letter-spacing:.035em}
+.rev-page #chapterDialog .ambition-ppt-principles img{
+  width:100%;height:142px;object-fit:contain;object-position:bottom;
+  filter:grayscale(1) brightness(1.6);pointer-events:none;
+}
+.rev-page #chapterDialog .ambition-ppt-outro{
+  border-top:1px solid #ffffff70;padding-top:26px;position:relative;
+  min-height:335px;display:flex;align-items:flex-start;gap:14px;
+}
+.rev-page #chapterDialog .ambition-ppt-outro-copy{position:relative;z-index:1;max-width:240px;flex:0 0 39%}
+.rev-page #chapterDialog .ambition-ppt-outro h3{
+  margin:0 0 15px;font:600 24px/1.11 "IBM Plex Mono",Consolas,monospace;letter-spacing:-.06em;
+}
+.rev-page #chapterDialog .ambition-ppt-outro p{
+  font:400 12px/1.65 "IBM Plex Mono",Consolas,monospace;margin:0;
+}
+.rev-page #chapterDialog .ambition-ppt-outro img{
+  position:absolute;right:-7%;bottom:0;width:105%;height:280px;
+  object-fit:contain;object-position:bottom right;opacity:.76;
+  filter:grayscale(1) brightness(1.25);pointer-events:none;
+}
+.rev-page #chapterDialog .ambition-ppt-actions{
+  border-top:1px solid #ffffff78;padding-top:17px;
+  display:flex;justify-content:space-between;gap:12px;align-items:center;
+  font:600 10px/1.3 "IBM Plex Mono",Consolas,monospace;letter-spacing:.06em;
+}
+.rev-page #chapterDialog .ambition-ppt-next{
+  border:1px solid #fffcf5;background:transparent;color:#fffdf8;
+  border-radius:0;padding:10px 13px;font:inherit;cursor:pointer;
+}
+.rev-page #chapterDialog .ambition-ppt-next:hover{background:#fffdf8;color:#4b453e}
+/* Shared optional download archive, available below every chapter. */
+.rev-page #chapterDialog .chapter-downloads{
+  background:#f5f3ef;border-top:1px solid #bbb3aa;
+  padding:25px clamp(24px,3.5vw,48px) 27px;color:#302b25;
+}
+.rev-page #chapterDialog .chapter-downloads-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;
+  border-bottom:1px solid #b8b2a9;padding-bottom:13px;
+}
+.rev-page #chapterDialog .chapter-downloads-eyebrow{
+  font:600 10px/1.4 "IBM Plex Mono",Consolas,monospace;letter-spacing:.08em;color:#786f64;
+}
+.rev-page #chapterDialog .chapter-downloads-heading h3{
+  font:500 24px/1.1 Arial,Helvetica,sans-serif;letter-spacing:-.055em;
+  margin:8px 0 0;color:#302b25;
+}
+.rev-page #chapterDialog .chapter-downloads-upload{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:35px;padding:9px 12px;border:1px solid #60584f;
+  color:#302b25;text-decoration:none;font:600 11px/1 "IBM Plex Mono",Consolas,monospace;
+  white-space:nowrap;letter-spacing:.035em;
+}
+.rev-page #chapterDialog .chapter-downloads-upload:hover{background:#302b25;color:#fff}
+.rev-page #chapterDialog .chapter-downloads-list{padding:8px 0 2px;}
+.rev-page #chapterDialog .chapter-downloads-empty{
+  font:400 12px/1.6 Arial,Helvetica,sans-serif;color:#686059;margin:13px 0;
+}
+.rev-page #chapterDialog .chapter-downloads-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:13px 0;border-bottom:1px solid #dad4cb;
+  font:500 13px/1.3 Arial,Helvetica,sans-serif;
+}
+.rev-page #chapterDialog .chapter-downloads-row>a{
+  color:#302b25;text-decoration:none;overflow-wrap:anywhere;
+  text-underline-offset:3px;
+}
+.rev-page #chapterDialog .chapter-downloads-row>a:hover{text-decoration:underline}
+.rev-page #chapterDialog .chapter-downloads-row>span{
+  font:400 10px "IBM Plex Mono",Consolas,monospace;color:#716960;flex-shrink:0;
+}
+.rev-page #chapterDialog .chapter-downloads-note{
+  font:400 11px/1.65 Arial,Helvetica,sans-serif;margin:14px 0 0;color:#7b736b;
+}
+@media(max-width:900px){
+  .rev-page #chapterDialog .ambition-ppt{grid-template-columns:39% 61%}
+  .rev-page #chapterDialog .ambition-ppt-copy{padding:27px 23px}
+  .rev-page #chapterDialog .ambition-ppt-copy h2{margin-bottom:34px}
+  .rev-page #chapterDialog .ambition-ppt-visual{padding:26px 20px}
+  .rev-page #chapterDialog .ambition-ppt-hero{height:485px}
+  .rev-page #chapterDialog .ambition-ppt-statement{top:7%;width:49%}
+}
+@media(max-width:680px){
+  .rev-page #chapterDialog.is-ambition{width:calc(100% - 12px)}
+  .rev-page #chapterDialog .ambition-ppt{display:flex;flex-direction:column}
+  .rev-page #chapterDialog .ambition-ppt-copy{border-right:0;border-bottom:1px solid #aba49b}
+  .rev-page #chapterDialog .ambition-ppt-copy h2{font-size:40px;margin:12px 0 24px}
+  .rev-page #chapterDialog .ambition-ppt-story{display:grid;grid-template-columns:1fr;gap:0}
+  .rev-page #chapterDialog .ambition-ppt-visual{padding:19px 16px}
+  .rev-page #chapterDialog .ambition-ppt-hero{height:405px}
+  .rev-page #chapterDialog .ambition-ppt-hero>img{left:-15%;width:112%}
+  .rev-page #chapterDialog .ambition-ppt-statement{right:0;top:5%;width:50%}
+  .rev-page #chapterDialog .ambition-ppt-statement h3{font-size:17px}
+  .rev-page #chapterDialog .ambition-ppt-statement p{font-size:10px}
+  .rev-page #chapterDialog .ambition-ppt-principles{gap:7px;padding-top:17px}
+  .rev-page #chapterDialog .ambition-ppt-principles figcaption{min-height:93px;font-size:9px}
+  .rev-page #chapterDialog .ambition-ppt-principles figcaption b{font-size:10px}
+  .rev-page #chapterDialog .ambition-ppt-principles img{height:91px}
+  .rev-page #chapterDialog .ambition-ppt-outro{min-height:330px}
+  .rev-page #chapterDialog .chapter-downloads-heading{align-items:flex-start}
+  .rev-page #chapterDialog .chapter-downloads-heading h3{font-size:21px}
+  .rev-page #chapterDialog .chapter-downloads-upload{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  .rev-page #chapterDialog .ambition-ppt *{animation:none!important;transition:none!important}
+}
