@@ -5,7 +5,6 @@
   const poster=document.getElementById("poster-01");
   if(!poster)return;
   const layers=[...poster.querySelectorAll(".ambition-slide")];
-  const index=poster.querySelector(".ambition-frame-number");
   if(layers.length!==2)return;
   const sources=[
     "../assets/exhibition/ambition-stacked.png",
@@ -47,7 +46,6 @@
     previous.classList.remove("is-visible");
     active=1-active;shown=n;
     history=[history[history.length-1],n];
-    if(index)index.textContent=String(n+1).padStart(2,"0");
     working=false;schedule();
   }
   function schedule(){
