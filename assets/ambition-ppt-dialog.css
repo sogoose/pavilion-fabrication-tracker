@@ -350,18 +350,20 @@
   .rev-page #chapterDialog.is-ambition[open]{
     /* Do not modify the other chapters or the PROJECT page's reduced density. */
     display:grid;
-    grid-template-columns:minmax(0,31%) minmax(0,47%) minmax(0,22%);
+    /* fractional tracks leave room for genuine space between the three sheets */
+    grid-template-columns:minmax(0,31fr) minmax(0,47fr) minmax(0,22fr);
     grid-template-rows:56px minmax(0,1fr);
-    gap:0;
+    column-gap:16px;
+    row-gap:14px;
     box-sizing:border-box;
     width:min(1720px,calc(100vw - 48px));
     min-width:0;
     height:calc(100svh - 42px);
     max-width:calc(100vw - 48px);
     max-height:calc(100svh - 42px);
-    padding:0;
+    padding:14px 16px 16px;
     overflow:hidden;
-    background:#cbc6bf;
+    background:#dcd7cf; /* visible warm gaps around each sheet */
     overscroll-behavior:contain;
   }
   .rev-page #chapterDialog.is-ambition[open] .dialog-header{
@@ -372,6 +374,8 @@
     height:56px;
     min-height:56px;
     z-index:8;
+    border:1px solid #bbb3a9;
+    background:#d0cbc5;
   }
   .rev-page #chapterDialog.is-ambition[open] .ambition-ppt{
     display:contents;
@@ -389,11 +393,14 @@
     overscroll-behavior-y:contain;
     scrollbar-width:thin;
     scrollbar-color:#999189 transparent;
+    /* Each independent window has a crisp architectural edge, no heavy shadow. */
+    border:1px solid #b1aaa0;
+    border-radius:0;
   }
   .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy{
     grid-column:1;grid-row:2;
     padding:38px clamp(26px,2.7vw,53px) 42px;
-    border-right:1px solid #aba49b;
+    background:#cbc6bf;
   }
   .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy h2{
     font-size:clamp(39px,3.25vw,58px);
@@ -407,7 +414,7 @@
   .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual{
     grid-column:2;grid-row:2;
     padding:32px clamp(20px,2.35vw,45px) 38px;
-    border-right:1px solid #918981;
+    background-color:#716b63;
   }
   .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-hero{
     height:700px;
@@ -441,8 +448,7 @@
     flex-direction:column;
     padding:35px clamp(18px,1.75vw,31px) 30px;
     background:#ede9e3;
-    border-top:0;
-    border-left:1px solid #b8b0a6;
+    border:1px solid #b8b0a6;
     color:#302b25;
   }
   .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-heading{
