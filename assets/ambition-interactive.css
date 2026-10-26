@@ -29,20 +29,10 @@
 .rev-page #poster-01:focus-visible .ambition-slide {
   transform:none!important;
 }
-.rev-page #poster-01 .ambition-random-indicator {
-  display:flex;align-items:baseline;gap:5px;
-  position:absolute;left:5%;bottom:16.5%;z-index:4;
-  font:500 9px/1.2 Arial,sans-serif;letter-spacing:.10em;
-  color:#6c645c;pointer-events:none;
-}
-.rev-page #poster-01 .ambition-frame-number{
-  font-variant-numeric:tabular-nums;color:#302b25;
-}
 .rev-page #poster-01 .rev-poster-top,
 .rev-page #poster-01 .rev-poster-bottom{z-index:5}
 @media(max-width:680px) {
   .rev-page #poster-01 .rev-poster-art{inset:9% 1% 20%}
-  .rev-page #poster-01 .ambition-random-indicator{bottom:19%;font-size:8px}
 }
 @media(prefers-reduced-motion:reduce) {
   .rev-page #poster-01 .ambition-slide{transition:none!important;will-change:auto}
