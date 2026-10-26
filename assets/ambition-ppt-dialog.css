@@ -1251,3 +1251,205 @@
     font-size:11px;
   }
 }
+
+/* Edge-to-edge exhibition slide window: reveal only the bottom pager on hover. */
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden!important;
+  padding:0!important;
+  background:#fff;
+  border-color:rgba(255,255,255,.48);
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual .ambition-windowbar,
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual .ambition-ppt-actions,
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-arrow,
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-thumbnails{
+  display:none!important;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer {
+  position:relative;
+  display:block;
+  flex:1 1 0;
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:none;
+  margin:0;
+  padding:0!important;
+  overflow:hidden;
+  isolation:isolate;
+  background:#fff;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-stage{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex:none;
+  width:100%;
+  height:100%;
+  min-height:0;
+  margin:0;
+  border:0;
+  border-radius:0;
+  background:#fff;
+  overflow:hidden;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-image-link{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  cursor:zoom-in;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-stage img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+  border-radius:0;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav {
+  position:absolute;
+  z-index:7;
+  inset:auto 0 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  width:100%;
+  height:82px;
+  min-height:0;
+  padding:16px 12px 11px;
+  box-sizing:border-box;
+  margin:0;
+  color:#2f2a26;
+  background:linear-gradient(0deg,rgba(249,247,244,.92),rgba(249,247,244,.70) 62%,rgba(249,247,244,0));
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  opacity:1;
+  transform:none;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav button{
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;
+  padding:0;
+  width:42px;
+  min-width:42px;
+  height:42px;
+  min-height:42px;
+  border:1px solid rgba(85,76,67,.3);
+  border-radius:50%;
+  background:rgba(255,255,255,.75);
+  color:#342f29;
+  box-shadow:0 2px 12px rgba(20,17,12,.08);
+  font:400 28px/1 Arial,sans-serif;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav button:hover:not(:disabled){
+  background:#fff;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery[open] #translationSlideCount{
+  min-width:65px;
+  text-align:center;
+  font:600 11px/1.3 "IBM Plex Mono",Consolas,monospace;
+  font-variant-numeric:tabular-nums;
+}
+@media (hover:hover) and (pointer:fine){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav{
+    opacity:0;
+    transform:translateY(9px);
+    transition:opacity .18s ease,transform .18s ease;
+  }
+  /* Even while invisible, the navigation's bottom hit area stays hoverable. */
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav:hover,
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav:focus-within{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav{
+    transition:none!important;
+  }
+}
+@media screen and (min-width:1240px){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual{
+    margin:0 0 2px;
+    padding:0!important;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    width:100%;
+    height:100%;
+    min-height:0;
+    max-height:none;
+    flex:1 1 0;
+  }
+  /* Closing the modal remains possible over the slide image. */
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .dialog-header{
+    top:10px;
+    right:10px;
+    z-index:40;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .dialog-header .dialog-close{
+    background:rgba(251,249,246,.84);
+    box-shadow:0 1px 5px rgba(0,0,0,.16);
+  }
+}
+@media screen and (max-width:1239px){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual{
+    display:flex;
+    overflow:hidden!important;
+    padding:0!important;
+    margin:0;
+    min-height:0;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    width:100%;
+    height:min(78dvh,760px);
+    min-height:350px;
+    flex:0 0 auto;
+  }
+}
+@media screen and (max-width:680px){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    height:min(66dvh,570px);
+    min-height:250px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav{
+    height:65px;
+    padding:10px 8px 8px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav button{
+    width:40px;
+    min-width:40px;
+    height:40px;
+    min-height:40px;
+  }
+}
+.rev-page #translationSlideViewer:fullscreen{
+  display:block!important;
+  width:100vw!important;
+  height:100dvh!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  background:#fff;
+  border:0!important;
+  border-radius:0;
+}
+.rev-page #translationSlideViewer:fullscreen .translation-slide-stage{
+  position:absolute;
+  inset:0;
+  border:0;
+  border-radius:0;
+}
+.rev-page #translationSlideViewer:fullscreen .translation-slide-image-link{cursor:zoom-out}
