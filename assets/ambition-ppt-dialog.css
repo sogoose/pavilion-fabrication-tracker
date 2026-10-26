@@ -622,3 +622,134 @@
     font-size:10px;
   }
 }
+
+/* Chapter 01 two-tier notes, wider poster, restored tall archive / 20261026 */
+/* Mobile + tablet: preserve the reading order, and don't impose a separate modal grid. */
+.rev-page #chapterDialog .ambition-notes-stack{
+  min-width:0;background:#cbc6bf;
+}
+.rev-page #chapterDialog .ambition-ppt-development{
+  min-width:0;padding:25px clamp(23px,3vw,45px) 28px;
+  background:#cbc6bf;color:#302b25;
+}
+.rev-page #chapterDialog .ambition-ppt-development .ambition-ppt-story{
+  border-top:0;padding-top:0;
+}
+.rev-page #chapterDialog .ambition-ppt-development .ambition-ppt-copy-footer{
+  margin-top:30px;
+}
+@media screen and (max-width:1239px){
+  .rev-page #chapterDialog .ambition-notes-stack{
+    display:flex;flex-direction:column;
+  }
+  .rev-page #chapterDialog .ambition-ppt-copy{
+    border-right:0;
+  }
+  .rev-page #chapterDialog .ambition-ppt-development{
+    border-top:1px solid #a69f95;
+  }
+}
+@media screen and (min-width:1240px){
+  /* Narrower notes and archive give the portrait presentation more real width. */
+  .rev-page #chapterDialog.is-ambition[open]{
+    grid-template-columns:minmax(0,26fr) minmax(0,54fr) minmax(0,20fr);
+    column-gap:clamp(18px,1.65vw,26px);
+  }
+  /* Left side now has two separate, independently scrollable windows. */
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack{
+    grid-column:1;grid-row:1;
+    display:grid;
+    grid-template-rows:minmax(0,55fr) minmax(0,45fr);
+    gap:14px;
+    min-width:0;min-height:0;
+    height:100%;
+    margin:5px 0 4px;
+    background:transparent;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack > .ambition-ppt-copy,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack > .ambition-ppt-development{
+    box-sizing:border-box;
+    grid-column:1;
+    min-height:0;min-width:0;height:auto;max-height:none;
+    padding:0 var(--pane-x) 24px;
+    margin:0;
+    overflow-x:hidden;overflow-y:auto;
+    overscroll-behavior-y:contain;
+    border-radius:18px;
+    border:1px solid #ffffff63;
+    box-shadow:0 14px 34px #221d1826,inset 0 1px #ffffff60;
+    backdrop-filter:blur(14px) saturate(116%);
+    -webkit-backdrop-filter:blur(14px) saturate(116%);
+    scrollbar-width:thin;
+    scrollbar-color:rgba(108,98,88,.6) transparent;
+    --pane-x:clamp(18px,1.8vw,29px);
+    --pane-top:0px;
+    background:rgba(210,203,196,.95);
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack > .ambition-ppt-copy{
+    grid-row:1;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack > .ambition-ppt-development{
+    grid-row:2;
+    background:rgba(229,224,218,.94);
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack .ambition-windowbar{
+    position:sticky;top:0;z-index:20;
+    box-sizing:border-box;
+    height:43px;min-height:43px;
+    padding:0 12px;
+    margin:0 calc(-1 * var(--pane-x)) 22px;
+    border-radius:17px 17px 0 0;
+    background:rgba(255,255,255,.23);
+    border-bottom:1px solid rgba(255,255,255,.24);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy .ambition-ppt-brand{
+    margin-top:10px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy h2{
+    font-size:clamp(28px,2.35vw,38px);
+    margin:11px 0 23px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-brief{
+    margin-bottom:0;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-brief h3{
+    font-size:clamp(20px,1.55vw,26px);
+    overflow-wrap:break-word;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-development .ambition-ppt-story{
+    border:0;padding:0;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-development .ambition-ppt-story p{
+    font-size:14.5px;line-height:1.67;margin:0 0 17px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-development .ambition-ppt-small-label{
+    font-size:11px;margin-bottom:18px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-development .ambition-ppt-copy-footer{
+    margin:27px 0 0;padding:16px 0 0;
+  }
+  /* Main image: no fixed height, naturally sized, vertical scroll reveals details. */
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual{
+    grid-column:2;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-image-slot{
+    display:block;flex:0 0 auto;
+    width:100%;height:auto;min-height:0;
+    overflow:visible;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-image-slot img{
+    width:100%;height:auto;max-height:none;object-fit:contain;
+  }
+  /* Archive becomes a tall independent pane again, as marked in the sketch. */
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads{
+    grid-column:3;
+    align-self:stretch;
+    height:auto;min-height:0;max-height:none;
+    margin:9px 0 4px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-list{
+    min-height:20px;
+  }
+}
