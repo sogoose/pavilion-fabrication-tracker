@@ -341,3 +341,161 @@
     right:-18%;bottom:0;width:125%;height:340px;
   }
 }
+
+/* AMBITION / desktop three-pane archive — chapter 01 only.
+   Restore normal on-screen size despite the overall 75% PROJECT zoom.
+   Each column is an independently scrollable, full-height reading surface.
+   All original phone/tablet rules remain unchanged. */
+@media screen and (min-width:1240px){
+  .rev-page #chapterDialog.is-ambition[open]{
+    /* Do not modify the other chapters or the PROJECT page's reduced density. */
+    display:grid;
+    grid-template-columns:minmax(0,31%) minmax(0,47%) minmax(0,22%);
+    grid-template-rows:56px minmax(0,1fr);
+    gap:0;
+    box-sizing:border-box;
+    width:min(1720px,calc(100vw - 48px));
+    min-width:0;
+    height:calc(100svh - 42px);
+    max-width:calc(100vw - 48px);
+    max-height:calc(100svh - 42px);
+    padding:0;
+    overflow:hidden;
+    background:#cbc6bf;
+    overscroll-behavior:contain;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .dialog-header{
+    grid-column:1/-1;
+    grid-row:1;
+    position:relative;top:auto;left:auto;
+    box-sizing:border-box;
+    height:56px;
+    min-height:56px;
+    z-index:8;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt{
+    display:contents;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual,
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads{
+    box-sizing:border-box;
+    height:auto;
+    min-width:0;
+    min-height:0;
+    max-height:none;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    scrollbar-width:thin;
+    scrollbar-color:#999189 transparent;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy{
+    grid-column:1;grid-row:2;
+    padding:38px clamp(26px,2.7vw,53px) 42px;
+    border-right:1px solid #aba49b;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy h2{
+    font-size:clamp(39px,3.25vw,58px);
+    margin:14px 0 48px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-brief p,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-story p{
+    font-size:16.5px;
+    line-height:1.74;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual{
+    grid-column:2;grid-row:2;
+    padding:32px clamp(20px,2.35vw,45px) 38px;
+    border-right:1px solid #918981;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-hero{
+    height:700px;
+    grid-template-columns:minmax(0,67%) minmax(0,33%);
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-hero>img{
+    height:700px;left:-13%;width:135%;
+    object-fit:contain;transform:scale(1.14);
+    transform-origin:46% 51%;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-statement{
+    margin-top:52px;
+    padding:23px 16px 23px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-statement h3{
+    font-size:clamp(20px,1.47vw,27px);
+    line-height:1.14;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-statement p{
+    font-size:14px;line-height:1.62;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-principles img{
+    height:245px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-outro{
+    min-height:470px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads{
+    grid-column:3;grid-row:2;
+    display:flex;
+    flex-direction:column;
+    padding:35px clamp(18px,1.75vw,31px) 30px;
+    background:#ede9e3;
+    border-top:0;
+    border-left:1px solid #b8b0a6;
+    color:#302b25;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-heading{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:24px;
+    padding-bottom:22px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-heading h3{
+    font-size:clamp(25px,2.05vw,34px);
+    line-height:1.09;
+    overflow-wrap:break-word;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-upload{
+    width:100%;
+    box-sizing:border-box;
+    min-height:45px;
+    font-size:12px;
+    text-align:center;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-list{
+    padding:17px 0 22px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-empty,
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-row{
+    font-size:14px;
+    line-height:1.6;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-note{
+    margin-top:auto;
+    padding-top:22px;
+    border-top:1px solid #c8c0b6;
+    font-size:12px;
+    line-height:1.7;
+  }
+  .rev-page #chapterDialog.is-ambition[open] [role="region"]:focus-visible{
+    outline:2px solid #87746b;
+    outline-offset:-3px;
+  }
+}
+/* Correct for the body zoom while leaving the full-screen popup unscaled. */
+@media screen and (min-width:1280px){
+  .rev-page #chapterDialog.is-ambition[open]{zoom:1.3333333333;}
+}
+@media screen and (min-width:1240px) and (max-width:1279px){
+  .rev-page #chapterDialog.is-ambition[open]{zoom:1.1764705882;}
+}
+/* Intermediate laptop screens use two readable columns plus the archive below.
+   Only full desktop switches to three independent panes. */
+@media screen and (min-width:1024px) and (max-width:1239px){
+  .rev-page #chapterDialog.is-ambition[open]{
+    zoom:1.1764705882;
+    width:min(1130px,calc(100vw - 38px));
+    max-height:calc(100svh - 36px);
+  }
+}
