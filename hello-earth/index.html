@@ -808,12 +808,14 @@
       document.querySelectorAll(".rev-poster").forEach(p=>{
         if(Number(p.id?.slice(-2))===n){
           const label=p.querySelector(".rev-poster-title");if(label)label.textContent=title;
+          const open=p.querySelector("[data-chapter]");if(open)open.setAttribute("aria-label","Open "+title+" chapter");
         }
       });
       document.querySelectorAll(".rev-index-item").forEach(link=>{
         if(Number(link.dataset.chapter)===n-1){
-          const label=link.querySelector(".rev-index-title,.rev-index-label");
-          if(label)label.textContent=title;
+          const label=link.querySelector(".rev-index-name");
+          if(label)label.textContent=title.replace(/^THE\s+/i,"");
+          link.setAttribute("aria-label","Open "+title+" chapter");
         }
       });
       if(current+1===n)render(current);
