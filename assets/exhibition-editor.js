@@ -145,6 +145,7 @@ async function showEditor(){
  else if((await client.auth.getUser()).data.user)status("Signed in, but this account is not an authorised editor.",true);
 }
 opener.addEventListener("click",e=>{e.preventDefault();showEditor()});
+$("exEditorHeaderButton")?.addEventListener("click",e=>{e.preventDefault();showEditor()});
 $("exEditorClose").addEventListener("click",()=>dialog.close());
 $("exEditorLoginForm").addEventListener("submit",async e=>{
  e.preventDefault();status("Signing in…");
