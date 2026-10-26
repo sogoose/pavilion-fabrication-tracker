@@ -1,0 +1,92 @@
+/* Footer credits — simple editorial names, no role titles or cards. */
+.rev-page .rev-footer.rev-footer-credits {
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:initial;
+  gap:0;
+  padding:0 clamp(18px,4.5vw,80px) 0;
+  color:#302b25;
+  background:#faf9f6;
+  border-top:1px solid #ccc7c1;
+}
+.rev-page .rev-credits {
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) minmax(0,3fr);
+  gap:clamp(30px,4vw,80px);
+  padding:clamp(55px,7vw,112px) 0 clamp(54px,7vw,108px);
+}
+.rev-page .rev-credits-heading .rev-credits-index {
+  display:block;
+  margin-bottom:20px;
+  font:500 10px/1.6 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:.08em;color:#72695e;
+}
+.rev-page .rev-credits-heading h2 {
+  margin:0;color:#302b25;
+  font:500 clamp(31px,3vw,56px)/1.06 Arial,Helvetica,sans-serif;
+  letter-spacing:-.055em;
+}
+.rev-page .rev-credits-groups {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2.8fr);
+  gap:clamp(20px,2.8vw,55px);
+}
+.rev-page .rev-credits-group {
+  min-width:0;border-top:1px solid #b6afa7;
+  padding-top:14px;
+}
+.rev-page .rev-credits-group h3 {
+  margin:0 0 26px;
+  color:#736a60;
+  font:600 10px/1.35 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:.075em;
+}
+.rev-page .rev-credits-group ul {
+  list-style:none;margin:0;padding:0;
+}
+.rev-page .rev-credits-group li {
+  margin:0 0 12px;
+  color:#302b25;
+  font:400 clamp(12px,1.05vw,15px)/1.45 Arial,Helvetica,sans-serif;
+  letter-spacing:-.01em;
+  overflow-wrap:normal;
+}
+.rev-page .rev-credits-students ul {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0 clamp(10px,1.7vw,30px);
+}
+.rev-page .rev-footer.rev-footer-credits .rev-footer-bottom {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:16px;
+  border-top:1px solid #ccc7c1;
+  padding:22px 0 35px;
+  color:#72695e;
+  font:500 10px/1.4 Arial,Helvetica,sans-serif;
+}
+@media(max-width:1160px) {
+  .rev-page .rev-credits {
+    grid-template-columns:minmax(0,1fr);
+    gap:32px;
+  }
+  .rev-page .rev-credits-groups {grid-template-columns:1fr 1fr 2fr}
+}
+@media(max-width:680px) {
+  .rev-page .rev-footer.rev-footer-credits {padding:0 18px}
+  .rev-page .rev-credits {gap:34px;padding:54px 0 48px}
+  .rev-page .rev-credits-heading h2 {font-size:37px}
+  .rev-page .rev-credits-groups {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:32px 16px;
+  }
+  .rev-page .rev-credits-students {grid-column:1/-1}
+  .rev-page .rev-credits-students ul {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .rev-page .rev-credits-group h3 {margin-bottom:18px}
+  .rev-page .rev-credits-group li {font-size:13px;margin-bottom:11px}
+  .rev-page .rev-footer.rev-footer-credits .rev-footer-bottom {
+    flex-wrap:wrap;gap:5px 14px;padding:18px 0 28px;font-size:9px;
+  }
+}
