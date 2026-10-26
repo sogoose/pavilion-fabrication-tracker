@@ -792,3 +792,35 @@
     overflow-y:auto;
   }
 }
+
+/* Minimal empty file archive, with GitHub-managed edit permissions. */
+@media screen and (min-width:1240px) {
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-heading {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+    padding-bottom:16px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-heading h3 {
+    margin:0;
+    font-size:clamp(20px,1.7vw,25px);
+    letter-spacing:-.045em;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-upload {
+    width:auto;
+    min-height:30px;
+    padding:7px 12px;
+    margin:0;
+    flex:0 0 auto;
+    font-size:11px;
+    border-radius:9px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-list {
+    flex:1 1 auto;
+    padding-top:5px;
+    padding-bottom:0;
+  }
+}
