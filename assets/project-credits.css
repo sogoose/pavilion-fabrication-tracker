@@ -1,92 +1,136 @@
-/* Footer credits — simple editorial names, no role titles or cards. */
-.rev-page .rev-footer.rev-footer-credits {
+/* PRINT("HELLO, EARTH")³ / official ARIT1507 course credits.
+   Larger Arial throughout, restrained editorial typography, no cards. */
+.rev-page .rev-footer.rev-footer-credits{
   display:flex;
   flex-direction:column;
   align-items:stretch;
   justify-content:initial;
   gap:0;
-  padding:0 clamp(18px,4.5vw,80px) 0;
+  padding:0 clamp(22px,4.5vw,84px);
   color:#302b25;
   background:#faf9f6;
-  border-top:1px solid #ccc7c1;
+  border-top:1px solid #cbc7c0;
+  font-family:Arial,Helvetica,sans-serif;
 }
-.rev-page .rev-credits {
+.rev-page .rev-credits,
+.rev-page .rev-credits *{
+  font-family:Arial,Helvetica,sans-serif!important;
+}
+.rev-page .rev-credits{
   display:grid;
-  grid-template-columns:minmax(180px,1fr) minmax(0,3fr);
-  gap:clamp(30px,4vw,80px);
-  padding:clamp(55px,7vw,112px) 0 clamp(54px,7vw,108px);
+  grid-template-columns:minmax(240px,0.88fr) minmax(0,2.3fr);
+  gap:clamp(42px,5.5vw,105px);
+  padding:clamp(68px,7vw,116px) 0 clamp(70px,7vw,116px);
 }
-.rev-page .rev-credits-heading .rev-credits-index {
+.rev-page .rev-credits-heading{
+  min-width:0;
+}
+.rev-page .rev-credits-heading .rev-credits-index{
   display:block;
-  margin-bottom:20px;
-  font:500 10px/1.6 "IBM Plex Mono",Consolas,monospace;
-  letter-spacing:.08em;color:#72695e;
+  margin-bottom:19px;
+  color:#857c71;
+  font-size:16px;
+  font-weight:600;
+  line-height:1.35;
+  letter-spacing:.03em;
 }
-.rev-page .rev-credits-heading h2 {
-  margin:0;color:#302b25;
-  font:500 clamp(31px,3vw,56px)/1.06 Arial,Helvetica,sans-serif;
-  letter-spacing:-.055em;
-}
-.rev-page .rev-credits-groups {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2.8fr);
-  gap:clamp(20px,2.8vw,55px);
-}
-.rev-page .rev-credits-group {
-  min-width:0;border-top:1px solid #b6afa7;
-  padding-top:14px;
-}
-.rev-page .rev-credits-group h3 {
-  margin:0 0 26px;
-  color:#736a60;
-  font:600 10px/1.35 "IBM Plex Mono",Consolas,monospace;
-  letter-spacing:.075em;
-}
-.rev-page .rev-credits-group ul {
-  list-style:none;margin:0;padding:0;
-}
-.rev-page .rev-credits-group li {
-  margin:0 0 12px;
+.rev-page .rev-credits-heading h2{
+  margin:0;
   color:#302b25;
-  font:400 clamp(12px,1.05vw,15px)/1.45 Arial,Helvetica,sans-serif;
-  letter-spacing:-.01em;
-  overflow-wrap:normal;
+  font-size:clamp(38px,3.5vw,62px);
+  font-weight:500;
+  line-height:1.03;
+  letter-spacing:-.055em;
+  overflow-wrap:anywhere;
 }
-.rev-page .rev-credits-students ul {
+.rev-page .rev-credits-course{
+  margin-top:clamp(30px,3.3vw,54px);
+  max-width:370px;
+}
+.rev-page .rev-credits-course-name{
+  margin:0 0 10px;
+  font-size:clamp(23px,1.7vw,29px);
+  font-weight:500;
+  line-height:1.25;
+  letter-spacing:-.035em;
+}
+.rev-page .rev-credits-course-type{
+  margin:0;
+  color:#72695f;
+  font-size:17px;
+  line-height:1.5;
+}
+.rev-page .rev-credits-groups{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:0 clamp(10px,1.7vw,30px);
+  gap:clamp(42px,4.1vw,72px) clamp(26px,4vw,72px);
+  min-width:0;
 }
-.rev-page .rev-footer.rev-footer-credits .rev-footer-bottom {
-  display:flex;justify-content:space-between;align-items:center;
-  gap:16px;
-  border-top:1px solid #ccc7c1;
-  padding:22px 0 35px;
-  color:#72695e;
-  font:500 10px/1.4 Arial,Helvetica,sans-serif;
+.rev-page .rev-credits-group{
+  min-width:0;
+  border-top:1px solid #b9b1a8;
+  padding-top:18px;
 }
-@media(max-width:1160px) {
-  .rev-page .rev-credits {
+.rev-page .rev-credits-group h3{
+  margin:0 0 23px;
+  color:#736b61;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.35;
+  letter-spacing:.065em;
+}
+.rev-page .rev-credits-group ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.rev-page .rev-credits-group li{
+  margin:0 0 12px;
+  color:#302b25;
+  font-size:clamp(17px,1.1vw,19px);
+  font-weight:400;
+  line-height:1.43;
+  letter-spacing:-.02em;
+  overflow-wrap:break-word;
+}
+.rev-page .rev-credits-thanks ul,
+.rev-page .rev-credits-students ul{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:0;
+}
+.rev-page .rev-footer.rev-footer-credits .rev-footer-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px 24px;
+  padding:23px 0 37px;
+  border-top:1px solid #cbc7c0;
+  color:#776e65;
+  font:400 13px/1.45 Arial,Helvetica,sans-serif;
+}
+@media(max-width:1220px){
+  .rev-page .rev-credits{
     grid-template-columns:minmax(0,1fr);
-    gap:32px;
+    gap:48px;
   }
-  .rev-page .rev-credits-groups {grid-template-columns:1fr 1fr 2fr}
+  .rev-page .rev-credits-heading h2{font-size:clamp(38px,5vw,58px)}
+  .rev-page .rev-credits-course{max-width:none;margin-top:25px}
+  .rev-page .rev-credits-course-name{font-size:26px}
+  .rev-page .rev-credits-groups{gap:42px 40px}
+  .rev-page .rev-credits-group li{font-size:18px}
 }
-@media(max-width:680px) {
-  .rev-page .rev-footer.rev-footer-credits {padding:0 18px}
-  .rev-page .rev-credits {gap:34px;padding:54px 0 48px}
-  .rev-page .rev-credits-heading h2 {font-size:37px}
-  .rev-page .rev-credits-groups {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:32px 16px;
-  }
-  .rev-page .rev-credits-students {grid-column:1/-1}
-  .rev-page .rev-credits-students ul {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-  .rev-page .rev-credits-group h3 {margin-bottom:18px}
-  .rev-page .rev-credits-group li {font-size:13px;margin-bottom:11px}
-  .rev-page .rev-footer.rev-footer-credits .rev-footer-bottom {
-    flex-wrap:wrap;gap:5px 14px;padding:18px 0 28px;font-size:9px;
-  }
+@media(max-width:680px){
+  .rev-page .rev-footer.rev-footer-credits{padding:0 20px}
+  .rev-page .rev-credits{padding:56px 0 68px;gap:42px}
+  .rev-page .rev-credits-heading .rev-credits-index{font-size:14px}
+  .rev-page .rev-credits-heading h2{font-size:clamp(37px,9vw,49px)}
+  .rev-page .rev-credits-course-name{font-size:24px}
+  .rev-page .rev-credits-course-type{font-size:16px}
+  .rev-page .rev-credits-groups{grid-template-columns:minmax(0,1fr);gap:36px}
+  .rev-page .rev-credits-group{padding-top:15px}
+  .rev-page .rev-credits-group h3{font-size:14px;margin-bottom:18px}
+  .rev-page .rev-credits-group li{font-size:17px;line-height:1.48;margin-bottom:10px}
+  .rev-page .rev-footer.rev-footer-credits .rev-footer-bottom{padding:20px 0 29px;font-size:12px}
 }
