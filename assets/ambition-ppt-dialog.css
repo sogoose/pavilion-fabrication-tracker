@@ -939,7 +939,7 @@
 .rev-page #chapterDialog.is-slide-gallery .ambition-ppt-brief{margin-bottom:28px}
 .rev-page #chapterDialog.is-slide-gallery .ambition-ppt-story{padding-top:0;border-top:0}
 .rev-page #chapterDialog.is-slide-gallery .ambition-ppt-brief h3{font-size:clamp(20px,1.5vw,26px);line-height:1.3}
-.rev-page #chapterDialog.is-slide-gallery #ambitionManualLinks{display:none!important}
+.rev-page #chapterDialog.is-slide-gallery #ambitionManualLinks[hidden]{display:none!important}
 .rev-page #chapterDialog.is-slide-gallery .ambition-ppt-visual{
   background:rgba(216,212,206,.95);
   overflow-y:hidden;
