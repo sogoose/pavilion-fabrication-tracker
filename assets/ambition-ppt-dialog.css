@@ -932,49 +932,49 @@
 
 /* Chapter 03 image-slide gallery. Shares 01/02 editorial window layout. */
 .rev-page #chapterDialog .translation-slide-viewer[hidden],
-.rev-page #chapterDialog:not(.is-translation) .translation-slide-viewer {display:none!important}
-.rev-page #chapterDialog.is-translation .ambition-image-slot{display:none!important}
-.rev-page #chapterDialog.is-translation .ambition-ppt-brief .ambition-ppt-small-label,
-.rev-page #chapterDialog.is-translation .ambition-ppt-story .ambition-ppt-small-label{display:none}
-.rev-page #chapterDialog.is-translation .ambition-ppt-brief{margin-bottom:28px}
-.rev-page #chapterDialog.is-translation .ambition-ppt-story{padding-top:0;border-top:0}
-.rev-page #chapterDialog.is-translation .ambition-ppt-brief h3{font-size:clamp(20px,1.5vw,26px);line-height:1.3}
-.rev-page #chapterDialog.is-translation #ambitionManualLinks{display:none!important}
-.rev-page #chapterDialog.is-translation .ambition-ppt-visual{
+.rev-page #chapterDialog:not(.is-slide-gallery) .translation-slide-viewer {display:none!important}
+.rev-page #chapterDialog.is-slide-gallery .ambition-image-slot{display:none!important}
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-brief .ambition-ppt-small-label,
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-story .ambition-ppt-small-label{display:none}
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-brief{margin-bottom:28px}
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-story{padding-top:0;border-top:0}
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-brief h3{font-size:clamp(20px,1.5vw,26px);line-height:1.3}
+.rev-page #chapterDialog.is-slide-gallery #ambitionManualLinks{display:none!important}
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-visual{
   background:rgba(216,212,206,.95);
   overflow-y:hidden;
 }
-.rev-page #chapterDialog.is-translation .ambition-ppt-visual .ambition-windowbar{
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-visual .ambition-windowbar{
   color:#f7f3ec;background:rgba(99,92,84,.9);
 }
-.rev-page #chapterDialog.is-translation .ambition-ppt-actions{
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-actions{
   border-color:rgba(66,61,55,.21);color:#39332e;
 }
-.rev-page #chapterDialog.is-translation .ambition-ppt-next{
+.rev-page #chapterDialog.is-slide-gallery .ambition-ppt-next{
   border:1px solid rgba(66,61,55,.32);color:#39332e;background:rgba(255,255,255,.45);
 }
-.rev-page #chapterDialog.is-translation .translation-slide-viewer{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-viewer{
   display:flex;flex:1 1 auto;flex-direction:column;
   width:100%;min-height:0;max-height:100%;
   gap:11px;padding-bottom:5px;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-stage{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-stage{
   display:flex;position:relative;min-width:0;min-height:0;flex:1 1 auto;
   justify-content:center;align-items:center;
   border:1px solid rgba(112,102,89,.18);
   border-radius:10px;
   overflow:hidden;background:#fff;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-image-link{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-image-link{
   display:flex;align-items:center;justify-content:center;
   width:100%;height:100%;min-width:0;min-height:0;
   cursor:zoom-in;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-stage img{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-stage img{
   display:block;object-fit:contain;object-position:center;width:100%;height:100%;
   max-height:100%;max-width:100%;border-radius:3px;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-arrow{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
   display:grid;place-items:center;
   width:42px;height:58px;min-width:42px;
@@ -984,15 +984,15 @@
   backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
   cursor:pointer;font-size:27px;font-weight:300;line-height:1;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-arrow.is-prev{left:8px}
-.rev-page #chapterDialog.is-translation .translation-slide-arrow.is-next{right:8px}
-.rev-page #chapterDialog.is-translation .translation-slide-arrow:disabled{opacity:.18;cursor:default}
-.rev-page #chapterDialog.is-translation .translation-slide-thumbnails{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow.is-prev{left:8px}
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow.is-next{right:8px}
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow:disabled{opacity:.18;cursor:default}
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumbnails{
   display:flex;flex:0 0 auto;
   gap:8px;min-height:0;max-width:100%;overflow-x:auto;overflow-y:hidden;
   padding:4px 3px 9px;scrollbar-width:thin;scrollbar-color:#8d857a55 transparent;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-thumb{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb{
   display:flex;flex:0 0 clamp(78px,8vw,105px);min-width:0;flex-direction:column;
   gap:4px;align-items:center;justify-content:center;
   padding:4px 4px 3px;
@@ -1000,38 +1000,38 @@
   border:1px solid transparent;border-radius:8px;
   color:#595149;cursor:pointer;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-thumb.is-active{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb.is-active{
   border-color:#897d6f;background:rgba(255,255,255,.75);
   box-shadow:0 0 0 1px #897d6f;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-thumb img{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb img{
   width:100%;aspect-ratio:2048/1447;object-fit:cover;display:block;
   border-radius:4px;background:#fff;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-thumb span{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb span{
   font:600 10px/1.25 "IBM Plex Mono",Consolas,monospace;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-nav{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-nav{
   display:flex;align-items:center;justify-content:center;gap:18px;
   flex:0 0 auto;padding-bottom:1px;color:#37312c;
   font:600 11px/1.2 "IBM Plex Mono",Consolas,monospace;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-nav button{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-nav button{
   min-width:108px;min-height:37px;display:grid;place-items:center;
   border-radius:11px;border:1px solid rgba(69,62,54,.42);
   background:rgba(255,255,255,.35);color:inherit;
   cursor:pointer;font:inherit;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-nav button:disabled{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-nav button:disabled{
   opacity:.26;cursor:default;
 }
-.rev-page #chapterDialog.is-translation .translation-slide-nav button:not(:disabled):hover,
-.rev-page #chapterDialog.is-translation .translation-slide-thumb:hover{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-nav button:not(:disabled):hover,
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb:hover{
   background:rgba(255,255,255,.72);
 }
-.rev-page #chapterDialog.is-translation .translation-slide-nav button:focus-visible,
-.rev-page #chapterDialog.is-translation .translation-slide-thumb:focus-visible,
-.rev-page #chapterDialog.is-translation .translation-slide-arrow:focus-visible{
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-nav button:focus-visible,
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb:focus-visible,
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow:focus-visible{
   outline:2px solid #62564a;outline-offset:2px;
 }
 /* Ensure section 02 has a visual blank line between the question and first paragraph. */
@@ -1043,26 +1043,99 @@
 .rev-page #poster-03 .rev-translation-stage,
 .rev-page #poster-03 .rev-poster-bottom{pointer-events:none}
 @media(max-width:1239px){
-  .rev-page #chapterDialog.is-translation .ambition-ppt-visual{
+  .rev-page #chapterDialog.is-slide-gallery .ambition-ppt-visual{
     overflow:hidden;display:flex;flex-direction:column;
   }
-  .rev-page #chapterDialog.is-translation .translation-slide-viewer{
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-viewer{
     flex:0 1 auto;min-height:430px;height:min(76svh,720px);
   }
 }
 @media(max-width:680px){
-  .rev-page #chapterDialog.is-translation .translation-slide-viewer{
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-viewer{
     height:min(67svh,560px);min-height:285px;gap:7px;
   }
-  .rev-page #chapterDialog.is-translation .translation-slide-thumb{flex-basis:70px}
-  .rev-page #chapterDialog.is-translation .translation-slide-arrow{
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-thumb{flex-basis:70px}
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-arrow{
     width:32px;height:43px;min-width:32px;font-size:23px;
   }
-  .rev-page #chapterDialog.is-translation .translation-slide-nav{gap:10px}
-  .rev-page #chapterDialog.is-translation .translation-slide-nav button{min-width:80px;min-height:34px;font-size:10px}
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-nav{gap:10px}
+  .rev-page #chapterDialog.is-slide-gallery .translation-slide-nav button{min-width:80px;min-height:34px;font-size:10px}
 }
 
 /* Larger question-to-body spacing in Materials notes. */
 .rev-page #chapterDialog.is-materials .ambition-ppt-brief{
   margin-bottom:34px;
+}
+
+/* 2026-10-26 / all chapters share slide windows and portrait mobile scroll */
+/* Keep 03/04/05 using one flexible image-slide viewer. */
+.rev-page #chapterDialog.is-slide-gallery .translation-slide-viewer[hidden]{display:none!important}
+.rev-page #chapterDialog.is-slide-gallery .ambition-image-slot{display:none!important}
+/* The main poster must retain its natural (portrait) height on phones / tablets.
+   Previously the 410px fixed box clipped it and mobile swipes had no target. */
+@media screen and (max-width:1239px){
+  .rev-page #chapterDialog.is-ambition[open]{
+    overflow-y:auto;
+    max-height:calc(100dvh - 14px);
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt{
+    min-height:0;
+  }
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-ppt-visual{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    max-height:78dvh;
+    overflow-y:auto!important;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
+  }
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-image-slot,
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-image-slot:not([hidden]){
+    display:block;
+    flex:0 0 auto;
+    width:100%;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none;
+    margin:0 0 14px;
+    overflow:visible!important;
+  }
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-image-slot img{
+    width:100%;
+    height:auto!important;
+    max-width:100%;
+    max-height:none!important;
+    display:block;
+    object-fit:contain;
+    object-position:top center;
+    touch-action:pan-y;
+    -webkit-user-drag:none;
+  }
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-ppt-actions{
+    flex:0 0 auto;
+    margin-top:0;
+  }
+  .rev-page #chapterDialog.is-ambition[open].is-slide-gallery .ambition-ppt-visual{
+    overflow:visible;
+    max-height:none;
+    min-height:0;
+  }
+  .rev-page #chapterDialog.is-ambition[open].is-slide-gallery .translation-slide-viewer{
+    width:100%;
+    max-width:100%;
+  }
+}
+@media screen and (max-width:680px){
+  .rev-page #chapterDialog.is-ambition[open]:not(.is-slide-gallery) .ambition-ppt-visual{
+    max-height:70dvh;
+    padding:14px;
+  }
+  .rev-page #chapterDialog.is-ambition[open].is-slide-gallery .ambition-ppt-visual{
+    padding:13px;
+  }
 }
