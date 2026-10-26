@@ -753,3 +753,42 @@
     min-height:20px;
   }
 }
+
+/* Ambition correction: intro and entire original text above archive; presentation spans right. */
+@media screen and (min-width:1240px) {
+  .rev-page #chapterDialog.is-ambition[open] {
+    grid-template-columns: minmax(0,30fr) minmax(0,70fr);
+    grid-template-rows: minmax(0,61fr) minmax(0,39fr);
+    column-gap:clamp(18px,1.65vw,26px);
+    row-gap:14px;
+  }
+  /* Flatten the legacy wrapper so the two left panes use the same grid. */
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack {
+    display:contents;
+    background:transparent;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack > .ambition-ppt-copy {
+    grid-column:1;
+    grid-row:1;
+    margin:4px 0 0;
+    min-height:0;
+    overflow-y:auto;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads {
+    grid-column:1;
+    grid-row:2;
+    align-self:stretch;
+    height:auto;
+    min-height:0;
+    max-height:none;
+    margin:0 0 4px;
+    overflow-y:auto;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual {
+    grid-column:2;
+    grid-row:1 / span 2;
+    margin:0 0 4px;
+    min-height:0;
+    overflow-y:auto;
+  }
+}
