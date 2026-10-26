@@ -162,8 +162,17 @@ async function uploadFiles(input,type){
      result.push(type==="slides"?{src:url,title:file.name.replace(/\.[^.]+$/,""),path}:{name:file.name,url,path,size:file.size});
    }
    if(type==="slides"){
-     if(active<=2)draft.slides=[result[result.length-1]];
-     else draft.slides.push(...result);
+     if(active<=2){
+       draft.slides=[result[result.length-1]];
+     }else if(active===3&&(
+       !store[3]?.slides ||
+       draft.slides.every(x=>String(x.src||"").includes("/translation-slides/slide-"))
+     )){
+       // Replace the earlier unhosted 9 placeholders with uploaded images.
+       draft.slides=[...result];
+     }else{
+       draft.slides.push(...result);
+     }
    }else draft.files.push(...result);
    refreshAssets();
    status(result.length+" file(s) uploaded. Choose SAVE CHANGES to publish.");
