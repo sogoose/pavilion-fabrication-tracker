@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-translation-viewer-v18">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-gallery-mobile-v20">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-v1">
   <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v2">
 
@@ -709,30 +709,48 @@
       alt:"The Materials presentation board: raw material sources, testing, 3D printed and rammed earth fabrication, and mixture charts"
     };
     function renderEditorial(i){
-      const m=i===1,t=i===2;
-      const defaults=t?translationCopy:m?materialsCopy:ambitionCopy;
-      const override=exhibitionOverrides[i+1]||{};
-      const d={...defaults,...override};
-      if(!t&&Array.isArray(override.slides)&&override.slides.length&&safeUrl(override.slides[0].src))
+      const n=i+1, multi=n>=3;
+      const base=i===0?ambitionCopy:i===1?materialsCopy:i===2?translationCopy:{
+        heading:data[i].title, question:data[i].lead, questionLabel:"", storyLabel:"",
+        paragraphs:[...data[i].paragraphs],
+        slides:(data[i].gallery||[]).map(([source,title])=>({
+          src:/^https?:\/\//i.test(source)?source:pictures+source,
+          title
+        }))
+      };
+      const override=exhibitionOverrides[n]||{};
+      const d={...base,...override};
+      if(!multi&&Array.isArray(override.slides)&&override.slides.length&&safeUrl(override.slides[0].src))
         d.src=safeUrl(override.slides[0].src);
-      noteTitle.textContent=d.heading;
-      questionLabel.textContent=d.questionLabel;
-      questionText.textContent=d.question;
-      storyLabel.textContent=d.storyLabel;
+      noteTitle.textContent=d.heading||data[i].title;
+      questionLabel.textContent=d.questionLabel||"";
+      questionText.textContent=d.question||"";
+      storyLabel.textContent=d.storyLabel||"";
       storyArea.querySelectorAll("p").forEach(x=>x.remove());
-      d.paragraphs.forEach(x=>storyArea.appendChild(make("p",null,x)));
-      sourcePanel.querySelector(".ambition-image-slot").hidden=t;
-      slideViewer.hidden=!t;
-      if(!t){if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;posterImage.alt=d.alt}
-      posterTitle.textContent=d.heading+" · PRESENTATION";
-      posterFooter.textContent=t?"THE TRANSLATION · 03 / 05":m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
-      posterNext.textContent=t?"NEXT / THE REALITY →":m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
-      syncArchiveLinks(i+1,Array.isArray(d.links)?d.links:(i===0?staticManualLinks:[]));
-      if(t){
-        const slides=Array.isArray(d.slides)&&d.slides.length?d.slides:defaultTranslationSlides;
-        translationSlides.splice(0,translationSlides.length,...slides.filter(x=>x&&safeUrl(x.src)).map(x=>({src:safeUrl(x.src),title:String(x.title||"Slide")})));
+      (Array.isArray(d.paragraphs)?d.paragraphs:[]).forEach(x=>storyArea.appendChild(make("p",null,x)));
+      sourcePanel.querySelector(".ambition-image-slot").hidden=multi;
+      slideViewer.hidden=!multi;
+      if(!multi&&d.src){
+        if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;
+        posterImage.alt=d.alt||d.heading;
+      }
+      posterTitle.textContent=(d.heading||data[i].title)+" · PRESENTATION";
+      posterFooter.textContent=(d.heading||data[i].title)+" · "+String(n).padStart(2,"0")+" / 05";
+      posterNext.textContent=n<5?"NEXT / "+data[i+1].title+" →":"CLOSE ×";
+      syncArchiveLinks(n,Array.isArray(d.links)?d.links:(n===1?staticManualLinks:[]));
+      if(multi){
+        const slides=Array.isArray(d.slides)?d.slides:base.slides||defaultTranslationSlides;
+        translationSlides.splice(0,translationSlides.length,...slides.filter(x=>x&&safeUrl(x.src)).map(x=>({
+          src:safeUrl(x.src),title:String(x.title||"Slide")
+        })));
         rebuildTranslationSlides();
         if(translationSlides.length)showSlide(0);
+        else{
+          slideImage.removeAttribute("src");
+          slideImage.alt="No slides uploaded";
+          document.getElementById("translationSlideCount").textContent="00 / 00";
+          document.getElementById("translationFullSize").removeAttribute("href");
+        }
       }
       [sourcePanel.querySelector(".ambition-ppt-copy"),sourcePanel.querySelector(".ambition-ppt-visual"),document.getElementById("chapterDownloads")].forEach(el=>el.scrollTop=0);
     }
@@ -747,10 +765,11 @@
       current=Math.max(0,Math.min(data.length-1,i));
       var chapter={...data[current],...(exhibitionOverrides[current+1]||{})},
           id=String(current+1).padStart(2,"0");
-      const editorial=current<=2;
-      dialog.classList.toggle("is-ambition",editorial);
+      const editorial=true;
+      dialog.classList.toggle("is-ambition",true);
       dialog.classList.toggle("is-materials",current===1);
       dialog.classList.toggle("is-translation",current===2);
+       dialog.classList.toggle("is-slide-gallery",current>=2);
       document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(editorial));
       document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(!editorial));
       if(editorial)renderEditorial(current);
@@ -836,7 +855,7 @@
     document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
     document.getElementById("prevChapter").addEventListener("click",function(){if(current>0)render(current-1)});
     document.getElementById("nextChapter").addEventListener("click",function(){if(current<data.length-1)render(current+1)});
-    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(Math.min(current+1,4))});
+    document.getElementById("ambitionNextChapter").addEventListener("click",function(){if(current>=4)dialog.close();else render(current+1)});
     dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
     dialog.addEventListener("close",function(){
       if(window.location.hash.startsWith("#chapter-"))window.history.replaceState(null,"",window.location.pathname+window.location.search);
@@ -845,8 +864,8 @@
     document.addEventListener("keydown",function(e){
       if(!dialog.open||document.getElementById("exhibitionEditorDialog")?.open)return;
       if(e.target.closest("input,textarea,[contenteditable]"))return;
-      if(e.key==="ArrowRight"){if(current===2){e.preventDefault();showSlide(slideIndex+1)}else if(current<4)render(current+1)}
-      if(e.key==="ArrowLeft"){if(current===2){e.preventDefault();showSlide(slideIndex-1)}else if(current>0)render(current-1)}
+      if(e.key==="ArrowRight"){if(current>=2){e.preventDefault();showSlide(slideIndex+1)}else if(current<4)render(current+1)}
+      if(e.key==="ArrowLeft"){if(current>=2){e.preventDefault();showSlide(slideIndex-1)}else if(current>0)render(current-1)}
     });
     var match=location.hash.match(/^#chapter-0?([1-5])$/);
     if(match)openChapter(Number(match[1])-1);
