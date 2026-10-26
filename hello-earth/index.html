@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
   <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-translation-viewer-v18">
   <link rel="stylesheet" href="../assets/project-credits.css?v=20261026-credits-v1">
+  <link rel="stylesheet" href="../assets/exhibition-editor.css?v=20261026-v1">
 
   <style>
   /* Exhibition palette sampled from the supplied chapter decks.
@@ -495,7 +496,7 @@
       <div class="ambition-windowbar" aria-hidden="true"><span class="ambition-windowtitle">FILE ARCHIVE</span></div>
       <div class="chapter-downloads-heading">
         <h3 id="chapterDownloadsTitle">Downloadable resources</h3>
-        <a id="chapterFileUpload" class="chapter-downloads-upload" href="https://github.com/sogoose/pavilion-fabrication-tracker/upload/main/assets/exhibition/downloads/01" target="_blank" rel="noopener noreferrer" aria-label="Edit chapter files on GitHub (repository edit permission required)">EDIT ↗</a>
+        <button id="chapterFileUpload" class="chapter-downloads-upload" type="button" aria-label="Edit chapter text, slides, links and files using Supabase">EDIT ↗</button>
       </div>
       <div class="chapter-manual-links" id="ambitionManualLinks">
         <div class="chapter-downloads-row">
@@ -505,6 +506,38 @@
       </div>
       <div id="chapterDownloadList" class="chapter-downloads-list" aria-live="polite"></div>
     </section>
+  </dialog>
+  <dialog id="exhibitionEditorDialog" class="exhibition-editor-dialog" aria-label="Exhibition chapter editor">
+    <div class="ex-editor-header"><strong>EDIT / CHAPTER <span id="exEditorChapterNumber">01</span></strong><button type="button" id="exEditorClose" aria-label="Close editor">×</button></div>
+    <div class="ex-editor-auth" id="exEditorAuth">
+      <p>Sign in with an authorised Supabase editor account. Visitors can view the archive without signing in.</p>
+      <form id="exEditorLoginForm">
+        <label>Email<input type="email" id="exEditorEmail" required autocomplete="username"></label>
+        <label>Password<input type="password" id="exEditorPassword" required autocomplete="current-password"></label>
+        <button type="submit">SIGN IN</button>
+      </form>
+    </div>
+    <form id="exEditorForm" hidden>
+      <label>CHAPTER TITLE<input id="exEditorTitle" maxlength="120"></label>
+      <label>QUESTION / LEAD<textarea id="exEditorQuestion" rows="3"></textarea></label>
+      <div class="ex-editor-labels">
+        <label>QUESTION LABEL<input id="exEditorQuestionLabel" placeholder="Optional"></label>
+        <label>BODY LABEL<input id="exEditorStoryLabel" placeholder="Optional"></label>
+      </div>
+      <label>BODY TEXT <small>Separate paragraphs with a blank line.</small><textarea id="exEditorBody" rows="10"></textarea></label>
+      <label>LINKS <small>One per line: Label | https://…</small><textarea id="exEditorLinks" rows="3" placeholder="RHINO MODELING FILE | https://…"></textarea></label>
+      <div class="ex-editor-section">
+        <div class="ex-editor-section-title">PRESENTATION IMAGES / SLIDES</div>
+        <div id="exEditorSlides" class="ex-editor-assets"></div>
+        <label class="ex-editor-upload">ADD IMAGES<input id="exEditorSlideInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple></label>
+      </div>
+      <div class="ex-editor-section">
+        <div class="ex-editor-section-title">DOWNLOADABLE FILES</div>
+        <div id="exEditorFiles" class="ex-editor-assets"></div>
+        <label class="ex-editor-upload">UPLOAD FILES<input id="exEditorFileInput" type="file" multiple></label>
+      </div>
+      <div class="ex-editor-footer"><span id="exEditorStatus" role="status"></span><button type="button" id="exEditorSignOut">SIGN OUT</button><button type="submit" id="exEditorSave">SAVE CHANGES</button></div>
+    </form>
   </dialog>
 
   <script>
@@ -565,6 +598,26 @@
       }
     ];
     var dialog=document.getElementById("chapterDialog"), current=0, lastTrigger=null;
+    const exhibitionOverrides=Object.create(null);
+    const staticManualLinks=Array.from(document.querySelectorAll("#ambitionManualLinks .chapter-downloads-row")).map(row=>({
+      label:row.querySelector("a")?.textContent.trim()||"",
+      url:row.querySelector("a")?.href||""
+    })).filter(x=>x.label&&x.url);
+    const safeUrl=u=>{
+      try{const v=new URL(u,location.href);return v.protocol==="https:"||v.protocol==="http:"?v.href:""}catch{return ""}
+    };
+    function syncArchiveLinks(chapter,links){
+      const container=document.getElementById("ambitionManualLinks");
+      container.replaceChildren();
+      (links||[]).forEach(l=>{
+        const url=safeUrl(l.url),name=String(l.label||"").trim();
+        if(!url||!name)return;
+        const row=make("div","chapter-downloads-row");
+        const link=make("a",null,name);link.href=url;link.rel="noopener noreferrer";link.target="_blank";
+        row.append(link,make("span",null,"LINK ↗"));container.append(row);
+      });
+      container.hidden=!container.children.length;
+    }
     // Preserve Chapter 01 copy and present Chapter 02 with the same three-window reader.
     const sourcePanel=document.getElementById("ambitionPpt");
     const noteTitle=sourcePanel.querySelector(".ambition-ppt-copy h2");
@@ -600,6 +653,7 @@
       "05 PRINTING CODES · CONTINUED","06 FABRICATION WEBSITE",
       "07 RAMMED EARTH BRICKS","08 MOULD DESIGN"
     ].map((title,i)=>({title,src:"../assets/exhibition/translation-slides/slide-"+String(i+1).padStart(2,"0")+".avif"}));
+    const defaultTranslationSlides=translationSlides.map(x=>({...x}));
     let slideIndex=0;
     const slideViewer=document.getElementById("translationSlideViewer");
     const slideImage=document.getElementById("translationSlideImage");
@@ -610,7 +664,7 @@
       slideImage.src=slide.src;
       slideImage.alt="THE TRANSLATION — "+slide.title;
       document.getElementById("translationFullSize").href=slide.src;
-      document.getElementById("translationSlideCount").textContent=String(slideIndex+1).padStart(2,"0")+" / 09";
+      document.getElementById("translationSlideCount").textContent=String(slideIndex+1).padStart(2,"0")+" / "+String(translationSlides.length).padStart(2,"0");
       slideThumbs.querySelectorAll("button").forEach((b,i)=>{
         b.classList.toggle("is-active",i===slideIndex);
         b.setAttribute("aria-current",i===slideIndex?"true":"false");
@@ -619,13 +673,17 @@
       ["translationNext","translationArrowNext"].forEach(id=>document.getElementById(id).disabled=slideIndex===translationSlides.length-1);
       slideThumbs.querySelectorAll("button")[slideIndex]?.scrollIntoView({block:"nearest",inline:"nearest"});
     }
-    translationSlides.forEach((slide,i)=>{
-      const b=document.createElement("button");b.type="button";b.className="translation-slide-thumb";
-      b.setAttribute("aria-label","Slide "+(i+1)+": "+slide.title);
-      const img=document.createElement("img");img.src=slide.src;img.alt="";img.loading=i<2?"eager":"lazy";
-      const label=document.createElement("span");label.textContent=String(i+1).padStart(2,"0");
-      b.append(img,label);b.addEventListener("click",()=>showSlide(i));slideThumbs.append(b);
-    });
+    function rebuildTranslationSlides(){
+      slideThumbs.replaceChildren();
+      translationSlides.forEach((slide,i)=>{
+        const b=document.createElement("button");b.type="button";b.className="translation-slide-thumb";
+        b.setAttribute("aria-label","Slide "+(i+1)+": "+slide.title);
+        const img=document.createElement("img");img.src=slide.src;img.alt="";img.loading=i<2?"eager":"lazy";
+        const label=document.createElement("span");label.textContent=String(i+1).padStart(2,"0");
+        b.append(img,label);b.addEventListener("click",()=>showSlide(i));slideThumbs.append(b);
+      });
+    }
+    rebuildTranslationSlides();
     for(const [id,step] of [["translationPrev",-1],["translationArrowPrev",-1],["translationNext",1],["translationArrowNext",1]])
       document.getElementById(id).addEventListener("click",()=>showSlide(slideIndex+step));
     let touchX=null;
@@ -650,7 +708,9 @@
       alt:"The Materials presentation board: raw material sources, testing, 3D printed and rammed earth fabrication, and mixture charts"
     };
     function renderEditorial(i){
-      const m=i===1,t=i===2,d=t?translationCopy:m?materialsCopy:ambitionCopy;
+      const m=i===1,t=i===2;
+      const defaults=t?translationCopy:m?materialsCopy:ambitionCopy;
+      const d={...defaults,...(exhibitionOverrides[i+1]||{})};
       noteTitle.textContent=d.heading;
       questionLabel.textContent=d.questionLabel;
       questionText.textContent=d.question;
@@ -663,19 +723,26 @@
       posterTitle.textContent=t?"THE TRANSLATION · PRESENTATION":m?"THE MATERIALS · PRESENTATION":"THE AMBITION · PRESENTATION";
       posterFooter.textContent=t?"THE TRANSLATION · 03 / 05":m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
       posterNext.textContent=t?"NEXT / THE REALITY →":m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
-      manualLink.hidden=i!==0;
-      if(t)showSlide(0);
+      syncArchiveLinks(i+1,Array.isArray(d.links)?d.links:(i===0?staticManualLinks:[]));
+      if(t){
+        const slides=Array.isArray(d.slides)&&d.slides.length?d.slides:defaultTranslationSlides;
+        translationSlides.splice(0,translationSlides.length,...slides.filter(x=>x&&safeUrl(x.src)).map(x=>({src:safeUrl(x.src),title:String(x.title||"Slide")})));
+        rebuildTranslationSlides();
+        if(translationSlides.length)showSlide(0);
+      }
       [sourcePanel.querySelector(".ambition-ppt-copy"),sourcePanel.querySelector(".ambition-ppt-visual"),document.getElementById("chapterDownloads")].forEach(el=>el.scrollTop=0);
     }
 
     function make(tag,cls,text){var el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el}
     function galleryItem(source,caption){
       var fig=make("figure","gallery-item"),im=document.createElement("img");
-      im.src=pictures+source;im.alt=caption;im.loading="lazy";
+      im.src=/^https?:\/\//i.test(source)?source:pictures+source;im.alt=caption;im.loading="lazy";
       fig.append(im,make("span",null,caption));return fig
     }
     function render(i){
-      current=Math.max(0,Math.min(data.length-1,i));var chapter=data[current],id=String(current+1).padStart(2,"0");
+      current=Math.max(0,Math.min(data.length-1,i));
+      var chapter={...data[current],...(exhibitionOverrides[current+1]||{})},
+          id=String(current+1).padStart(2,"0");
       const editorial=current<=2;
       dialog.classList.toggle("is-ambition",editorial);
       dialog.classList.toggle("is-materials",current===1);
@@ -694,7 +761,7 @@
       document.getElementById("tarot").style.setProperty("--accent",chapter.color);
       document.getElementById("tarot").style.setProperty("--card-ink",current===2||current===3?"#fffdf8":"#302b25");
       document.getElementById("tarot").style.setProperty("--card-filter",current===2||current===3?"invert(1)":"brightness(1)");
-      var art=document.getElementById("tarotImage");art.src=pictures+chapter.image;art.alt=chapter.title+" visual";
+      var art=document.getElementById("tarotImage");art.src=/^https?:\/\//i.test(chapter.image)?chapter.image:pictures+chapter.image;art.alt=chapter.title+" visual";
       var gal=document.getElementById("dialogGallery");gal.replaceChildren();
       chapter.gallery.forEach(function(entry){gal.appendChild(galleryItem(entry[0],entry[1]))});
       var body=document.getElementById("dialogCopy");body.replaceChildren();
@@ -704,7 +771,31 @@
       document.getElementById("nextChapter").disabled=current===data.length-1;
       dialog.scrollTop=0;
       window.history.replaceState(null,"","#chapter-"+id);
+      window.dispatchEvent(new CustomEvent("helloearth:chapterchange",{detail:{chapter:current+1}}));
     }
+    window.helloEarthActiveChapter=()=>current+1;
+    window.helloEarthGetChapter=function(num){
+      const n=Number(num),base=data[n-1];
+      if(!base)return null;
+      const editorial=n<=3,copy=n===1?ambitionCopy:n===2?materialsCopy:translationCopy;
+      const defaultData=editorial?{
+        heading:copy.heading,question:copy.question,questionLabel:copy.questionLabel,
+        storyLabel:copy.storyLabel,paragraphs:[...copy.paragraphs],
+        slides:n===3?defaultTranslationSlides.map(x=>({...x})):[{title:copy.heading,src:copy.src}],
+        links:n===1?staticManualLinks.map(x=>({...x})):[]
+      }:{
+        heading:base.title,question:base.lead,paragraphs:[...base.paragraphs],
+        slides:(base.gallery||[]).map(x=>({title:x[1],src:/^https?:\/\//i.test(x[0])?x[0]:pictures+x[0]})),
+        links:[]
+      };
+      return {...defaultData,...(exhibitionOverrides[n]||{}),files:(exhibitionOverrides[n]?.files||[]).map(x=>({...x}))};
+    };
+    window.helloEarthApplyChapter=function(num,content){
+      const n=Number(num);
+      if(!(n>=1&&n<=5)||!content||typeof content!=="object")return;
+      exhibitionOverrides[n]=content;
+      if(current+1===n)render(current);
+    };
     function openChapter(i){
       lastTrigger=document.activeElement;
       render(i);
@@ -922,7 +1013,9 @@
 })();
 </script>
   <script src="../assets/ambition-interactive.js?v=20261026-clean-v5" defer></script>
-  <script src="../assets/chapter-downloads.js?v=20261026-archive-empty-v2" defer></script>
+  <script src="../config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
+  <script src="../assets/exhibition-editor.js?v=20261026-v1" defer></script>
 </body>
 </html>
 
