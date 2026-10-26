@@ -14,12 +14,24 @@
     zoom:.75;
   }
   /*
+   * The PROJECT page shrinks the body to 75% for editorial density.
+   * Counter-zoom only the shared topbar so its physical 59px height,
+   * typography, padding and navigation spacing match TRACKER / LAMA SLICER.
+   * This does not affect the poster gallery or chapter dialog scale.
+   */
+  .rev-page .ed-topbar {
+    zoom:1.3333333333;
+    height:59px;
+    min-height:59px;
+  }
+  /*
    * viewport units still use the physical viewport under element zoom.
    * Restore full-height sidebar and a compact editorial hero, while keeping
    * poster sizes, copy and controls at the requested three-quarter scale.
    */
   .rev-page .rev-aside-inner {
-    height:calc(133.3333svh - 60px);
+    top:78.6667px; /* 59px header at 75% body zoom */
+    height:calc(133.3333svh - 78.6667px);
   }
   .rev-page .rev-hero.rev-hero-fullvideo {
     min-height:clamp(850px,110svh,1100px);
@@ -36,8 +48,14 @@
   body.rev-page {
     zoom:.85;
   }
+  .rev-page .ed-topbar {
+    zoom:1.1764705882;
+    height:59px;
+    min-height:59px;
+  }
   .rev-page .rev-aside-inner {
-    height:calc(117.6471svh - 60px);
+    top:69.4118px; /* 59px header at 85% body zoom */
+    height:calc(117.6471svh - 69.4118px);
   }
   .rev-page .rev-hero.rev-hero-fullvideo {
     min-height:clamp(710px,100svh,1050px);
