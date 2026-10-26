@@ -602,7 +602,7 @@
   .rev-page #chapterDialog.is-ambition[open] .ambition-windowbar{
     box-sizing:border-box;
     position:sticky;
-    top:calc(-1 * var(--ambition-pane-top));
+    top:0;
     z-index:15;
     display:flex;
     justify-content:space-between;
@@ -632,7 +632,8 @@
     opacity:.68;
   }
 }
-/* Window title bars are desktop-only: retain the current mobile/editorial flow. */
+/* Keep shared archive unchanged for chapters 02–05 and preserve mobile. */
+.rev-page #chapterDialog:not(.is-ambition) .ambition-windowbar{display:none!important;}
 @media screen and (max-width:1239px){
   .rev-page #chapterDialog .ambition-windowbar{display:none;}
 }
