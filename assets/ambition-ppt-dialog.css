@@ -1560,3 +1560,40 @@
 .rev-page #chapterDialog.is-slide-gallery.is-portrait-slide #translationSlideViewer:fullscreen .translation-slide-stage{
   overflow-y:auto!important;
 }
+
+/* 01/02 fit-to-frame: portrait posters behave like the landscape viewer. */
+/* The prior portrait override forced full-width natural-height images and a scroll.
+   Fit the entire poster inside the same stage used by chapters 03–05 instead. */
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-stage{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden!important;
+  touch-action:auto;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-image-link{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%!important;
+  min-height:0;
+  min-width:0;
+  line-height:normal;
+  touch-action:auto;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-stage img{
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  min-height:0;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain;
+  object-position:center;
+  -webkit-user-drag:none;
+}
+/* Fullscreen also shows the whole page at once; clicking again exits. */
+.rev-page #chapterDialog.is-slide-gallery.is-portrait-slide #translationSlideViewer:fullscreen .translation-slide-stage{
+  overflow:hidden!important;
+}
