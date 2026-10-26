@@ -8,7 +8,6 @@
   if(layers.length!==2)return;
   const sources=[
     "../assets/exhibition/ambition-stacked.png",
-    "../assets/exhibition/module-symbol-original.png",
     "../assets/exhibition/hero-chain.png",
     "../assets/exhibition/hero-chain-secondary-outline.svg"
   ];
@@ -50,7 +49,7 @@
   function schedule(){
     clearTimeout(clock);clock=0;
     if(!visible||document.hidden||reduced.matches)return;
-    clock=setTimeout(next,900+Math.random()*900);
+    clock=setTimeout(next,1350+Math.random()*1350);
   }
   if("IntersectionObserver" in window){
     new IntersectionObserver(entries=>{
