@@ -831,3 +831,78 @@
 .rev-page #chapterDialog #ambitionManualLinks .chapter-downloads-row {gap:10px;}
 .rev-page #chapterDialog #ambitionManualLinks a {font-weight:600;text-decoration:none;}
 .rev-page #chapterDialog #ambitionManualLinks a:hover {text-decoration:underline;}
+
+/* 2026-10-26 / archive palette swap + low-key editor access */
+/* Light reading surface, charcoal text and quiet warm-grey archive. */
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy,
+.rev-page #chapterDialog.is-ambition .ambition-notes-stack>.ambition-ppt-copy {
+  background:rgba(252,251,249,.98);
+  color:#302b25;
+}
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy h2,
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy h3,
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy p,
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy .ambition-ppt-small-label {
+  color:#302b25;
+}
+.rev-page #chapterDialog.is-ambition .ambition-ppt-copy .ambition-ppt-story p {
+  color:#454039;
+}
+.rev-page #chapterDialog.is-ambition .chapter-downloads {
+  background:rgba(206,200,193,.97);
+  color:#302b25;
+}
+.rev-page #chapterDialog.is-ambition .chapter-downloads .ambition-windowbar{
+  background:rgba(232,226,219,.65);
+}
+/* Just an unobtrusive edit permission link rather than a large call-to-action. */
+.rev-page #chapterDialog.is-ambition .chapter-downloads .chapter-downloads-upload{
+  display:inline-flex;
+  align-items:center;justify-content:center;
+  align-self:flex-start;
+  width:auto;min-width:0;
+  min-height:0;
+  padding:3px 2px;
+  border:0;border-radius:0;
+  background:transparent;
+  color:#696058;
+  box-shadow:none;
+  font:600 9px/1.1 "IBM Plex Mono",Consolas,monospace;
+  letter-spacing:.035em;
+  text-decoration:none;
+  white-space:nowrap;
+}
+.rev-page #chapterDialog.is-ambition .chapter-downloads .chapter-downloads-upload:hover,
+.rev-page #chapterDialog.is-ambition .chapter-downloads .chapter-downloads-upload:focus-visible{
+  color:#302b25;
+  background:transparent;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+@media screen and (min-width:1240px) {
+ .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack>.ambition-ppt-copy{
+   background:rgba(252,251,249,.98);
+   border-color:rgba(255,255,255,.78);
+ }
+ .rev-page #chapterDialog.is-ambition[open] .ambition-notes-stack .ambition-windowbar{
+   background:rgba(231,228,224,.68);
+   border-color:rgba(179,172,164,.28);
+ }
+ .rev-page #chapterDialog.is-ambition[open] .chapter-downloads{
+   background:rgba(206,200,193,.97);
+   border-color:rgba(255,255,255,.56);
+ }
+ .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-heading{
+   display:flex;
+   flex-direction:row;
+   flex-wrap:wrap;
+   justify-content:space-between;
+   align-items:baseline;
+   gap:6px 12px;
+ }
+ .rev-page #chapterDialog.is-ambition[open] .chapter-downloads .chapter-downloads-upload{
+   width:auto;min-height:0;padding:3px 2px;
+   border:0;border-radius:0;background:transparent;
+   font-size:9px;line-height:1.1;box-shadow:none;
+ }
+}
