@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-ppt-v1">
 
   <style>
   /* Exhibition palette sampled from the supplied chapter decks.
@@ -387,6 +388,74 @@
         </nav>
       </div>
     </div>
+
+    <section class="ambition-ppt" id="ambitionPpt" aria-label="The Ambition — exhibition presentation">
+      <div class="ambition-ppt-copy">
+        <div class="ambition-ppt-brand">PRINT(“HELLO, EARTH”)<sup>3</sup></div>
+        <h2>THE AMBITION</h2>
+        <div class="ambition-ppt-brief">
+          <div class="ambition-ppt-small-label">01 / THE QUESTION</div>
+          <h3>ONE SYSTEM,<br>DIFFERENT SPACES</h3>
+          <p>The repeating triangular geometry allows the pavilion to be reconfigured according to its location and the number of available components.</p>
+        </div>
+        <div class="ambition-ppt-story">
+          <div class="ambition-ppt-small-label">02 / DESIGN DEVELOPMENT</div>
+          <p>The pavilion was developed as a reconfigurable architectural system, designed to adapt to different exhibition spaces, layouts, and available quantities of building components.</p>
+          <p>Rather than creating a fixed structure dependent on one specific arrangement, the design focuses on a single repeatable element that allows the pavilion to take on different forms. This approach shifts the design process from the scale of the pavilion to the scale of the individual brick.</p>
+          <p>The geometry of the brick emerged from a continuous negotiation between architectural ambition, structural requirements, material efficiency, and robotic fabrication constraints.</p>
+          <p>Earth performs well under compression, making vertical load transfer an important starting point. However, its high density and the limited material capacity of the robotic printer required a more efficient distribution of material.</p>
+          <p>Each part of the geometry therefore serves a specific purpose. The cylinders form the primary load-bearing elements, while the triangular arrangement is intended to improve stability against lateral forces. The connecting walls provide continuity between the cylinders while reducing material consumption. The geometry was also developed around the requirements of robotic 3D printing, including the need for a planar printing surface.</p>
+          <p>All together, these considerations shaped a component that balances structural logic, material use, and fabrication feasibility.</p>
+          <p>Their triangular organization allows the wall to follow different arrangements, adapting its overall configuration. The result is not one predetermined pavilion, but a building system in which a single component creates multiple architectural possibilities.</p>
+        </div>
+        <div class="ambition-ppt-copy-footer">ARIT1507 · CREATIVE ROBOTICS IN SPATIAL DESIGN</div>
+      </div>
+      <div class="ambition-ppt-visual">
+        <div class="ambition-ppt-topline">RECONFIGURABLE ARCHITECTURAL SYSTEM <span>01 / 05</span></div>
+        <div class="ambition-ppt-hero">
+          <img src="../assets/exhibition/ambition-stacked.png" alt="Exploded isometric arrangement of repeatable triangular modules forming a pavilion" loading="lazy">
+          <div class="ambition-ppt-statement">
+            <span class="ambition-ppt-small-label">FROM A SINGLE EARTHEN BRICK</span>
+            <h3>ONE COMPONENT<br>MANY CONFIGURATIONS</h3>
+            <p>Rather than one fixed structure, the pavilion is a modular system that can be assembled in different arrangements.</p>
+          </div>
+        </div>
+        <div class="ambition-ppt-principles" aria-label="Three geometric design principles">
+          <figure>
+            <figcaption><b>01 / STABILITY</b><span>Triangular arrangement of load-bearing cylinders</span></figcaption>
+            <img src="../assets/exhibition/hero-chain-secondary-outline.svg" alt="Connected triangular geometries" loading="lazy">
+          </figure>
+          <figure>
+            <figcaption><b>02 / EFFICIENCY</b><span>Denser cylinders, lighter connecting walls</span></figcaption>
+            <img src="../assets/workflow/decor/printed-module.webp" alt="Hollow printed triangular earthen component" loading="lazy">
+          </figure>
+          <figure>
+            <figcaption><b>03 / PRINTABILITY</b><span>Geometry adapted to planar printing</span></figcaption>
+            <img src="../assets/exhibition/ambition-stacked.png" alt="Stacked printable earthen modules" loading="lazy">
+          </figure>
+        </div>
+        <div class="ambition-ppt-outro">
+          <div class="ambition-ppt-outro-copy">
+            <span class="ambition-ppt-small-label">THE OUTCOME</span>
+            <h3>ONE SYSTEM,<br>DIFFERENT SPACES</h3>
+            <p>The repeating triangular geometry allows the pavilion to be reconfigured according to its location and the number of available components.</p>
+          </div>
+          <img src="../assets/exhibition/hero-chain.png" alt="Curving plan arrangement showing reconfigurable pavilion modules" loading="lazy">
+        </div>
+        <div class="ambition-ppt-actions">
+          <span>THE AMBITION · 01 / 05</span>
+          <button id="ambitionNextChapter" class="ambition-ppt-next" type="button">NEXT / THE MATERIALS →</button>
+        </div>
+      </div>
+    </section>
+    <section class="chapter-downloads" id="chapterDownloads" aria-labelledby="chapterDownloadsTitle">
+      <div class="chapter-downloads-heading">
+        <div><span class="chapter-downloads-eyebrow">OPEN ARCHIVE / CHAPTER FILES</span><h3 id="chapterDownloadsTitle">Downloadable resources</h3></div>
+        <a id="chapterFileUpload" class="chapter-downloads-upload" href="https://github.com/sogoose/pavilion-fabrication-tracker/upload/main/assets/exhibition/downloads/01" target="_blank" rel="noopener noreferrer" aria-label="Upload chapter files through GitHub (repository editors only)">UPLOAD FILES ↗</a>
+      </div>
+      <div id="chapterDownloadList" class="chapter-downloads-list" aria-live="polite">Loading chapter files…</div>
+      <p class="chapter-downloads-note">Visitors can download published files. Repository editors can add files using GitHub; new files then appear in this chapter automatically.</p>
+    </section>
   </dialog>
 
   <script>
@@ -455,6 +524,10 @@
     }
     function render(i){
       current=Math.max(0,Math.min(data.length-1,i));var chapter=data[current],id=String(current+1).padStart(2,"0");
+      dialog.classList.toggle("is-ambition",current===0);
+      document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(current===0));
+      document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(current!==0));
+      if(typeof window.loadChapterDownloads==="function")window.loadChapterDownloads(current+1);
       document.getElementById("dialogCounter").textContent=id+" / 05";
       document.getElementById("chapterCount").textContent=id+" / 05";
       document.getElementById("dialogLabel").textContent="CHAPTER "+id+" / FIVE";
@@ -488,6 +561,7 @@
     document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
     document.getElementById("prevChapter").addEventListener("click",function(){if(current>0)render(current-1)});
     document.getElementById("nextChapter").addEventListener("click",function(){if(current<data.length-1)render(current+1)});
+    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(1)});
     dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
     dialog.addEventListener("close",function(){
       if(window.location.hash.startsWith("#chapter-"))window.history.replaceState(null,"",window.location.pathname+window.location.search);
@@ -688,6 +762,7 @@
 })();
 </script>
   <script src="../assets/ambition-interactive.js?v=20261026-clean-v5" defer></script>
+  <script src="../assets/chapter-downloads.js?v=20261026-archive-v1" defer></script>
 </body>
 </html>
 
