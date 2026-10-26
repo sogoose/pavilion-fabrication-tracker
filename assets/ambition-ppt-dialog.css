@@ -200,3 +200,144 @@
 @media(prefers-reduced-motion:reduce){
   .rev-page #chapterDialog .ambition-ppt *{animation:none!important;transition:none!important}
 }
+
+/* AMBITION / editorial legibility pass 2026-10-26 */
+/* Screen-first reading sizes (the PROJECT body uses its own editorial zoom). */
+.rev-page #chapterDialog .ambition-ppt-small-label{
+  font-size:12px;
+  letter-spacing:.065em;
+}
+.rev-page #chapterDialog .ambition-ppt-brief p{
+  font-size:17px;line-height:1.63;max-width:38ch;
+}
+.rev-page #chapterDialog .ambition-ppt-story{
+  padding-top:22px;
+}
+.rev-page #chapterDialog .ambition-ppt-story p{
+  font-size:17px;line-height:1.68;margin-bottom:24px;
+  color:#3d3731;letter-spacing:0;
+}
+/* Quiet large-scale tracing paper grid instead of dense crosshatching. */
+.rev-page #chapterDialog .ambition-ppt-visual{
+  background-color:#716b63;
+  background-image:
+    linear-gradient(#ffffff09 1px,transparent 1px),
+    linear-gradient(90deg,#ffffff09 1px,transparent 1px);
+  background-size:26px 26px;
+}
+.rev-page #chapterDialog .ambition-ppt-topline{
+  font-size:12px;letter-spacing:.055em;
+}
+/* The module now gets its own image field, separated from the title's ink panel. */
+.rev-page #chapterDialog .ambition-ppt-hero{
+  height:730px;display:grid;
+  grid-template-columns:minmax(0,64%) minmax(0,36%);
+  align-items:start;overflow:hidden;
+}
+.rev-page #chapterDialog .ambition-ppt-hero>img{
+  position:relative;top:0;left:-12%;
+  width:126%;height:730px;max-width:none;
+  object-fit:contain;object-position:center center;
+  transform:scale(1.13);transform-origin:44% 50%;
+}
+.rev-page #chapterDialog .ambition-ppt-statement{
+  position:relative;top:auto;right:auto;
+  width:auto;align-self:start;z-index:2;
+  margin-top:56px;padding:24px 20px 26px;
+  background:#4b453f;color:#fffdf8;text-shadow:none;
+}
+.rev-page #chapterDialog .ambition-ppt-statement .ambition-ppt-small-label{
+  font-size:11px;line-height:1.45;
+}
+.rev-page #chapterDialog .ambition-ppt-statement h3{
+  font-size:clamp(23px,2.65vw,36px);
+  line-height:1.12;letter-spacing:-.055em;margin-bottom:20px;
+  overflow-wrap:normal;
+}
+.rev-page #chapterDialog .ambition-ppt-statement p{
+  max-width:31ch;font:400 15px/1.62 Arial,Helvetica,sans-serif;
+  color:#eeeae5;
+}
+/* Larger technical images, with readable labels rather than small cards. */
+.rev-page #chapterDialog .ambition-ppt-principles{
+  gap:20px;padding:25px 0 35px;
+}
+.rev-page #chapterDialog .ambition-ppt-principles figcaption{
+  min-height:98px;gap:10px;
+  font:400 13px/1.46 Arial,Helvetica,sans-serif;
+}
+.rev-page #chapterDialog .ambition-ppt-principles figcaption b{
+  font:600 14px/1.32 "IBM Plex Mono",Consolas,monospace;
+}
+.rev-page #chapterDialog .ambition-ppt-principles img{
+  width:100%;height:240px;max-width:none;
+  object-fit:contain;object-position:center;
+  filter:grayscale(1) brightness(1.55);
+}
+/* Scale up the concluding plan diagram without obscuring the copy. */
+.rev-page #chapterDialog .ambition-ppt-outro{
+  min-height:475px;
+}
+.rev-page #chapterDialog .ambition-ppt-outro-copy{
+  max-width:270px;flex-basis:38%;
+}
+.rev-page #chapterDialog .ambition-ppt-outro p{
+  font:400 15px/1.6 Arial,Helvetica,sans-serif;
+}
+.rev-page #chapterDialog .ambition-ppt-outro img{
+  right:-10%;bottom:4px;width:115%;height:420px;max-width:none;
+  opacity:.93;
+}
+@media(max-width:900px){
+  .rev-page #chapterDialog .ambition-ppt-hero{
+    height:605px;grid-template-columns:minmax(0,60%) minmax(0,40%);
+  }
+  .rev-page #chapterDialog .ambition-ppt-hero>img{
+    height:605px;left:-16%;width:134%;
+  }
+  .rev-page #chapterDialog .ambition-ppt-statement{
+    margin-top:35px;padding:17px 14px;width:auto;
+  }
+  .rev-page #chapterDialog .ambition-ppt-statement h3{font-size:22px}
+  .rev-page #chapterDialog .ambition-ppt-statement p{font-size:14px}
+  .rev-page #chapterDialog .ambition-ppt-principles img{height:190px}
+}
+@media(max-width:680px){
+  .rev-page #chapterDialog .ambition-ppt-brief p,
+  .rev-page #chapterDialog .ambition-ppt-story p{
+    font-size:16px;line-height:1.68;
+  }
+  .rev-page #chapterDialog .ambition-ppt-hero{
+    height:auto;display:grid;grid-template-columns:minmax(0,1fr);
+    grid-template-rows:450px auto;overflow:hidden;
+  }
+  .rev-page #chapterDialog .ambition-ppt-hero>img{
+    top:0;left:0;width:100%;height:450px;
+    transform:scale(1.15);transform-origin:50% 50%;
+  }
+  .rev-page #chapterDialog .ambition-ppt-statement{
+    margin:0 0 24px;padding:22px 20px;width:auto;
+  }
+  .rev-page #chapterDialog .ambition-ppt-statement h3{font-size:26px}
+  .rev-page #chapterDialog .ambition-ppt-statement p{font-size:16px}
+  .rev-page #chapterDialog .ambition-ppt-principles{
+    grid-template-columns:minmax(0,1fr);gap:0;padding:17px 0 25px;
+  }
+  .rev-page #chapterDialog .ambition-ppt-principles figure{
+    display:grid;grid-template-columns:minmax(0,45%) minmax(0,55%);
+    gap:10px;align-items:center;
+    border-bottom:1px solid #ffffff40;padding:14px 0;
+  }
+  .rev-page #chapterDialog .ambition-ppt-principles figcaption{
+    min-height:0;font-size:14px;line-height:1.5;
+  }
+  .rev-page #chapterDialog .ambition-ppt-principles figcaption b{font-size:14px}
+  .rev-page #chapterDialog .ambition-ppt-principles img{height:200px}
+  .rev-page #chapterDialog .ambition-ppt-outro{min-height:520px}
+  .rev-page #chapterDialog .ambition-ppt-outro-copy{
+    max-width:76%;flex-basis:70%;
+  }
+  .rev-page #chapterDialog .ambition-ppt-outro img{
+    right:-18%;bottom:0;width:125%;height:340px;
+  }
+}
