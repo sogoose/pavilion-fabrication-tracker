@@ -1139,3 +1139,115 @@
     padding:13px;
   }
 }
+
+/* Presentation-first slide viewer (03-05): maximize slide, no thumbnail strip. */
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-thumbnails {
+  display:none!important;
+}
+/* Remove the overly wide white thumbnail-stage background. The image itself
+   determines the visible paper rectangle and stays fully in frame. */
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-stage {
+  flex:1 1 0;
+  min-height:0;
+  min-width:0;
+  background:transparent;
+  border:0;
+  border-radius:5px;
+  overflow:hidden;
+}
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-image-link {
+  width:100%;
+  height:100%;
+}
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-stage img {
+  width:100%;
+  height:100%;
+  max-height:100%;
+  max-width:100%;
+  object-fit:contain;
+  object-position:center;
+}
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-viewer{
+  gap:8px;
+  padding-bottom:0;
+  min-height:0;
+  max-height:none;
+}
+.rev-page #chapterDialog.is-slide-gallery[open] .translation-slide-nav{
+  min-height:39px;
+  gap:16px;
+  padding:0 0 3px;
+}
+.rev-page #chapterDialog.is-slide-gallery[open] .ambition-ppt-actions{
+  padding-top:10px;
+}
+@media screen and (min-width:1240px) {
+  /* The old fixed 650px / zoomed window left only ~350px for the slide.
+     Use nearly full viewport height, with an inset rather than a 1.33 zoom. */
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] {
+    zoom:1!important;
+    width:min(1560px, calc(100vw - 56px))!important;
+    max-width:calc(100vw - 36px)!important;
+    height:min(900px, calc(100dvh - 36px))!important;
+    max-height:calc(100dvh - 24px)!important;
+    grid-template-columns:minmax(285px, 27fr) minmax(0, 73fr);
+    grid-template-rows:minmax(0, 60fr) minmax(0, 40fr);
+    column-gap:clamp(16px,1.5vw,26px);
+    row-gap:13px;
+    overflow:visible;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual {
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    overflow:hidden!important;
+    margin:0 0 2px;
+    padding:0 clamp(12px,1.5vw,22px) 13px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-visual .ambition-windowbar{
+    flex:0 0 43px;
+    margin-bottom:12px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    flex:1 1 0;
+    height:auto;
+    width:100%;
+    min-height:0;
+    max-height:none;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-stage{
+    flex:1 1 0;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav{
+    flex:0 0 39px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .ambition-ppt-actions{
+    flex:0 0 40px;
+    margin-top:4px;
+  }
+}
+/* Keep tablet/mobile image navigation, but dedicate the preview strip's height
+   to the actual slide. */
+@media screen and (max-width:1239px) {
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    display:flex;
+    flex-direction:column;
+    height:min(82dvh, 760px);
+    min-height:370px;
+    max-height:none;
+    flex:0 0 auto;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-stage{
+    flex:1 1 0;
+  }
+}
+@media screen and (max-width:680px) {
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-viewer{
+    height:min(69dvh, 560px);
+    min-height:270px;
+  }
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery[open] .translation-slide-nav{
+    gap:10px;
+    font-size:11px;
+  }
+}
