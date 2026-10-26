@@ -10,7 +10,6 @@
     "../assets/exhibition/ambition-stacked.png",
     "../assets/exhibition/module-symbol-original.png",
     "../assets/exhibition/hero-chain.png",
-    "../assets/exhibition/assembly-original.svg",
     "../assets/exhibition/hero-chain-secondary-outline.svg"
   ];
   const cache=sources.map(src=>{
