@@ -24,7 +24,12 @@ const normalizeURL=(u)=>{
 const escapeText=v=>String(v==null?"":v);
 const titleNum=n=>String(n).padStart(2,"0");
 const filesize=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1)+" MB";
-const status=(message,isError=false)=>{const el=$("exEditorStatus");el.textContent=message||"";el.style.color=isError?"#af4439":"";};
+const status=(message,isError=false)=>{
+  for(const id of ["exEditorStatus","exEditorAuthStatus"]){
+    const el=$(id);if(!el)continue;
+    el.textContent=message||"";el.style.color=isError?"#af4439":"";
+  }
+};
 const base=n=>window.helloEarthGetChapter?.(n)||null;
 const latest=n=>({...base(n),...(store[n]||{})});
 function publicFiles(chapter){
