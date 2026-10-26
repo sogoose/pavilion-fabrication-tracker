@@ -1597,3 +1597,118 @@
 .rev-page #chapterDialog.is-slide-gallery.is-portrait-slide #translationSlideViewer:fullscreen .translation-slide-stage{
   overflow:hidden!important;
 }
+
+/* Expandable FILE ARCHIVE — compact by default, reclaim space for DESIGN NOTES. */
+.rev-page #chapterDialog .chapter-archive-body[hidden]{
+  display:none!important;
+}
+.rev-page #chapterDialog .chapter-archive-body{
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  min-height:0;
+  min-width:0;
+  overflow-y:auto;
+}
+.rev-page #chapterDialog .chapter-downloads .archive-toggle{
+  appearance:none;
+  box-sizing:border-box;
+  width:calc(100% + 2 * var(--pane-x, 0px));
+  flex:0 0 auto;
+  display:flex!important;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  cursor:pointer;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:11px;
+  font-weight:500;
+  line-height:1.2;
+  letter-spacing:.025em;
+  text-align:center;
+  color:#423b35;
+}
+.rev-page #chapterDialog .chapter-downloads .archive-toggle:focus-visible{
+  outline:2px solid #60554a;
+  outline-offset:-3px;
+}
+.rev-page #chapterDialog .chapter-downloads .archive-toggle .ambition-windowtitle{
+  pointer-events:none;
+}
+.rev-page #chapterDialog .chapter-downloads .archive-toggle-symbol{
+  position:absolute;
+  right:17px;
+  top:50%;
+  transform:translateY(-50%);
+  font:400 18px/1 Arial,Helvetica,sans-serif;
+  color:#615950;
+  pointer-events:none;
+}
+.rev-page #chapterDialog.archive-collapsed[open] .chapter-downloads {
+  display:flex;
+  flex-direction:column;
+  overflow:hidden!important;
+  padding:0!important;
+  margin:0 0 4px!important;
+  min-height:0!important;
+  max-height:53px!important;
+}
+.rev-page #chapterDialog.archive-collapsed[open] .chapter-downloads .archive-toggle{
+  flex:1 1 auto;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none;
+  padding:0 40px 0 20px!important;
+  margin:0!important;
+  border:0;
+  border-radius:inherit;
+  background:rgba(232,226,218,.24);
+}
+.rev-page #chapterDialog.archive-collapsed[open] .chapter-downloads .archive-toggle:hover{
+  background:rgba(255,255,255,.35);
+}
+.rev-page #chapterDialog:not(.archive-collapsed) .chapter-downloads .archive-toggle{
+  min-height:43px;
+  height:43px;
+  margin-bottom:13px;
+}
+@media screen and (min-width:1240px){
+  .rev-page #chapterDialog.is-ambition.archive-collapsed[open]{
+    grid-template-rows:minmax(0,1fr) 53px!important;
+    transition:grid-template-rows .24s ease;
+  }
+  .rev-page #chapterDialog.is-ambition:not(.archive-collapsed)[open]{
+    grid-template-rows:minmax(0,61fr) minmax(0,39fr);
+    transition:grid-template-rows .24s ease;
+  }
+  .rev-page #chapterDialog.is-ambition.archive-collapsed[open] .ambition-notes-stack>.ambition-ppt-copy{
+    min-height:0;
+    margin:4px 0 0;
+  }
+  .rev-page #chapterDialog.is-ambition.archive-collapsed[open] .chapter-downloads{
+    height:49px!important;
+  }
+}
+@media screen and (max-width:1239px){
+  .rev-page #chapterDialog.archive-collapsed[open] .chapter-downloads{
+    height:48px!important;
+    min-height:48px!important;
+    max-height:48px!important;
+  }
+  .rev-page #chapterDialog:not(.archive-collapsed) .chapter-downloads{
+    overflow:visible;
+  }
+  .rev-page #chapterDialog .chapter-downloads .archive-toggle{
+    margin-left:calc(-1 * var(--pane-x, 0px));
+    margin-right:calc(-1 * var(--pane-x, 0px));
+  }
+  .rev-page #chapterDialog.archive-collapsed[open] .chapter-downloads .archive-toggle{
+    margin:0!important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .rev-page #chapterDialog.is-ambition[open]{
+    transition:none!important;
+  }
+}
