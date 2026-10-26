@@ -1477,3 +1477,86 @@
     line-height:1.68;
   }
 }
+
+/* Unified 01–05 viewer: portrait chapters scroll naturally inside full-bleed window. */
+/* Do not change 01/02 editorial headings when adopting the shared presentation viewer. */
+.rev-page #chapterDialog.is-portrait-slide:not(.is-materials) .ambition-ppt-brief > .ambition-ppt-small-label,
+.rev-page #chapterDialog.is-portrait-slide:not(.is-materials) .ambition-ppt-story > .ambition-ppt-small-label{
+  display:block;
+}
+.rev-page #chapterDialog.is-portrait-slide:not(.is-materials) .ambition-ppt-story {
+  border-top:1px solid #aaa49b;
+  padding-top:22px;
+}
+.rev-page #chapterDialog.is-portrait-slide.is-materials .ambition-ppt-brief > .ambition-ppt-small-label,
+.rev-page #chapterDialog.is-portrait-slide.is-materials .ambition-ppt-story > .ambition-ppt-small-label{
+  display:none;
+}
+.rev-page #chapterDialog.is-portrait-slide.is-materials .ambition-ppt-story{
+  border-top:0;
+  padding-top:0;
+}
+/* Remove unused arrows for a one-page poster, but retain the same quiet page indicator. */
+.rev-page #chapterDialog.is-single-slide .translation-slide-nav button{display:none!important}
+.rev-page #chapterDialog.is-single-slide .translation-slide-nav{pointer-events:none}
+.rev-page #chapterDialog.is-single-slide .translation-slide-nav #translationSlideCount{
+  border-radius:30px;
+  padding:9px 13px;
+  background:rgba(252,250,247,.8);
+  box-shadow:0 1px 8px rgba(35,29,23,.08);
+}
+/* Unlike landscape slideshow images (03–05), tall 01–02 posters should be
+   full width with their real aspect ratio and an independently scrollable canvas. */
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-stage{
+  display:block;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(118,108,99,.52) transparent;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-image-link{
+  display:block!important;
+  width:100%;
+  height:auto!important;
+  min-height:100%;
+  line-height:0;
+  touch-action:pan-y;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-stage img{
+  display:block;
+  width:100%!important;
+  height:auto!important;
+  min-height:0;
+  max-width:100%!important;
+  max-height:none!important;
+  object-fit:contain;
+  object-position:top center;
+  border-radius:0;
+  -webkit-user-drag:none;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .ambition-ppt-visual{
+  padding:0!important;
+  overflow:hidden!important;
+}
+.rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-viewer{
+  padding:0!important;
+  overflow:hidden!important;
+}
+@media screen and (max-width:1239px){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-viewer{
+    height:min(78dvh,760px);
+    min-height:260px;
+  }
+}
+@media screen and (max-width:680px){
+  .rev-page #chapterDialog.is-ambition.is-slide-gallery.is-portrait-slide[open] .translation-slide-viewer{
+    height:min(70dvh,570px);
+    min-height:240px;
+  }
+}
+.rev-page #chapterDialog.is-slide-gallery.is-portrait-slide #translationSlideViewer:fullscreen .translation-slide-stage{
+  overflow-y:auto!important;
+}
