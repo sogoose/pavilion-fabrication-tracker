@@ -94,3 +94,14 @@
  .ex-editor-asset input{flex-basis:calc(100% - 95px)}
  .ex-asset-actions{margin-left:auto}
 }
+
+/* Make editing accessible in legacy chapter 04/05 too. */
+#chapterDialog .ex-editor-global-entry{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:6px 9px;border:0;border-radius:6px;
+  background:rgba(95,85,74,.10);color:#594f43;
+  font:600 10px/1.1 Consolas,monospace;
+  cursor:pointer;letter-spacing:.02em;
+}
+#chapterDialog .ex-editor-global-entry:hover{background:rgba(95,85,74,.19)}
+#chapterDialog.is-ambition .ex-editor-global-entry{display:none}
