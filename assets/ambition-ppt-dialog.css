@@ -543,3 +543,82 @@
     font-size:11px;line-height:1.2;text-align:center;
   }
 }
+
+/* 2026-10-26 / scrollable board and compact archive */
+@media screen and (min-width:1240px) {
+  /* Full independent scrolling for lengthy notes and tall presentation. */
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual {
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior-y:contain;
+    scrollbar-width:auto;
+    scrollbar-color:rgba(108,98,88,.62) rgba(255,255,255,.08);
+    scrollbar-gutter:stable;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy::-webkit-scrollbar,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual::-webkit-scrollbar {
+    width:9px;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-copy::-webkit-scrollbar-thumb,
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual::-webkit-scrollbar-thumb {
+    background:rgba(131,121,111,.68);
+    border:2px solid transparent;
+    border-radius:30px;
+    background-clip:padding-box;
+  }
+  /* Actual scrollable page: image retains its natural aspect ratio. */
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-visual {
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-image-slot {
+    display:block;
+    flex:0 0 auto;
+    height:auto;
+    min-height:0;
+    width:100%;
+    margin:0 0 16px;
+    overflow:visible;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-image-slot img {
+    display:block;
+    width:100%;
+    height:auto;
+    max-width:100%;
+    max-height:none;
+    object-fit:contain;
+    object-position:top center;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .ambition-ppt-actions {
+    flex:0 0 auto;
+    margin-top:0;
+    padding-bottom:3px;
+  }
+  /* Separate, approximately half-height file archive. */
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads {
+    align-self:start;
+    height:54%;
+    min-height:315px;
+    max-height:395px;
+    overflow-y:auto;
+    overflow-x:hidden;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-heading {
+    flex:0 0 auto;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-list {
+    flex:1 1 auto;
+    min-height:20px;
+    overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .rev-page #chapterDialog.is-ambition[open] .chapter-downloads-note {
+    flex:0 0 auto;
+    margin-top:4px;
+    padding-top:10px;
+    font-size:10px;
+  }
+}
