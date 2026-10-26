@@ -1,6 +1,6 @@
 /* PRINT("HELLO, EARTH")³ — Supabase exhibition content + storage editor.
- * Readers need no account. Database and bucket RLS enforce editor membership.
- * Never ship private service keys, shared passwords or public writer policies. */
+ * Deliberately open exhibition editing only; workflow/tracker policies are unchanged.
+ * Never ship server secrets or service-role keys. */
 (()=>{
 "use strict";
 const root=window.PAVILION_CONFIG||{};
@@ -9,14 +9,16 @@ const opener=document.getElementById("chapterFileUpload");
 const archiveList=document.getElementById("chapterDownloadList");
 const section=document.getElementById("chapterDialog");
 if(!root.supabaseUrl||!root.supabaseAnonKey||!window.supabase||!dialog||!opener)return;
-const client=window.supabase.createClient(root.supabaseUrl,root.supabaseAnonKey);
+const client=window.supabase.createClient(root.supabaseUrl,root.supabaseAnonKey,{
+ auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+});
 const BUCKET="pavilion-exhibition-files",TABLE="pavilion_exhibition_chapters";
 const ids={
  title:"exEditorTitle",question:"exEditorQuestion",questionLabel:"exEditorQuestionLabel",
  storyLabel:"exEditorStoryLabel",paragraphs:"exEditorBody",links:"exEditorLinks"
 };
 const $=id=>document.getElementById(id);
-let active=1,authorized=false,draft=null,busy=false;
+let active=1,draft=null,busy=false;
 const store={};
 const normalizeURL=(u)=>{
  try{const parsed=new URL(u,location.href);return /^(https?:)$/.test(parsed.protocol)?parsed.href:""}catch{return ""}
@@ -25,7 +27,7 @@ const escapeText=v=>String(v==null?"":v);
 const titleNum=n=>String(n).padStart(2,"0");
 const filesize=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(0)+" KB":(n/1048576).toFixed(1)+" MB";
 const status=(message,isError=false)=>{
-  for(const id of ["exEditorStatus","exEditorAuthStatus"]){
+  for(const id of ["exEditorStatus"]){
     const el=$(id);if(!el)continue;
     el.textContent=message||"";el.style.color=isError?"#af4439":"";
   }
@@ -127,49 +129,20 @@ function setFields(chapter){
  refreshAssets();
  status("Edit text, links and files, then save.");
 }
-async function verifyEditor(){
- const {data:{user},error}=await client.auth.getUser();
- if(error||!user){authorized=false;return false}
- const r=await client.from("pavilion_workflow_editors").select("user_id").eq("user_id",user.id).maybeSingle();
- authorized=!r.error&&!!r.data;
- return authorized;
-}
-async function showEditor(){
+function showEditor(){
  active=window.helloEarthActiveChapter?.()||1;
  if(!dialog.open)dialog.showModal();
- status("");
- const ok=await verifyEditor();
- $("exEditorAuth").hidden=ok;
- $("exEditorForm").hidden=!ok;
- if(ok)setFields(active);
- else if((await client.auth.getUser()).data.user)status("Signed in, but this account is not an authorised editor.",true);
+ setFields(active);
 }
 opener.addEventListener("click",e=>{e.preventDefault();showEditor()});
 $("exEditorHeaderButton")?.addEventListener("click",e=>{e.preventDefault();showEditor()});
 $("exEditorClose").addEventListener("click",()=>dialog.close());
-$("exEditorLoginForm").addEventListener("submit",async e=>{
- e.preventDefault();status("Signing in…");
- const email=$("exEditorEmail").value.trim(),password=$("exEditorPassword").value;
- const {error}=await client.auth.signInWithPassword({email,password});
- $("exEditorPassword").value="";
- if(error){status("Sign-in failed: "+error.message,true);return;}
- if(!await verifyEditor()){
-   status("This account is not on the authorised editor list.",true);
-   await client.auth.signOut();return;
- }
- $("exEditorAuth").hidden=true;$("exEditorForm").hidden=false;
- setFields(active);
-});
-$("exEditorSignOut").onclick=async()=>{
- await client.auth.signOut();authorized=false;
- $("exEditorForm").hidden=true;$("exEditorAuth").hidden=false;status("Signed out.");
-};
 const slug=name=>{
  const parts=name.toLowerCase().replace(/[^a-z0-9.\-_]/g,"-").replace(/-+/g,"-");
  return parts.slice(-90)||"file";
 };
 async function uploadFiles(input,type){
- if(!authorized||busy)return;
+ if(busy)return;
  const files=Array.from(input.files||[]);
  if(!files.length)return;
  busy=true;status("Uploading "+files.length+" file(s) to Supabase…");
@@ -198,16 +171,15 @@ $("exEditorSlideInput").addEventListener("change",e=>uploadFiles(e.target,"slide
 $("exEditorFileInput").addEventListener("change",e=>uploadFiles(e.target,"files"));
 $("exEditorForm").addEventListener("submit",async e=>{
  e.preventDefault();
- if(!authorized||busy)return;
+ if(busy)return;
  busy=true;status("Saving…");
  try{
-   if(!await verifyEditor())throw Error("Your edit permission has expired. Please sign in again.");
+   
    const content=readForm();
    if(!content.heading)throw Error("Chapter title cannot be empty.");
    if(JSON.stringify(content).length>150000)throw Error("Content is too large.");
-   const {data:{user}}=await client.auth.getUser();
    const {error}=await client.from(TABLE).upsert({
-     chapter_no:active,content,updated_at:new Date().toISOString(),updated_by:user.id
+     chapter_no:active,content,updated_at:new Date().toISOString(),updated_by:null
    },{onConflict:"chapter_no"});
    if(error)throw Error(error.message);
    store[active]=content;
