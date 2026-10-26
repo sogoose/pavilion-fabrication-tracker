@@ -29,7 +29,7 @@
   display:block;
   margin-bottom:19px;
   color:#857c71;
-  font-size:16px;
+  font-size:19px;
   font-weight:600;
   line-height:1.35;
   letter-spacing:.03em;
@@ -37,7 +37,7 @@
 .rev-page .rev-credits-heading h2{
   margin:0;
   color:#302b25;
-  font-size:clamp(38px,3.5vw,62px);
+  font-size:clamp(48px,4.1vw,76px);
   font-weight:500;
   line-height:1.03;
   letter-spacing:-.055em;
@@ -49,7 +49,7 @@
 }
 .rev-page .rev-credits-course-name{
   margin:0 0 10px;
-  font-size:clamp(23px,1.7vw,29px);
+  font-size:clamp(27px,2vw,35px);
   font-weight:500;
   line-height:1.25;
   letter-spacing:-.035em;
@@ -57,7 +57,7 @@
 .rev-page .rev-credits-course-type{
   margin:0;
   color:#72695f;
-  font-size:17px;
+  font-size:20px;
   line-height:1.5;
 }
 .rev-page .rev-credits-groups{
@@ -74,7 +74,7 @@
 .rev-page .rev-credits-group h3{
   margin:0 0 23px;
   color:#736b61;
-  font-size:15px;
+  font-size:18px;
   font-weight:600;
   line-height:1.35;
   letter-spacing:.065em;
@@ -85,12 +85,12 @@
   padding:0;
 }
 .rev-page .rev-credits-group li{
-  margin:0 0 12px;
+  margin:0 0 16px;
   color:#302b25;
-  font-size:clamp(17px,1.1vw,19px);
+  font-size:clamp(21px,1.4vw,25px);
   font-weight:400;
-  line-height:1.43;
-  letter-spacing:-.02em;
+  line-height:1.46;
+  letter-spacing:-.025em;
   overflow-wrap:break-word;
 }
 .rev-page .rev-credits-thanks ul,
@@ -115,22 +115,22 @@
     grid-template-columns:minmax(0,1fr);
     gap:48px;
   }
-  .rev-page .rev-credits-heading h2{font-size:clamp(38px,5vw,58px)}
+  .rev-page .rev-credits-heading h2{font-size:clamp(46px,6vw,66px)}
   .rev-page .rev-credits-course{max-width:none;margin-top:25px}
-  .rev-page .rev-credits-course-name{font-size:26px}
+  .rev-page .rev-credits-course-name{font-size:30px}
   .rev-page .rev-credits-groups{gap:42px 40px}
-  .rev-page .rev-credits-group li{font-size:18px}
+  .rev-page .rev-credits-group li{font-size:22px}
 }
 @media(max-width:680px){
   .rev-page .rev-footer.rev-footer-credits{padding:0 20px}
   .rev-page .rev-credits{padding:56px 0 68px;gap:42px}
-  .rev-page .rev-credits-heading .rev-credits-index{font-size:14px}
-  .rev-page .rev-credits-heading h2{font-size:clamp(37px,9vw,49px)}
-  .rev-page .rev-credits-course-name{font-size:24px}
-  .rev-page .rev-credits-course-type{font-size:16px}
+  .rev-page .rev-credits-heading .rev-credits-index{font-size:16px}
+  .rev-page .rev-credits-heading h2{font-size:clamp(43px,9vw,56px)}
+  .rev-page .rev-credits-course-name{font-size:27px}
+  .rev-page .rev-credits-course-type{font-size:18px}
   .rev-page .rev-credits-groups{grid-template-columns:minmax(0,1fr);gap:36px}
   .rev-page .rev-credits-group{padding-top:15px}
-  .rev-page .rev-credits-group h3{font-size:14px;margin-bottom:18px}
-  .rev-page .rev-credits-group li{font-size:17px;line-height:1.48;margin-bottom:10px}
+  .rev-page .rev-credits-group h3{font-size:17px;margin-bottom:21px}
+  .rev-page .rev-credits-group li{font-size:20px;line-height:1.48;margin-bottom:13px}
   .rev-page .rev-footer.rev-footer-credits .rev-footer-bottom{padding:20px 0 29px;font-size:12px}
 }
