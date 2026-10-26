@@ -10,10 +10,7 @@ const uploadLink=document.getElementById("chapterFileUpload");
 if(!root||!uploadLink)return;
 const memory={};
 let requested=0;
-function message(msg){
- const p=document.createElement("p");p.className="chapter-downloads-empty";p.textContent=msg;
- root.replaceChildren(p);
-}
+function clearList(){root.replaceChildren();}
 const formatSize=size=>{
  if(size<1024)return size+" B";
  if(size<1048576)return (size/1024).toFixed(0)+" KB";
@@ -22,7 +19,7 @@ const formatSize=size=>{
 function drawFiles(files){
  root.replaceChildren();
  if(!files.length){
-  message("No downloadable files have been published for this chapter yet.");
+  clearList();
   return;
  }
  files.forEach(file=>{
@@ -42,7 +39,7 @@ window.loadChapterDownloads=async function(chapter){
  const serial=++requested;
  uploadLink.href=upload+folder+num;
  if(memory[num]){drawFiles(memory[num]);return;}
- message("Checking published chapter files…");
+ clearList();
  try{
   const response=await fetch(api+folder+num+"?ref=main",{headers:{"Accept":"application/vnd.github+json"}});
   if(!response.ok)throw new Error("HTTP "+response.status);
@@ -55,7 +52,7 @@ window.loadChapterDownloads=async function(chapter){
   memory[num]=files;
   if(serial===requested)drawFiles(files);
  }catch(err){
-  if(serial===requested)message("File list is temporarily unavailable. Use UPLOAD FILES to manage chapter resources on GitHub.");
+  if(serial===requested)clearList();
  }
 };
 // Direct #chapter-01...05 links can open before this deferred script executes.
