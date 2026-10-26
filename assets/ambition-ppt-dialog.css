@@ -1061,3 +1061,8 @@
   .rev-page #chapterDialog.is-translation .translation-slide-nav{gap:10px}
   .rev-page #chapterDialog.is-translation .translation-slide-nav button{min-width:80px;min-height:34px;font-size:10px}
 }
+
+/* Larger question-to-body spacing in Materials notes. */
+.rev-page #chapterDialog.is-materials .ambition-ppt-brief{
+  margin-bottom:34px;
+}
