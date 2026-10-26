@@ -511,6 +511,7 @@
     <div class="ex-editor-header"><strong>EDIT / CHAPTER <span id="exEditorChapterNumber">01</span></strong><button type="button" id="exEditorClose" aria-label="Close editor">×</button></div>
     <div class="ex-editor-auth" id="exEditorAuth">
       <p>Sign in with an authorised Supabase editor account. Visitors can view the archive without signing in.</p>
+      <p id="exEditorAuthStatus" role="status"></p>
       <form id="exEditorLoginForm">
         <label>Email<input type="email" id="exEditorEmail" required autocomplete="username"></label>
         <label>Password<input type="password" id="exEditorPassword" required autocomplete="current-password"></label>
@@ -826,7 +827,8 @@
       if(lastTrigger&&lastTrigger.focus)lastTrigger.focus()
     });
     document.addEventListener("keydown",function(e){
-      if(!dialog.open)return;
+      if(!dialog.open||document.getElementById("exhibitionEditorDialog")?.open)return;
+      if(e.target.closest("input,textarea,[contenteditable]"))return;
       if(e.key==="ArrowRight"){if(current===2){e.preventDefault();showSlide(slideIndex+1)}else if(current<4)render(current+1)}
       if(e.key==="ArrowLeft"){if(current===2){e.preventDefault();showSlide(slideIndex-1)}else if(current>0)render(current-1)}
     });
@@ -1022,7 +1024,7 @@
   <script src="../assets/ambition-interactive.js?v=20261026-clean-v5" defer></script>
   <script src="../config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js"></script>
-  <script src="../assets/exhibition-editor.js?v=20261026-v1" defer></script>
+  <script src="../assets/exhibition-editor.js?v=20261026-v2" defer></script>
 </body>
 </html>
 
