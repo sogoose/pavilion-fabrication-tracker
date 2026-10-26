@@ -906,3 +906,10 @@
    font-size:9px;line-height:1.1;box-shadow:none;
  }
 }
+
+/* Materials repeats the Ambition two-column floating window arrangement. */
+.rev-page #chapterDialog.is-materials #ambitionManualLinks{display:none!important}
+.rev-page #chapterDialog.is-materials .ambition-ppt-copy{background:rgba(252,251,249,.98);color:#302b25}
+.rev-page #chapterDialog.is-materials .chapter-downloads{background:rgba(206,200,193,.97)}
+.rev-page #chapterDialog.is-materials .ambition-ppt-brief h3{font-size:clamp(20px,1.55vw,25px);line-height:1.19;overflow-wrap:break-word}
+@media(max-width:680px){.rev-page #chapterDialog.is-materials .ambition-ppt-brief h3{font-size:21px}}

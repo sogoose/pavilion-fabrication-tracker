@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/project-hero-refined.css?v=20261025-video-loop-v1">
   <link rel="stylesheet" href="../assets/project-hero-video.css?v=20261026-grain-hover-v5">
   <link rel="stylesheet" href="../assets/translation-poster.css?v=20261025-robot-primary-v3">
-  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-white-notes-v15">
+  <link rel="stylesheet" href="../assets/ambition-ppt-dialog.css?v=20261026-materials-reader-v16">
 
   <style>
   /* Exhibition palette sampled from the supplied chapter decks.
@@ -76,13 +76,14 @@
 
 <style>
 /* Decorative material cards travel continuously around a shallow orbit. */
-.rev-page .material-poster {cursor:default}
+.rev-page .material-poster {cursor:pointer}
 .rev-page .material-poster:hover {transform:none}
 .material-cloud {position:absolute;inset:12% 0 23%;isolation:isolate;overflow:hidden;pointer-events:none}
 .material-float {position:absolute;left:50%;top:50%;width:28%;height:76%;border:0;padding:0;background:none;will-change:transform;transform:translate(-50%,-50%)}
 .material-float img {display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(2px 6px 5px #302b252a)}
 .rev-page .material-chapter-link {position:relative;z-index:6;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;margin-top:auto}
 .material-chapter-link:focus-visible {outline:2px solid currentColor;outline-offset:6px}
+.rev-page #poster-02:focus-visible{outline:2px solid #403b34;outline-offset:5px}
 @media(max-width:680px){.material-cloud {inset:12% 0 25%}.material-float {width:34%;height:79%}}
 </style>
 <style>
@@ -318,10 +319,10 @@
           <span class="rev-poster-action" aria-hidden="true">↗</span>
         </span>
       </article>
-      <article class="rev-poster material-poster" id="poster-02" aria-label="Chapter 02: THE MATERIALS">
+      <article class="rev-poster material-poster" id="poster-02" role="button" tabindex="0" data-chapter="1" aria-label="Open chapter 02: THE MATERIALS">
         <span class="rev-poster-top"><span>02 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
         <div class="material-cloud" aria-hidden="true"><span class="material-float"><img src="../assets/exhibition/material-cards/01.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/02.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/03.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/04.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/05.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/06.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/07.png" alt="" loading="lazy" draggable="false"></span><span class="material-float"><img src="../assets/exhibition/material-cards/08.png" alt="" loading="lazy" draggable="false"></span></div>
-        <button class="material-chapter-link rev-poster-bottom" type="button" data-chapter="1" aria-label="Open chapter 02: THE MATERIALS"><span class="rev-poster-title">THE MATERIALS</span><span class="rev-poster-action" aria-hidden="true">↗</span></button>
+        <span class="material-chapter-link rev-poster-bottom"><span class="rev-poster-title">THE MATERIALS</span><span class="rev-poster-action" aria-hidden="true">↗</span></span>
       </article>
       <button class="rev-poster" type="button" data-chapter="2" id="poster-03" aria-label="Open chapter 03: THE TRANSLATION">
         <span class="rev-poster-top"><span>03 / 05</span><span>PRINT("HELLO, EARTH")³</span></span>
@@ -498,6 +499,55 @@
       }
     ];
     var dialog=document.getElementById("chapterDialog"), current=0, lastTrigger=null;
+    // Preserve Chapter 01 copy and present Chapter 02 with the same three-window reader.
+    const sourcePanel=document.getElementById("ambitionPpt");
+    const noteTitle=sourcePanel.querySelector(".ambition-ppt-copy h2");
+    const questionLabel=sourcePanel.querySelector(".ambition-ppt-brief .ambition-ppt-small-label");
+    const questionText=sourcePanel.querySelector(".ambition-ppt-brief h3");
+    const storyArea=sourcePanel.querySelector(".ambition-ppt-story");
+    const storyLabel=storyArea.querySelector(".ambition-ppt-small-label");
+    const posterImage=document.getElementById("ambitionPresentationImage");
+    const posterTitle=sourcePanel.querySelector(".ambition-ppt-visual .ambition-windowtitle");
+    const posterFooter=sourcePanel.querySelector(".ambition-ppt-actions > span");
+    const posterNext=document.getElementById("ambitionNextChapter");
+    const manualLink=document.getElementById("ambitionManualLinks");
+    const ambitionCopy={
+      heading:noteTitle.textContent,questionLabel:questionLabel.textContent,
+      question:questionText.textContent,storyLabel:storyLabel.textContent,
+      paragraphs:Array.from(storyArea.querySelectorAll("p")).map(p=>p.textContent),
+      src:posterImage.getAttribute("src"),alt:posterImage.alt
+    };
+    const materialsCopy={
+      heading:"THE MATERIALS",
+      questionLabel:"01 / THE QUESTION",
+      question:"How do we turn raw earth into a material suitable for fabrication?",
+      storyLabel:"02 / MATERIAL DEVELOPMENT",
+      paragraphs:[
+        "Two fabrication methods, two different material compositions.",
+        "The 3D-printing mixture was developed to balance extrusion, layer adhesion and shape stability. Clay and sand formed the base, while chamotte improved the mixture's paste-like consistency and resistance to tearing. Water was gradually introduced to achieve sufficient workability while limiting shrinkage during drying.",
+        "For rammed earth, a coarser and comparatively dry mixture was developed to withstand compaction and support structural loads. The proportions were adjusted through workshop experiments, considering material availability, cost, shrinkage and breakability.",
+        "Material testing examined cracking, edge and corner integrity, and friability. The presentation documents material sources, trial mixtures, 3D-printing and rammed-earth workflows, and final compositions."
+      ],
+      src:"../assets/exhibition/materials-presentation-board-hq.avif?v=20261026-materials85-v1",
+      alt:"The Materials presentation board: raw material sources, testing, 3D printed and rammed earth fabrication, and mixture charts"
+    };
+    function renderEditorial(i){
+      const m=i===1,d=m?materialsCopy:ambitionCopy;
+      noteTitle.textContent=d.heading;
+      questionLabel.textContent=d.questionLabel;
+      questionText.textContent=d.question;
+      storyLabel.textContent=d.storyLabel;
+      storyArea.querySelectorAll("p").forEach(x=>x.remove());
+      d.paragraphs.forEach(x=>storyArea.appendChild(make("p",null,x)));
+      if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;
+      posterImage.alt=d.alt;
+      posterTitle.textContent=m?"THE MATERIALS · PRESENTATION":"THE AMBITION · PRESENTATION";
+      posterFooter.textContent=m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
+      posterNext.textContent=m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
+      manualLink.hidden=m;
+      [sourcePanel.querySelector(".ambition-ppt-copy"),sourcePanel.querySelector(".ambition-ppt-visual"),document.getElementById("chapterDownloads")].forEach(el=>el.scrollTop=0);
+    }
+
     function make(tag,cls,text){var el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el}
     function galleryItem(source,caption){
       var fig=make("figure","gallery-item"),im=document.createElement("img");
@@ -506,9 +556,12 @@
     }
     function render(i){
       current=Math.max(0,Math.min(data.length-1,i));var chapter=data[current],id=String(current+1).padStart(2,"0");
-      dialog.classList.toggle("is-ambition",current===0);
-      document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(current===0));
-      document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(current!==0));
+      const editorial=current===0||current===1;
+      dialog.classList.toggle("is-ambition",editorial);
+      dialog.classList.toggle("is-materials",current===1);
+      document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(editorial));
+      document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(!editorial));
+      if(editorial)renderEditorial(current);
       if(typeof window.loadChapterDownloads==="function")window.loadChapterDownloads(current+1);
       document.getElementById("dialogCounter").textContent=id+" / 05";
       document.getElementById("chapterCount").textContent=id+" / 05";
@@ -540,10 +593,14 @@
     document.querySelectorAll("[data-chapter]").forEach(function(el){
       el.addEventListener("click",function(){openChapter(Number(el.dataset.chapter))});
     });
+    document.getElementById("poster-02").addEventListener("keydown",function(e){
+      if(e.target!==this)return;
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();this.click();}
+    });
     document.getElementById("closeDialog").addEventListener("click",function(){dialog.close()});
     document.getElementById("prevChapter").addEventListener("click",function(){if(current>0)render(current-1)});
     document.getElementById("nextChapter").addEventListener("click",function(){if(current<data.length-1)render(current+1)});
-    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(1)});
+    document.getElementById("ambitionNextChapter").addEventListener("click",function(){render(current===0?1:2)});
     dialog.addEventListener("click",function(e){if(e.target===dialog)dialog.close()});
     dialog.addEventListener("close",function(){
       if(window.location.hash.startsWith("#chapter-"))window.history.replaceState(null,"",window.location.pathname+window.location.search);
