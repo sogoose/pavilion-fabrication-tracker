@@ -132,6 +132,9 @@ function setFields(chapter){
 function showEditor(){
  active=window.helloEarthActiveChapter?.()||1;
  if(!dialog.open)dialog.showModal();
+ $("exEditorAuth").hidden=true;
+ $("exEditorForm").hidden=false;
+ if($("exEditorSignOut"))$("exEditorSignOut").hidden=true;
  setFields(active);
 }
 opener.addEventListener("click",e=>{e.preventDefault();showEditor()});
