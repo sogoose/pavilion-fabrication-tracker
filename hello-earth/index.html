@@ -724,7 +724,7 @@
       sourcePanel.querySelector(".ambition-image-slot").hidden=t;
       slideViewer.hidden=!t;
       if(!t){if(posterImage.getAttribute("src")!==d.src)posterImage.src=d.src;posterImage.alt=d.alt}
-      posterTitle.textContent=t?"THE TRANSLATION · PRESENTATION":m?"THE MATERIALS · PRESENTATION":"THE AMBITION · PRESENTATION";
+      posterTitle.textContent=d.heading+" · PRESENTATION";
       posterFooter.textContent=t?"THE TRANSLATION · 03 / 05":m?"THE MATERIALS · 02 / 05":"THE AMBITION · 01 / 05";
       posterNext.textContent=t?"NEXT / THE REALITY →":m?"NEXT / THE TRANSLATION →":"NEXT / THE MATERIALS →";
       syncArchiveLinks(i+1,Array.isArray(d.links)?d.links:(i===0?staticManualLinks:[]));
@@ -754,6 +754,8 @@
       document.querySelector("#chapterDialog .dialog-main").setAttribute("aria-hidden",String(editorial));
       document.getElementById("ambitionPpt").setAttribute("aria-hidden",String(!editorial));
       if(editorial)renderEditorial(current);
+      else syncArchiveLinks(current+1,Array.isArray(chapter.links)?chapter.links:[]);
+      document.getElementById("chapterDownloadsTitle").textContent=chapter.archiveHeading||"Downloadable resources";
       if(typeof window.loadChapterDownloads==="function")window.loadChapterDownloads(current+1);
       document.getElementById("dialogCounter").textContent=id+" / 05";
       document.getElementById("chapterCount").textContent=id+" / 05";
@@ -802,6 +804,18 @@
         lead:content.question??data[n-1].lead,
         gallery:Array.isArray(content.slides)?content.slides.map(x=>[x.src,x.title||"Image"]):data[n-1].gallery
       };
+      const title=String(content.heading||data[n-1].title);
+      document.querySelectorAll(".rev-poster").forEach(p=>{
+        if(Number(p.dataset.chapter)===n){
+          const label=p.querySelector(".rev-poster-title");if(label)label.textContent=title;
+        }
+      });
+      document.querySelectorAll(".rev-index-item").forEach(link=>{
+        if(Number(link.dataset.chapter)===n){
+          const label=link.querySelector(".rev-index-title,.rev-index-label");
+          if(label)label.textContent=title;
+        }
+      });
       if(current+1===n)render(current);
     };
     function openChapter(i){
