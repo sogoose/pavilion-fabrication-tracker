@@ -1,0 +1,96 @@
+/* Exhibition CMS: quiet, light editorial controls. Does not change visitor layout. */
+.exhibition-editor-dialog{
+  box-sizing:border-box;
+  width:min(740px,calc(100vw - 30px));max-width:740px;
+  height:min(90dvh,960px);max-height:90dvh;
+  margin:auto;padding:0;
+  background:#fcfbf8;color:#302b25;border:1px solid #d6d0c8;border-radius:18px;
+  box-shadow:0 28px 90px rgba(15,12,10,.30),0 2px 12px rgba(15,12,10,.08);
+  font-family:Arial,Helvetica,sans-serif;
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.exhibition-editor-dialog::backdrop{
+  background:rgba(27,24,21,.52);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)
+}
+.exhibition-editor-dialog *{box-sizing:border-box}
+.exhibition-editor-dialog [hidden]{display:none!important}
+.ex-editor-header{
+  position:sticky;top:0;z-index:8;
+  height:51px;padding:0 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(239,235,229,.96);border-bottom:1px solid #d7d0c8;
+  -webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);
+}
+.ex-editor-header strong,.ex-editor-section-title{
+  font:600 11px/1.2 ui-monospace,"IBM Plex Mono",Consolas,monospace;letter-spacing:.08em
+}
+.ex-editor-header button{
+  cursor:pointer;width:30px;height:30px;border:0;border-radius:50%;
+  background:#e1ddd6;color:#302b25;font-size:19px
+}
+.ex-editor-auth,#exEditorForm{padding:25px clamp(17px,4vw,36px) 34px}
+.ex-editor-auth p{font-size:14px;line-height:1.65;margin:0 0 22px}
+.exhibition-editor-dialog label{
+  display:block;color:#635b50;
+  font:600 10px/1.4 ui-monospace,Consolas,monospace;
+  letter-spacing:.06em;margin:0 0 19px
+}
+.exhibition-editor-dialog label small{
+  margin-left:8px;font-size:10px;color:#857e76;font-weight:400;
+  letter-spacing:0;text-transform:none
+}
+.exhibition-editor-dialog input:not([type="file"]),
+.exhibition-editor-dialog textarea{
+  display:block;width:100%;margin:8px 0 0;
+  border:1px solid #c9c1b6;border-radius:9px;
+  background:#ffffff;color:#302b25;min-height:38px;
+  padding:10px 12px;outline:none;resize:vertical;
+  font:400 14px/1.6 Arial,Helvetica,sans-serif;letter-spacing:0;
+}
+.exhibition-editor-dialog textarea{min-height:85px}
+.exhibition-editor-dialog input:focus-visible,.exhibition-editor-dialog textarea:focus-visible{
+  border-color:#766c60;box-shadow:0 0 0 2px #c0b4a744
+}
+.ex-editor-labels{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.ex-editor-section{border-top:1px solid #ded8d0;padding:22px 0}
+.ex-editor-section-title{margin:0 0 17px;color:#625b52}
+.ex-editor-assets{display:flex;flex-direction:column;gap:9px;max-height:350px;overflow:auto}
+.ex-editor-asset{
+  display:flex;align-items:center;gap:9px;padding:8px;
+  background:#f0ece6;border:1px solid #e3dcd3;border-radius:9px;
+}
+.ex-editor-asset img{flex:0 0 74px;width:74px;height:53px;object-fit:cover;border-radius:4px}
+.ex-editor-asset input{flex:1;min-width:0!important;margin:0!important;font-size:12px!important}
+.ex-asset-actions{display:flex;gap:4px;flex-shrink:0}
+.ex-editor-asset button{
+  border:1px solid #d4cdc4;background:#fff;color:#453d36;border-radius:6px;
+  padding:6px 8px;font-size:10px;cursor:pointer
+}
+.ex-editor-asset button:disabled{opacity:.3;cursor:not-allowed}
+.ex-editor-empty{font-size:12px;color:#7b7267}
+.ex-editor-upload{
+  display:inline-flex!important;align-items:center;gap:12px;
+  margin:12px 0 0!important;padding:10px 13px;
+  border:1px solid #aaa094;border-radius:8px;
+  background:#e9e4dd;color:#342e29;cursor:pointer;
+}
+.ex-editor-upload input{width:205px;max-width:100%;font-size:11px;letter-spacing:0}
+.ex-editor-footer{
+  display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;
+  gap:9px;border-top:1px solid #ded8d0;padding-top:18px;
+}
+#exEditorStatus{margin-right:auto;max-width:100%;font-size:12px;line-height:1.5;color:#6f655b}
+.ex-editor-footer button,.ex-editor-auth button[type="submit"]{
+  border:1px solid #a39a8f;background:#e9e4dc;border-radius:8px;
+  padding:11px 13px;cursor:pointer;color:#302b25;font:600 11px/1.2 Consolas,monospace;
+}
+#exEditorSave,.ex-editor-auth button[type="submit"]{
+  background:#403a34;color:#fff;border-color:#403a34
+}
+@media(max-width:620px){
+ .ex-editor-labels{grid-template-columns:1fr;gap:0}
+ .ex-editor-asset{flex-wrap:wrap}
+ .ex-editor-asset input{flex-basis:calc(100% - 95px)}
+ .ex-asset-actions{margin-left:auto}
+}
