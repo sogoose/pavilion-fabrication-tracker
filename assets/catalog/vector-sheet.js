@@ -368,31 +368,37 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   pageBase(pdf,number,total);
   print(pdf,present(r.Object_ID),10,23,165,22,true,ink);
 
-  // Single tall Rhino render on the LEFT. This merges the old Photo/02
-  // footprint into the main figure; the separate second-photo box is removed.
-  const hero=asset.model || asset.photos?.[0] || null;
-  bg(pdf,10,33,101,137,MODULE_PANEL_RGB);
+  // Main LEFT: a large fabrication photo, with a Rhino fallback for modules
+  // that have not yet been photographed. Keep its original 101 x 137 mm frame.
+  const primaryPhoto=asset.photos?.[0] || null;
+  const hero=primaryPhoto || asset.model || null;
+  bg(pdf,10,33,101,137,primaryPhoto?[250,250,247]:MODULE_PANEL_RGB);
   if(hero){
-    try { photoFit(pdf,hero,11,34,99,135,asset.model?'PNG':'JPEG'); }
+    try { photoFit(pdf,hero,11,34,99,135,primaryPhoto?'JPEG':'PNG'); }
     catch(err){console.warn('PDF module hero:',err);}
   }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,124)) {
-    print(pdf,'NO 3D MODEL',35,104,65,8,false,grey);
+    print(pdf,'NO SITE PHOTO',35,104,65,8,false,grey);
   }
   frame(pdf,10,33,101,137);
-  label(pdf,asset.model?'RHINO / MODULE 3D':'MODULE VISUAL',10,173.6);
+  label(pdf,primaryPhoto?'SITE PHOTO / 01':asset.model?'RHINO / MODULE 3D':'MODULE VISUAL',10,173.6);
 
-  // Upper RIGHT: independent, vector G-code axonometric.
+  // Upper RIGHT: unchanged vector G-code axonometric.
   box(pdf,114,33,53,73,'G-CODE / 3D AXONOMETRIC');
   if(!drawGcode3D(pdf,asset.gcode,116,41,49,63,9500)) {
     label(pdf,'NO G-CODE LINK',123,70);
   }
 
-  // Lower RIGHT: latest uploaded site photo only. Older photos remain stored.
-  box(pdf,114,109,53,61,'SITE PHOTO / 01');
-  if(asset.photos?.[0]){
-    try { photoThumbnail(pdf,asset.photos[0],115,116,51,53); }
-    catch(err){console.warn('Site photo:',err);}
-  }else label(pdf,'NO UPLOADED PHOTO',120,139);
+  // Lower RIGHT: smaller Rhino 3D preview when a site photo fills the hero.
+  // If no photo exists, the full-size Rhino is already shown on the left.
+  box(pdf,114,109,53,61,primaryPhoto?'RHINO / MODULE 3D':'SITE PHOTO / 01');
+  if(primaryPhoto && asset.model){
+    try { photoFit(pdf,asset.model,115,116,51,53,'PNG'); }
+    catch(err){console.warn('PDF Rhino thumbnail:',err);}
+  }else if(primaryPhoto){
+    label(pdf,'NO 3D MODEL',121,139);
+  }else{
+    label(pdf,'NO UPLOADED PHOTO',120,139);
+  }
 
   // Mix recipe is independent from annotations and module notes.
   stroke(pdf,10,175.2,167,175.2,[75,79,72],.17);
