@@ -10,7 +10,7 @@ import {
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261027-site-photo-hero-v1';
+} from './vector-sheet.js?v=20261027-auto-portrait-v2';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
