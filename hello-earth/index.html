@@ -719,13 +719,16 @@
     };
     const translationCopy={
       heading:"THE TRANSLATION",
-      questionLabel:"",
-      question:"How can one brick create an adaptable architectural system?",
-      storyLabel:"",
+      questionLabel:"01 / THE QUESTION",
+      question:"How can a digital design become a fabrication process across different machines and materials?",
+      storyLabel:"02 / FROM MODEL TO FABRICATION",
       paragraphs:[
-        "Rather than designing a fixed pavilion, we developed a modular building system based on a single triangular component.",
-        "Three cylindrical supports form the structural basis of each brick, connected by walls that minimise material use while maintaining continuity between the supports. The geometry was further adapted to accommodate robotic clay printing.",
-        "By repeating, rotating and staggering these components, individual bricks become part of a larger interconnected assembly. This approach allows the pavilion to take different forms while retaining a consistent geometric and fabrication logic."
+        "Designing a brick is not the same as telling a robot how to make it. The digital model must become a toolpath: precise instructions for where the nozzle moves, when material is extruded, and how the layers connect. Conventional slicers provide a starting point, but many of their infill patterns were developed for plastics that solidify much faster than wet clay.",
+        "With clay, unsupported lines can sag, and crossing paths can accumulate excess material. The team therefore developed custom infill in Grasshopper. Early overlapping zigzags gradually evolved into smoother sinusoidal curves, reducing sharp turns and making material deposition more consistent.",
+        "Infill was also a structural decision. The three cylinders carry the main loads and require more material, while the connecting walls can be lighter. In the team's compression tests, a patterned specimen performed better than the solid reference under the tested conditions. The result suggested that the distribution of material can matter as much as its quantity.",
+        "As the arches grow larger towards the upper rows, one fixed infill pattern is no longer sufficient. A parametric slicing workflow was developed to adjust the internal paths to different brick geometries and reinforce vulnerable areas around the openings. In this way, the fabrication instructions could respond to variation rather than simply repeat an identical object.",
+        "The workflow also had to accommodate WASP, COMAU, and UR5 robots, each with different programming requirements. Web-based tools helped connect digital models to fabrication files, while the Fabrication Tracker documented each module, its production date, parameters, and outcome. This made fabrication a coordinated and traceable process across machines and team members.",
+        "Rammed earth required another approach. Printing an entire mould in PLA would have taken days, so the team combined 3D-printed rounded corners with straight betonplex panels inside a supporting timber box. The hybrid mould could be made within one working day, showing how robotic fabrication and conventional woodworking can complement each other."
       ],src:"",alt:"The Translation slideshow"
     };
     const translationSlides=[
