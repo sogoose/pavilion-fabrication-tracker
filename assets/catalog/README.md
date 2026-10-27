@@ -30,7 +30,7 @@ These two preliminary pages can be disabled using the checkbox in the PDF downlo
 
 ### Module sheets — one landscape A4 per block
 
-- **Main left / site photograph:** a tall **101 × 137 mm** frame featuring the newest uploaded fabrication photograph. The original image aspect ratio is preserved. If no photo has been uploaded, the shaded Rhino module capture fills this frame as a fallback.
+- **Main left / site photograph:** a tall **101 × 137 mm** frame featuring the newest uploaded fabrication photograph. Landscape photos are automatically rotated 90° clockwise for portrait layout without cropping; portrait and square photos keep their orientation. If no photo has been uploaded, the shaded Rhino module capture fills this frame as a fallback.
 - **Upper right / G-code:** the unchanged **53 × 73 mm 3D axonometric** of G1 machining/printing moves, with continuous paths preserved. The drawing stays native PDF vector linework.
 - **Lower right / Rhino 3D:** the smaller frame displays the shaded Rhino module capture when a fabrication photograph occupies the main frame. If there is no photograph, this frame says `NO UPLOADED PHOTO` instead. Other uploaded photos remain in storage.
 
