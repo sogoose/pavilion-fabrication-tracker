@@ -10,7 +10,7 @@ import {
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261020-fabrication-3d-pdf-v4';
+} from './vector-sheet.js?v=20261027-site-photo-hero-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -31,7 +31,7 @@ export function setupCatalog({ THREE, getState, notify }) {
         '<span>Include status map + module register at the front</span></label>' +
       '<label class="catalog-check"><input class="catalog-dates" type="checkbox" checked>' +
         '<span>Include fabrication timeline + dated 3D pavilion map</span></label>' +
-      '<p class="catalog-footnote">Only modules in the current Rhino model are included. Individual sheets show a square Rhino close-up, enlarged 3D G-code, and up to two uploaded photos.</p>' +
+      '<p class="catalog-footnote">Only modules in the current Rhino model are included. Individual sheets place the latest site photo in the large left frame, with 3D G-code above a smaller Rhino render. Modules without site photos retain the Rhino hero.</p>' +
       '<div class="catalog-progress" hidden><div class="catalog-track"><div class="catalog-progress-fill"></div></div>' +
         '<span class="catalog-status" role="status" aria-live="polite"></span></div>' +
       '<div class="catalog-actions"><button type="button" class="catalog-cancel">Cancel</button>' +
@@ -372,7 +372,7 @@ export function setupCatalog({ THREE, getState, notify }) {
   }
   async function moduleAssets(state,entry,photos,capture,visualPref) {
     const asset={photos:[],model:null,gcode:[]};
-    // Only the latest two uploaded photos enter the thumbnail strip.
+    // Up to two recent photos are loaded; the newest is featured as the large site-photo hero.
     // A failed photo never prevents the Rhino render or G-code from appearing.
     if(photos.has(entry.key) && state.client) {
       for(const item of photos.get(entry.key).slice(0,2)) {
