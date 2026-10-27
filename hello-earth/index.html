@@ -317,6 +317,27 @@
           </h1>
         </div>
       </section>
+      <script>
+      /* Choose one of two hero films on each page load.
+         If the alternative has not been uploaded or cannot play, return to the original. */
+      (function(){
+        const video=document.querySelector(".rev-hero-fullvideo .rev-hero-video");
+        const source=video&&video.querySelector("source");
+        if(!video||!source||Math.random()>=0.5)return;
+        const original=source.getAttribute("src");
+        let restored=false;
+        function restoreOriginal(){
+          if(restored)return;
+          restored=true;
+          source.setAttribute("src",original);
+          video.load();
+        }
+        source.addEventListener("error",restoreOriginal,{once:true});
+        video.addEventListener("error",restoreOriginal,{once:true});
+        source.setAttribute("src","../assets/video/hero-assembly.mp4");
+        video.load();
+      })();
+      </script>
       <section class="landing-gallery" id="landingGallery" aria-label="Photographic fabrication archive" hidden>
         <header class="landing-gallery-tools">
           <span class="landing-gallery-index" aria-hidden="true"><span id="landingGalleryCount">00</span></span>
