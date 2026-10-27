@@ -39,7 +39,8 @@ create table if not exists public.pavilion_parts (
   first_layer_height_mm numeric,
   layer_height_mm numeric,
   print_duration_min numeric,
-  weight_kg numeric,
+  weight_kg numeric, -- Existing module weight: DRY mass in kg
+  wet_weight_kg numeric, -- Separate WET mass in kg, initially null
   production_status text,
   drying_qc_status text,
   construction_status text,
@@ -51,6 +52,16 @@ create table if not exists public.pavilion_parts (
   updated_at timestamptz not null default now(),
   primary key (project_id, rhino_guid)
 );
+
+-- For an already-installed tracker schema, add the new optional wet field
+-- without rewriting any existing dry weight_kg values.
+alter table public.pavilion_parts
+  add column if not exists wet_weight_kg numeric;
+
+comment on column public.pavilion_parts.weight_kg is
+  'Dry module weight in kilograms (legacy Weight_kg; preserve existing data).';
+comment on column public.pavilion_parts.wet_weight_kg is
+  'Wet module weight in kilograms; independent from dry weight.';
 
 create index if not exists pavilion_parts_object_id_idx
   on public.pavilion_parts(project_id, object_id);
