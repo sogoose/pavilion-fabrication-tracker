@@ -1,0 +1,20 @@
+{
+ "version": "1.6",
+ "wheel": "wheels/trimesh-4.6.2-py3-none-any.whl",
+ "files": [
+  "lama_server.py",
+  "lama_engine.py",
+  "configurations/earthen.json",
+  "configurations/standard.json",
+  "converters/gcode2pdl_arduino.py",
+  "converters/settings.json",
+  "toolpaths/sinusoidal/weave_gcode.py",
+  "toolpaths/sinusoidal/weave_pattern.py",
+  "toolpaths/sinusoidal/weave_slice.py",
+  "toolpaths/examples/Contour.py",
+  "toolpaths/examples/OrthogonalFill.py"
+ ],
+ "patches": [
+  "geos_patch.py"
+ ]
+}

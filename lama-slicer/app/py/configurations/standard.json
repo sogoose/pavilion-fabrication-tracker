@@ -1,0 +1,11 @@
+{
+  "id": "standard",
+  "order": 0,
+  "title": "LAMA Slicer",
+  "label": "Standard",
+  "description": "Basic slicing for any shape: Contour and Orthogonal fill, and your own imported toolpaths.",
+  "toolpaths": ["Contour", "OrthogonalFill"],
+  "imported": true,
+  "defaults": { "toolpath": "OrthogonalFill", "machine": "comau" },
+  "theme": {}
+}

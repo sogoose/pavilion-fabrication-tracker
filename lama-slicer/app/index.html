@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAMA Slicer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230c2340'/%3E%3Crect x='6' y='21' width='20' height='4' fill='%2300a6d6'/%3E%3Crect x='8' y='15' width='16' height='4' fill='%23fff'/%3E%3Crect x='10' y='9' width='12' height='4' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  #splash { position: fixed; inset: 0; z-index: 1000; background: #ffffff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; color: #0c2340;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; transition: opacity .5s ease; }
+  #splash.done { opacity: 0; pointer-events: none; }
+  #splash svg { width: 112px; height: 112px; }
+  #splash .bar { animation: lamaRise 1.6s ease-in-out infinite; }
+  #splash .b1 { animation-delay: 0s; } #splash .b2 { animation-delay: .22s; } #splash .b3 { animation-delay: .44s; }
+  @keyframes lamaRise { 0%, 100% { opacity: .25; } 35% { opacity: 1; } 60% { opacity: .6; } }
+  #splash .nm { margin-top: 26px; font-size: 22px; letter-spacing: 6px; }
+  #splash .nm b { font-weight: 800; } #splash .nm span { font-weight: 300; color: #6b7580; }
+  #splash .ld { margin-top: 14px; font: 600 12px Consolas, "Cascadia Mono", monospace; letter-spacing: 3px; text-transform: uppercase; color: #00a6d6; animation: lamaPulse 1.4s ease-in-out infinite; }
+  #splash .ld::after { content: ''; display: inline-block; width: 1.6em; text-align: left; animation: lamaDots 1.4s steps(4, end) infinite; }
+  @keyframes lamaPulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+  @keyframes lamaDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75%, 100% { content: '...'; } }
+  #splash .st { margin-top: 8px; font: 11px Consolas, "Cascadia Mono", monospace; color: #8a939c; min-height: 1.4em; }
+  #splash .track { margin-top: 22px; width: 180px; height: 2px; background: #e3e7eb; overflow: hidden; }
+  #splash .track i { display: block; width: 40%; height: 100%; background: #00a6d6; animation: lamaTrack 1.3s ease-in-out infinite; }
+  @keyframes lamaTrack { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+  #splash.err .ld { color: #c8102e; animation: none; } #splash.err .ld::after { content: ''; animation: none; } #splash.err .track { display: none; }
+</style>
+<link rel="stylesheet" href="css/style.css?v=1.6">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+</script>
+<link id="lama-pavilion-loading-theme" rel="stylesheet" href="../loading-theme.css">
+</head>
+<body>
+<div id="splash" aria-live="polite">
+  <svg viewBox="0 0 32 32" aria-hidden="true">
+    <rect width="32" height="32" fill="#0c2340"/>
+    <rect class="bar b1" x="6" y="21" width="20" height="4" fill="#00a6d6"/>
+    <rect class="bar b2" x="8" y="15" width="16" height="4" fill="#ffffff"/>
+    <rect class="bar b3" x="10" y="9" width="12" height="4" fill="#ffffff"/>
+  </svg>
+  <div class="nm"><b>LAMA</b> <span>SLICER</span></div>
+  <div class="ld">Loading</div>
+  <div class="st">Starting</div>
+  <div class="track"><i></i></div>
+</div>
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><rect width="32" height="32" fill="#0c2340"/><rect x="6" y="21" width="20" height="4" fill="#00a6d6"/><rect x="8" y="15" width="16" height="4" fill="#fff"/><rect x="10" y="9" width="12" height="4" fill="#fff"/></svg>
+    <div class="wordmark"><b>LAMA</b><span>SLICER</span></div>
+    <small id="brandSub">earth-based materials · TU Delft BK</small>
+  </div>
+  <nav class="tabs">
+    <button id="tabPrepare" class="tab active"><i>01</i>Prepare</button>
+    <button id="tabPreview" class="tab"><i>02</i>Preview</button>
+  </nav>
+  <div class="actions">
+    <button id="btnImportGcode" class="btn ghost" title="Load a G-code made elsewhere (e.g. AI-generated) to preview and export it">Import G-code</button>
+    <button id="btnSlice" class="btn primary">Slice plate</button>
+    <button id="btnExport" class="btn" disabled>Export</button>
+  </div>
+</header>
+<div class="projbar" id="projbar">
+  <button id="tabHome" class="ptab home" title="Home: all projects">⌂ Home</button>
+  <div id="ptabs" class="ptabs"></div>
+  <button id="btnNewProject" class="ptab add" title="New project">＋</button>
+</div>
+
+<main class="layout">
+  <section id="home" class="homeview hidden">
+    <div class="homehead">
+      <div><h2>Configurations</h2><p>Start a project in the plain slicer or in a project configuration with its own toolpaths and colours.</p></div>
+    </div>
+    <div id="homeConfigs" class="cfggrid"></div>
+    <div class="homehead">
+      <div><h2>Projects</h2><p>Each project keeps its own configuration, objects, machine and settings and is saved automatically. Open several at once: they appear as tabs.</p></div>
+    </div>
+    <div id="homeGrid" class="homegrid"></div>
+  </section>
+  <aside class="side" id="side">
+    <section>
+      <h3><i>A</i>Machine</h3>
+      <div class="machines" id="machineList">
+        <button data-m="wasp"><span>WASP 40100</span><em>.gcode</em></button>
+        <button data-m="ur5"><span>UR5</span><em>.gcode</em></button>
+        <button data-m="comau"><span>Comau NJ60-2.2</span><em>.pdl</em></button>
+      </div>
+    </section>
+
+    <section>
+      <h3><i>B</i>Toolpath</h3>
+      <div class="seg" id="toolpathSeg"></div>
+      <div class="row2 gap"><button id="btnImportToolpath" class="btn small" title="Add a toolpath script (.py) from your computer">＋ Import toolpath…</button><button id="btnCode" class="btn small hidden" title="Open the folder with the toolpath scripts of this configuration (edit their SETTINGS blocks or code)">Open code</button><button id="btnRemoveToolpath" class="btn small hidden">Remove</button></div>
+      <div class="imported hidden" id="importedBox">
+        <span>Imported G-code: <b id="importedName"></b></span>
+        <button id="btnClearImport" class="x" title="Back to the toolpaths">✕</button>
+      </div>
+      <p class="hint" id="toolpathHint"></p>
+      <div id="advWrap" class="advwrap">
+        <button id="advToggle" class="advtoggle"><span>Advanced settings</span><small id="advCount"></small><i>›</i></button>
+        <div id="advBox" class="advbox hidden">
+          <div class="grid2" id="advFields"></div>
+          <div class="advprev">
+            <canvas id="advCanvas"></canvas>
+            <div class="advbar">
+              <span class="seg mini" id="advLayers"><button data-l="1">L1</button><button data-l="2">L2</button><button data-l="3">L3</button></span>
+              <button id="advRefresh" class="btn small" title="Compute the preview again (e.g. after moving or changing the object)">↻</button>
+            </div>
+            <p class="advstatus" id="advStatus"></p>
+          </div>
+          <p class="hint" id="advHints"></p>
+          <button id="advReset" class="btn small">Reset to defaults</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3><i>C</i>Print settings <span class="tag" id="paramsFor"></span></h3>
+      <div class="grid2">
+        <label title="= infill (bead) width">Nozzle thickness<div class="unit"><input id="p_nozzle" type="number" step="0.5" min="1"><i>mm</i></div></label>
+        <label>Layer height<div class="unit"><input id="p_layer_height" type="number" step="0.1" min="0.5"><i>mm</i></div></label>
+        <label>First layer height<div class="unit"><input id="p_first_layer_height" type="number" step="0.1" min="0.5"><i>mm</i></div></label>
+      </div>
+      <div class="presets" id="nozPresets" title="nozzle with layer heights in the same proportion as 6 mm / 3.5 mm / 2 mm"><span class="lbl">nozzle</span><button data-noz="1">1</button><button data-noz="2">2</button><button data-noz="3">3</button><button data-noz="4">4</button><button data-noz="6">6</button><button data-noz="8">8</button></div>
+      <p class="hint" id="widthHint"></p>
+      <div class="gsbox" data-sec="speed"></div>
+    </section>
+
+    <section class="fold closed" data-fold="material">
+      <h3><i>D</i>Material <span class="tag gsfor"></span><small class="nchg"></small></h3>
+      <div class="gsbox" data-sec="material"></div>
+    </section>
+
+    <section class="fold closed" data-fold="printer">
+      <h3><i>E</i>Printer <span class="tag gsfor"></span><small class="nchg"></small></h3>
+      <div class="gsbox" data-sec="printer"></div>
+    </section>
+
+    <section id="panelComau" class="mpanel fold" data-fold="comau">
+      <h3><i>F</i>PDL settings <span class="tag">gcode → pdl</span></h3>
+      <div class="grid2">
+        <label title="blank = use the speeds from the G-code">PDL print speed<div class="unit"><input id="pdl_print_speed_mm_s" type="number" placeholder="from G-code"><i>mm/s</i></div></label>
+        <label title="blank = use the speeds from the G-code">PDL travel speed<div class="unit"><input id="pdl_travel_speed_mm_s" type="number" placeholder="from G-code"><i>mm/s</i></div></label>
+        <label title="Arduino motor speed value (sign = direction)">Flow rate S<input id="pdl_flow_rate_S" type="number" step="10"></label>
+        <label title="S written = flow rate × factor">Extrusion factor<input id="pdl_extrusion_factor" type="number" step="0.05"></label>
+        <label title="Z of the first printed layer in $UFRAME">First layer Z<div class="unit"><input id="pdl_first_layer_z" type="number" step="0.5"><i>mm</i></div></label>
+        <label title="keep: use the position on the plate · auto: centre if not on origin · center: always centre">Placement<select id="pdl_placement"><option>keep</option><option>auto</option><option>center</option></select></label>
+      </div>
+      <label class="wide" title="nozzle tip on the flange">Tool TCP <small>x, y, z, e1, e2, e3</small><input id="pdl_tool" class="vec"></label>
+      <div class="frame" data-frame="comau">
+        <div class="sub">Print frame ($UFRAME) <button class="btn small fmove" title="Drag the frame in the 3D view">Move in 3D</button></div>
+        <div class="grid3">
+          <label>X<div class="unit"><input type="number" step="10" data-f="x"><i>mm</i></div></label>
+          <label>Y<div class="unit"><input type="number" step="10" data-f="y"><i>mm</i></div></label>
+          <label title="height of the print board top above the floor">Height above floor<div class="unit"><input type="number" step="1" data-f="h"><i>mm</i></div></label>
+        </div>
+        <label title="rotation of the frame, Comau ZYZ angles">Rotation <small>e1, e2, e3 (deg)</small><input class="vec" data-f="rot"></label>
+        <p class="hint mono fhint"></p>
+      </div>
+      <p class="hint mono" id="pdlStatus"></p>
+      <details>
+        <summary>Robot settings</summary>
+        <label class="wide">Home pose J1…J6 <small>deg</small><input id="pdl_home" class="vec"></label>
+        <div class="grid2">
+          <label>Nozzle orientation <small>e1, e2, e3</small><input id="pdl_orient" class="vec"></label>
+          <label>Configuration<input id="pdl_config"></label>
+          <label>Approach speed<div class="unit"><input id="pdl_approach_speed" type="number" step="0.01"><i>m/s</i></div></label>
+        </div>
+        <p class="hint mono" id="pdlFixed"></p>
+      </details>
+      <details>
+        <summary>Scene (visual only)</summary>
+        <label class="wide">Print board <small>width, depth, thickness (mm)</small><input id="scene_comau_board" class="vec" data-scene="comau.board" data-n="3"></label>
+        <label class="wide">Robot base plate <small>width, depth, thickness, centre x, y (mm) · thickness 0 = none</small><input id="scene_comau_base" class="vec" data-scene="comau.base" data-n="5"></label>
+        <p class="hint">Only for the view: the robot stands on the base plate (1200 × 1200 × 30 mm from Environment.3dm) and the floor is 30 mm lower. The G-code and the PDL do not change.</p>
+      </details>
+    </section>
+
+    <section id="panelUr5" class="mpanel fold" data-fold="ur5">
+      <h3><i>F</i>UR5 station</h3>
+      <div class="frame" data-frame="ur5">
+        <div class="sub">Print frame (plate origin) <button class="btn small fmove" title="Drag the frame in the 3D view">Move in 3D</button></div>
+        <div class="grid3">
+          <label>X<div class="unit"><input type="number" step="10" data-f="x"><i>mm</i></div></label>
+          <label>Y<div class="unit"><input type="number" step="10" data-f="y"><i>mm</i></div></label>
+          <label title="height of the print board top above the table top">Height above table<div class="unit"><input type="number" step="1" data-f="h"><i>mm</i></div></label>
+        </div>
+        <p class="hint mono fhint"></p>
+      </div>
+      <label class="wide">Tool TCP <small>x, y, z, e1, e2, e3 · from the station file</small><input id="ur5_tcp" class="vec"></label>
+      <p class="hint">Output is the robot-neutral G-code for now; a URScript export can follow once the extruder I/O is known.</p>
+      <details>
+        <summary>Scene (visual only)</summary>
+        <label class="wide">Robot base rotation on the table <small>deg about Z</small><input id="scene_ur5_rot" class="vec" data-scene="ur5.rot" data-n="1"></label>
+        <label class="wide">Print board <small>width, depth, thickness (mm)</small><input id="scene_ur5_board" class="vec" data-scene="ur5.board" data-n="3"></label>
+        <label class="wide">Robot base plate <small>width, depth, thickness, centre x, y (mm) · thickness 0 = none</small><input id="scene_ur5_base" class="vec" data-scene="ur5.base" data-n="5"></label>
+        <p class="hint">Base rotation turns the table around the robot as on your station (robot base frame = plate coordinates, unchanged). Board and base plate are only for the view.</p>
+      </details>
+    </section>
+
+    <section id="panelWasp" class="mpanel fold" data-fold="wasp">
+      <h3><i>F</i>WASP 40100</h3>
+      <p class="hint">Round bed Ø 400 mm, build height 1000 mm. The plate origin is the bed centre.</p>
+    </section>
+
+    <section>
+      <h3><i>G</i>Objects</h3>
+      <label class="solo hidden" id="soloRow"><input type="checkbox" id="soloBox"> Show only the selected object</label>
+      <div id="objectList" class="objlist"><p class="empty">Drop STL / OBJ / 3MF files here or use <b>Add</b>.</p></div>
+      <div id="objectProps" class="hidden">
+        <div class="row2 gap copies"><button class="btn small" id="btnDuplicate" title="Ctrl+D (Ctrl+C / Ctrl+V: copy, paste)">Duplicate</button><button class="btn small" id="btnMultiply2" title="Copies in a grid">Multiply…</button></div>
+        <div class="sub">Position</div>
+        <div class="grid3">
+          <label>X<div class="unit"><input id="o_x" type="number" step="5"><i>mm</i></div></label>
+          <label>Y<div class="unit"><input id="o_y" type="number" step="5"><i>mm</i></div></label>
+          <label>Units<select id="o_unit"><option value="1">mm</option><option value="10">cm</option><option value="1000">m</option></select></label>
+        </div>
+        <div class="sub">Rotation <span class="snap">step <select id="rotStep"><option>5</option><option selected>15</option><option>30</option><option>45</option><option>90</option></select> °</span></div>
+        <div class="rotrows">
+          <div class="rot" data-ax="0"><b class="ax x">X</b><button data-d="-1">−</button><div class="unit"><input type="number" step="15"><i>°</i></div><button data-d="1">+</button></div>
+          <div class="rot" data-ax="1"><b class="ax y">Y</b><button data-d="-1">−</button><div class="unit"><input type="number" step="15"><i>°</i></div><button data-d="1">+</button></div>
+          <div class="rot" data-ax="2"><b class="ax z">Z</b><button data-d="-1">−</button><div class="unit"><input type="number" step="15"><i>°</i></div><button data-d="1">+</button></div>
+        </div>
+        <div class="presets" id="rotPresets"></div>
+        <div class="row2"><button class="btn small" id="btnRotReset">Reset rotation</button><output id="o_size"></output></div>
+        <div class="sub">Scale <label class="lock"><input type="checkbox" id="scaleLock" checked> uniform</label></div>
+        <div class="grid3">
+          <label>X<div class="unit"><input type="number" step="5" min="1" data-sc="0"><i>%</i></div></label>
+          <label>Y<div class="unit"><input type="number" step="5" min="1" data-sc="1"><i>%</i></div></label>
+          <label>Z<div class="unit"><input type="number" step="5" min="1" data-sc="2"><i>%</i></div></label>
+        </div>
+        <div class="grid3">
+          <label>Size X<div class="unit"><input type="number" step="1" min="1" data-sz="0"><i>mm</i></div></label>
+          <label>Size Y<div class="unit"><input type="number" step="1" min="1" data-sz="1"><i>mm</i></div></label>
+          <label>Size Z<div class="unit"><input type="number" step="1" min="1" data-sz="2"><i>mm</i></div></label>
+        </div>
+        <div class="presets"><span class="lbl">scale</span><button data-scp="25">25%</button><button data-scp="50">50%</button><button data-scp="75">75%</button><button data-scp="100">100%</button><button data-scp="150">150%</button><button data-scp="200">200%</button></div>
+        <p class="hint">X, Y place the middle of the part's base on the plate (0, 0 = plate origin). The part always stands on the plate, also after rotating or scaling.</p>
+      </div>
+    </section>
+
+    <section>
+      <h3><i>H</i>Output</h3>
+      <label class="wide">File name<input id="out_name" placeholder="part"></label>
+      <div class="gsbox" data-sec="output"></div>
+      <label class="check"><input type="checkbox" id="out_results"> Results (.txt)</label>
+      <label class="check" title="the layer shown in the toolpath's Advanced settings"><input type="checkbox" id="out_preview"> Preview image (.png)</label>
+      <p class="hint mono" id="outFiles"></p>
+      <p class="hint">Export asks for the folder each time and puts the files in a folder named after the file name.</p>
+      <div class="row2 gap"><button id="btnOpenFolder" class="btn small">Open last export folder</button></div>
+    </section>
+  </aside>
+
+  <div class="viewport" id="viewport">
+    <div class="toolbar" id="toolbar">
+      <button id="btnAdd" class="prep" title="Add objects">＋ Add</button>
+      <button id="btnUndo" class="prep icon" title="Undo (Ctrl+Z)">↶</button>
+      <button id="btnRedo" class="prep icon" title="Redo (Ctrl+Y / Ctrl+X)">↷</button>
+      <span class="sep prep"></span>
+      <button id="btnMove" class="mode prep active" title="Move (W)">Move</button>
+      <button id="btnRotate" class="mode prep" title="Rotate (E) - snaps to the rotation step">Rotate</button>
+      <button id="btnScale" class="mode prep" title="Scale (S) - drag an axis, or the centre for uniform">Scale</button>
+      <button id="btnCenter" class="prep" title="Put on the plate origin">Center</button>
+      <button id="btnFrame" class="mode prep" title="Move the print frame (board) in the 3D view">Frame</button>
+      <button id="btnMultiply" class="prep" title="Multiply: copies of the selected object in a grid (Ctrl+C / Ctrl+V copy-paste, Ctrl+D duplicate)">Multiply</button>
+      <button id="btnDelete" class="prep" title="Delete (Del)">Delete</button>
+      <span class="sep prep"></span>
+      <button data-view="iso">Iso</button>
+      <button data-view="top">Top</button>
+      <button data-view="front">Front</button>
+      <button data-view="plate">Plate</button>
+    </div>
+    <div class="badges" id="badges"></div>
+    <div class="layerbar hidden" id="layerbar">
+      <div class="lbl top"><b id="layerNow">0</b><span id="layerZ"></span></div>
+      <input type="range" id="layerSlider" min="1" max="1" value="1" orient="vertical">
+      <div class="lbl bottom">1</div>
+    </div>
+    <div class="legend hidden" id="legend"></div>
+    <div class="player hidden" id="player">
+      <button id="animPlay" class="play" title="Play / pause (space)">▶</button>
+      <button id="animRestart" title="Back to the start">⏮</button>
+      <input type="range" id="animScrub" min="0" max="1000" value="0">
+      <span class="time mono" id="animTime">0:00 / 0:00</span>
+      <select id="animSpeed" title="playback speed">
+        <option value="1">1×</option><option value="10">10×</option><option value="50" selected>50×</option><option value="200">200×</option><option value="1000">1000×</option>
+      </select>
+    </div>
+    <div class="overlay hidden" id="busy"><div class="spinner"></div><p id="busyText">Slicing…</p></div>
+    <div class="exportcard hidden" id="exportCard"></div>
+    <div class="modal hidden" id="mulDlg">
+      <div class="dlg">
+        <h4>Multiply <span id="mulName"></span></h4>
+        <div class="grid3">
+          <label>Copies to add<div class="unit"><input id="mulCount" type="number" min="1" max="99" step="1" value="3"></div></label>
+          <label>Columns<div class="unit"><input id="mulCols" type="number" min="1" max="100" step="1" value="2"></div></label>
+          <label>Gap<div class="unit"><input id="mulGap" type="number" min="0" step="5" value="20"><i>mm</i></div></label>
+        </div>
+        <p class="hint" id="mulInfo"></p>
+        <div class="row"><button class="btn small" id="mulCancel">Cancel</button><button class="btn small primary" id="mulOk">Multiply</button></div>
+      </div>
+    </div>
+    <div class="modal hidden" id="folderDlg">
+      <div class="dlg">
+        <h4>Export to folder</h4>
+        <label class="wide">Folder<input id="folderPath"></label>
+        <p class="hint" id="folderFiles"></p>
+        <div class="row"><button class="btn small" id="folderCancel">Cancel</button><button class="btn small primary" id="folderOk">Export</button></div>
+      </div>
+    </div>
+    <div class="log" id="logBox">
+      <div class="logtabs"><button id="resToggle" class="hidden">Results</button><button id="logToggle">Log</button></div>
+      <div class="results" id="resultsBox"></div>
+      <pre id="logText"></pre>
+    </div>
+  </div>
+</main>
+
+<input type="file" id="fileInput" accept=".stl,.obj,.3mf" multiple hidden>
+<input type="file" id="gcodeInput" accept=".gcode,.gco,.nc,.txt" hidden>
+<input type="file" id="toolpathInput" accept=".py" hidden>
+<script src="../bridge.js?v=1.6"></script>
+<script type="module" src="js/app.js?v=1.6"></script>
+<a href="../../" style="position:fixed;bottom:8px;left:8px;z-index:9000;color:#7c7367;font:11px monospace;background:#fff;border:1px solid #ccc7c1;padding:4px 8px;text-decoration:none">← Pavilion website</a>
+</body>
+</html>

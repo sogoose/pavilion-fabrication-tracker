@@ -1,30 +1,35 @@
-# LAMA Slicer — Original N1/N2 robot workspace
+# LAMA Slicer 1.6 — browser version
 
-Address: https://sogoose.github.io/pavilion-fabrication-tracker/lama-slicer/
+Address: https://sogoose.github.io/pavilion-fabrication-tracker/lama-slicer/ (the QR code / edu.nl/8p47a opens `app/` directly)
 
-The **unchanged original user-provided** `LAMA_Slicer.zip` is committed at `lama-slicer/LAMA_Slicer.zip` in this repository (sha1 Git blob `ec4f6cf4391d49bb19d992f4c2f9c0bbea6b5402`). Visitors **do not** upload or download a ZIP manually.
+LAMA Slicer 1.6 runs completely in the visitor's browser: the original interface, the robot scene (WASP 40100, UR5,
+Comau NJ60-2.2), both configurations (standard: Contour, Orthogonal; **Earthen**: Simple and Improved sinusoidal),
+G-code, Comau PDL and the results. No installation, no server.
 
-## What opens
-- The *original* `web/index.html`, `web/css/style.css` and `web/js/app.js` interface, plus its original bundled Three.js controls/loaders.
-- WASP 40100 `web/models/wasp.json`, UR5 `web/models/ur5_station.json`, Comau NJ60-2.2 `web/models/comau_nj60.json`, unchanged. The full robot scene, placement, animation and printing preview code are used.
-- Unchanged N1 and N2 `weave_pattern.py`, `weave_slice.py`, `weave_gcode.py` plus the original `gcode2pdl_arduino.py` converter and `settings.json`.
+## Files
+- `app/` — the LAMA Slicer interface (`web/` of the desktop source) with `js/app.js` connected to the browser engine.
+  Plain files: the QR address works on any device without a first visit to the landing page.
+- `app/py/` — the Python side, unchanged: `lama_server.py`, `lama_engine.py`, `configurations/`, `toolpaths/`
+  (the weave scripts of the Earthen configuration, Contour, Orthogonal), `converters/` (gcode2pdl), the trimesh wheel,
+  `manifest.json`. **Open code** in the Earthen configuration links here.
+- `app/py/geos_patch.py` — browser-only: shapely overlays with a 1e-6 mm grid. Pyodide's GEOS 3.12 throws an uncatchable
+  TopologyException on some module sections (Improved sinusoidal on A00 stopped the engine); with it the toolpaths are the
+  desktop ones (A00: same extruded length, layers within 0.1 mm).
+- `py-worker.js` — runs that Python in Pyodide 0.29.3 (numpy, scipy, shapely from the Pyodide CDN) in a Web Worker.
+- `bridge.js` — replaces the desktop app's local server: projects in IndexedDB, settings in localStorage, exports downloaded.
+- `sw.js` — serves the export files of the session (`download?path=…`) and removes the caches of the old zip installer.
+- `index.html` — landing page; opens `app/`. `loading-theme.css` — splash style. `legacy/` — older page.
 
-## Hosting architecture
-1. Loading `/lama-slicer/` downloads the committed original ZIP and unpacks its web files and Python scripts into the **browser Cache Storage** under `/lama-slicer/app/`. This happens automatically without asking the visitor for a file. Later visits reuse the cache until version invalidation or browser storage clearing.
-2. `sw.js` serves only resources within the `/lama-slicer/` scope and never affects the Tracker's root route. The robot models are loaded by the original interface on demand.
-3. The sole JS interface change is a small bridge replacing the original local HTTP `api()` fetch with `window.lamaApi()`, and replacing local output links with browser download links.
-4. `py-worker.js` loads Pyodide, Numpy, Shapely, Scipy, NetworkX and the original Trimesh Python library. Its Emscripten filesystem contains the original scripts. Original `lama_server.api_slice` and `lama_server.api_export` use the original `lama_engine.job_slice` and `lama_engine.job_export` implementations.
-5. Browser output files are downloaded, rather than written into a user's Windows output folder. No persistent slicing Python server is needed.
+## Updating
+Build from the desktop source (`LAMA_Slicer` folder): `python tools/build_web.py <this folder>`, then commit `app/`,
+`bridge.js`, `py-worker.js`, `sw.js`. The desktop setup (`LAMA_Slicer_Setup_<version>.exe`) and the two manuals come from
+the same source.
 
-## Validation and limitations
-- Verified exact ZIP was committed in GitHub; verified all three model JSONs exist (WASP 3 meshes, UR5 station 5, Comau 23).
-- Verified browser module entry rewrite parses as JavaScript.
-- Verified the **original** `gcode2pdl_arduino.py` locally transforms sample G-code into a PDL file.
-- **Not verified:** full live GitHub Pages end-to-end slicing in a real user browser after Pyodide load. This is a work-in-progress deployment; robot output must not be used unverified.
-- N1/N2 are tailored to their original geometry families and may refuse other solids; original algorithm restrictions still apply.
-
-## Updating source
-To upgrade LAMA, replace `lama-slicer/LAMA_Slicer.zip` with the new original archive, bump the cache version in `index.html`, `sw.js`, `bridge.js` and run functionality tests. Do not substitute the original algorithms with a generic contour/zigzag slicer.
+## Limits
+- First visit downloads the Python runtime (~30 MB); later visits use the browser cache. Slicing takes about twice as long
+  as the desktop app (A00: Improved sinusoidal ~30 s, Orthogonal ~50 s).
+- Projects stay in the browser they were made in. Imported toolpath scripts last for the session.
+- Validate machine outputs before fabrication.
 
 ## Project credits and copyright
 
@@ -37,9 +42,9 @@ The standalone entry page and the original application's loading splash follow t
 - **Left click:** select the part or use its move/rotate gizmo. Left-drag no longer orbits the scene.
 - **Right-button drag:** orbit in isometric / machine / plate views.
 - **Right-button drag in Top or Front:** pan the view.
-- **Shift + right-button drag:** pan in all views.
+- **Shift + right-button drag:** orbit (also in Top / Front).
 - **Ctrl + right-button drag:** zoom / dolly.
 - **Middle-button drag:** pan.
 - **Mouse wheel:** zoom toward the cursor.
 
-This is a browser-side patch applied to the original web/js/app.js when installing into Cache Storage. The original ZIP, robot models, slicing algorithms, G-code and PDL exporter are not changed. Cache version v5 ensures the updated controls are installed for existing visitors.
+This is a patch applied to `web/js/app.js` by `tools/build_web.py`. The robot models, slicing algorithms, G-code and PDL exporter are not changed.

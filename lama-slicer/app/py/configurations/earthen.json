@@ -1,0 +1,17 @@
+{
+  "id": "earthen",
+  "order": 1,
+  "title": "Earthen",
+  "label": "Earthen",
+  "description": "Spatial Robotics pavilion: the Simple and Improved sinusoidal weave of the earthen modules.",
+  "toolpaths": ["N1", "N2"],
+  "imported": false,
+  "defaults": { "toolpath": "N2", "machine": "comau" },
+  "code": "toolpaths/sinusoidal",
+  "theme": {
+    "palette": ["#CCC7C1", "#B2ABA2", "#7C7367", "#B19B7A", "#BBA583"],
+    "subtitle": "Earthen · Spatial Robotics",
+    "paths": { "external": "#7C7367", "perimeter": "#4A433B", "infill": "#BBA583", "fill": "#B19B7A" },
+    "board": { "comau": "#CCC7C1", "ur5": "#B2ABA2", "wasp": "#CCC7C1" }
+  }
+}

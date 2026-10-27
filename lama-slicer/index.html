@@ -50,7 +50,6 @@ footer{background:var(--bg);border-top:1px solid var(--line);width:min(1020px,ca
 footer strong{color:#464641;font-weight:600}
 @media(max-width:680px){.brand span{display:block;border:0;margin:5px 0 0;padding:0}.heading{display:block}.heading-note{margin-top:15px}.modules{grid-template-columns:1fr}.module{border-right:0;border-bottom:1px solid var(--line);padding:14px 0}.module:first-child{padding-top:0}.module:last-child{border-bottom:0}.status{padding:20px 17px}.intro{margin-bottom:24px}}
 </style>
-<script src="./jszip.min.js" defer></script>
 <link rel="stylesheet" href="../assets/editorial-landing.css?v=20261025-launch-v1">
 <style>body > header{display:none} .ed-global-nav a[aria-current="page"]{border-bottom:1px solid currentColor}@media(max-width:630px){.ed-global-nav a:last-child{display:none}}</style>
 </head>
@@ -67,9 +66,9 @@ footer strong{color:#464641;font-weight:600}
   <div class="kicker"><span>26/27 TU DELFT · CREATIVE ROBOTICS IN SPATIAL DESIGN</span><span>DIGITAL FABRICATION TOOL / 03</span></div>
   <div class="heading">
     <h1>LAMA Slicer</h1>
-    <span class="heading-note">N1 / N2 &nbsp;·&nbsp; MACHINE SIMULATION</span>
+    <span class="heading-note">VERSION 1.6 &nbsp;·&nbsp; EARTHEN CONFIGURATION</span>
   </div>
-  <p class="intro">An independent 3D fabrication workspace for WASP 40100, UR5 and Comau NJ60-2.2, including the original N1/N2 toolpaths, G-code generation and Comau PDL conversion.</p>
+  <p class="intro">An independent 3D fabrication workspace for WASP 40100, UR5 and Comau NJ60-2.2, with the Earthen configuration of the pavilion (Simple and Improved sinusoidal weave), G-code generation and Comau PDL conversion.</p>
   <section class="status" aria-label="Slicer loading status">
     <div class="status-top">
       <div>
@@ -85,10 +84,10 @@ footer strong{color:#464641;font-weight:600}
   </section>
   <div class="modules">
     <div class="module"><span class="label">01 / GEOMETRY</span><b>WASP · UR5 · COMAU</b><p>3D machine and printing-space preview</p></div>
-    <div class="module"><span class="label">02 / TOOLPATH</span><b>N1 · N2</b><p>Original weave-based slicing methods</p></div>
+    <div class="module"><span class="label">02 / TOOLPATH</span><b>SIMPLE · IMPROVED SINUSOIDAL</b><p>The weave of the earthen modules (Earthen configuration)</p></div>
     <div class="module"><span class="label">03 / OUTPUT</span><b>G-CODE · PDL</b><p>Machine-specific toolpath export</p></div>
   </div>
-  <p class="note">The original Slicer loads automatically in a separate workspace. No file installation is required. Validate machine outputs before fabrication.</p>
+  <p class="note">LAMA Slicer opens automatically and runs in this browser. No installation is required. Validate machine outputs before fabrication.</p>
 </main>
 <footer>
   <strong>© 2026–27 Maria Dumitrache · Rojin Aghaei · Niels Dobroschelski · TU Delft Creative Robotics 26–27 Students.</strong> All rights reserved.
@@ -96,145 +95,19 @@ footer strong{color:#464641;font-weight:600}
 <script>
 (async function(){
   'use strict';
-  const $=id=>document.getElementById(id), CACHE='lama-slicer-assets-v6';
-  const root=new URL('./',location.href), app=new URL('app/',root);
-  const essential=['web/index.html','web/js/app.js','lama_server.py','lama_engine.py',
-    'toolpaths/N1/weave_pattern.py','toolpaths/N1/weave_slice.py','toolpaths/N1/weave_gcode.py',
-    'toolpaths/N2/weave_pattern.py','toolpaths/N2/weave_slice.py','toolpaths/N2/weave_gcode.py',
-    'converters/gcode2pdl_arduino.py','converters/settings.json'];
-  let ready=false;
-  function progress(s,n){$('progress').textContent=s;if(n!=null){$('track').style.display='block';$('bar').style.width=n+'%';}}
-  function state(isReady){
-    ready=isReady;
-    $('ready').style.display=isReady?'block':'none';
-    $('installer').style.display='none';
-    $('title').textContent=isReady?'Opening LAMA Slicer':'Loading the original LAMA';
-    $('detail').textContent=isReady?'Original N1/N2 engine and robot models are ready':'Preparing original N1/N2 toolpaths and robot models';
-  }
+  // LAMA Slicer 1.6: the app is plain files in app/ (no unpacking into the browser cache any more).
+  const $=id=>document.getElementById(id), app=new URL('app/',location.href);
+  const progress=(s,n)=>{$('progress').textContent=s;if(n!=null){$('track').style.display='block';$('bar').style.width=n+'%';}};
   $('launch').onclick=()=>location.assign(app.href);
+  $('installer').style.display='none';
   try{
-    if(!('serviceWorker' in navigator)||!('caches' in window))throw Error('This browser does not support Service Workers / Cache Storage. Use current Chrome, Edge or Firefox.');
-    progress('Activating separate LAMA workspace…',1);
-    await navigator.serviceWorker.register('./sw.js',{scope:'./'});
-    await Promise.race([navigator.serviceWorker.ready, new Promise((_,reject)=>setTimeout(()=>reject(new Error('Service Worker activation timed out (20s). Try a normal Chrome/Edge tab.')),20000))]);
-    const c=await caches.open(CACHE);
-    if(await c.match(new URL('app/__installed__',root).href)){
-      state(true);progress('Opening original LAMA Slicer…');location.replace(app.href);
-      return;
-    }
-    state(false);
-    progress('Downloading original LAMA source and robot models…',2);
-    const hosted=await fetch('./LAMA_Slicer.zip',{cache:'no-store'}).catch(()=>null);
-    if(hosted?.ok){
-      progress('Found hosted engine bundle. Installing automatically…',3);
-      await install(await hosted.arrayBuffer());
-    } else throw Error('Could not download LAMA_Slicer.zip from this website. HTTP '+(hosted?.status ?? 'network error'));
-  }catch(e){state(false);progress('Setup error: '+e.message);}
-  window.addEventListener('unhandledrejection', event=>progress('Unexpected initialization error: '+(event.reason?.message||event.reason)));
-  $('zip').onchange=async event=>{
-    const file=event.target.files?.[0];if(!file)return;
-    try{await install(await file.arrayBuffer());}
-    catch(e){state(false);progress('Import failed: '+e.message);}
-  };
-  async function install(buf){
-    if(!window.JSZip) { if(document.readyState!=='complete') await new Promise(r=>window.addEventListener('load',r,{once:true})); if(!window.JSZip)throw Error('ZIP decompression library unavailable. Check connection and refresh.'); }
-    progress('Reading ZIP structure…',5);
-    const zip=await JSZip.loadAsync(buf);
-    const paths=Object.keys(zip.files);
-    const rootIndex=paths.find(p=>p.endsWith('/web/index.html')&&!zip.files[p].dir);
-    if(!rootIndex)throw Error('ZIP must contain LAMA_Slicer/web/index.html.');
-    const prefix=rootIndex.slice(0,-'web/index.html'.length);
-    for(const file of essential){
-      if(!zip.file(prefix+file))throw Error('Missing original LAMA file: '+file);
-    }
-    const source=await zip.file(prefix+'web/js/app.js').async('string');
-    if(!/async function api\(path, body\)/.test(source)||!/return r\.json\(\)/.test(source))
-      throw Error('Unexpected app.js version: API connector was not found.');
-    const c=await caches.open(CACHE);
-    let files=paths.filter(p=>p.startsWith(prefix)&&!zip.files[p].dir);
-    files=files.filter(p=>p.startsWith(prefix+'web/')||p.startsWith(prefix+'toolpaths/')||
-      p.startsWith(prefix+'converters/')||p===prefix+'lama_engine.py'||p===prefix+'lama_server.py');
-    // Scripts and geometry stay separated from the Tracker. Only required resources are installed.
-    files=files.filter(p=>!p.endsWith('.pyc')&&!p.endsWith('.keep'));
-    let i=0;
-    for(const path of files){
-      const relative=path.slice(prefix.length);
-      const isWeb=relative.startsWith('web/');
-      const dest=new URL('app/'+(isWeb?relative.slice(4):'py/'+relative),root);
-      let data=await zip.file(path).async('uint8array');
-      let type='application/octet-stream';
-      if(/\.html$/i.test(path)){
-        type='text/html; charset=utf-8';
-        let html=new TextDecoder().decode(data);
-        if(path===rootIndex){
-          const tag='<script type="module" src="js/app.js"><\/script>';
-          if(!html.includes(tag))throw Error('The original app entry script changed.');
-          // Style the original application splash before its first paint.
-          // Only #splash is changed: Three.js, camera controls and exporters remain intact.
-          const splashTheme='<link id="lama-pavilion-loading-theme" rel="stylesheet" href="../loading-theme.css">';
-          html=html.replace('</head>', splashTheme + '</head>');
-          html=html.replace(tag,'<script src="../bridge.js"><\/script>'+tag);
-          html=html.replace('</body>','<a href="../" style="position:fixed;bottom:8px;left:8px;z-index:9000;color:#59c8f0;font:11px monospace;background:#0a1827;padding:5px 9px">← Tracker / Installer</a></body>');
-        }
-        data=new TextEncoder().encode(html);
-      } else if(/\.js$/i.test(path)){
-        type='text/javascript; charset=utf-8';
-        if(relative==='web/js/app.js'){
-          let code=source.replace(/async function api\(path, body\)\s*\{[\s\S]*?return r\.json\(\);\s*\}/,
-            'async function api(path, body) { return window.lamaApi(path, body); }');
-          // Rhino-style navigation, without replacing the original 3D or slicing code.
-          const orbitAnchor='orbit.screenSpacePanning = true;';
-          const clickAnchor="renderer.domElement.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });";
-          const viewAnchor='function fitView(kind) {';
-          if(!code.includes(orbitAnchor)||!code.includes(clickAnchor)||!code.includes(viewAnchor))
-            throw Error('Original navigation code changed; refusing an unsafe camera patch.');
-          code=code.replace(orbitAnchor, orbitAnchor + `
-  // Rhino-style navigation: left select, RMB orbit, Shift+RMB pan,
-  // Ctrl+RMB dolly, wheel zoom; MMB also pans.
-  let rhinoViewMode = 'perspective';
-  orbit.mouseButtons.LEFT = -1;
-  orbit.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
-  orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
-  orbit.zoomToCursor = true;
-  orbit.zoomSpeed = 1.15;
-  renderer.domElement.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'touch' || e.button !== 2) return;
-    orbit.mouseButtons.RIGHT = (e.ctrlKey || e.metaKey)
-      ? THREE.MOUSE.DOLLY
-      : e.shiftKey ? THREE.MOUSE.ROTATE
-      : rhinoViewMode === 'parallel' ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
-  }, { capture: true });
-  const clearRhinoPointer = e => {
-    if (!e || e.button === 2) orbit.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
-  };
-  renderer.domElement.addEventListener('pointerup', clearRhinoPointer, { capture: true });
-  renderer.domElement.addEventListener('pointercancel', () => clearRhinoPointer(), { capture: true });
-  window.addEventListener('blur', () => clearRhinoPointer());
-`);
-          code=code.replace(clickAnchor,
-            "renderer.domElement.addEventListener('pointerdown', e => { down = e.button === 0 ? [e.clientX, e.clientY] : null; });");
-          code=code.replace(viewAnchor, viewAnchor + `
-  // In Rhino, right-drag pans in Top/Front (parallel) views.
-  rhinoViewMode = (kind === 'top' || kind === 'front') ? 'parallel' : 'perspective';
-`);
-          code=code.replaceAll('/api/file?path=','../download?path=');
-          if (code === source || !code.includes('window.lamaApi(path, body)')) throw Error('Could not connect original UI to Python.');
-          code=code.replace('>Open folder</button>','>Downloads help</button>');
-          code=code.replace('Saved ${r.files.map(f => f.name).join(\', \')} in ${r.out_dir}', 'Ready to download ${r.files.map(f => f.name).join(\', \')}');
-          data=new TextEncoder().encode(code);
-        }
-      } else if(/\.css$/i.test(path))type='text/css; charset=utf-8';
-      else if(/\.json$/i.test(path))type='application/json';
-      else if(/\.png$/i.test(path))type='image/png';
-      else if(/\.svg$/i.test(path))type='image/svg+xml';
-      await c.put(dest.href,new Response(data,{headers:{'Content-Type':type}}));
-      progress('Installing '+relative+'  ('+(++i)+' / '+files.length+')',Math.round(8+90*i/files.length));
-    }
-    await c.put(new URL('app/__installed__',root).href, new Response('LAMA original source install complete', {headers:{'Content-Type':'text/plain'}}));
-    state(true);
-    progress('Original 3D machine workspace ready; opening…',100);
-    location.replace(app.href);
-  }
+    if('serviceWorker' in navigator){progress('Preparing the download helper…',40);await navigator.serviceWorker.register('./sw.js',{scope:'./'});}
+  }catch(e){console.warn(e);}
+  $('ready').style.display='block';
+  $('title').textContent='Opening LAMA Slicer';
+  $('detail').textContent='LAMA Slicer 1.6 runs in this browser: toolpaths, robot preview, G-code and PDL';
+  progress('Opening LAMA Slicer…',100);
+  location.replace(app.href);
 })();
 </script>
 </body></html>

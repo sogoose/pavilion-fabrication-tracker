@@ -1,0 +1,52 @@
+{
+  "print_speed_mm_s": "",
+  "travel_speed_mm_s": "",
+  "flow_rate_S": 700.0,
+  "extrusion_factor": 1.0,
+  "first_layer_z": 2.5,
+  "approach_mm": 0.0,
+  "retract_mm": 0.0,
+  "placement": "auto",
+  "robot": "Comau Smart5 NJ 60-2.2",
+  "uframe": [
+    1400.0,
+    600.0,
+    59.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "tool": [
+    578.0,
+    0.0,
+    210.0,
+    0.0,
+    90.0,
+    0.0
+  ],
+  "home": [
+    -28.2854,
+    7.68203,
+    -135.629,
+    146.136,
+    58.2559,
+    -160.554
+  ],
+  "orient": [
+    0.0,
+    180.0,
+    0.0
+  ],
+  "config": "T1:0 T2:0 T3:0",
+  "fly_dist": 1.0,
+  "stress_per": 65,
+  "approach_speed": 0.1,
+  "com_port": "COM1:",
+  "gear_ratio": "1.0",
+  "name_suffix": "Ext",
+  "extensions": [
+    ".gcode",
+    ".gco",
+    ".nc"
+  ]
+}
