@@ -406,6 +406,11 @@
       <button type="button" id="landingGalleryLightNext" aria-label="Next image">›</button>
     </div>
   </dialog>
+  <div class="future-video-edit-bar" aria-label="Replace chapter 05 video" style="position:relative;padding:12px 5.5%;text-align:right;background:#faf9f6;font-family:Arial,sans-serif">
+    <button id="futureVideoUploadButton" type="button" style="font:12px Arial,sans-serif;border:0;background:transparent;color:#6d6258;cursor:pointer">05 VIDEO / REPLACE ↗</button>
+    <input id="futureVideoUploadInput" type="file" accept="video/mp4" hidden>
+    <span id="futureVideoUploadStatus" role="status" style="font:12px Arial,sans-serif;color:#756c62;margin-left:12px"></span>
+  </div>
   <footer class="rev-footer rev-footer-credits">
     <section class="rev-credits" aria-labelledby="revCreditsTitle">
       <div class="rev-credits-heading">
@@ -1136,6 +1141,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
   <script src="../assets/exhibition-editor.js?v=20261026-open-v6" defer></script>
   <script src="../assets/landing-gallery.js?v=20261026-gallery-v1" defer></script>
+  <script src="../assets/future-video-upload.js?v=20261027-v1" defer></script>
 </body>
 </html>
 
