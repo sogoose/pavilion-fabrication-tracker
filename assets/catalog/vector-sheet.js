@@ -344,8 +344,9 @@ function table(pdf,r){
   ]);
   section('02  MATERIAL / MANUFACTURING',[
     ['METHOD',r.Manufacturing_Method,'MACHINE',r.Machine],
-    ['MATERIAL',r.Material,'WEIGHT / KG',r.Weight_kg],
-    ['INFILL',r.Infill_Pattern,'DENSITY / %',r.Infill_Density_pct]
+    ['MATERIAL',r.Material,'INFILL / DENSITY',
+      present(r.Infill_Pattern)+' / '+(present(r.Infill_Density_pct)==='-'?'-':present(r.Infill_Density_pct)+'%')],
+    ['WET WEIGHT / KG',r.Wet_Weight_kg,'DRY WEIGHT / KG',r.Weight_kg]
   ]);
   section('03  FABRICATION / STATUS',[
     ['FABRICATION DATE',r.Fabrication_Date,'PRODUCTION',r.Production_Status],
