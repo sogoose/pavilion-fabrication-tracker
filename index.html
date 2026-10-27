@@ -770,7 +770,7 @@ const MAX_PHOTOS_PER_MODULE = 5;
 const MAX_GCODE_BYTES = 50 * 1024 * 1024;
 const fields = [
   'Rhino_GUID','Object_ID','Module_No','Level','Sequence','Rhino_Object_Name','Material','Material_Details','Manufacturing_Method','Fabrication_Date','Firing_Status','Firing_Batch','Firing_Kiln','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Program','Firing_Date','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct','Assigned_To',
-  'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
+  'Structural_Status','Compression_Force_kN','Ready_for_Production','Infill_Pattern','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Wet_Weight_kg','Weight_kg','Production_Status','Drying_QC_Status','Construction_Status','Overall_Status',
   'Machine','GCode_File','Last_Updated','Updated_By','Notes'
 ];
 const lists = {
@@ -809,7 +809,7 @@ const dbMap = {
   Structural_Status:'structural_status', Compression_Force_kN:'compression_force_kn', Ready_for_Production:'ready_for_production',
   Infill_Pattern:'infill_pattern', Infill_Density_pct:'infill_density_pct', Motor_Speed:'motor_speed', Motor_Speed_Manual_Adjustment_pct:'motor_speed_manual_adjustment_pct',
   Air_Pressure_bar:'air_pressure_bar', First_Layer_Height_mm:'first_layer_height_mm', Layer_Height_mm:'layer_height_mm', Print_Duration_min:'print_duration_min',
-  Weight_kg:'weight_kg', Production_Status:'production_status',
+  Wet_Weight_kg:'wet_weight_kg', Weight_kg:'weight_kg', Production_Status:'production_status',
   Drying_QC_Status:'drying_qc_status', Construction_Status:'construction_status', Overall_Status:'overall_status', Machine:'machine',
   GCode_File:'gcode_file', Last_Updated:'updated_at', Updated_By:'updated_by', Notes:'notes'
 };
@@ -945,7 +945,7 @@ function toDbRecord(r){
   const out={project_id:PROJECT_ID};
   for(const [app,db] of Object.entries(dbMap)){
     let v=r?.[app] ?? null;
-    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
+    if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Wet_Weight_kg','Weight_kg','Firing_Peak_Temp_C','Firing_Duration_h','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(app)) v=normalizeNumber(v);
     // PostgreSQL DATE rejects an empty string. Unsupplied firing dates are SQL NULL.
     // This applies to individual autosaves and bulk/cloud sync through toDbRecord().
     if(app==='Firing_Date' || app==='Fabrication_Date') v = String(v ?? '').trim() || null;
@@ -1202,7 +1202,7 @@ function defaultRecord(part,i){
     Material:'Custom / TBD', Material_Details:'', Manufacturing_Method:'3D Printing',
     Fabrication_Date:'', Firing_Status:'Not fired', Firing_Batch:'', Firing_Kiln:'ROHDE-kiln', Firing_Peak_Temp_C:'', Firing_Duration_h:'', Firing_Program:'', Firing_Date:'', Firing_Dimension_Before_mm:'', Firing_Dimension_After_mm:'', Firing_Shrinkage_pct:'', Assigned_To:'Unassigned',
     Structural_Status:'Pending', Compression_Force_kN:'', Ready_for_Production:'WAIT', Infill_Pattern:'', Infill_Density_pct:'',
-    Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Weight_kg:'', Production_Status:'Not Started',
+    Motor_Speed:'', Motor_Speed_Manual_Adjustment_pct:'', Air_Pressure_bar:'', First_Layer_Height_mm:'', Layer_Height_mm:'', Print_Duration_min:'', Wet_Weight_kg:'', Weight_kg:'', Production_Status:'Not Started',
     Drying_QC_Status:'Not Started', Construction_Status:'Not Installed', Overall_Status:'Not Started',
     Machine:'WASP', GCode_File:'', Last_Updated:'', Updated_By:'', Notes:''
   };
@@ -1990,7 +1990,10 @@ function renderPanel(){
     ${selectField('Manufacturing_Method','Manufacturing method',r.Manufacturing_Method,lists.Manufacturing_Method)}
     ${selectField('Machine','Machine',r.Machine,machineOptions)}
     ${datalistField('Assigned_To','Assigned to',r.Assigned_To,'peopleList')}
-    ${inputField('Weight_kg','Module weight (kg)',r.Weight_kg,'number','0.01')}
+    <div class="grid2">
+      ${inputField('Wet_Weight_kg','Wet weight (kg)',r.Wet_Weight_kg,'number','0.01')}
+      ${inputField('Weight_kg','Dry weight (kg)',r.Weight_kg,'number','0.01')}
+    </div>
     ${inputField('Fabrication_Date','Fabrication date',r.Fabrication_Date,'date')}
 
     <div class="divider"></div>
@@ -2332,7 +2335,7 @@ async function exportExcel(){
 
   fields.forEach((f,i)=>{
     const cell=ws.getCell(headerRow,i+1);
-    cell.value=f;
+    cell.value=f==='Weight_kg'?'Dry_Weight_kg':f;
     cell.font={name:'Arial',size:9,bold:true,color:{argb:'FFFFFFFF'}};
     cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF222222'}};
     cell.alignment={vertical:'middle',horizontal:'left',wrapText:true};
@@ -2345,7 +2348,7 @@ async function exportExcel(){
     fields.forEach((f,colIndex)=>{
       const cell=ws.getCell(excelRow,colIndex+1);
       let value=r[f]??'';
-      if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(f) && value!==''){
+      if(['Module_No','Level','Sequence','Compression_Force_kN','Infill_Density_pct','Motor_Speed','Motor_Speed_Manual_Adjustment_pct','Air_Pressure_bar','First_Layer_Height_mm','Layer_Height_mm','Print_Duration_min','Wet_Weight_kg','Weight_kg','Firing_Peak_Temp_C','Firing_Dimension_Before_mm','Firing_Dimension_After_mm','Firing_Shrinkage_pct'].includes(f) && value!==''){
         const n=Number(value); if(Number.isFinite(n)) value=n;
       }
       cell.value=value;
@@ -2414,6 +2417,11 @@ async function importExcel(file){
   const rows=XLSX.utils.sheet_to_json(ws,{range:headerIndex,defval:''});
   let matched=0;
   rows.forEach(row=>{
+    // Accept both new Dry_Weight_kg exports and legacy Weight_kg spreadsheets.
+    // The existing Weight_kg always means dry weight, never wet weight.
+    if(row.Dry_Weight_kg!==undefined && row.Dry_Weight_kg!==null){
+      row.Weight_kg=row.Dry_Weight_kg;
+    }
     let key=String(row.Rhino_GUID||'').trim();
     if(!records[key]){
       const p=parts.find(p=> String(records[p.key]?.Object_ID||'')===String(row.Object_ID||'') || String(records[p.key]?.Module_No||'')===String(row.Module_No||''));
