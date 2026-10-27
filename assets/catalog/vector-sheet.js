@@ -98,13 +98,26 @@ function wrap(pdf,str,w,maxLines=4){
   if(lines.length>maxLines){lines=lines.slice(0,maxLines);lines[maxLines-1]+='...';}
   return {lines,size};
 }
-function photoFit(pdf,img,x,y,w,h,format='JPEG'){
+function photoFit(pdf,img,x,y,w,h,format='JPEG',rotateLandscape=false){
   const iw=img.width||img.videoWidth||1,ih=img.height||img.videoHeight||1;
-  const scale=Math.min(w/iw,h/ih),iwmm=iw*scale,ihmm=ih*scale;
+  // Only site photographs opt in: landscape images are turned clockwise for
+  // portrait PDF panels, but portrait/square photos and Rhino renders stay as-is.
+  const turn=rotateLandscape && iw>ih;
+  const displayW=turn?ih:iw,displayH=turn?iw:ih;
+  const scale=Math.min(w/displayW,h/displayH);
+  const iwmm=displayW*scale,ihmm=displayH*scale;
   const cv=document.createElement('canvas');
-  const down=Math.min(1800/iw,1300/ih,1);
-  cv.width=Math.max(1,Math.round(iw*down));cv.height=Math.max(1,Math.round(ih*down));
-  cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+  const down=Math.min(1800/displayW,1300/displayH,1);
+  cv.width=Math.max(1,Math.round(displayW*down));
+  cv.height=Math.max(1,Math.round(displayH*down));
+  const ctx=cv.getContext('2d');
+  if(turn){
+    ctx.translate(cv.width,0);
+    ctx.rotate(Math.PI/2);
+    ctx.drawImage(img,0,0,cv.height,cv.width);
+  }else{
+    ctx.drawImage(img,0,0,cv.width,cv.height);
+  }
   // Keep Rhino previews lossless: JPEG can shift the nearly-white
   // background by 1-2 RGB values, creating a visible rectangular seam.
   const png=format==='PNG';
@@ -374,7 +387,7 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   const hero=primaryPhoto || asset.model || null;
   bg(pdf,10,33,101,137,primaryPhoto?[250,250,247]:MODULE_PANEL_RGB);
   if(hero){
-    try { photoFit(pdf,hero,11,34,99,135,primaryPhoto?'JPEG':'PNG'); }
+    try { photoFit(pdf,hero,11,34,99,135,primaryPhoto?'JPEG':'PNG',Boolean(primaryPhoto)); }
     catch(err){console.warn('PDF module hero:',err);}
   }else if(!drawGcode3D(pdf,asset.gcode,14,39,93,124)) {
     print(pdf,'NO SITE PHOTO',35,104,65,8,false,grey);
