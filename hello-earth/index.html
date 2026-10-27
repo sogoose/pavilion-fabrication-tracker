@@ -318,12 +318,12 @@
         </div>
       </section>
       <script>
-      /* Choose one of two hero films on each page load.
+      /* Choose the assembly hero film on 20% of page loads; use the original on 80%.
          If the alternative has not been uploaded or cannot play, return to the original. */
       (function(){
         const video=document.querySelector(".rev-hero-fullvideo .rev-hero-video");
         const source=video&&video.querySelector("source");
-        if(!video||!source||Math.random()>=0.5)return;
+        if(!video||!source||Math.random()>=0.2)return;
         const original=source.getAttribute("src");
         let restored=false;
         function restoreOriginal(){
