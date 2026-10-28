@@ -18,6 +18,23 @@ The authoritative inventory is `assets/catalog/model-inventory.json`. GitHub Act
 
 **Tracker cache:** once a valid Rhino model loads, local records from older model versions whose GUIDs are not in the current geometry are removed from that browser cache. A failed model load never purges local records.
 
+## Photo order and reversible removal
+
+From **Tracker > open module > Photos / Site Record**, move photos with
+**up/down arrows**. The first visible photo is marked **COVER + PDF** and
+appears as the main image in both the technical and simple module PDF.
+This display order is stored in Supabase rather than the browser cache.
+
+**Remove** hides one photo from the module, global gallery and both PDF
+exports; it does not remove the original file in Storage. Expand
+**Removed photos** and click **Restore** to bring it back. Up to five
+photos can be *visible* per module. New uploads default to the front.
+
+The Tracker presently has shared anonymous editing, not per-user sign-in:
+reordering/removal is available to anyone with editable Tracker access.
+Only `display_order` and `is_hidden` can be changed through these
+browser-photo update permissions (not `storage_path` or uploader identity).
+
 ## Simple photo catalogue (new export option)
 
 Use **Export > Simple PDF** in the Tracker. This format is separate from
