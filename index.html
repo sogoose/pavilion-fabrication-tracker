@@ -71,6 +71,16 @@
     .photoCard img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#efefeb;cursor:pointer}
     .photoMeta{padding:7px 8px;font-size:10px;line-height:1.35;color:#555}
     .photoMeta .photoNote{font-size:11px;color:#222;margin-bottom:4px;white-space:pre-wrap}
+    .photoControls{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:8px}
+    .photoControls button{font-size:10px;padding:5px 8px;border:1px solid var(--line);border-radius:5px;background:#f7f7f4;color:#32352e;cursor:pointer}
+    .photoControls button:hover:not(:disabled){background:#e7e8e2}
+    .photoControls button:disabled{opacity:.35;cursor:default}
+    .photoControls button[data-photo-action="remove"]{margin-left:auto;color:#a14c43}
+    .photoCoverLabel{font-size:9px;color:#3c7047;font-weight:700;letter-spacing:.05em;margin-bottom:5px}
+    .photoOrderHint{font-size:10px;color:#777;margin:6px 0}
+    .photoRemoved{margin-top:12px;padding:10px 0;border-top:1px solid var(--line)}
+    .photoRemoved summary{font-size:11px;cursor:pointer;color:#666}
+    .photoCardRemoved img{opacity:.45}
     .photoEmpty{font-size:11px;color:#888;padding:8px 0}
     .attachmentsModal{position:fixed;inset:0;z-index:1200;background:rgba(15,15,15,.42);display:none;align-items:center;justify-content:center;padding:28px}
     .attachmentsModal.open{display:flex}
@@ -1706,6 +1716,7 @@ async function openAttachmentsGallery(){
         .from('pavilion_module_photos')
         .select('*')
         .eq('project_id',PROJECT_ID)
+        .eq('is_hidden',false)
         .order('created_at',{ascending:false});
       if(error) throw error;
       photos=data||[];
@@ -1768,43 +1779,127 @@ async function openAttachmentsGallery(){
   });
 }
 
+function sortModulePhotos(rows){
+  return [...rows].sort((a,b)=>{
+    const n=(Number(a.display_order)||0)-(Number(b.display_order)||0);
+    return n || new Date(b.created_at||0)-new Date(a.created_at||0) || Number(b.id)-Number(a.id);
+  });
+}
+
+async function moveModulePhoto(key,id,direction){
+  if(!liveMode||!supabaseClient||selectedKey!==key)return;
+  const wrap=document.getElementById('modulePhotos');
+  const ordered=JSON.parse(wrap?.dataset.visiblePhotoIds||'[]');
+  const from=ordered.indexOf(Number(id)),to=from+(direction==='up'?-1:1);
+  if(from<0||to<0||to>=ordered.length)return;
+  [ordered[from],ordered[to]]=[ordered[to],ordered[from]];
+  wrap.querySelectorAll('[data-photo-action]').forEach(button=>button.disabled=true);
+  try{
+    for(let i=0;i<ordered.length;i++){
+      const {data,error}=await supabaseClient.from('pavilion_module_photos')
+        .update({display_order:i+1})
+        .eq('id',ordered[i]).eq('project_id',PROJECT_ID).eq('rhino_guid',key)
+        .select('id');
+      if(error)throw error;
+      if(!data?.length)throw new Error('Could not save photo order. Check editing permissions.');
+    }
+    await loadModulePhotos(key);
+    showMessage('Photo order saved · First photo is the PDF cover.');
+  }catch(error){
+    console.error('Photo order save',error);
+    await loadModulePhotos(key);
+    showMessage('Could not reorder photos: '+(error?.message||error),true);
+  }
+}
+
+async function changeModulePhotoVisibility(key,id,hide){
+  if(!liveMode||!supabaseClient||selectedKey!==key)return;
+  const wrap=document.getElementById('modulePhotos');
+  if(hide){
+    const ok=window.confirm('Remove this photo from the module, gallery and PDF?\n\nThe original file will be kept so you can restore it later.');
+    if(!ok)return;
+  }else if(Number(wrap?.dataset.count||0)>=MAX_PHOTOS_PER_MODULE){
+    showMessage('Maximum 5 visible photos. Remove another photo before restoring.',true);
+    return;
+  }
+  wrap?.querySelectorAll('[data-photo-action]').forEach(button=>button.disabled=true);
+  try{
+    const updated=hide?{is_hidden:true}:{is_hidden:false,display_order:0};
+    const {data,error}=await supabaseClient.from('pavilion_module_photos')
+      .update(updated).eq('id',Number(id)).eq('project_id',PROJECT_ID)
+      .eq('rhino_guid',key).select('id');
+    if(error)throw error;
+    if(!data?.length)throw new Error('Photo change was not saved. Check editing permissions.');
+    await loadModulePhotos(key);
+    showMessage(hide?'Photo removed from Tracker and PDF. You can restore it below.':'Photo restored.');
+  }catch(error){
+    console.error('Photo visibility',error);
+    await loadModulePhotos(key);
+    showMessage('Could not update photo: '+(error?.message||error),true);
+  }
+}
+
 async function loadModulePhotos(key){
   const wrap=document.getElementById('modulePhotos');
-  if(!wrap || !key || !liveMode || !supabaseClient){
-    if(wrap) wrap.innerHTML='<div class="photoEmpty">Photos are available in shared mode.</div>';
+  if(!wrap||!key||!liveMode||!supabaseClient){
+    if(wrap)wrap.innerHTML='<div class="photoEmpty">Photos are available in shared mode.</div>';
     return;
   }
   const {data,error}=await supabaseClient
-    .from('pavilion_module_photos')
-    .select('*')
-    .eq('project_id',PROJECT_ID)
-    .eq('rhino_guid',key)
+    .from('pavilion_module_photos').select('*')
+    .eq('project_id',PROJECT_ID).eq('rhino_guid',key)
+    .order('display_order',{ascending:true})
     .order('created_at',{ascending:false});
-  if(!document.getElementById('modulePhotos') || selectedKey!==key) return;
+  if(!document.getElementById('modulePhotos')||selectedKey!==key)return;
   if(error){
     console.error(error);
     wrap.innerHTML='<div class="photoEmpty">Could not load photos.</div>';
     return;
   }
-  const items=data||[];
-  wrap.dataset.count=String(items.length);
+  const items=sortModulePhotos(data||[]);
+  const visible=items.filter(item=>!item.is_hidden);
+  const removed=items.filter(item=>item.is_hidden);
+  wrap.dataset.count=String(visible.length);
+  wrap.dataset.visiblePhotoIds=JSON.stringify(visible.map(item=>Number(item.id)));
   if(!items.length){
     wrap.innerHTML='<div class="photoEmpty">No site photos yet.</div>';
     return;
   }
-  wrap.innerHTML='<div class="photoGrid">'+items.map(item=>{
+  const card=(item,i,hidden)=>{
     const url=publicPhotoUrl(item.storage_path);
     const when=item.created_at?new Date(item.created_at).toLocaleString():'';
-    return `<div class="photoCard">
+    return `<div class="photoCard ${hidden?'photoCardRemoved':''}">
       <img src="${escapeAttr(url)}" alt="${escapeAttr(item.object_id||'Module photo')}" loading="lazy" data-photo-url="${escapeAttr(url)}">
       <div class="photoMeta">
+        ${!hidden&&i===0?'<div class="photoCoverLabel">01 / COVER + PDF</div>':''}
         ${item.note?`<div class="photoNote">${escapeHtml(item.note)}</div>`:''}
         <div>${escapeHtml(item.uploaded_by||'—')} · ${escapeHtml(when)}</div>
+        <div class="photoControls">
+          ${hidden?`<button type="button" data-photo-action="restore" data-photo-id="${item.id}">Restore</button>`:`
+            <button type="button" title="Move earlier" aria-label="Move photo earlier" data-photo-action="up" data-photo-id="${item.id}" ${i===0?'disabled':''}>↑</button>
+            <button type="button" title="Move later" aria-label="Move photo later" data-photo-action="down" data-photo-id="${item.id}" ${i===visible.length-1?'disabled':''}>↓</button>
+            <button type="button" data-photo-action="remove" data-photo-id="${item.id}">Remove</button>
+          `}
+        </div>
       </div>
     </div>`;
-  }).join('')+'</div>';
+  };
+  wrap.innerHTML=`
+    ${visible.length?`<div class="photoOrderHint">Use ↑ / ↓ to reorder · First photo appears in exported PDFs.</div>
+      <div class="photoGrid">${visible.map((item,i)=>card(item,i,false)).join('')}</div>`:
+      '<div class="photoEmpty">No visible photos. You can restore a removed photo below.</div>'}
+    ${removed.length?`<details class="photoRemoved"><summary>Removed photos (${removed.length}) · Restore</summary>
+      <div class="photoGrid">${removed.map((item,i)=>card(item,i,true)).join('')}</div></details>`:''}`;
   wrap.querySelectorAll('[data-photo-url]').forEach(img=>{
     img.addEventListener('click',()=>window.open(img.dataset.photoUrl,'_blank','noopener'));
+  });
+  wrap.querySelectorAll('[data-photo-action]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const action=btn.dataset.photoAction,id=Number(btn.dataset.photoId);
+      if(action==='up'||action==='down')moveModulePhoto(key,id,action);
+      else if(action==='remove'||action==='restore')
+        changeModulePhotoVisibility(key,id,action==='remove');
+    });
   });
 }
 async function uploadModulePhoto(key){
@@ -2039,7 +2134,7 @@ function renderPanel(){
         <button id="uploadModulePhoto" type="button">Add photo</button>
       </div>
       <div id="modulePhotoStatus" class="photoSelected">No photo selected.</div>
-      <div class="photoUploadHint">Max 5 photos/module · JPG/PNG/WebP · compressed to max 1200 px · max 2 MB/file · no delete from the tracker</div>
+      <div class="photoUploadHint">Max 5 visible photos/module · ↑↓ change PDF cover · Remove is reversible</div>
     </div>
     <div id="modulePhotos" data-count="0"><div class="photoEmpty">Loading photos…</div></div>
 
