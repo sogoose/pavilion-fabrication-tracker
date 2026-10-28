@@ -23,8 +23,8 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<h2>Fabrication Catalogue</h2>' +
       '<p class="catalog-lead">Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.</p>' +
       '<label class="catalog-field">FORMAT' +
-        '<select class="catalog-format"><option value="technical">Technical / detailed catalogue</option>' +
-        '<option value="simple">Simple / photo + date + material + notes</option></select></label>' +
+        '<select class="catalog-format"><option value="technical">Technical / A3 landscape</option>' +
+        '<option value="simple">Simple / A4 portrait + 2 photos</option></select></label>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
