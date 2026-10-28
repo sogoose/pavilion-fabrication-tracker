@@ -436,7 +436,8 @@ header{gap:6px;padding:10px 16px}
       <label class="editorBox">Editing as <input id="editorName" list="peopleList" placeholder="Your name" /></label>
       <details class="tracker-menu" aria-label="Export tools">
         <summary>Export</summary><div class="tracker-menu-content"><span class="menu-caption">EXPORT RECORDS</span>
-          <button id="downloadCatalog" title="Download a PDF catalogue of pavilion modules">Catalogue PDF ↗</button>
+          <button id="downloadCatalog" title="Download the detailed technical fabrication catalogue">Catalogue PDF ↗</button>
+          <button id="downloadSimpleCatalog" title="Download a photo-first PDF with only fabrication date, material and notes">Simple PDF ↗</button>
           <button id="downloadExcel">Download Excel</button>
         </div>
       </details>
@@ -758,7 +759,7 @@ header{gap:6px;padding:10px 16px}
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
-import { setupCatalog } from './assets/catalog/catalog.js?v=20261028-wet-dry-weights-v1';
+import { setupCatalog } from './assets/catalog/catalog.js?v=20261028-simple-record-v1';
 import { setupFabricationTimeline } from './assets/catalog/fabrication-timeline.js?v=20261020-3d-timeline-export-v4';
 
 const EXPECTED_PARTS = 70;
@@ -2437,7 +2438,8 @@ async function importExcel(file){
 function wireUI(){
   document.getElementById('modelInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(f)await loadModelFile(f);e.target.value='';});
   document.getElementById('excelInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(f)importExcel(f)});
-  document.getElementById('downloadCatalog').onclick=()=>catalogue.open('all');
+  document.getElementById('downloadCatalog').onclick=()=>catalogue.open('all','technical');
+  document.getElementById('downloadSimpleCatalog').onclick=()=>catalogue.open('all','simple');
   document.getElementById('downloadExcel').onclick=exportExcel;
   document.getElementById('fitView').onclick=fitView;
   document.getElementById('toggleObjectLabels').onclick=toggleAllObjectLabels;
