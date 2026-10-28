@@ -181,8 +181,14 @@ create table if not exists public.pavilion_module_photos (
   storage_path text not null unique,
   note text not null default '' check (char_length(note) <= 240),
   uploaded_by text,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  display_order integer not null default 0,
+  is_hidden boolean not null default false
 );
+
+alter table public.pavilion_module_photos
+  add column if not exists display_order integer not null default 0,
+  add column if not exists is_hidden boolean not null default false;
 
 create index if not exists pavilion_module_photos_lookup_idx
   on public.pavilion_module_photos(project_id, rhino_guid, created_at desc);
@@ -205,6 +211,18 @@ with check (
   and char_length(coalesce(note,'')) <= 240
 );
 
+-- Photo reorder/removal permissions. Tracker's original shared mode has no
+-- account login: allow only display_order and is_hidden updates, never changes
+-- to storage_path, module identity, or upload metadata.
+revoke update on public.pavilion_module_photos from anon, authenticated;
+grant update (display_order, is_hidden) on public.pavilion_module_photos to anon, authenticated;
+
+drop policy if exists "pavilion_module_photos_reorder_hide" on public.pavilion_module_photos;
+create policy "pavilion_module_photos_reorder_hide"
+on public.pavilion_module_photos for update to anon, authenticated
+using (project_id='pavilion-2026')
+with check (project_id='pavilion-2026');
+
 create or replace function public.limit_pavilion_module_photos()
 returns trigger
 language plpgsql
@@ -217,6 +235,7 @@ begin
     from public.pavilion_module_photos
     where project_id = new.project_id
       and rhino_guid = new.rhino_guid
+      and not is_hidden
   ) >= 5 then
     raise exception 'Maximum 5 photos per module';
   end if;
@@ -229,6 +248,23 @@ create trigger trg_limit_pavilion_module_photos
 before insert on public.pavilion_module_photos
 for each row execute function public.limit_pavilion_module_photos();
 
+
+create or replace function public.limit_visible_module_photos_on_restore()
+returns trigger language plpgsql security definer set search_path=public as $
+begin
+  if old.is_hidden and not new.is_hidden and (
+    select count(*) from public.pavilion_module_photos
+    where project_id=new.project_id and rhino_guid=new.rhino_guid and not is_hidden
+  ) >= 5 then
+    raise exception 'Maximum 5 visible photos per module; hide another photo before restoring this one';
+  end if;
+  return new;
+end;
+$;
+drop trigger if exists trg_limit_visible_module_photos_restore on public.pavilion_module_photos;
+create trigger trg_limit_visible_module_photos_restore
+before update of is_hidden on public.pavilion_module_photos
+for each row execute function public.limit_visible_module_photos_on_restore();
 
 -- Per-module G-code file storage
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
