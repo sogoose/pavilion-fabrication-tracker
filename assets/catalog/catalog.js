@@ -1,4 +1,4 @@
-/* Pavilion Fabrication Catalogue — CAD-style A4 landscape PDF.
+/* Pavilion Fabrication Catalogue — selectable A3/A4 landscape technical PDF.
  * Runs entirely in the visitor's browser; does not mutate Tracker records.
  * Module records come from shared Supabase (fallback: current Rhino/Tracker).
  * One image-rich technical sheet per module, optional summary cover.
@@ -23,8 +23,11 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<h2>Fabrication Catalogue</h2>' +
       '<p class="catalog-lead">Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.</p>' +
       '<label class="catalog-field">FORMAT' +
-        '<select class="catalog-format"><option value="technical">Technical / A3 landscape</option>' +
+        '<select class="catalog-format"><option value="technical">Technical / detailed catalogue</option>' +
         '<option value="simple">Simple / A4 portrait + 2 photos</option></select></label>' +
+      '<label class="catalog-field catalog-paper-field">PAPER SIZE' +
+        '<select class="catalog-paper"><option value="a3">A3 / landscape (default)</option>' +
+          '<option value="a4">A4 / landscape</option></select></label>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
@@ -46,6 +49,8 @@ export function setupCatalog({ THREE, getState, notify }) {
   const $ = s => dialog.querySelector(s);
   const scope = $('.catalog-scope');
   const format = $('.catalog-format');
+  const paperSize = $('.catalog-paper');
+  const paperField = $('.catalog-paper-field');
   const description = $('.catalog-lead');
   const footnote = $('.catalog-footnote');
   const heading = dialog.querySelector('h2');
@@ -83,6 +88,7 @@ export function setupCatalog({ THREE, getState, notify }) {
   });
   function syncOptions(){
     const simple=format.value==='simple';
+    paperField.style.display=simple?'none':'';
     const timeline=scope.querySelector('option[value="timeline"]');
     timeline.disabled=simple;
     if(simple && scope.value==='timeline')scope.value='all';
@@ -93,11 +99,12 @@ export function setupCatalog({ THREE, getState, notify }) {
     heading.textContent=simple?'Simple Module Catalogue':'Fabrication Catalogue';
     description.textContent=simple
       ? 'A4 portrait: two full-bleed photos, larger titles, the full material mix, fabrication date and notes.'
-      : 'A3 landscape: full technical sheets, production-status map, register and fabrication timeline.';
+      : (paperSize.value==='a4'?'A4':'A3')+' landscape: full technical sheets, production-status map, register and fabrication timeline.';
     footnote.textContent=simple
       ? 'Both images fill their frames edge-to-edge (slight central crop when needed). Photo order follows the Tracker. Full material composition and notes are included.'
       : 'Only modules in the current Rhino model are included. Individual sheets place the latest site photo in the large left frame, with 3D G-code above a smaller Rhino render. Modules without site photos retain the Rhino hero.';
   }
+  paperSize.addEventListener('change',syncOptions);
   scope.addEventListener('change',()=>{
     if(format.value!=='simple')datesOption.checked=scope.value!=='selected';
     syncOptions();
@@ -437,8 +444,10 @@ export function setupCatalog({ THREE, getState, notify }) {
       message('PDF library unavailable. Check your connection and reload.');
       return;
     }
-    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;format.disabled=true;
+    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;format.disabled=true;paperSize.disabled=true;
     const simple=format.value==='simple';
+    const outputPaper=simple?'a4':paperSize.value;
+    const scaleToA3=!simple&&outputPaper==='a3';
     cover.disabled=true;datesOption.disabled=true;
     const original=download.textContent;
     download.textContent='Generating…';
@@ -459,22 +468,22 @@ export function setupCatalog({ THREE, getState, notify }) {
       const pdf=new Class({
         orientation:simple?'portrait':'landscape',
         unit:'mm',
-        format:simple?'a4':'a3',
+        format:outputPaper,
         compress:true,putOnlyUsedFonts:true,precision:4
       });
       pdf.setProperties({title:simple?'Pavilion Simple Module Catalogue':'Pavilion Fabrication Catalogue',
         subject:simple?'Site photos, fabrication dates, materials and notes':'CAD fabrication module records',author:'Pavilion Fabrication Tracker'});
       let pages=0;
       const next=()=>{
-        if(pages)pdf.addPage(simple?'a4':'a3',simple?'portrait':'landscape');
+        if(pages)pdf.addPage(outputPaper,simple?'portrait':'landscape');
         pages++;
       };
-      // Technical diagrams are designed in a 297 x 210 mm reference grid.
-      // Scale its entire vector/image coordinate space into the A3 landscape
-      // MediaBox (420 x 297 mm) without rasterising any typography or toolpath.
-      // jsPDF compat-mode coordinates originate at the TOP of the current
-      // 297 mm page, so adjust the native PDF bottom-left-origin translation.
+      // The technical designs use the original A4 (297 x 210 mm) grid.
+      // Draw natively at A4, or scale that same vector grid onto A3 without
+      // rasterising typography or toolpaths. The translation compensates for
+      // jsPDF's bottom-left PDF origin.
       const drawTechnicalPage=(draw)=>{
+        if(!scaleToA3){draw();return;}
         const k=Math.SQRT2;
         const ty=(1-k)*297*pdf.internal.scaleFactor;
         pdf.saveGraphicsState();
@@ -551,10 +560,10 @@ export function setupCatalog({ THREE, getState, notify }) {
           ? 'Pavilion_Simple_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
           : 'Pavilion_Simple_Catalogue_A4_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf')
         : timelineOnly
-        ? 'Pavilion_Fabrication_Timeline_'+stamp+'.pdf'
+        ? 'Pavilion_Fabrication_Timeline_'+outputPaper.toUpperCase()+'_'+stamp+'.pdf'
         : scope.value==='selected'
-        ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
-        : 'Pavilion_Fabrication_Catalogue_A3_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
+        ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'_'+outputPaper.toUpperCase()+'.pdf'
+        : 'Pavilion_Fabrication_Catalogue_'+outputPaper.toUpperCase()+'_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
       message('Saved '+pages+' pages · '+entries.length+' modules · '+(simple?'simple records':'vector CAD')+'.',1);
       notify?.((simple?'Simple PDF ready · ':'Vector PDF ready · ')+(timelineOnly?'fabrication timeline':entries.length+' module sheets')+'.');
@@ -564,7 +573,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     }finally{
       capture?.dispose();
       busy=false;cancelled=false;
-      download.disabled=false;scope.disabled=false;format.disabled=false;
+      download.disabled=false;scope.disabled=false;format.disabled=false;paperSize.disabled=false;
       syncOptions();
       download.textContent=original;
     }
