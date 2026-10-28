@@ -493,7 +493,7 @@ export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
   const notes=String(r.Notes||'').trim();
   const materialGroups=detail.split(/\n\s*\n/).map(v=>v.trim()).filter(Boolean);
   const multiMix=materialGroups.length>=2;
-  const longMix=multiMix||detail.length>160;
+  const longMix=multiMix||detail.length>160||detail.split(/\r?\n/).filter(line=>line.trim()).length>5;
   const pageInk=[31,34,30],soft=[105,108,101];
   const outer=12,imageY=63,imageH=longMix?102:124,photoWidth=91;
   const infoY=imageY+imageH+19;
