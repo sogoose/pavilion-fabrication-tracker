@@ -1,6 +1,6 @@
 # Pavilion Fabrication Catalogue — current-model-only PDF
 
-The Tracker exports an **A4 landscape catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional **two-part front matter**: first a labelled, colour-coded Rhino model showing Production Status, then a large Module Register. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
+The Tracker exports an **A3 landscape technical catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional **two-part front matter**: first a labelled, colour-coded Rhino model showing Production Status, then a large Module Register. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
 
 ## Current model and historical records
 
@@ -40,17 +40,16 @@ browser-photo update permissions (not `storage_path` or uploader identity).
 Use **Export > Simple PDF** in the Tracker. This format is separate from
 the technical **Catalogue PDF** and does not change any Tracker record.
 The dialog supports all current Rhino modules, uppercase IDs only, or the
-selected module. It produces one A4 landscape page per module with:
+selected module. It produces **one A4 portrait page per module** with:
 
-- one large, uncropped **latest site photo** (Rhino screenshot if unavailable);
+- **two large, uncropped site photographs** using the Tracker's saved display order; if the second photo is missing, the Rhino 3D image takes its place;
 - **Fabrication Date** (not Last Updated);
 - **Material**;
 - **Notes** from the module detail panel.
 
 It omits G-code, parameter tables, status maps, technical diagrams and
-fabrication timelines. The original technical PDF remains unchanged.
-The newest photo visible on a module is defined by the photo records'
-`created_at` descending order.
+fabrication timelines. The technical PDF retains its content and proportional layout, enlarged from the original A4 reference grid to A3 landscape.
+The photo order is defined by the module's **display_order**; the first visible photo is the PDF cover image in both formats.
 
 ## PDF page layout
 
@@ -58,11 +57,11 @@ The newest photo visible on a module is defined by the photo records'
 
 **Page 1 / Production Status Map:** the currently loaded Rhino geometry is rendered as one **orthographic axonometric**, with each module coloured using the same **Production Status palette and user-edited legend colours as the Tracker**. Modules are displaced radially by about **5.5% of the pavilion diagonal** in a PDF-only exploded view: the original Rhino geometry and production data remain unchanged. Small module names appear near their updated, exploded positions with **thin white text halos**, no boxes, no colour pins and no leader lines. A collision-avoidance pass seeks nearby available label positions so their printed names do not overlap. The **Production Status / Key Map** displays the colour, status and total for Not Started, Queued, Printing, Printed and Failed. Total modules, 3D Printing and Rammed Earth counts sit beside the drawing.
 
-**Page 2 / Module Register:** the module names are no longer crowded into tiny lines on the cover. Instead they appear on a dedicated, readable A4 register: ID, colour swatch, Production Status and abbreviated manufacturing method. Records sort with uppercase IDs first. The register supports 88 entries per page; very large models use further register pages.
+**Page 2 / Module Register:** the module names are no longer crowded into tiny lines on the cover. Instead they appear on a dedicated, readable A3 register: ID, colour swatch, Production Status and abbreviated manufacturing method. Records sort with uppercase IDs first. The register supports 88 entries per page; very large models use further register pages.
 
 These two preliminary pages can be disabled using the checkbox in the PDF download dialog; individual-module PDFs never include them.
 
-### Module sheets — one landscape A4 per block
+### Technical module sheets — one landscape A3 per block
 
 - **Main left / site photograph:** a tall **101 × 137 mm** frame featuring the newest uploaded fabrication photograph. Landscape photos are automatically rotated 90° clockwise for portrait layout without cropping; portrait and square photos keep their orientation. If no photo has been uploaded, the shaded Rhino module capture fills this frame as a fallback.
 - **Upper right / G-code:** the unchanged **53 × 73 mm 3D axonometric** of G1 machining/printing moves, with continuous paths preserved. The drawing stays native PDF vector linework.
