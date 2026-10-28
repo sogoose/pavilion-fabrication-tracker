@@ -42,10 +42,10 @@ the technical **Catalogue PDF** and does not change any Tracker record.
 The dialog supports all current Rhino modules, uppercase IDs only, or the
 selected module. It produces **one A4 portrait page per module** with:
 
-- **two large, uncropped site photographs** using the Tracker's saved display order; if the second photo is missing, the Rhino 3D image takes its place;
-- **Fabrication Date** (not Last Updated);
-- **Material**;
-- **Notes** from the module detail panel.
+- **two full-bleed site photographs** using the Tracker's saved display order; portrait panels are cropped centrally only as much as necessary to avoid blank/grey bands, and landscape photos are rotated to portrait orientation. If the second photo is missing, the Rhino 3D image takes its place;
+- the module ID as an oversized headline and **Fabrication Date** (not Last Updated);
+- the recorded **Material** and the complete line-by-line **Material_Details** recipe, including ingredient percentages. Multi-mix rammed-earth recipes are arranged in two columns;
+- **Notes** from the module detail panel, shown in a separate readable column or compact section for multi-mix records.
 
 It omits G-code, parameter tables, status maps, technical diagrams and
 fabrication timelines. The technical PDF retains its content and proportional layout, enlarged from the original A4 reference grid to A3 landscape.
