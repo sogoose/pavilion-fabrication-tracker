@@ -11,7 +11,7 @@ import {
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261028-a3-a4-two-photo-v3';
+} from './vector-sheet.js?v=20261028-photo-fill-material-v4';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -92,10 +92,10 @@ export function setupCatalog({ THREE, getState, notify }) {
     datesOption.disabled=simple||scope.value==='timeline';
     heading.textContent=simple?'Simple Module Catalogue':'Fabrication Catalogue';
     description.textContent=simple
-      ? 'A4 portrait: two photographs, fabrication date, material and notes.'
+      ? 'A4 portrait: two full-bleed photos, larger titles, the full material mix, fabrication date and notes.'
       : 'A3 landscape: full technical sheets, production-status map, register and fabrication timeline.';
     footnote.textContent=simple
-      ? 'The first two photos follow the order chosen in the Tracker. If only one photo exists, the Rhino model fills the second frame. No cropped photographs.'
+      ? 'Both images fill their frames edge-to-edge (slight central crop when needed). Photo order follows the Tracker. Full material composition and notes are included.'
       : 'Only modules in the current Rhino model are included. Individual sheets place the latest site photo in the large left frame, with 3D G-code above a smaller Rhino render. Modules without site photos retain the Rhino hero.';
   }
   scope.addEventListener('change',()=>{
