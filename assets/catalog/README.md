@@ -18,6 +18,23 @@ The authoritative inventory is `assets/catalog/model-inventory.json`. GitHub Act
 
 **Tracker cache:** once a valid Rhino model loads, local records from older model versions whose GUIDs are not in the current geometry are removed from that browser cache. A failed model load never purges local records.
 
+## Simple photo catalogue (new export option)
+
+Use **Export > Simple PDF** in the Tracker. This format is separate from
+the technical **Catalogue PDF** and does not change any Tracker record.
+The dialog supports all current Rhino modules, uppercase IDs only, or the
+selected module. It produces one A4 landscape page per module with:
+
+- one large, uncropped **latest site photo** (Rhino screenshot if unavailable);
+- **Fabrication Date** (not Last Updated);
+- **Material**;
+- **Notes** from the module detail panel.
+
+It omits G-code, parameter tables, status maps, technical diagrams and
+fabrication timelines. The original technical PDF remains unchanged.
+The newest photo visible on a module is defined by the photo records'
+`created_at` descending order.
+
 ## PDF page layout
 
 ### Front matter — full-catalogue downloads only
