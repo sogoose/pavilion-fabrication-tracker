@@ -423,6 +423,64 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
   if(end>197)console.warn('Catalogue: table exceeds footer',end);
 }
 
+
+/* Lightweight exhibition/field record. One landscape A4 page per current
+ * Rhino module: photograph, fabrication date, material and module notes.
+ * Keep the main technical catalogue (drawSheet) unchanged. */
+export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
+  const r=entry.record||{};
+  bg(pdf,0,0,PW,PH,[252,252,249]);
+  label(pdf,'PRINT("HELLO, EARTH")³  /  FABRICATION RECORD',10,12,[48,52,47],6.6);
+  label(pdf,'SIMPLE CATALOGUE',251,12,[90,92,86],5.5);
+  stroke(pdf,10,20,287,20,[75,80,73],.21);
+
+  // Main image is the latest site photograph. When none was uploaded, keep
+  // the sheet useful by showing the Rhino module instead, clearly labelled.
+  const photo=asset.photos?.[0]||null;
+  const image=photo||asset.model||null;
+  bg(pdf,10,29,164,158,photo?[250,250,247]:MODULE_PANEL_RGB);
+  if(image){
+    try{
+      // Preserve photo orientation and content: fit entirely, no cropping.
+      photoFit(pdf,image,11,30,162,156,photo?'JPEG':'PNG');
+    }catch(err){
+      console.warn('Simple catalogue image:',err);
+      label(pdf,'IMAGE NOT AVAILABLE',25,105);
+    }
+  }else{
+    label(pdf,'NO MODULE IMAGE',25,105);
+  }
+  frame(pdf,10,29,164,158);
+  label(pdf,photo?'SITE PHOTO':asset.model?'RHINO 3D / NO SITE PHOTO':'IMAGE NOT AVAILABLE',
+    10,192,[120,123,116],5.0);
+
+  const tx=184;
+  print(pdf,present(r.Object_ID),tx,44,101,23,true,ink);
+  stroke(pdf,tx,52,287,52,[80,86,80],.2);
+
+  label(pdf,'FABRICATION DATE',tx,65,[112,115,109],5.5);
+  print(pdf,r.Fabrication_Date || 'NOT RECORDED',tx,76,99,11,false,ink);
+
+  stroke(pdf,tx,85,287,85,[224,225,220],.13);
+  label(pdf,'MATERIAL',tx,97,[112,115,109],5.5);
+  const mat=wrap(pdf,r.Material,100,3);
+  mat.lines.forEach((line,i)=>print(pdf,line,tx,108+i*5.2,99,Math.max(8,mat.size+1.2),false,ink));
+
+  stroke(pdf,tx,126,287,126,[224,225,220],.13);
+  label(pdf,'NOTES',tx,137,[112,115,109],5.5);
+  const notes=String(r.Notes??'').trim();
+  if(notes){
+    const lines=wrap(pdf,notes,100,10);
+    lines.lines.forEach((line,i)=>print(pdf,line,tx,147+i*4.1,100,Math.max(6,lines.size),false,ink));
+  }else{
+    print(pdf,'No notes recorded',tx,148,100,8,false,grey);
+  }
+
+  stroke(pdf,10,198.4,287,198.4,[76,80,72],.18);
+  label(pdf,'PAVILION / MODULE ARCHIVE',10,204,[90,93,85],5.3);
+  label(pdf,'SHEET '+number+' / '+total,256,204,[70,75,68],5.3);
+}
+
 const STATUS_ORDER=['Not Started','Queued','Printing','Printed','Failed'];
 const DEFAULT_STATUS_COLORS={
   'Not Started':'#d6d6d1','Queued':'#a8c7e8',
