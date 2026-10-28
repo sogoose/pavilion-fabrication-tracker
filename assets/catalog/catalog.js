@@ -181,6 +181,8 @@ export function setupCatalog({ THREE, getState, notify }) {
       .from('pavilion_module_photos')
       .select('rhino_guid,storage_path,note,created_at,object_id')
       .eq('project_id',state.projectId)
+      .eq('is_hidden',false)
+      .order('display_order',{ascending:true})
       .order('created_at',{ascending:false}).range(0,1999);
     if (error) {
       console.warn('Catalogue photos unavailable:',error.message);
