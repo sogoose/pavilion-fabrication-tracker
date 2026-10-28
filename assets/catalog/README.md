@@ -1,6 +1,19 @@
 # Pavilion Fabrication Catalogue — current-model-only PDF
 
-The Tracker exports an **A3 landscape technical catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional **two-part front matter**: first a labelled, colour-coded Rhino model showing Production Status, then a large Module Register. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
+The Tracker exports a **selectable A3 or A4 landscape technical catalogue** with exactly **one PDF sheet per Rhino module**, plus an optional **two-part front matter**: first a labelled, colour-coded Rhino model showing Production Status, then a large Module Register. The authoritative list of modules is the geometry loaded from the currently published `model.3dm`, NOT every historical row in Supabase.
+
+## PDF paper size selection
+
+Use **Export > Catalogue PDF > PAPER SIZE** to choose **A3 landscape**
+(default) or **A4 landscape**. The same selected size applies to the
+technical module sheets, status map, module register and fabrication
+timeline. A4 uses the original 297 x 210 mm vector layout directly;
+A3 scales the complete A4 artwork to 420 x 297 mm without flattening
+text or G-code paths. Downloaded technical PDF filenames include
+`A3` or `A4`.
+
+**Export > Simple PDF** remains A4 portrait and its own photo-first
+layout is unaffected.
 
 ## Current model and historical records
 
