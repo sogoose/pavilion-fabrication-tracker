@@ -6,11 +6,12 @@
 import {
   idOrder, parseGcode3D, MODULE_PANEL_RGB,
   drawSheet as drawVectorSheet,
+  drawSimpleSheet as drawSimpleVectorSheet,
   drawStatusCover as drawVectorCover,
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261028-wet-dry-weights-v1';
+} from './vector-sheet.js?v=20261028-simple-record-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -21,6 +22,9 @@ export function setupCatalog({ THREE, getState, notify }) {
       '<button type="button" class="catalog-close" aria-label="Close">×</button></div>' +
       '<h2>Fabrication Catalogue</h2>' +
       '<p class="catalog-lead">Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.</p>' +
+      '<label class="catalog-field">FORMAT' +
+        '<select class="catalog-format"><option value="technical">Technical / detailed catalogue</option>' +
+        '<option value="simple">Simple / photo + date + material + notes</option></select></label>' +
       '<label class="catalog-field">PAGES' +
         '<select class="catalog-scope"><option value="all">Full catalogue / all modules</option>' +
         '<option value="upper">Uppercase IDs only / A, B, C…</option>' +
@@ -41,6 +45,10 @@ export function setupCatalog({ THREE, getState, notify }) {
 
   const $ = s => dialog.querySelector(s);
   const scope = $('.catalog-scope');
+  const format = $('.catalog-format');
+  const description = $('.catalog-lead');
+  const footnote = $('.catalog-footnote');
+  const heading = dialog.querySelector('h2');
   const cover = $('.catalog-cover');
   const datesOption = $('.catalog-dates');
   const progress = $('.catalog-progress');
@@ -73,25 +81,44 @@ export function setupCatalog({ THREE, getState, notify }) {
   dialog.addEventListener('click', e => {
     if (e.target === dialog) close();
   });
-  scope.addEventListener('change', () => {
-    const dateOnly=scope.value==='timeline';
-    cover.disabled=scope.value==='selected'||dateOnly;
-    datesOption.checked=scope.value!=='selected';
-    datesOption.disabled=dateOnly;
+  function syncOptions(){
+    const simple=format.value==='simple';
+    const timeline=scope.querySelector('option[value="timeline"]');
+    timeline.disabled=simple;
+    if(simple && scope.value==='timeline')scope.value='all';
+    cover.closest('label').style.display=simple?'none':'';
+    datesOption.closest('label').style.display=simple?'none':'';
+    cover.disabled=simple||scope.value==='selected'||scope.value==='timeline';
+    datesOption.disabled=simple||scope.value==='timeline';
+    heading.textContent=simple?'Simple Module Catalogue':'Fabrication Catalogue';
+    description.textContent=simple
+      ? 'One photo-first A4 sheet per module: fabrication date, material and notes. No technical parameters.'
+      : 'Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.';
+    footnote.textContent=simple
+      ? 'The latest uploaded site photo is shown large. If no photo exists, the Rhino model is used instead. The full technical catalogue remains available.'
+      : 'Only modules in the current Rhino model are included. Individual sheets place the latest site photo in the large left frame, with 3D G-code above a smaller Rhino render. Modules without site photos retain the Rhino hero.';
+  }
+  scope.addEventListener('change',()=>{
+    if(format.value!=='simple')datesOption.checked=scope.value!=='selected';
+    syncOptions();
   });
-  function open(requested = 'all') {
-    if (busy) return;
-    const state = getState();
-    const hasSelection = !!(state.selectedKey && state.records[state.selectedKey]);
-    scope.querySelector('option[value="selected"]').disabled = !hasSelection;
-    scope.value=requested==='timeline'?'timeline':
+  format.addEventListener('change',()=>{
+    if(format.value!=='simple')datesOption.checked=scope.value!=='selected';
+    syncOptions();
+  });
+  function open(requested='all',layout='technical'){
+    if(busy)return;
+    const state=getState();
+    const hasSelection=!!(state.selectedKey&&state.records[state.selectedKey]);
+    scope.querySelector('option[value="selected"]').disabled=!hasSelection;
+    format.value=layout==='simple'?'simple':'technical';
+    scope.value=requested==='timeline'&&format.value!=='simple'?'timeline':
       requested==='selected'&&hasSelection?'selected':'all';
-    cover.disabled=scope.value==='selected'||scope.value==='timeline';
-    datesOption.checked=scope.value!=='selected';
-    datesOption.disabled=scope.value==='timeline';
-    progress.hidden = true;
-    progressFill.style.width = '0%';
-    status.textContent = '';
+    datesOption.checked=scope.value!=='selected'&&format.value!=='simple';
+    syncOptions();
+    progress.hidden=true;
+    progressFill.style.width='0%';
+    status.textContent='';
     dialog.showModal();
   }
   // Module records take priority over the current viewport filter/search.
@@ -375,7 +402,7 @@ export function setupCatalog({ THREE, getState, notify }) {
     // Up to two recent photos are loaded; the newest is featured as the large site-photo hero.
     // A failed photo never prevents the Rhino render or G-code from appearing.
     if(photos.has(entry.key) && state.client) {
-      for(const item of photos.get(entry.key).slice(0,2)) {
+      for(const item of photos.get(entry.key).slice(0,visualPref==='simple'?1:2)) {
         try {
           const loaded=await photoVisual(state.client,state.photoBucket,item);
           if(loaded?.canvas) asset.photos.push(loaded.canvas);
@@ -390,7 +417,7 @@ export function setupCatalog({ THREE, getState, notify }) {
       }
     }
     const path=String(entry.record.GCode_File||'').trim();
-    if(path.startsWith(state.projectId+'/') && state.client){
+    if(visualPref!=='simple' && path.startsWith(state.projectId+'/') && state.client){
       try{
         const {data,error}=await state.client.storage.from(state.gcodeBucket).download(path);
         if(error)throw error;
@@ -408,7 +435,8 @@ export function setupCatalog({ THREE, getState, notify }) {
       message('PDF library unavailable. Check your connection and reload.');
       return;
     }
-    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;
+    busy=true;cancelled=false;download.disabled=true;scope.disabled=true;format.disabled=true;
+    const simple=format.value==='simple';
     cover.disabled=true;datesOption.disabled=true;
     const original=download.textContent;
     download.textContent='Generating…';
@@ -424,18 +452,18 @@ export function setupCatalog({ THREE, getState, notify }) {
         ? all.filter(e=>/^[A-Z]/.test(String(e.record.Object_ID||'')))
         : all;
       if(!entries.length)throw new Error('No modules found. Load or sync the Tracker first.');
-      const timelineOnly=scope.value==='timeline';
+      const timelineOnly=!simple&&scope.value==='timeline';
       const photos=timelineOnly?new Map():await gatherPhotos(state);
       const pdf=new Class({orientation:'landscape',unit:'mm',format:'a4',
         compress:true,putOnlyUsedFonts:true,precision:4});
-      pdf.setProperties({title:'Pavilion Fabrication Catalogue',
-        subject:'CAD fabrication module records',author:'Pavilion Fabrication Tracker'});
+      pdf.setProperties({title:simple?'Pavilion Simple Module Catalogue':'Pavilion Fabrication Catalogue',
+        subject:simple?'Site photos, fabrication dates, materials and notes':'CAD fabrication module records',author:'Pavilion Fabrication Tracker'});
       let pages=0;
       const next=()=>{
         if(pages)pdf.addPage('a4','landscape');
         pages++;
       };
-      if(scope.value!=='selected'&&scope.value!=='timeline'&&cover.checked){
+      if(!simple&&scope.value!=='selected'&&scope.value!=='timeline'&&cover.checked){
         message('Rendering 3D production-status map…',.025);
         let overview=null;
         try {
@@ -459,7 +487,7 @@ export function setupCatalog({ THREE, getState, notify }) {
           });
         }
       }
-      if(datesOption.checked){
+      if(!simple&&datesOption.checked){
         // The same date groups and colours are used for the 3D scrubber
         // and the native PDF timeline, without changing Tracker state.
         const dated=fabricationDateGroups(entries);
@@ -487,36 +515,38 @@ export function setupCatalog({ THREE, getState, notify }) {
       for(let i=0;!timelineOnly&&i<entries.length;i++){
         if(cancelled)throw new Error('Catalogue cancelled.');
         const entry=entries[i];
-        message('CAD sheet '+(i+1)+' / '+entries.length+' · '+clean(entry.record.Object_ID),
+        message((simple?'Simple record ':'CAD sheet ')+(i+1)+' / '+entries.length+' · '+clean(entry.record.Object_ID),
           (i+.1)/entries.length);
-        const asset=await moduleAssets(state,entry,photos,capture,'model');
+        const asset=await moduleAssets(state,entry,photos,capture,simple?'simple':'model');
         next();
-        drawVectorSheet(pdf,entry,asset,{
-          THREE,number:i+1,total:entries.length
-        });
+        if(simple)drawSimpleVectorSheet(pdf,entry,asset,{number:i+1,total:entries.length});
+        else drawVectorSheet(pdf,entry,asset,{THREE,number:i+1,total:entries.length});
         for(const img of asset.photos || []) if(img?.close)img.close();
         if(i%2===0)await new Promise(resolve=>setTimeout(resolve,0));
       }
       if(cancelled)throw new Error('Catalogue cancelled.');
-      message('Saving '+pages+' vector PDF pages…',1);
+      message('Saving '+pages+(simple?' simple':' vector')+' PDF pages…',1);
       const stamp=new Date().toISOString().slice(0,10).replace(/-/g,'');
-      const name=timelineOnly
+      const name=simple
+        ? (scope.value==='selected'
+          ? 'Pavilion_Simple_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
+          : 'Pavilion_Simple_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf')
+        : timelineOnly
         ? 'Pavilion_Fabrication_Timeline_'+stamp+'.pdf'
         : scope.value==='selected'
         ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
         : 'Pavilion_Fabrication_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
-      message('Saved '+pages+' pages · '+entries.length+' modules · vector CAD.',1);
-      notify?.('Vector PDF ready · '+(timelineOnly?'fabrication timeline':entries.length+' module sheets')+'.');
+      message('Saved '+pages+' pages · '+entries.length+' modules · '+(simple?'simple records':'vector CAD')+'.',1);
+      notify?.((simple?'Simple PDF ready · ':'Vector PDF ready · ')+(timelineOnly?'fabrication timeline':entries.length+' module sheets')+'.');
     }catch(error){
       message(error?.message||'Could not generate the catalogue PDF.');
       if(!cancelled)notify?.('Catalogue PDF failed: '+(error?.message||error),true);
     }finally{
       capture?.dispose();
       busy=false;cancelled=false;
-      download.disabled=false;scope.disabled=false;
-      cover.disabled=scope.value==='selected'||scope.value==='timeline';
-      datesOption.disabled=scope.value==='timeline';
+      download.disabled=false;scope.disabled=false;format.disabled=false;
+      syncOptions();
       download.textContent=original;
     }
   });
