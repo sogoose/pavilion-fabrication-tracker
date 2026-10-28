@@ -424,69 +424,156 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
 }
 
 
-/* Simple module record — editorial A4 PORTRAIT.
- * Two site images from the module's chosen display order; the Rhino render
- * fills the second cell only when a second site photograph is unavailable.
- * Existing technical sheet functions remain unchanged and use A3 via an
- * export-time full-page scale transform.
+/* Cropped, edge-to-edge photographs for the editorial A4 sheet.
+ * This intentionally differs from the technical PDF's contain/fit layout.
+ * Rotating landscape site photos remains consistent with the earlier request.
+ */
+function simplePhotoFill(pdf,img,x,y,w,h,format='JPEG',rotateLandscape=true){
+  const iw=img.width||img.videoWidth||1,ih=img.height||img.videoHeight||1;
+  const rotate=rotateLandscape&&iw>ih;
+  let oriented=img,ow=iw,oh=ih;
+  if(rotate){
+    const rotated=document.createElement('canvas');
+    rotated.width=ih;rotated.height=iw;
+    const ctx=rotated.getContext('2d');
+    ctx.translate(ih,0);ctx.rotate(Math.PI/2);
+    ctx.drawImage(img,0,0,iw,ih);
+    oriented=rotated;ow=ih;oh=iw;
+  }
+  const targetAspect=w/h,sourceAspect=ow/oh;
+  const cropW=sourceAspect>targetAspect?oh*targetAspect:ow;
+  const cropH=sourceAspect>targetAspect?oh:ow/targetAspect;
+  const sx=(ow-cropW)/2,sy=(oh-cropH)/2;
+  const cv=document.createElement('canvas');
+  const density=Math.min(12,1600/Math.max(w,h));
+  cv.width=Math.max(1,Math.round(w*density));
+  cv.height=Math.max(1,Math.round(h*density));
+  cv.getContext('2d').drawImage(oriented,sx,sy,cropW,cropH,0,0,cv.width,cv.height);
+  const png=format==='PNG';
+  pdf.addImage(cv.toDataURL(png?'image/png':'image/jpeg',.92),
+    png?'PNG':'JPEG',x,y,w,h,undefined,'FAST');
+}
+
+// Measured text wrapping at the ACTUAL displayed font size. Unlike the old
+// small caption helper, this preserves multi-line mix compositions.
+function simpleCopyLines(pdf,content,w,fontSize=10.5,maxLines=10){
+  const paragraphs=String(content??'').replace(/\r/g,'').split('\n');
+  pdf.setFont('helvetica','normal');pdf.setFontSize(fontSize);
+  const lines=[];
+  for(const paragraph of paragraphs){
+    const words=paragraph.trim().split(/\s+/).filter(Boolean);
+    if(!words.length){if(lines.length)lines.push('');continue;}
+    let line='';
+    for(const word of words){
+      const candidate=line?line+' '+word:word;
+      if(pdf.getTextWidth(candidate)<=w){line=candidate;continue;}
+      if(line){lines.push(line);line='';}
+      for(const ch of word){
+        if(line&&pdf.getTextWidth(line+ch)>w){lines.push(line);line='';}
+        line+=ch;
+      }
+    }
+    if(line)lines.push(line);
+  }
+  if(lines.length>maxLines){
+    const clipped=lines.slice(0,maxLines);
+    clipped[maxLines-1]=clipped[maxLines-1].replace(/\s*$/,'')+'…';
+    return clipped;
+  }
+  return lines;
+}
+
+/* A4 portrait photo record: generous typography, no letterboxed photo
+ * frames, original recorded material composition and clear notes.
  */
 export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
   const r=entry.record||{};
-  const sw=210,sh=297;
-  bg(pdf,0,0,sw,sh,[252,252,249]);
-
-  // Compact archive masthead, followed by the module identity and metadata.
-  label(pdf,'PRINT("HELLO, EARTH")³',12,12,[48,52,47],7.2);
-  label(pdf,'FABRICATION  /  IMAGE RECORD',147,12,[111,113,107],5.2);
-  stroke(pdf,12,18,198,18,[67,73,65],.2);
-
-  print(pdf,present(r.Object_ID),12,36,110,27,true,ink);
-  label(pdf,'MODULE / PHOTO ARCHIVE',12,43,[112,115,108],5.4);
-  stroke(pdf,127,24,198,24,[207,209,204],.12);
-  label(pdf,'FABRICATION DATE',127,30,[112,115,108],5.1);
-  print(pdf,r.Fabrication_Date||'NOT RECORDED',127,38,69,9.2,false,ink);
-  label(pdf,'MATERIAL',127,46,[112,115,108],5.1);
-  print(pdf,r.Material,153,46,44,8.4,false,ink);
-
-  // Two deliberately equal image frames: a calm, consistent grid across
-  // all modules, with no aspect-ratio distortion or cropping.
-  const frames=[{x:12,y:54,w:91,h:159},{x:107,y:54,w:91,h:159}];
   const photos=asset.photos||[];
-  const first=photos[0]||asset.model||null;
-  const second=photos[1]||(photos[0] ? asset.model : null);
-  const imageEntries=[
-    {img:first,isPhoto:!!photos[0],name:photos[0]?'01 / SITE PHOTO':asset.model?'01 / RHINO 3D':'01 / IMAGE MISSING'},
-    {img:second,isPhoto:!!photos[1],name:photos[1]?'02 / SITE PHOTO':second?'02 / RHINO 3D':'02 / NO ADDITIONAL PHOTO'}
+  const detail=String(r.Material_Details||'').trim();
+  const notes=String(r.Notes||'').trim();
+  const materialGroups=detail.split(/\n\s*\n/).map(v=>v.trim()).filter(Boolean);
+  const multiMix=materialGroups.length>=2;
+  const longMix=multiMix||detail.length>160;
+  const pageInk=[31,34,30],soft=[105,108,101];
+  const outer=12,imageY=63,imageH=longMix?102:124,photoWidth=91;
+  const infoY=imageY+imageH+19;
+  bg(pdf,0,0,210,297,[252,251,248]);
+
+  // Exhibition website hierarchy: oversized module ID, tight black type.
+  print(pdf,'PRINT("HELLO, EARTH")³',outer,15,140,11.5,true,pageInk);
+  print(pdf,'FABRICATION ARCHIVE',143,14.5,55,7.2,true,soft);
+  stroke(pdf,outer,22,198,22,[55,60,53],.22);
+  print(pdf,present(r.Object_ID),outer,47,113,43,true,pageInk);
+  print(pdf,'FABRICATION DATE',137,37,61,8,true,soft);
+  print(pdf,r.Fabrication_Date||'NOT RECORDED',137,49,61,12,true,pageInk);
+
+  const photographs=[
+    {image:photos[0]||asset.model||null,photo:!!photos[0],
+     caption:photos[0]?'01  /  SITE PHOTO':asset.model?'01  /  RHINO 3D':'01  /  NO IMAGE'},
+    {image:photos[1]||(photos[0]?asset.model:null),photo:!!photos[1],
+     caption:photos[1]?'02  /  SITE PHOTO':photos[0]&&asset.model?'02  /  RHINO 3D':'02  /  NO IMAGE'}
   ];
   for(let i=0;i<2;i++){
-    const a=frames[i],o=imageEntries[i];
-    bg(pdf,a.x,a.y,a.w,a.h,o.isPhoto?[248,248,245]:MODULE_PANEL_RGB);
-    if(o.img){
-      try {photoFit(pdf,o.img,a.x+1,a.y+1,a.w-2,a.h-2,o.isPhoto?'JPEG':'PNG',o.isPhoto);}
-      catch(err){console.warn('Simple PDF image '+(i+1),err);label(pdf,'IMAGE NOT AVAILABLE',a.x+6,a.y+a.h/2);}
+    const x=i===0?outer:107;
+    const item=photographs[i];
+    if(item.image){
+      try{
+        // Crop only the surplus edge area, never show grey/white letterboxing.
+        simplePhotoFill(pdf,item.image,x,imageY,photoWidth,imageH,
+          item.photo?'JPEG':'PNG',item.photo);
+      }catch(error){
+        console.warn('Simple PDF photo '+(i+1),error);
+        print(pdf,'IMAGE UNAVAILABLE',x+8,imageY+imageH/2,76,9,true,soft);
+      }
     }else{
-      // Do not duplicate a single site photo merely to fill the page.
-      label(pdf,'NO SECOND IMAGE',a.x+10,a.y+a.h/2,[146,147,141],5.6);
+      // An absent image is deliberately left on the cream page, unboxed.
+      print(pdf,'NO SECOND IMAGE',x+10,imageY+imageH/2,75,9,true,soft);
     }
-    frame(pdf,a.x,a.y,a.w,a.h);
-    label(pdf,o.name,a.x,a.y+a.h+5,[105,109,102],5.3);
+    print(pdf,item.caption,x,imageY+imageH+7,91,8.5,true,pageInk);
   }
+  stroke(pdf,outer,infoY-4,198,infoY-4,[55,60,53],.2);
 
-  // Separate field notes get the full width of the sheet instead of being
-  // constrained to a narrow side column.
-  stroke(pdf,12,225,198,225,[67,73,65],.2);
-  label(pdf,'NOTES',12,234,[99,105,97],6);
-  const note=String(r.Notes??'').trim();
-  if(note){
-    const wrapped=wrap(pdf,note,183,7);
-    wrapped.lines.forEach((line,i)=>print(pdf,line,12,244+i*5,183,Math.max(7,wrapped.size+1),false,ink));
+  print(pdf,'MATERIAL',outer,infoY+5,106,9.5,true,soft);
+  print(pdf,r.Material||'NOT RECORDED',outer,infoY+19,180,19,true,pageInk);
+  print(pdf,'MIX / COMPOSITION',outer,infoY+31,150,8.5,true,soft);
+
+  if(!detail){
+    print(pdf,'No material composition recorded',outer,infoY+44,170,10,false,soft);
+  }else if(multiMix){
+    // Rammed-earth records often contain two distinct recipes. Give each a
+    // legible column, preserving the MIX 1/MIX 2 paragraphs and percentages.
+    const groups=[materialGroups[0],materialGroups.slice(1).join('\n\n')];
+    for(let col=0;col<2;col++){
+      const x=col===0?outer:107;
+      const lines=simpleCopyLines(pdf,groups[col],87,9.5,9);
+      lines.forEach((line,j)=>{
+        if(line)print(pdf,line,x,infoY+41+j*5.7,87,9.5,j===0,pageInk);
+      });
+    }
+    if(notes){
+      stroke(pdf,outer,278,198,278,[193,197,189],.16);
+      print(pdf,'NOTES',outer,285,45,8,true,soft);
+      const shortened=simpleCopyLines(pdf,notes,145,8.5,1);
+      shortened.forEach(line=>print(pdf,line,49,285,149,8.5,false,pageInk));
+    }
   }else{
-    print(pdf,'No notes recorded',12,245,183,8,false,grey);
+    // Regular clay mixes are kept line-by-line, with a generous Notes column.
+    const mixLines=simpleCopyLines(pdf,detail,88,10.5,8);
+    mixLines.forEach((line,j)=>{
+      if(line)print(pdf,line,outer,infoY+43+j*6.5,88,10.5,false,pageInk);
+    });
+    stroke(pdf,103,infoY+2,103,281,[223,225,220],.15);
+    print(pdf,'NOTES',112,infoY+5,86,9.5,true,soft);
+    const noteLines=simpleCopyLines(pdf,notes||'No notes recorded',84,11,9);
+    noteLines.forEach((line,j)=>{
+      if(line)print(pdf,line,112,infoY+20+j*6.2,84,11,false,notes?pageInk:soft);
+    });
   }
-
-  stroke(pdf,12,283.5,198,283.5,[72,78,70],.16);
-  label(pdf,'PAVILION / FABRICATION ARCHIVE',12,289.5,[102,106,101],5.3);
-  label(pdf,'SHEET '+number+' / '+total,168,289.5,[70,75,68],5.3);
+  // Footer stays quiet: module data and photographs remain the main event.
+  stroke(pdf,outer,288,198,288,[55,60,53],.15);
+  print(pdf,'FABRICATION RECORD',outer,294,85,7.5,true,soft);
+  print(pdf,String(number).padStart(2,'0')+' / '+String(total).padStart(2,'0'),
+    169,294,29,7.5,true,soft);
 }
 
 const STATUS_ORDER=['Not Started','Queued','Printing','Printed','Failed'];
