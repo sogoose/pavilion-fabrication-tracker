@@ -489,6 +489,9 @@ function simpleCopyLines(pdf,content,w,fontSize=10.5,maxLines=10){
 export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
   const r=entry.record||{};
   const photos=asset.photos||[];
+  // Rammed-earth R/r modules use only uploaded site photos in the Simple PDF.
+  // Never substitute the Rhino render or show missing-image placeholders.
+  const isRammedModule=/^[Rr]/.test(String(r.Object_ID||'').trim());
   const detail=String(r.Material_Details||'').trim();
   const notes=String(r.Notes||'').trim();
   const materialGroups=detail.split(/\n\s*\n/).map(v=>v.trim()).filter(Boolean);
@@ -508,14 +511,17 @@ export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
   print(pdf,r.Fabrication_Date||'NOT RECORDED',137,49,61,12,true,pageInk);
 
   const photographs=[
-    {image:photos[0]||asset.model||null,photo:!!photos[0],
-     caption:photos[0]?'01  /  SITE PHOTO':asset.model?'01  /  RHINO 3D':'01  /  NO IMAGE'},
-    {image:photos[1]||(photos[0]?asset.model:null),photo:!!photos[1],
-     caption:photos[1]?'02  /  SITE PHOTO':photos[0]&&asset.model?'02  /  RHINO 3D':'02  /  NO IMAGE'}
+    {image:photos[0]||(!isRammedModule?asset.model:null)||null,photo:!!photos[0],
+     caption:photos[0]?'01  /  SITE PHOTO':!isRammedModule&&asset.model?'01  /  RHINO 3D':'01  /  NO IMAGE'},
+    {image:photos[1]||(!isRammedModule&&photos[0]?asset.model:null),photo:!!photos[1],
+     caption:photos[1]?'02  /  SITE PHOTO':!isRammedModule&&photos[0]&&asset.model?'02  /  RHINO 3D':'02  /  NO IMAGE'}
   ];
   for(let i=0;i<2;i++){
     const x=i===0?outer:107;
     const item=photographs[i];
+    // Keep the right-hand area empty for R/r modules with one photo.
+    // The image grid, typography and material/notes positions do not change.
+    if(isRammedModule&&!item.image)continue;
     if(item.image){
       try{
         // Crop only the surplus edge area, never show grey/white letterboxing.
