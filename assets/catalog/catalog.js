@@ -11,7 +11,7 @@ import {
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261028-simple-record-v1';
+} from './vector-sheet.js?v=20261028-a3-a4-two-photo-v3';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
@@ -92,10 +92,10 @@ export function setupCatalog({ THREE, getState, notify }) {
     datesOption.disabled=simple||scope.value==='timeline';
     heading.textContent=simple?'Simple Module Catalogue':'Fabrication Catalogue';
     description.textContent=simple
-      ? 'One photo-first A4 sheet per module: fabrication date, material and notes. No technical parameters.'
-      : 'Export the production-status map, fabrication-date timeline with 3D model, module register and individual CAD sheets.';
+      ? 'A4 portrait: two photographs, fabrication date, material and notes.'
+      : 'A3 landscape: full technical sheets, production-status map, register and fabrication timeline.';
     footnote.textContent=simple
-      ? 'The latest uploaded site photo is shown large. If no photo exists, the Rhino model is used instead. The full technical catalogue remains available.'
+      ? 'The first two photos follow the order chosen in the Tracker. If only one photo exists, the Rhino model fills the second frame. No cropped photographs.'
       : 'Only modules in the current Rhino model are included. Individual sheets place the latest site photo in the large left frame, with 3D G-code above a smaller Rhino render. Modules without site photos retain the Rhino hero.';
   }
   scope.addEventListener('change',()=>{
@@ -401,10 +401,10 @@ export function setupCatalog({ THREE, getState, notify }) {
   }
   async function moduleAssets(state,entry,photos,capture,visualPref) {
     const asset={photos:[],model:null,gcode:[]};
-    // Up to two recent photos are loaded; the newest is featured as the large site-photo hero.
+    // Up to two photos follow user-selected display_order. Simple PDF shows both; technical PDF uses the first.
     // A failed photo never prevents the Rhino render or G-code from appearing.
     if(photos.has(entry.key) && state.client) {
-      for(const item of photos.get(entry.key).slice(0,visualPref==='simple'?1:2)) {
+      for(const item of photos.get(entry.key).slice(0,2)) {
         try {
           const loaded=await photoVisual(state.client,state.photoBucket,item);
           if(loaded?.canvas) asset.photos.push(loaded.canvas);
@@ -456,14 +456,31 @@ export function setupCatalog({ THREE, getState, notify }) {
       if(!entries.length)throw new Error('No modules found. Load or sync the Tracker first.');
       const timelineOnly=!simple&&scope.value==='timeline';
       const photos=timelineOnly?new Map():await gatherPhotos(state);
-      const pdf=new Class({orientation:'landscape',unit:'mm',format:'a4',
-        compress:true,putOnlyUsedFonts:true,precision:4});
+      const pdf=new Class({
+        orientation:simple?'portrait':'landscape',
+        unit:'mm',
+        format:simple?'a4':'a3',
+        compress:true,putOnlyUsedFonts:true,precision:4
+      });
       pdf.setProperties({title:simple?'Pavilion Simple Module Catalogue':'Pavilion Fabrication Catalogue',
         subject:simple?'Site photos, fabrication dates, materials and notes':'CAD fabrication module records',author:'Pavilion Fabrication Tracker'});
       let pages=0;
       const next=()=>{
-        if(pages)pdf.addPage('a4','landscape');
+        if(pages)pdf.addPage(simple?'a4':'a3',simple?'portrait':'landscape');
         pages++;
+      };
+      // Technical diagrams are designed in a 297 x 210 mm reference grid.
+      // Scale its entire vector/image coordinate space into the A3 landscape
+      // MediaBox (420 x 297 mm) without rasterising any typography or toolpath.
+      // jsPDF compat-mode coordinates originate at the TOP of the current
+      // 297 mm page, so adjust the native PDF bottom-left-origin translation.
+      const drawTechnicalPage=(draw)=>{
+        const k=Math.SQRT2;
+        const ty=(1-k)*297*pdf.internal.scaleFactor;
+        pdf.saveGraphicsState();
+        pdf.internal.write(k.toFixed(9)+' 0 0 '+k.toFixed(9)+' 0 '+ty.toFixed(6)+' cm');
+        try { draw(); }
+        finally { pdf.restoreGraphicsState(); }
       };
       if(!simple&&scope.value!=='selected'&&scope.value!=='timeline'&&cover.checked){
         message('Rendering 3D production-status map…',.025);
@@ -471,9 +488,9 @@ export function setupCatalog({ THREE, getState, notify }) {
         try {
           overview=captureProductionOverview(state,entries);
           next();
-          drawVectorCover(pdf,entries,overview,{
+          drawTechnicalPage(()=>drawVectorCover(pdf,entries,overview,{
             palette:state.productionPalette||DEFAULT_PRODUCTION_COLORS
-          });
+          }));
         }finally{
           overview?.dispose();
         }
@@ -483,10 +500,10 @@ export function setupCatalog({ THREE, getState, notify }) {
         for(let offset=0;offset<entries.length;offset+=perRegisterPage){
           if(cancelled)throw new Error('Catalogue cancelled.');
           next();
-          drawVectorRegister(pdf,entries.slice(offset,offset+perRegisterPage),{
+          drawTechnicalPage(()=>drawVectorRegister(pdf,entries.slice(offset,offset+perRegisterPage),{
             palette:state.productionPalette||DEFAULT_PRODUCTION_COLORS,
             startIndex:offset,total:entries.length
-          });
+          }));
         }
       }
       if(!simple&&datesOption.checked){
@@ -506,9 +523,9 @@ export function setupCatalog({ THREE, getState, notify }) {
               fabricationCutoff:days.at(-1)?.date||'0000-00-00'
             });
             next();
-            drawDatePage(pdf,entries,dateOverview,{
+            drawTechnicalPage(()=>drawDatePage(pdf,entries,dateOverview,{
               dateWindow:days,section:i+1,totalSections:groups.length
-            });
+            }));
           }finally{dateOverview?.dispose();}
           await new Promise(resolve=>setTimeout(resolve,0));
         }
@@ -522,7 +539,7 @@ export function setupCatalog({ THREE, getState, notify }) {
         const asset=await moduleAssets(state,entry,photos,capture,simple?'simple':'model');
         next();
         if(simple)drawSimpleVectorSheet(pdf,entry,asset,{number:i+1,total:entries.length});
-        else drawVectorSheet(pdf,entry,asset,{THREE,number:i+1,total:entries.length});
+        else drawTechnicalPage(()=>drawVectorSheet(pdf,entry,asset,{THREE,number:i+1,total:entries.length}));
         for(const img of asset.photos || []) if(img?.close)img.close();
         if(i%2===0)await new Promise(resolve=>setTimeout(resolve,0));
       }
@@ -532,12 +549,12 @@ export function setupCatalog({ THREE, getState, notify }) {
       const name=simple
         ? (scope.value==='selected'
           ? 'Pavilion_Simple_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
-          : 'Pavilion_Simple_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf')
+          : 'Pavilion_Simple_Catalogue_A4_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf')
         : timelineOnly
         ? 'Pavilion_Fabrication_Timeline_'+stamp+'.pdf'
         : scope.value==='selected'
         ? 'Pavilion_Module_'+(entries[0].record.Object_ID||'record').replace(/[^A-Za-z0-9_-]/g,'_')+'.pdf'
-        : 'Pavilion_Fabrication_Catalogue_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
+        : 'Pavilion_Fabrication_Catalogue_A3_'+(scope.value==='upper'?'Uppercase_':'')+stamp+'.pdf';
       await pdf.save(name,{returnPromise:true});
       message('Saved '+pages+' pages · '+entries.length+' modules · '+(simple?'simple records':'vector CAD')+'.',1);
       notify?.((simple?'Simple PDF ready · ':'Vector PDF ready · ')+(timelineOnly?'fabrication timeline':entries.length+' module sheets')+'.');
