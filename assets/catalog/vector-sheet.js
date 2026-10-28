@@ -424,61 +424,69 @@ export function drawSheet(pdf,entry,asset,{THREE,number=1,total=1}={}){
 }
 
 
-/* Lightweight exhibition/field record. One landscape A4 page per current
- * Rhino module: photograph, fabrication date, material and module notes.
- * Keep the main technical catalogue (drawSheet) unchanged. */
+/* Simple module record — editorial A4 PORTRAIT.
+ * Two site images from the module's chosen display order; the Rhino render
+ * fills the second cell only when a second site photograph is unavailable.
+ * Existing technical sheet functions remain unchanged and use A3 via an
+ * export-time full-page scale transform.
+ */
 export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
   const r=entry.record||{};
-  bg(pdf,0,0,PW,PH,[252,252,249]);
-  label(pdf,'PRINT("HELLO, EARTH")³  /  FABRICATION RECORD',10,12,[48,52,47],6.6);
-  label(pdf,'SIMPLE CATALOGUE',251,12,[90,92,86],5.5);
-  stroke(pdf,10,20,287,20,[75,80,73],.21);
+  const sw=210,sh=297;
+  bg(pdf,0,0,sw,sh,[252,252,249]);
 
-  // Main image is the latest site photograph. When none was uploaded, keep
-  // the sheet useful by showing the Rhino module instead, clearly labelled.
-  const photo=asset.photos?.[0]||null;
-  const image=photo||asset.model||null;
-  bg(pdf,10,29,164,158,photo?[250,250,247]:MODULE_PANEL_RGB);
-  if(image){
-    try{
-      // Preserve photo orientation and content: fit entirely, no cropping.
-      photoFit(pdf,image,11,30,162,156,photo?'JPEG':'PNG');
-    }catch(err){
-      console.warn('Simple catalogue image:',err);
-      label(pdf,'IMAGE NOT AVAILABLE',25,105);
+  // Compact archive masthead, followed by the module identity and metadata.
+  label(pdf,'PRINT("HELLO, EARTH")³',12,12,[48,52,47],7.2);
+  label(pdf,'FABRICATION  /  IMAGE RECORD',147,12,[111,113,107],5.2);
+  stroke(pdf,12,18,198,18,[67,73,65],.2);
+
+  print(pdf,present(r.Object_ID),12,36,110,27,true,ink);
+  label(pdf,'MODULE / PHOTO ARCHIVE',12,43,[112,115,108],5.4);
+  stroke(pdf,127,24,198,24,[207,209,204],.12);
+  label(pdf,'FABRICATION DATE',127,30,[112,115,108],5.1);
+  print(pdf,r.Fabrication_Date||'NOT RECORDED',127,38,69,9.2,false,ink);
+  label(pdf,'MATERIAL',127,46,[112,115,108],5.1);
+  print(pdf,r.Material,153,46,44,8.4,false,ink);
+
+  // Two deliberately equal image frames: a calm, consistent grid across
+  // all modules, with no aspect-ratio distortion or cropping.
+  const frames=[{x:12,y:54,w:91,h:159},{x:107,y:54,w:91,h:159}];
+  const photos=asset.photos||[];
+  const first=photos[0]||asset.model||null;
+  const second=photos[1]||(photos[0] ? asset.model : null);
+  const imageEntries=[
+    {img:first,isPhoto:!!photos[0],name:photos[0]?'01 / SITE PHOTO':asset.model?'01 / RHINO 3D':'01 / IMAGE MISSING'},
+    {img:second,isPhoto:!!photos[1],name:photos[1]?'02 / SITE PHOTO':second?'02 / RHINO 3D':'02 / NO ADDITIONAL PHOTO'}
+  ];
+  for(let i=0;i<2;i++){
+    const a=frames[i],o=imageEntries[i];
+    bg(pdf,a.x,a.y,a.w,a.h,o.isPhoto?[248,248,245]:MODULE_PANEL_RGB);
+    if(o.img){
+      try {photoFit(pdf,o.img,a.x+1,a.y+1,a.w-2,a.h-2,o.isPhoto?'JPEG':'PNG',o.isPhoto);}
+      catch(err){console.warn('Simple PDF image '+(i+1),err);label(pdf,'IMAGE NOT AVAILABLE',a.x+6,a.y+a.h/2);}
+    }else{
+      // Do not duplicate a single site photo merely to fill the page.
+      label(pdf,'NO SECOND IMAGE',a.x+10,a.y+a.h/2,[146,147,141],5.6);
     }
-  }else{
-    label(pdf,'NO MODULE IMAGE',25,105);
-  }
-  frame(pdf,10,29,164,158);
-  label(pdf,photo?'SITE PHOTO':asset.model?'RHINO 3D / NO SITE PHOTO':'IMAGE NOT AVAILABLE',
-    10,192,[120,123,116],5.0);
-
-  const tx=184;
-  print(pdf,present(r.Object_ID),tx,44,101,23,true,ink);
-  stroke(pdf,tx,52,287,52,[80,86,80],.2);
-
-  label(pdf,'FABRICATION DATE',tx,65,[112,115,109],5.5);
-  print(pdf,r.Fabrication_Date || 'NOT RECORDED',tx,76,99,11,false,ink);
-
-  stroke(pdf,tx,85,287,85,[224,225,220],.13);
-  label(pdf,'MATERIAL',tx,97,[112,115,109],5.5);
-  const mat=wrap(pdf,r.Material,100,3);
-  mat.lines.forEach((line,i)=>print(pdf,line,tx,108+i*5.2,99,Math.max(8,mat.size+1.2),false,ink));
-
-  stroke(pdf,tx,126,287,126,[224,225,220],.13);
-  label(pdf,'NOTES',tx,137,[112,115,109],5.5);
-  const notes=String(r.Notes??'').trim();
-  if(notes){
-    const lines=wrap(pdf,notes,100,10);
-    lines.lines.forEach((line,i)=>print(pdf,line,tx,147+i*4.1,100,Math.max(6,lines.size),false,ink));
-  }else{
-    print(pdf,'No notes recorded',tx,148,100,8,false,grey);
+    frame(pdf,a.x,a.y,a.w,a.h);
+    label(pdf,o.name,a.x,a.y+a.h+5,[105,109,102],5.3);
   }
 
-  stroke(pdf,10,198.4,287,198.4,[76,80,72],.18);
-  label(pdf,'PAVILION / MODULE ARCHIVE',10,204,[90,93,85],5.3);
-  label(pdf,'SHEET '+number+' / '+total,256,204,[70,75,68],5.3);
+  // Separate field notes get the full width of the sheet instead of being
+  // constrained to a narrow side column.
+  stroke(pdf,12,225,198,225,[67,73,65],.2);
+  label(pdf,'NOTES',12,234,[99,105,97],6);
+  const note=String(r.Notes??'').trim();
+  if(note){
+    const wrapped=wrap(pdf,note,183,7);
+    wrapped.lines.forEach((line,i)=>print(pdf,line,12,244+i*5,183,Math.max(7,wrapped.size+1),false,ink));
+  }else{
+    print(pdf,'No notes recorded',12,245,183,8,false,grey);
+  }
+
+  stroke(pdf,12,283.5,198,283.5,[72,78,70],.16);
+  label(pdf,'PAVILION / FABRICATION ARCHIVE',12,289.5,[102,106,101],5.3);
+  label(pdf,'SHEET '+number+' / '+total,168,289.5,[70,75,68],5.3);
 }
 
 const STATUS_ORDER=['Not Started','Queued','Printing','Printed','Failed'];
