@@ -413,7 +413,8 @@ header{gap:6px;padding:10px 16px}
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./config.js"></script>
+  <script src="./config.js?v=20261029-readonly"></script>
+<script src="./assets/archive-readonly.js?v=20261029-lock-v1"></script>
   <script type="importmap">
   {
     "imports": {
@@ -907,6 +908,7 @@ async function loadColorSettings(){
   }catch(err){console.warn('color settings load',err);}
 }
 async function saveColorSettings(){
+  if(CONFIG.readOnly) return;
   persistColorOverrides();
   if(!liveMode || !supabaseClient) return;
   try{
@@ -983,12 +985,14 @@ function persistLocal(){
   }catch(e){document.getElementById('saveBadge').textContent='autosave unavailable';}
 }
 function queueCloudSave(key){
+  if(CONFIG.readOnly) return;
   if(!liveMode || !cloudReady || !key || !records[key]) return;
   clearTimeout(cloudSaveTimers[key]);
   setSyncBadge('SAVING…','syncing');
   cloudSaveTimers[key]=setTimeout(()=>saveRecordToCloud(key),450);
 }
 async function saveRecordToCloud(key){
+  if(CONFIG.readOnly) return;
   if(!liveMode || !records[key]) return;
   const payload=toDbRecord(records[key]);
   const {error}=await supabaseClient.from('pavilion_parts').upsert(payload,{onConflict:'project_id,rhino_guid'});
@@ -1000,6 +1004,7 @@ async function saveRecordToCloud(key){
   if(selectedKey===key) renderPanel();
 }
 async function upsertKeys(keys){
+  if(CONFIG.readOnly) return;
   if(!liveMode || !keys.length) return;
   const payloads=keys.filter(k=>records[k]).map(k=>toDbRecord(records[k]));
   if(!payloads.length) return;
@@ -1787,6 +1792,7 @@ function sortModulePhotos(rows){
 }
 
 async function moveModulePhoto(key,id,direction){
+  if(CONFIG.readOnly) return;
   if(!liveMode||!supabaseClient||selectedKey!==key)return;
   const wrap=document.getElementById('modulePhotos');
   const ordered=JSON.parse(wrap?.dataset.visiblePhotoIds||'[]');
@@ -1903,6 +1909,7 @@ async function loadModulePhotos(key){
   });
 }
 async function uploadModulePhoto(key){
+  if(CONFIG.readOnly) return;
   if(!liveMode || !supabaseClient){showMessage('Photo upload needs shared mode.',true);return;}
   const fileInput=document.getElementById('modulePhotoInput');
   const noteInput=document.getElementById('modulePhotoNote');
@@ -1967,6 +1974,7 @@ function gcodeDisplayName(path){
   }
 }
 async function uploadGCode(key){
+  if(CONFIG.readOnly) return;
   if(!liveMode || !supabaseClient){showMessage('G-code upload needs shared mode.',true);return;}
   const input=document.getElementById('gcodeInput');
   const file=input?.files?.[0];
@@ -2059,7 +2067,7 @@ function firingPanel(r){
 }
 
 function renderPanel(){
-  if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to edit its data.</div>'; objectLabel.style.display='none'; return; }
+  if(!selectedKey || !records[selectedKey]){ panel.innerHTML='<div class="empty">Click a block in the 3D model to view its data.</div>'; objectLabel.style.display='none'; return; }
   const r=records[selectedKey];
   derive(r);
   const methodClass=r.Manufacturing_Method==='3D Printing'?'method-print':(r.Manufacturing_Method==='Rammed Earth'?'method-rammed':'method-other');
@@ -2139,7 +2147,7 @@ function renderPanel(){
     <div id="modulePhotos" data-count="0"><div class="photoEmpty">Loading photos…</div></div>
 
     <div class="footerActions"><button id="stampNow">Stamp updated time</button><button id="focusSelected">Focus object</button></div>
-    <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.'}</div>`;
+    <div class="sub" style="margin-top:10px">Rhino key: ${escapeHtml(r.Rhino_GUID)}<br>Last updated: ${escapeHtml(r.Last_Updated||'—')}<br><span class="updatedBy">Updated by: <b>${escapeHtml(r.Updated_By||'—')}</b></span></div><div class="liveNote">${CONFIG.readOnly?'READ ONLY · Fabrication archive':(liveMode?'Shared edits sync to the team database in real time.':'Local mode: this browser is not connected to the shared database yet.')}</div>`;
 
   window.pavilionTrackerMinimal?.enhance(panel, r, selectedKey);
   // The mixer edits the original Material / Material_Details fields with ONE
@@ -2290,6 +2298,7 @@ function updateAllUI(){
   if(showAllObjectLabels) rebuildAllObjectLabels();
 }
 function persist(changedKey=null){
+  if(CONFIG.readOnly) return;
   persistLocal();
   if(changedKey) queueCloudSave(changedKey);
 }
@@ -2298,6 +2307,7 @@ function restoreLocal(){
   catch(e){console.warn(e)}
 }
 async function resetData(){
+  if(CONFIG.readOnly) return;
   if(liveMode){
     if(!confirm('Discard this browser cache and reload the current shared team data? The shared database will NOT be deleted.')) return;
     records={}; localStorage.removeItem(STORAGE_KEY); clearSelectionOutline(); selectedKey=null; objectLabel.style.display='none';
@@ -2505,6 +2515,7 @@ async function exportExcel(){
   showMessage(`Excel exported · ${rows.length} modules · sorted by Object_ID.`);
 }
 async function importExcel(file){
+  if(CONFIG.readOnly) return;
   if(!window.XLSX){showMessage('Excel library has not loaded. Check your internet connection.',true);return;}
   const data=await file.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]];
   const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
@@ -2590,7 +2601,7 @@ function escapeAttr(v){return escapeHtml(v).replace(/`/g,'&#96;')}
 
 
 <script src="./assets/workflow/board.js?v=20261020-grasshopper-cad-v7" defer></script>
-<script src="./assets/workflow/editor.js?v=20261020-zip-windows-fix-v8" defer></script>
+<script src="./assets/workflow/editor.js?v=20261029-readonly" defer></script>
 <script src="./assets/editorial-landing.js?v=20261025-launch-v1" defer></script>
 </body>
 </html>

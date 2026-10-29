@@ -18,8 +18,9 @@ async function load(){
  const {data,error}=await client.from(table).select("storage_path").eq("id",1).maybeSingle();
  if(!error&&data?.storage_path)setVideo(data.storage_path);
 }
-button.addEventListener("click",()=>input.click());
+button.addEventListener("click",()=>{if(!cfg.readOnly)input.click()});
 input.addEventListener("change",async()=>{
+ if(cfg.readOnly)return;
  const file=input.files?.[0];if(!file)return;
  if(file.size>50*1024*1024){show("Maximum video size: 50 MB");input.value="";return}
  if(file.type!=="video/mp4"){show("Please select an H.264 MP4 video");input.value="";return}

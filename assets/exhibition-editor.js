@@ -130,6 +130,7 @@ function setFields(chapter){
  status("Edit text, links and files, then save.");
 }
 function showEditor(){
+ if(root.readOnly)return;
  active=window.helloEarthActiveChapter?.()||1;
  if(!dialog.open)dialog.showModal();
  $("exEditorAuth").hidden=true;
@@ -145,6 +146,7 @@ const slug=name=>{
  return parts.slice(-90)||"file";
 };
 async function uploadFiles(input,type){
+ if(root.readOnly)return;
  if(busy)return;
  const files=Array.from(input.files||[]);
  if(!files.length)return;
@@ -183,6 +185,7 @@ $("exEditorSlideInput").addEventListener("change",e=>uploadFiles(e.target,"slide
 $("exEditorFileInput").addEventListener("change",e=>uploadFiles(e.target,"files"));
 $("exEditorForm").addEventListener("submit",async e=>{
  e.preventDefault();
+ if(root.readOnly)return;
  if(busy)return;
  busy=true;status("Saving…");
  try{

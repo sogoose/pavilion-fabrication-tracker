@@ -101,7 +101,7 @@
       status("Photo archive could not load.",true);
       root.hidden=true;return;
     }
-    editEnabled=settings.data?.editing_enabled===true;
+    editEnabled=!config.readOnly&&settings.data?.editing_enabled===true;
     items=records.data||[];
     render();
     if(!editEnabled&&editor.open)editor.close();

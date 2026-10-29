@@ -224,6 +224,7 @@
   dialog.addEventListener('click', event => { if (event.target === dialog) closeDialog(); });
 
   const showEditor = id => {
+    if(config.readOnly)return;
     if (!sections.has(id)) return;
     editingId = id;
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
@@ -428,6 +429,7 @@
   };
 
   const showPageEditor = () => {
+    if(config.readOnly)return;
     // Available to all visitors; Supabase RLS allows only Workflow-scoped writes.
     editingId = '__page';
     fields.replaceChildren(); buttons.replaceChildren(); setFeedback('');
