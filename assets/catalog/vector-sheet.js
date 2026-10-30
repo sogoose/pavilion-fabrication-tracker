@@ -545,23 +545,47 @@ export function drawSimpleSheet(pdf,entry,asset,{number=1,total=1}={}){
 
   if(!detail){
     print(pdf,'No material composition recorded',outer,infoY+44,170,10,false,soft);
-  }else if(multiMix){
-    // Rammed-earth records often contain two distinct recipes. Give each a
-    // legible column, preserving the MIX 1/MIX 2 paragraphs and percentages.
-    const groups=[materialGroups[0],materialGroups.slice(1).join('\n\n')];
-    for(let col=0;col<2;col++){
-      const x=col===0?outer:107;
-      const lines=simpleCopyLines(pdf,groups[col],87,9.5,9);
-      lines.forEach((line,j)=>{
-        if(line)print(pdf,line,x,infoY+41+j*5.7,87,9.5,j===0,pageInk);
+    // Rammed-earth sheets must still show their module notes when a recipe
+    // has not yet been entered.
+    if(isRammedModule){
+      stroke(pdf,outer,259.5,198,259.5,[193,197,189],.16);
+      print(pdf,'NOTES',outer,266.5,37,8.5,true,soft);
+      const noteLines=simpleCopyLines(pdf,notes||'No notes recorded',149,8.6,5);
+      noteLines.forEach((line,j)=>{
+        if(line)print(pdf,line,49,266.5+j*4,149,8.6,false,notes?pageInk:soft);
       });
     }
-    if(notes){
-      stroke(pdf,outer,278,198,278,[193,197,189],.16);
-      print(pdf,'NOTES',outer,285,45,8,true,soft);
-      const shortened=simpleCopyLines(pdf,notes,145,8.5,1);
-      shortened.forEach(line=>print(pdf,line,49,285,149,8.5,false,pageInk));
+  }else if(multiMix){
+    // Compact two-column recipes leave a real, multi-line NOTES section
+    // above the footer. Preserve each mix's original ingredient percentages.
+    const groups=[materialGroups[0],materialGroups.slice(1).join('\n\n')];
+    const mixY=infoY+38;
+    const maxMixBottom=256;
+    let mixSize=8.7;
+    let mixLines=groups.map(group=>simpleCopyLines(pdf,group,87,mixSize,14));
+    let rowCount=Math.max(1,...mixLines.map(lines=>lines.length));
+    let lineStep=Math.min(4.05,(maxMixBottom-mixY)/Math.max(1,rowCount-1));
+    if(lineStep<3.6){
+      mixSize=lineStep<3?7.1:7.8;
+      mixLines=groups.map(group=>simpleCopyLines(pdf,group,87,mixSize,14));
+      rowCount=Math.max(1,...mixLines.map(lines=>lines.length));
+      lineStep=Math.min(4.05,(maxMixBottom-mixY)/Math.max(1,rowCount-1));
     }
+    mixLines.forEach((lines,col)=>{
+      const x=col===0?outer:107;
+      lines.forEach((line,j)=>{
+        if(line)print(pdf,line,x,mixY+j*lineStep,87,mixSize,j===0,pageInk);
+      });
+    });
+
+    // Keep notes in their own reserved strip, not the old one-line position
+    // at y=285 (which almost touched the 288 mm footer).
+    stroke(pdf,outer,259.5,198,259.5,[193,197,189],.16);
+    print(pdf,'NOTES',outer,266.5,37,8.5,true,soft);
+    const noteLines=simpleCopyLines(pdf,notes||'No notes recorded',149,8.6,5);
+    noteLines.forEach((line,j)=>{
+      if(line)print(pdf,line,49,266.5+j*4,149,8.6,false,notes?pageInk:soft);
+    });
   }else{
     // Regular clay mixes are kept line-by-line, with a generous Notes column.
     const mixLines=simpleCopyLines(pdf,detail,88,10.5,8);
