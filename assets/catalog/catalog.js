@@ -11,7 +11,7 @@ import {
   drawRegisterPage as drawVectorRegister,
   drawFabricationTimelinePage as drawDatePage,
   fabricationDateGroups
-} from './vector-sheet.js?v=20261028-rammed-photo-only-v5';
+} from './vector-sheet.js?v=20261030-rammed-notes-v1';
 
 export function setupCatalog({ THREE, getState, notify }) {
   const dialog = document.createElement('dialog');
